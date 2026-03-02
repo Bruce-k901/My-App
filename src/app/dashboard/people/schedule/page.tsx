@@ -461,6 +461,13 @@ function AddShiftModal({
 // EDIT SHIFT MODAL
 // ============================================
 
+const ABSENCE_REASONS = [
+  { value: 'sick', label: 'Sick' },
+  { value: 'no_show', label: 'No-show' },
+  { value: 'personal', label: 'Personal' },
+  { value: 'other', label: 'Other' },
+];
+
 function EditShiftModal({
   shift,
   staff,
@@ -469,6 +476,7 @@ function EditShiftModal({
   onSave,
   onDelete,
   onClose,
+  onRecordAbsence,
 }: {
   shift: Shift;
   staff: Staff[];
@@ -477,12 +485,17 @@ function EditShiftModal({
   onSave: (data: Partial<Shift>) => void;
   onDelete: () => void;
   onClose: () => void;
+  onRecordAbsence?: (shiftId: string, profileId: string, reason: string, notes: string) => Promise<void>;
 }) {
   const [startTime, setStartTime] = useState(shift.start_time);
   const [endTime, setEndTime] = useState(shift.end_time);
   const [breakMins, setBreakMins] = useState(shift.break_minutes);
   const [selectedStaff, setSelectedStaff] = useState(shift.profile_id || '');
   const [selectedSectionId, setSelectedSectionId] = useState<string>(sectionsEnabled ? (shift.section_id || '') : '');
+  const [showAbsenceForm, setShowAbsenceForm] = useState(false);
+  const [absenceReason, setAbsenceReason] = useState('sick');
+  const [absenceNotes, setAbsenceNotes] = useState('');
+  const [absenceLoading, setAbsenceLoading] = useState(false);
 
   const netHours = calculateNetHours(startTime, endTime, breakMins);
   const staffMember = staff.find(s => s.id === selectedStaff);
@@ -589,24 +602,97 @@ function EditShiftModal({
               )}
             </div>
           </div>
+
+          {/* Absence form — only for assigned shifts */}
+          {showAbsenceForm && shift.profile_id && onRecordAbsence && (
+            <div className="border border-red-500/20 rounded-lg p-4 space-y-3 bg-red-500/5">
+              <h4 className="text-sm font-semibold text-red-400 flex items-center gap-2">
+                <UserX className="w-4 h-4" />
+                Record Absence — {staff.find(s => s.id === shift.profile_id)?.full_name || 'Staff'}
+              </h4>
+              <div>
+                <label className="block text-xs text-theme-tertiary mb-1">Reason</label>
+                <select
+                  value={absenceReason}
+                  onChange={(e) => setAbsenceReason(e.target.value)}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:border-module-fg focus:ring-1 focus:ring-module-fg"
+                >
+                  {ABSENCE_REASONS.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-theme-tertiary mb-1">Notes (optional)</label>
+                <textarea
+                  value={absenceNotes}
+                  onChange={(e) => setAbsenceNotes(e.target.value)}
+                  placeholder="Additional details..."
+                  rows={2}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm placeholder-gray-400 dark:placeholder-white/40 focus:border-module-fg focus:ring-1 focus:ring-module-fg"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!shift.profile_id) return;
+                    setAbsenceLoading(true);
+                    try {
+                      await onRecordAbsence(shift.id, shift.profile_id, absenceReason, absenceNotes);
+                      onClose();
+                    } catch (err: any) {
+                      toast.error(err?.message || 'Failed to record absence');
+                    } finally {
+                      setAbsenceLoading(false);
+                    }
+                  }}
+                  disabled={absenceLoading}
+                  className="flex-1 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {absenceLoading ? 'Recording...' : 'Confirm Absence'}
+                </button>
+                <button
+                  onClick={() => setShowAbsenceForm(false)}
+                  className="px-3 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary text-sm"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-between p-4 border-t border-theme">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }} 
-            className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg"
-          >
-            Delete
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg"
+            >
+              Delete
+            </button>
+            {shift.profile_id && onRecordAbsence && !showAbsenceForm && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAbsenceForm(true);
+                }}
+                className="px-4 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-lg flex items-center gap-2"
+              >
+                <UserX className="w-4 h-4" />
+                Record Absence
+              </button>
+            )}
+          </div>
           <div className="flex gap-3">
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onClose();
-              }} 
+              }}
               className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary"
             >
               Cancel
@@ -617,9 +703,9 @@ function EditShiftModal({
                 e.stopPropagation();
                 e.preventDefault();
                 console.log('Save Shift button clicked:', { startTime, endTime, breakMins, selectedStaff, netHours });
-                onSave({ 
-                  start_time: startTime, 
-                  end_time: endTime, 
+                onSave({
+                  start_time: startTime,
+                  end_time: endTime,
                   break_minutes: breakMins,
                   net_hours: netHours,
                   profile_id: selectedStaff || null,
@@ -3613,6 +3699,64 @@ export default function RotaBuilderPage() {
     loadData();
   };
 
+  // Shared absence handler used by both mobile ShiftActionSheet and desktop EditShiftModal
+  const handleRecordAbsence = async (shiftId: string, profileId: string, reason: string, notes: string) => {
+    const shift = shifts.find(s => s.id === shiftId);
+    if (!shift) throw new Error('Shift not found');
+
+    const leaveTypeCode = reason === 'sick' ? 'SICK' : 'UNPAID';
+    const leaveType = leaveTypes.find(lt => lt.code === leaveTypeCode) || leaveTypes[0];
+    if (!leaveType) throw new Error('No leave types configured — please contact your admin');
+
+    // 1. Insert leave_requests
+    const { error: leaveError } = await supabase.from('leave_requests').insert({
+      profile_id: profileId,
+      company_id: companyId,
+      leave_type_id: leaveType.id,
+      start_date: shift.shift_date,
+      end_date: shift.shift_date,
+      total_days: 1,
+      status: 'approved',
+      reason: `${reason}${notes ? ': ' + notes : ''}`,
+      reviewed_by: profile?.id,
+      reviewed_at: new Date().toISOString(),
+    });
+    if (leaveError) throw new Error(`Leave request failed: ${leaveError.message}`);
+
+    // 2. Make the shift open by clearing profile_id
+    await supabase.from('rota_shifts').update({ profile_id: null, estimated_cost: 0 }).eq('id', shiftId);
+
+    // 3. Insert staff_attendance as audit record
+    await supabase.from('staff_attendance').insert({
+      profile_id: profileId,
+      company_id: companyId,
+      site_id: selectedSite,
+      clock_in_time: new Date().toISOString(),
+      shift_status: 'absent',
+      shift_notes: `${reason}${notes ? ': ' + notes : ''}`,
+    }).then(({ error }) => { if (error) console.warn('[Absence] staff_attendance insert failed (non-blocking):', error); });
+
+    // 4. If sick, create a sickness record
+    if (reason === 'sick') {
+      const staffMember = staff.find(s => s.id === profileId);
+      await supabase.from('staff_sickness_records').insert({
+        company_id: companyId,
+        site_id: selectedSite,
+        staff_member_id: profileId,
+        staff_member_name: staffMember?.full_name || 'Unknown',
+        illness_onset_date: shift.shift_date,
+        symptoms: notes || 'Reported sick via rota',
+        exclusion_period_start: shift.shift_date,
+        reported_by: profile?.id,
+        reported_date: new Date().toISOString().split('T')[0],
+        status: 'active',
+      }).then(({ error }) => { if (error) console.warn('[Absence] sickness record failed (non-blocking):', error); });
+    }
+
+    toast.success('Absence recorded — shift is now open');
+    await loadData();
+  };
+
   const handleCopyShift = async (shiftId: string, targetDate?: string) => {
     const shift = shifts.find(s => s.id === shiftId);
     if (!shift || !rota || !companyId) {
@@ -4537,77 +4681,7 @@ export default function RotaBuilderPage() {
             toast.success('Clocked out successfully');
             setUserAttendanceStatus({ onShift: false });
           }}
-          onRecordAbsence={async (shiftId, profileId, reason, notes) => {
-            // Find the shift to get the date
-            const shift = shifts.find(s => s.id === shiftId);
-            if (!shift) throw new Error('Shift not found');
-
-            // Map absence reason to leave type code
-            const leaveTypeCode = reason === 'sick' ? 'SICK' : 'UNPAID';
-            const leaveType = leaveTypes.find(lt => lt.code === leaveTypeCode) || leaveTypes[0];
-            console.log('[Absence] leaveTypes available:', leaveTypes, 'selected:', leaveType, 'for reason:', reason);
-            if (!leaveType) throw new Error('No leave types configured — please contact your admin');
-
-            // 1. Insert leave_requests (drives the rota display)
-            const leavePayload = {
-              profile_id: profileId,
-              company_id: companyId,
-              leave_type_id: leaveType.id,
-              start_date: shift.shift_date,
-              end_date: shift.shift_date,
-              total_days: 1,
-              status: 'approved',
-              reason: `${reason}${notes ? ': ' + notes : ''}`,
-              reviewed_by: profile?.id,
-              reviewed_at: new Date().toISOString(),
-            };
-            console.log('[Absence] Inserting leave_request:', leavePayload);
-            const { error: leaveError } = await supabase.from('leave_requests').insert(leavePayload);
-            if (leaveError) {
-              console.error('[Absence] leave_requests insert failed:', leaveError);
-              throw new Error(`Leave request failed: ${leaveError.message}`);
-            }
-
-            // 2. Make the shift open by clearing profile_id
-            const { error: shiftError } = await supabase
-              .from('rota_shifts')
-              .update({ profile_id: null, estimated_cost: 0 })
-              .eq('id', shiftId);
-            if (shiftError) console.warn('[Absence] Failed to make shift open (non-blocking):', shiftError);
-
-            // 3. Also insert staff_attendance as audit record
-            const { error: attendanceError } = await supabase.from('staff_attendance').insert({
-              profile_id: profileId,
-              company_id: companyId,
-              site_id: selectedSite,
-              clock_in_time: new Date().toISOString(),
-              shift_status: 'absent',
-              shift_notes: `${reason}${notes ? ': ' + notes : ''}`,
-            });
-            if (attendanceError) console.warn('[Absence] staff_attendance insert failed (non-blocking):', attendanceError);
-
-            // 4. If sick, also create a sickness record
-            if (reason === 'sick') {
-              const staffMember = staff.find(s => s.id === profileId);
-              const { error: sicknessError } = await supabase.from('staff_sickness_records').insert({
-                company_id: companyId,
-                site_id: selectedSite,
-                staff_member_id: profileId,
-                staff_member_name: staffMember?.full_name || 'Unknown',
-                illness_onset_date: shift.shift_date,
-                symptoms: notes || 'Reported sick via rota',
-                exclusion_period_start: shift.shift_date,
-                reported_by: profile?.id,
-                reported_date: new Date().toISOString().split('T')[0],
-                status: 'active',
-              });
-              if (sicknessError) console.warn('[Absence] sickness record insert failed (non-blocking):', sicknessError);
-            }
-
-            // 5. Reload rota data so the absence shows immediately
-            toast.success('Absence recorded');
-            await loadData();
-          }}
+          onRecordAbsence={handleRecordAbsence}
           onEditShift={(shift) => {
             setEditingShift(shift as Shift);
           }}
@@ -4649,6 +4723,7 @@ export default function RotaBuilderPage() {
               setEditingShift(null);
             }}
             onClose={() => setEditingShift(null)}
+            onRecordAbsence={canManageRota ? handleRecordAbsence : undefined}
           />
         )}
       </div>
@@ -5568,6 +5643,7 @@ export default function RotaBuilderPage() {
             setEditingShift(null);
           }}
           onClose={() => setEditingShift(null)}
+          onRecordAbsence={canManageRota ? handleRecordAbsence : undefined}
         />
       )}
 
