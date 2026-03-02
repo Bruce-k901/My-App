@@ -258,7 +258,7 @@ export async function POST(req: Request) {
         notes.push({
           company_id: callerProfile.company_id,
           profile_id: person.id,
-          type: "message",
+          type: "task",
           title,
           message,
           link: "/notifications",
