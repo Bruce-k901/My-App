@@ -59,6 +59,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { ShiftActionSheet } from '@/components/rota/ShiftActionSheet';
 import { StaffPickerSheet } from '@/components/rota/StaffPickerSheet';
 import { useShiftPatterns } from '@/hooks/use-shift-patterns';
+import { toast } from 'sonner';
 
 // ============================================
 // TYPES
