@@ -27,11 +27,11 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's profile
+    // Get user's profile (handle both identity patterns)
     const { data: currentProfile, error: profileError } = await supabase
       .from('profiles')
       .select('id, company_id, full_name, home_site, site_id')
-      .eq('auth_user_id', user.id)
+      .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
       .maybeSingle();
 
     if (profileError || !currentProfile) {

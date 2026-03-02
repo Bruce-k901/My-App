@@ -763,15 +763,19 @@ export function useConversations({
   const deleteConversation = useCallback(
     async (conversationId: string): Promise<boolean> => {
     try {
-      // Attempt hard delete
-      const { error: deleteError } = await supabase
-          .from("messaging_channels")
-        .delete()
-          .eq("id", conversationId);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
 
-      if (deleteError) {
-          console.error("Error deleting conversation:", deleteError);
-          setError(deleteError.message || "Failed to delete conversation");
+      // Leave the conversation by setting left_at on our membership
+      const { error: leaveError } = await supabase
+          .from("messaging_channel_members")
+        .update({ left_at: new Date().toISOString() })
+          .eq("channel_id", conversationId)
+          .eq("profile_id", user.id);
+
+      if (leaveError) {
+          console.error("Error leaving conversation:", leaveError);
+          setError(leaveError.message || "Failed to delete conversation");
         return false;
       }
 

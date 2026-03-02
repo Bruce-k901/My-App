@@ -1374,7 +1374,7 @@ export default function CalloutModal({
                 onClick={() => setCalloutType(option.value as 'reactive' | 'warranty' | 'ppm')}
                 className={`flex-1 flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-200 ${
                   calloutType === option.value
-                    ? 'text-[#D37E91] dark:text-teamly/20'
+                    ? 'text-[#D37E91] dark:text-teamly'
                     : 'text-theme-secondary hover:text-theme-primary'
                 }`}
               >
@@ -1413,7 +1413,7 @@ export default function CalloutModal({
                       setFaultDescription(e.target.value);
                     }}
                     placeholder="Describe the fault or issue..."
-                    className={`w-full h-24 px-4 py-3 bg-theme-surface/50 border rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full h-24 px-4 py-3 bg-theme-surface border rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
                       !faultDescription.trim() 
                         ? 'border-yellow-400 dark:border-yellow-500/50 focus:ring-yellow-500/50 focus:border-yellow-500/50' 
                         : 'border-gray-300 dark:border-theme focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50'
@@ -1578,7 +1578,7 @@ export default function CalloutModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any additional notes..."
-                  className="w-full h-20 px-4 py-3 bg-theme-surface/50 border border-gray-300 dark:border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50 transition-all"
+                  className="w-full h-20 px-4 py-3 bg-theme-surface border border-gray-300 dark:border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50 transition-all"
                 />
               </div>
         

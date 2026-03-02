@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { oa } from "@/lib/oa";
 
 type NotifyOpenShiftsBody = {
   rotaId: string;
@@ -256,7 +257,7 @@ export async function POST(req: Request) {
       for (const person of recipientList) {
         notes.push({
           company_id: callerProfile.company_id,
-          user_id: person.id,
+          profile_id: person.id,
           type: "message",
           title,
           message,
@@ -268,6 +269,7 @@ export async function POST(req: Request) {
             site_id: siteId,
             via: ["messaging", "email", "notifications"],
             channel_id: channelId,
+            source: "opsly_assistant",
           },
           read: false,
         });
@@ -282,27 +284,45 @@ export async function POST(req: Request) {
       if (nErr) throw nErr;
     }
 
-    // 2) Messaging portal post (single message)
-    if (channelId) {
-      const messageContent =
-        `Open shifts available for ${siteName} (week starting ${rota.week_starting}).\n\n` +
-        `${lines.join("\n")}\n\n` +
-        `To claim a shift: go to Notifications and tap "Accept shift".`;
+    // 2) Messaging via OA — channel post + individual DMs
+    const messageContent =
+      `Open shifts available for ${siteName} (week starting ${rota.week_starting}).\n\n` +
+      `${lines.join("\n")}\n\n` +
+      `To claim a shift: go to Notifications and tap "Accept shift".`;
 
-      await admin.from("messaging_messages").insert({
-        channel_id: channelId,
-        sender_id: callerProfile.id,
+    // Post to the site Open Shifts channel via OA
+    if (channelId) {
+      await oa.sendChannelMessage({
+        channelId,
         content: messageContent,
-        message_type: "system",
+        messageType: "text",
         metadata: {
+          messageType: "open_shift_offer",
           kind: "open_shifts_offer",
           rota_id: rotaId,
           site_id: siteId,
           shift_ids: openShifts.map((s: any) => s.id),
-          notifications_link: "/notifications",
         },
-      } as any);
+      });
     }
+
+    // Send individual DMs from OA to each staff member
+    const dmPromises = recipientList.map((person: any) =>
+      oa.sendDM({
+        recipientProfileId: person.id,
+        companyId: callerProfile.company_id,
+        content: messageContent,
+        messageType: "text",
+        metadata: {
+          messageType: "open_shift_offer",
+          kind: "open_shift_offer",
+          rota_id: rotaId,
+          site_id: siteId,
+          shift_ids: openShifts.map((s: any) => s.id),
+        },
+      })
+    );
+    await Promise.allSettled(dmPromises);
 
     // 3) Email
     const emails = recipientList.map((p: any) => p.email).filter(Boolean) as string[];

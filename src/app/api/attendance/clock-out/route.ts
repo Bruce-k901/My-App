@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * POST /api/attendance/clock-out
@@ -57,12 +58,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use admin client for time_entries operations — the time_entries RLS
+    // policies only check auth_user_id = auth.uid(), which fails for profiles
+    // where id = auth.uid() but auth_user_id is NULL.
+    const admin = getSupabaseAdmin();
+
     if (!activeShift) {
       // No active staff_attendance shift, but there may be orphaned time_entries
       // records that are keeping the TimeClock UI showing "clocked in".
       // Clean them up and return success so the UI resets.
       const cleanupTime = new Date().toISOString();
-      const { data: orphans } = await supabase
+      const { data: orphans } = await admin
         .from('time_entries')
         .update({
           clock_out: cleanupTime,
@@ -114,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Also close any active time_entries records for this user
-    const { error: timeEntryError } = await supabase
+    const { error: timeEntryError } = await admin
       .from('time_entries')
       .update({
         clock_out: clockOutTime,

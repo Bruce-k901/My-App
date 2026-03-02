@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { CheckSquare, Users, Calendar, MessageSquare, MoreHorizontal, UserX, Clock } from '@/components/ui/icons';
+import { CheckSquare, Users, Calendar, MessageSquare, MoreHorizontal, UserX, Clock, ClipboardList } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 import { usePanelStore } from '@/lib/stores/panel-store';
@@ -76,6 +76,14 @@ const quickAccessItems = [
     href: '/dashboard/people/attendance',
     color: 'text-teamly-dark dark:text-teamly',
     bg: 'bg-teamly/10 dark:bg-teamly/10',
+  },
+  {
+    id: 'place-order',
+    label: 'Place Order',
+    icon: ClipboardList,
+    href: '/dashboard/stockly/orders/new',
+    color: 'text-stockly-dark dark:text-stockly',
+    bg: 'bg-stockly/10 dark:bg-stockly/10',
   },
 ] as const;
 

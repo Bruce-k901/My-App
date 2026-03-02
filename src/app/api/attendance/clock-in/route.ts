@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * POST /api/attendance/clock-in
@@ -67,6 +68,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use admin client for time_entries operations — the time_entries RLS
+    // INSERT/SELECT policies only check auth_user_id = auth.uid(), which fails
+    // for profiles where id = auth.uid() but auth_user_id is NULL.
+    // staff_attendance RLS uses user_company_id() which handles both patterns.
+    const admin = getSupabaseAdmin();
+
     // Check if user already has an active shift
     const clockInTime = new Date().toISOString();
     const { data: activeShift } = await supabase
@@ -87,7 +94,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Check if there's a corresponding active time_entries record
-      const { data: activeEntry } = await supabase
+      const { data: activeEntry } = await admin
         .from('time_entries')
         .select('id')
         .eq('profile_id', profile.id)
@@ -115,7 +122,7 @@ export async function POST(request: NextRequest) {
           .eq('id', activeShift.id);
 
         // Also close any matching time_entries
-        await supabase
+        await admin
           .from('time_entries')
           .update({
             clock_out: clockInTime,
@@ -154,7 +161,7 @@ export async function POST(request: NextRequest) {
 
     // Close any orphaned active time_entries before inserting a new one
     // (prevents unique constraint violation on idx_one_active_entry)
-    await supabase
+    await admin
       .from('time_entries')
       .update({
         clock_out: clockInTime,
@@ -166,7 +173,7 @@ export async function POST(request: NextRequest) {
       .is('clock_out', null);
 
     // Create a time_entries record so TimeClock UI stays in sync
-    const { error: timeEntryError } = await supabase
+    const { error: timeEntryError } = await admin
       .from('time_entries')
       .insert({
         profile_id: profile.id,

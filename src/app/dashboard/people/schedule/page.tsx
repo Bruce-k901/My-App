@@ -4077,15 +4077,31 @@ export default function RotaBuilderPage() {
   }
 
   if (error) {
+    const isNoRota = error.includes('No rota exists');
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-red-400 mb-2">Error loading rota</p>
-          <p className="text-theme-tertiary text-sm">{error}</p>
-          <button onClick={loadData} className="mt-4 px-4 py-2 bg-theme-surface rounded-lg text-theme-primary">
-            Retry
-          </button>
+        <div className="text-center max-w-sm px-4">
+          {isNoRota ? (
+            <>
+              <Calendar className="w-12 h-12 text-theme-tertiary/40 mx-auto mb-4" />
+              <p className="text-theme-primary font-semibold text-lg mb-2">No rota published yet</p>
+              <p className="text-theme-tertiary text-sm mb-6">
+                A manager hasn&apos;t created the rota for this week yet. Check back later or ask your manager for an update.
+              </p>
+              <button onClick={loadData} className="px-5 py-2.5 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm hover:bg-theme-hover transition-colors">
+                Check again
+              </button>
+            </>
+          ) : (
+            <>
+              <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+              <p className="text-red-400 mb-2">Error loading rota</p>
+              <p className="text-theme-tertiary text-sm mb-4">{error}</p>
+              <button onClick={loadData} className="px-5 py-2.5 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm hover:bg-theme-hover transition-colors">
+                Retry
+              </button>
+            </>
+          )}
         </div>
       </div>
     );

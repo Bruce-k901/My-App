@@ -14,6 +14,7 @@ import { SearchModal } from "@/components/search";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSidebarMode } from "@/hooks/useSidebarMode";
 import { useAppContext } from "@/context/AppContext";
+import { useKeyboardScrollFix } from "@/hooks/useKeyboardScrollFix";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAppContext();
@@ -23,6 +24,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isMobile } = useIsMobile();
   const { width: sidebarWidth } = useSidebarMode();
+  useKeyboardScrollFix();
 
   // Redirect to login if session expired
   useEffect(() => {
@@ -83,6 +85,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
       <MobileNavProvider>
         <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary w-full max-w-[100vw] overflow-x-hidden`}>
+          {/* Fixed backdrop behind status bar - prevents content showing through when scrolling */}
+          <div
+            className="fixed top-0 left-0 right-0 z-[45] bg-[rgb(var(--module-bg-tint))]"
+            style={{ height: 'env(safe-area-inset-top, 0px)' }}
+          />
           {/* No desktop header on mobile - pages handle their own headers */}
           <main className="w-full min-w-0 overflow-x-hidden">
             {children}

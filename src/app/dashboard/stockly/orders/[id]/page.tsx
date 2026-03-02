@@ -1038,7 +1038,7 @@ export default function PurchaseOrderDetailPage() {
           <div className="bg-theme-surface border border-theme rounded-xl p-6">
             <h2 className="text-lg font-semibold text-theme-primary mb-4">Order Details</h2>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="supplier-select" className="block text-sm font-medium text-theme-primary/80 mb-1">Supplier *</label>
                 <select

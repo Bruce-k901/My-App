@@ -725,7 +725,7 @@ export async function GET(request: NextRequest) {
         try {
           await supabase.from('notifications').insert({
             company_id: company.id,
-            user_id: recipients[0]?.id,
+            profile_id: recipients[0]?.id,
             type: 'digest',
             title: 'Daily Operations Summary',
             message: `Yesterday's digest sent to ${recipients.length} recipient(s)`,

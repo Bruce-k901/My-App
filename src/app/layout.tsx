@@ -300,7 +300,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <RouteLogger />
                   {children}
                   <Footer />
-                  <Toaster position="top-right" richColors />
+                  <Toaster position="top-right" richColors offset={{ top: 'env(safe-area-inset-top, 0px)', right: 8 }} />
                   <SpeedInsights />
                   
                   {/* Global components - only shown on dashboard pages */}

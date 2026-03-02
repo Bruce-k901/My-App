@@ -634,8 +634,9 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[55] p-4"
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'calc(var(--above-tab-bar, 3.5rem) + 0.5rem)' }}
       onClick={(e) => {
         // Only close if clicking directly on the backdrop, not on dropdown content
         if (e.target === e.currentTarget) {
@@ -643,7 +644,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         }
       }}
     >
-      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-full sm:max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold text-theme-primary mb-6">
           {contractor ? "Edit Contractor" : "Add Contractor"}
         </h2>

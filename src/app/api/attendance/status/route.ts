@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * GET /api/attendance/status
@@ -32,6 +33,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Use admin client for time_entries operations — the time_entries RLS
+    // policies only check auth_user_id = auth.uid(), which fails for profiles
+    // where id = auth.uid() but auth_user_id is NULL.
+    const admin = getSupabaseAdmin();
+
     // Get active shift using the helper function
     const { data: activeShift, error: shiftError } = await supabase
       .rpc('get_active_shift', { p_profile_id: profile.id });
@@ -54,7 +60,7 @@ export async function GET(request: NextRequest) {
         const hoursOnShift = (Date.now() - clockInTime.getTime()) / (1000 * 60 * 60);
 
         // Self-heal: ensure time_entries record exists so TimeClock UI stays in sync
-        const { data: existingEntry } = await supabase
+        const { data: existingEntry } = await admin
           .from('time_entries')
           .select('id')
           .eq('profile_id', profile.id)
@@ -63,7 +69,7 @@ export async function GET(request: NextRequest) {
           .maybeSingle();
 
         if (!existingEntry) {
-          await supabase.from('time_entries').insert({
+          await admin.from('time_entries').insert({
             profile_id: profile.id,
             company_id: fallbackShift.company_id,
             site_id: fallbackShift.site_id,
@@ -91,7 +97,7 @@ export async function GET(request: NextRequest) {
     if (activeShift && activeShift.length > 0) {
       // Self-heal: ensure time_entries record exists so TimeClock UI stays in sync
       const shift = activeShift[0];
-      const { data: existingEntry } = await supabase
+      const { data: existingEntry } = await admin
         .from('time_entries')
         .select('id')
         .eq('profile_id', profile.id)
@@ -100,7 +106,7 @@ export async function GET(request: NextRequest) {
         .maybeSingle();
 
       if (!existingEntry && shift.company_id && shift.site_id) {
-        await supabase.from('time_entries').insert({
+        await admin.from('time_entries').insert({
           profile_id: profile.id,
           company_id: shift.company_id,
           site_id: shift.site_id,
@@ -121,7 +127,7 @@ export async function GET(request: NextRequest) {
 
     // Clean up orphaned time_entries that are still 'active'
     // This prevents the TimeClock from showing stale "124h" elapsed times
-    const { error: cleanupError } = await supabase
+    const { error: cleanupError } = await admin
       .from('time_entries')
       .update({
         status: 'completed',
