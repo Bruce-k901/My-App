@@ -298,6 +298,7 @@ BEGIN
     JOIN assets a ON a.id = p.asset_id
     WHERE p.next_service_date <= CURRENT_DATE + INTERVAL '14 days'
       AND p.status IN ('scheduled', 'due_soon', 'overdue')
+      AND a.archived = false  -- Exclude archived assets
       AND NOT EXISTS (
         SELECT 1 FROM tasks t 
         WHERE t.linked_ppm_id = p.id 

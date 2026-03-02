@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, AlertTriangle, Phone, FileText, CheckCircle2, Download } from 'lucide-react';
+import { X, AlertTriangle, Phone, FileText, CheckCircle2, Download } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { compressImage } from '@/lib/image-compression';
 import { PhotoEvidenceFeature } from '@/components/templates/features/PhotoEvidenceFeature';
 import Select from '@/components/ui/Select';
 
@@ -596,35 +597,35 @@ export function EmergencyIncidentModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 overflow-hidden">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="absolute right-0 top-0 h-full w-full max-w-4xl bg-[#1a1d2e] border-l border-red-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
+      <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-red-300 dark:border-red-500/30 shadow-2xl overflow-y-auto overflow-x-hidden animate-slideInRight">
         <div className="p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-red-500/20">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500/20 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-red-400" />
+        <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-red-200 dark:border-red-500/20">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="p-1.5 sm:p-2 bg-red-50 dark:bg-red-500/20 rounded-lg flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">Emergency Incident Report</h2>
-              <p className="text-sm text-white/60">Report workplace accidents, injuries, and near misses</p>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-2xl font-bold text-theme-primary truncate">Emergency Incident Report</h2>
+              <p className="text-xs sm:text-sm text-theme-secondary hidden sm:block">Report workplace accidents, injuries, and near misses</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+            className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Emergency Protocol Section */}
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
-            <Phone className="w-5 h-5 text-red-400 mt-0.5" />
+            <Phone className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-semibold text-red-400 mb-2">Emergency Protocol</h3>
-              <ul className="text-sm text-white/80 space-y-1 list-disc list-inside">
-                <li>If life-threatening: <strong className="text-red-300">CALL 999 IMMEDIATELY</strong></li>
+              <h3 className="font-semibold text-red-700 dark:text-red-400 mb-2">Emergency Protocol</h3>
+              <ul className="text-sm text-theme-primary/80 space-y-1 list-disc list-inside">
+                <li>If life-threatening: <strong className="text-red-700 dark:text-red-300">CALL 999 IMMEDIATELY</strong></li>
                 <li>Provide first aid if trained and safe to do so</li>
                 <li>Preserve the scene - do not move anything unless necessary for safety</li>
                 <li>Secure the area to prevent further incidents</li>
@@ -633,19 +634,19 @@ export function EmergencyIncidentModal({
           </div>
         </div>
 
-        <div className="space-y-6 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
+        <div className="space-y-6 max-h-[calc(100vh-220px)] sm:max-h-[calc(100vh-300px)] overflow-y-auto pr-1 sm:pr-2">
           {/* Incident Details */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white border-b border-white/10 pb-2">Incident Details</h3>
+            <h3 className="text-lg font-semibold text-theme-primary border-b border-theme pb-2">Incident Details</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Incident Date & Time *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Incident Date & Time *</label>
                 <input
                   type="datetime-local"
                   value={formData.incident_datetime}
                   onChange={(e) => setFormData({ ...formData, incident_datetime: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                   required
                 />
               </div>
@@ -690,26 +691,26 @@ export function EmergencyIncidentModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Location *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Location *</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="e.g., Kitchen - Prep Area"
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-1">Detailed Description *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Detailed Description *</label>
               <textarea
                 value={formData.incident_description}
                 onChange={(e) => setFormData({ ...formData, incident_description: e.target.value })}
                 placeholder="Describe what happened, what went wrong, and immediate consequences..."
                 rows={4}
-                className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 required
               />
             </div>
@@ -717,13 +718,13 @@ export function EmergencyIncidentModal({
 
           {/* RIDDOR Assessment */}
           {riddorReportable && (
-            <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+            <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-orange-400 mb-2">RIDDOR Reportable Incident</h3>
-                  <p className="text-sm text-white/80 mb-2">{riddorReason}</p>
-                  <p className="text-xs text-white/60">
+                  <h3 className="font-semibold text-orange-700 dark:text-orange-400 mb-2">RIDDOR Reportable Incident</h3>
+                  <p className="text-sm text-theme-primary/80 mb-2">{riddorReason}</p>
+                  <p className="text-xs text-theme-secondary/60">
                     This incident must be reported to HSE. Contact: 0345 300 9923 or report online at hse.gov.uk/riddor
                   </p>
                 </div>
@@ -732,11 +733,11 @@ export function EmergencyIncidentModal({
           )}
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white border-b border-white/10 pb-2">RIDDOR Assessment &amp; Triggers</h3>
+            <h3 className="text-lg font-semibold text-theme-primary border-b border-theme pb-2">RIDDOR Assessment &amp; Triggers</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Lost Time (days off work)</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Lost Time (days off work)</label>
                 <input
                   type="number"
                   min={0}
@@ -751,7 +752,7 @@ export function EmergencyIncidentModal({
                     setLostTimeDays(Number.isNaN(parsed) ? null : Math.max(parsed, 0));
                   }}
                   placeholder="0"
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
               </div>
 
@@ -771,30 +772,30 @@ export function EmergencyIncidentModal({
                   options={RIDDOR_CATEGORY_OPTIONS}
                 />
                 {!riddorCategoryManual && riddorCategory && (
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-theme-secondary/50 mt-1">
                     Detected category: {RIDDOR_CATEGORIES.find((c) => c.value === riddorCategory)?.label ?? 'Other'}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Reporting Deadline</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Reporting Deadline</label>
                 <input
                   type="text"
                   value={riddorDueDate ? new Date(riddorDueDate).toLocaleDateString() : 'Not reportable'}
                   readOnly
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none"
+                  className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-secondary focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Assessment Notes</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Assessment Notes</label>
                 <textarea
                   rows={2}
                   value={riddorNotes}
                   onChange={(e) => setRiddorNotes(e.target.value)}
                   placeholder="Add decision notes or supporting detail"
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
               </div>
             </div>
@@ -805,9 +806,9 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={hospitalisation}
                   onChange={(e) => setHospitalisation(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Worker admitted to hospital</span>
+                <span className="text-theme-primary">Worker admitted to hospital</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer">
@@ -815,9 +816,9 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={publicInvolved}
                   onChange={(e) => setPublicInvolved(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Member of public taken to hospital</span>
+                <span className="text-theme-primary">Member of public taken to hospital</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer">
@@ -825,9 +826,9 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={reportableDisease}
                   onChange={(e) => setReportableDisease(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Suspected occupational disease</span>
+                <span className="text-theme-primary">Suspected occupational disease</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer">
@@ -835,24 +836,24 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={environmentalRelease}
                   onChange={(e) => setEnvironmentalRelease(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Dangerous occurrence / hazardous release</span>
+                <span className="text-theme-primary">Dangerous occurrence / hazardous release</span>
               </label>
             </div>
 
             {riddorReportable && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-white/10 rounded-lg p-4 bg-white/[0.02]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-theme rounded-lg p-4 bg-gray-50 dark:bg-white/[0.02]">
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     checked={riddorReported}
                     onChange={(e) => setRiddorReported(e.target.checked)}
-                    className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                   />
                   <div>
-                    <p className="text-sm text-white font-semibold">RIDDOR report submitted</p>
-                    <p className="text-xs text-white/60">Tick once the incident has been reported to HSE</p>
+                    <p className="text-sm text-theme-primary font-semibold">RIDDOR report submitted</p>
+                    <p className="text-xs text-theme-secondary">Tick once the incident has been reported to HSE</p>
                   </div>
                 </div>
 
@@ -860,22 +861,22 @@ export function EmergencyIncidentModal({
                   <div className="space-y-3 md:col-span-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-medium text-white mb-1 uppercase tracking-wide">Reported Date &amp; Time</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-1 uppercase tracking-wide">Reported Date &amp; Time</label>
                         <input
                           type="datetime-local"
                           value={riddorReportedDate}
                           onChange={(e) => setRiddorReportedDate(e.target.value)}
-                          className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-white mb-1 uppercase tracking-wide">HSE Reference</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-1 uppercase tracking-wide">HSE Reference</label>
                         <input
                           type="text"
                           value={riddorReference}
                           onChange={(e) => setRiddorReference(e.target.value)}
                           placeholder="e.g., Incident ref number"
-                          className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                     </div>
@@ -887,7 +888,7 @@ export function EmergencyIncidentModal({
 
           {/* Emergency Response */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white border-b border-white/10 pb-2">Emergency Response</h3>
+            <h3 className="text-lg font-semibold text-theme-primary border-b border-theme pb-2">Emergency Response</h3>
             
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer">
@@ -895,9 +896,9 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.emergency_services_called}
                   onChange={(e) => setFormData({ ...formData, emergency_services_called: e.target.checked })}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Emergency Services (999) Called</span>
+                <span className="text-theme-primary">Emergency Services (999) Called</span>
               </label>
 
               {formData.emergency_services_called && (
@@ -922,9 +923,9 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.first_aid_provided}
                   onChange={(e) => setFormData({ ...formData, first_aid_provided: e.target.checked })}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">First Aid Provided</span>
+                <span className="text-theme-primary">First Aid Provided</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer">
@@ -932,20 +933,20 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.scene_preserved}
                   onChange={(e) => setFormData({ ...formData, scene_preserved: e.target.checked })}
-                  className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
-                <span className="text-white">Scene Preserved for Investigation</span>
+                <span className="text-theme-primary">Scene Preserved for Investigation</span>
               </label>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-1">Immediate Actions Taken</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Immediate Actions Taken</label>
               <textarea
                 value={formData.immediate_actions}
                 onChange={(e) => setFormData({ ...formData, immediate_actions: e.target.value })}
                 placeholder="Describe immediate actions taken..."
                 rows={3}
-                className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
               />
             </div>
           </div>
@@ -955,7 +956,7 @@ export function EmergencyIncidentModal({
             {/* Casualties */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold text-white">Casualties</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Casualties</h3>
                 <Button
                   type="button"
                   onClick={handleAddCasualty}
@@ -968,16 +969,16 @@ export function EmergencyIncidentModal({
               </div>
 
               {formData.casualties.length === 0 ? (
-                <p className="text-sm text-white/40 italic">No casualties added</p>
+                <p className="text-sm text-theme-tertiary italic">No casualties added</p>
               ) : (
                 <div className="space-y-2">
                   {formData.casualties.map((casualty, index) => (
-                    <div key={index} className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-3">
+                    <div key={index} className="bg-theme-surface border border-theme rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-white/60">Casualty {index + 1}</span>
+                        <span className="text-xs font-medium text-theme-secondary">Casualty {index + 1}</span>
                         <button
                           onClick={() => handleRemoveCasualty(index)}
-                          className="text-red-400 hover:text-red-300 text-xs"
+                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs"
                         >
                           Remove
                         </button>
@@ -988,28 +989,28 @@ export function EmergencyIncidentModal({
                           placeholder="Name"
                           value={casualty.name}
                           onChange={(e) => handleUpdateCasualty(index, 'name', e.target.value)}
-                          className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <input
                           type="text"
                           placeholder="Age"
                           value={casualty.age}
                           onChange={(e) => handleUpdateCasualty(index, 'age', e.target.value)}
-                          className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <input
                           type="text"
                           placeholder="Injury Type"
                           value={casualty.injury_type}
                           onChange={(e) => handleUpdateCasualty(index, 'injury_type', e.target.value)}
-                          className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
                         />
                         <input
                           type="text"
                           placeholder="Treatment"
                           value={casualty.treatment_required}
                           onChange={(e) => handleUpdateCasualty(index, 'treatment_required', e.target.value)}
-                          className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500 col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
                         />
                       </div>
                     </div>
@@ -1021,7 +1022,7 @@ export function EmergencyIncidentModal({
             {/* Witnesses */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold text-white">Witnesses</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Witnesses</h3>
                 <Button
                   type="button"
                   onClick={handleAddWitness}
@@ -1034,16 +1035,16 @@ export function EmergencyIncidentModal({
               </div>
 
               {formData.witnesses.length === 0 ? (
-                <p className="text-sm text-white/40 italic">No witnesses added</p>
+                <p className="text-sm text-theme-tertiary italic">No witnesses added</p>
               ) : (
                 <div className="space-y-2">
                   {formData.witnesses.map((witness, index) => (
-                    <div key={index} className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-3">
+                    <div key={index} className="bg-theme-surface border border-theme rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-white/60">Witness {index + 1}</span>
+                        <span className="text-xs font-medium text-theme-secondary">Witness {index + 1}</span>
                         <button
                           onClick={() => handleRemoveWitness(index)}
-                          className="text-red-400 hover:text-red-300 text-xs"
+                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs"
                         >
                           Remove
                         </button>
@@ -1055,14 +1056,14 @@ export function EmergencyIncidentModal({
                             placeholder="Name"
                             value={witness.name}
                             onChange={(e) => handleUpdateWitness(index, 'name', e.target.value)}
-                            className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                           />
                           <input
                             type="text"
                             placeholder="Contact"
                             value={witness.contact}
                             onChange={(e) => handleUpdateWitness(index, 'contact', e.target.value)}
-                            className="px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                           />
                         </div>
                         <textarea
@@ -1070,7 +1071,7 @@ export function EmergencyIncidentModal({
                           value={witness.statement}
                           onChange={(e) => handleUpdateWitness(index, 'statement', e.target.value)}
                           rows={2}
-                          className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                     </div>
@@ -1083,11 +1084,11 @@ export function EmergencyIncidentModal({
           {/* Photo Evidence */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-white">Photo Evidence</h3>
+              <h3 className="text-lg font-semibold text-theme-primary">Photo Evidence</h3>
               {formData.photos.length === 0 ? (
-                <span className="text-sm text-white/40 italic">No photos added</span>
+                <span className="text-sm text-theme-tertiary italic">No photos added</span>
               ) : (
-                <span className="text-sm text-white/60">{formData.photos.length} photo{formData.photos.length !== 1 ? 's' : ''}</span>
+                <span className="text-sm text-theme-secondary">{formData.photos.length} photo{formData.photos.length !== 1 ? 's' : ''}</span>
               )}
               <label className="ml-auto">
                 <input
@@ -1097,14 +1098,15 @@ export function EmergencyIncidentModal({
                     const file = e.target.files?.[0];
                     if (file) {
                       try {
+                        const compressed = await compressImage(file).catch(() => file);
                         // Upload to Supabase storage
-                        const fileExt = file.name.split('.').pop();
+                        const fileExt = compressed.name.split('.').pop();
                         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
                         const filePath = `incidents/${companyId}/${fileName}`;
 
                         const { data: uploadData, error: uploadError } = await supabase.storage
                           .from('task-evidence')
-                          .upload(filePath, file);
+                          .upload(filePath, compressed);
 
                         if (uploadError) throw uploadError;
 
@@ -1133,7 +1135,7 @@ export function EmergencyIncidentModal({
                   className="hidden"
                   id="photo-upload"
                 />
-                <span className="inline-block px-4 py-2 bg-white/[0.06] border border-white/[0.1] text-white rounded-lg hover:bg-white/[0.12] hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-[0_0_14px_rgba(236,72,153,0.25)] text-sm">
+                <span className="inline-block px-4 py-2 bg-gray-100 dark:bg-white/[0.06] border border-theme text-theme-primary rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.12] hover:border-[#D37E91]/50 dark:hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-sm dark:shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-md dark:hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)] text-sm">
                   Upload Photo
                 </span>
               </label>
@@ -1142,20 +1144,20 @@ export function EmergencyIncidentModal({
             {formData.photos.length > 0 && (
               <div className="grid grid-cols-2 gap-3">
                 {formData.photos.map((photo, index) => (
-                  <div key={index} className="relative bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                  <div key={index} className="relative bg-theme-surface border border-theme rounded-lg p-3">
                     <img 
                       src={photo.url} 
                       alt={photo.fileName} 
                       className="w-full h-32 object-cover rounded mb-2" 
                     />
-                    <p className="text-white text-xs truncate mb-2">{photo.fileName}</p>
+                    <p className="text-theme-primary text-xs truncate mb-2">{photo.fileName}</p>
                     <button
                       type="button"
                       onClick={() => {
                         const newPhotos = formData.photos.filter((_, i) => i !== index);
                         setFormData({ ...formData, photos: newPhotos });
                       }}
-                      className="w-full px-3 py-1 text-red-400 hover:bg-red-500/10 rounded text-sm"
+                      className="w-full px-3 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded text-sm"
                     >
                       Remove
                     </button>
@@ -1168,15 +1170,15 @@ export function EmergencyIncidentModal({
           {/* Follow-up Tasks */}
           <div className="space-y-3">
             <div>
-              <h3 className="text-lg font-semibold text-white mb-1">Follow-up Actions</h3>
-              <p className="text-sm text-white/60">
+              <h3 className="text-lg font-semibold text-theme-primary mb-1">Follow-up Actions</h3>
+              <p className="text-sm text-theme-secondary">
                 Select tasks to create in Today's Tasks feed.
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-96 overflow-y-auto pr-2">
               {FOLLOW_UP_TASK_OPTIONS.map((task) => (
-                <div key={task.id} className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-2.5">
+                <div key={task.id} className="bg-theme-surface border border-theme rounded-lg p-2.5">
                   <label className="flex items-start gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -1195,12 +1197,12 @@ export function EmergencyIncidentModal({
                           });
                         }
                       }}
-                      className="w-4 h-4 rounded border-neutral-600 bg-[#0f1220] text-pink-500 focus:ring-pink-500 mt-0.5 flex-shrink-0"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] mt-0.5 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white font-medium">{task.label}</div>
+                      <div className="text-sm text-theme-primary font-medium">{task.label}</div>
                       {task.description && (
-                        <div className="text-xs text-white/50 mt-0.5">{task.description}</div>
+                        <div className="text-xs text-theme-secondary/50 mt-0.5">{task.description}</div>
                       )}
                       {formData.followUpTasks.includes(task.id) && (
                         <textarea
@@ -1214,7 +1216,7 @@ export function EmergencyIncidentModal({
                             }
                           })}
                           rows={2}
-                          className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       )}
                     </div>
@@ -1226,40 +1228,44 @@ export function EmergencyIncidentModal({
 
           {/* Reported By */}
           <div>
-            <label className="block text-sm font-medium text-white mb-1">Reported By (Name) *</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Reported By (Name) *</label>
             <input
               type="text"
               value={formData.reported_by}
               onChange={(e) => setFormData({ ...formData, reported_by: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
               required
             />
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+        <div className="flex items-center justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-theme gap-2">
           <Button
             onClick={onClose}
             variant="outline"
+            className="text-sm sm:text-base"
           >
             Cancel
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               onClick={handleDownloadReport}
               variant="outline"
               disabled={saving || generatingReport || !lastSavedIncidentId}
+              className="text-sm sm:text-base"
             >
-              <Download className="w-4 h-4 mr-2" />
-              {generatingReport ? 'Preparing...' : 'Download Report'}
+              <Download className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{generatingReport ? 'Preparing...' : 'Download Report'}</span>
+              <span className="sm:hidden">{generatingReport ? '...' : 'PDF'}</span>
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
               variant="destructive"
+              className="text-sm sm:text-base"
             >
-              {saving ? 'Saving...' : 'Save Incident Report'}
+              {saving ? 'Saving...' : <><span className="hidden sm:inline">Save Incident Report</span><span className="sm:hidden">Save</span></>}
             </Button>
           </div>
         </div>

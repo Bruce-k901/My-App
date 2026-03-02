@@ -40,7 +40,7 @@ export default function AdminDashboard() {
       <MessagingWidget />
 
       <Widget title="EHO Compliance Pack">
-        <p className="text-slate-300 text-sm mb-3">
+        <p className="text-theme-secondary text-sm mb-3">
           One click, full compliance export across selected sites and dates.
         </p>
         <Link href="/compliance/eho-pack" className="btn-gradient text-sm inline-block">
@@ -49,11 +49,11 @@ export default function AdminDashboard() {
       </Widget>
 
       <Widget title="Multi-Site Overview">
-        <p className="text-slate-300 text-sm">Summary of sites and active issues.</p>
-        <ul className="text-sm text-slate-300 space-y-2 mt-2">
-          <li className="flex justify-between"><span>Sites</span><span className="text-slate-500">—</span></li>
-          <li className="flex justify-between"><span>Open incidents</span><span className="text-slate-500">{incidents.length}</span></li>
-          <li className="flex justify-between"><span>Registered assets</span><span className="text-slate-500">{assets.length}</span></li>
+        <p className="text-theme-secondary text-sm">Summary of sites and active issues.</p>
+        <ul className="text-sm text-theme-secondary space-y-2 mt-2">
+          <li className="flex justify-between"><span>Sites</span><span className="text-theme-tertiary">—</span></li>
+          <li className="flex justify-between"><span>Open incidents</span><span className="text-theme-tertiary">{incidents.length}</span></li>
+          <li className="flex justify-between"><span>Registered assets</span><span className="text-theme-tertiary">{assets.length}</span></li>
         </ul>
       </Widget>
 
@@ -61,13 +61,13 @@ export default function AdminDashboard() {
         {summary.length === 0 ? (
           <Empty text="No tasks for today across your sites." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {summary.map((s) => {
               const pct = s.total ? Math.round((s.completed / s.total) * 100) : 0;
               return (
                 <li key={s.site_id} className="flex justify-between">
                   <span>Site {s.site_id.slice(0, 8)}…</span>
-                  <span className="text-slate-500">{pct}%</span>
+                  <span className="text-theme-tertiary">{pct}%</span>
                 </li>
               );
             })}
@@ -79,11 +79,11 @@ export default function AdminDashboard() {
         {incidents.length === 0 ? (
           <Empty text="No open incidents across sites." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {incidents.slice(0, 6).map((i: any) => (
               <li key={i.id} className="flex justify-between">
                 <span>{i.type ?? `Incident #${i.id}`}</span>
-                <span className="text-slate-500">{i.status ?? "open"}</span>
+                <span className="text-theme-tertiary">{i.status ?? "open"}</span>
               </li>
             ))}
           </ul>
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
       </Widget>
 
       <Widget title="Downtime Report">
-        <p className="text-slate-300 text-sm">Recent downtime events.</p>
+        <p className="text-theme-secondary text-sm">Recent downtime events.</p>
         <div className="mt-3 h-24 rounded bg-[#191c26] border border-neutral-800" />
       </Widget>
     </section>
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
 
 function Widget({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(236,72,153,0.12)]">
+    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(211, 126, 145,0.12)]">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       {children}
     </div>
@@ -108,13 +108,13 @@ function Widget({ title, children }: { title: string; children: React.ReactNode 
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="text-slate-500 text-sm">{text}</p>;
+  return <p className="text-theme-tertiary text-sm">{text}</p>;
 }
 
 function Loading() {
   return (
     <div className="min-h-[40vh] flex items-center justify-center">
-      <p className="text-slate-400">Loading dashboard…</p>
+      <p className="text-theme-tertiary">Loading dashboard…</p>
     </div>
   );
 }

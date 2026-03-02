@@ -22,7 +22,7 @@ type Incident = {
 };
 
 function Badge({ status }: { status: string }) {
-  const color = status === "resolved" ? "bg-green-100 text-green-700" : status === "open" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-700";
+  const color = status === "resolved" ? "bg-green-100 text-green-700" : status === "open" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-theme-secondary";
   return <span className={`text-xs px-2 py-1 rounded ${color}`}>{status}</span>;
 }
 
@@ -87,7 +87,7 @@ function IncidentsList() {
     return () => {
       supabase.removeChannel(channel);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId, siteId, status, severity, startDate, endDate]);
 
   const assignToMe = async (incidentId: string) => {
@@ -120,7 +120,7 @@ function IncidentsList() {
     <div className="max-w-4xl mx-auto py-6 px-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Active Incidents</h1>
-        <Link href="/incidents/new" className="bg-transparent border border-[#EC4899] text-[#EC4899] px-3 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200">Add New Report</Link>
+        <Link href="/incidents/new" className="bg-transparent border border-[#D37E91] text-[#D37E91] px-3 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200">Add New Report</Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
         <div>
@@ -149,12 +149,12 @@ function IncidentsList() {
           <input type="date" className="w-full border rounded px-2 py-2" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
       </div>
-      <p className="text-sm text-gray-500 mb-2">Filters: {filtersDesc || "none"}</p>
+      <p className="text-sm text-theme-tertiary mb-2">Filters: {filtersDesc || "none"}</p>
       {error && <div className="bg-red-50 text-red-700 px-3 py-2 rounded mb-3">{error}</div>}
       {loading ? (
         <div>Loading...</div>
       ) : incidents.length === 0 ? (
-        <div className="text-gray-600">No incidents found.</div>
+        <div className="text-theme-secondary">No incidents found.</div>
       ) : (
         <ul className="space-y-3">
           {incidents.map((it) => (
@@ -166,8 +166,8 @@ function IncidentsList() {
                   <Sev severity={it.severity} />
                 </div>
               </div>
-              <div className="text-sm text-gray-700 mt-1">{it.description}</div>
-              <div className="text-xs text-gray-500 mt-1">Reported: {new Date(it.created_at).toLocaleString()}</div>
+              <div className="text-sm text-theme-secondary mt-1">{it.description}</div>
+              <div className="text-xs text-theme-tertiary mt-1">Reported: {new Date(it.created_at).toLocaleString()}</div>
               <div className="mt-2 flex items-center gap-3">
                 {it.photo_url ? (
                   <AsyncThumb path={it.photo_url} />
@@ -183,7 +183,7 @@ function IncidentsList() {
                       value={notesDraft[it.id] ?? ""}
                       onChange={(e) => setNotesDraft((d) => ({ ...d, [it.id]: e.target.value }))}
                     />
-                    <button className="bg-transparent border border-[#EC4899] text-[#EC4899] px-3 py-1 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200" onClick={() => resolveIncident(it.id)}>Mark Resolved</button>
+                    <button className="bg-transparent border border-[#D37E91] text-[#D37E91] px-3 py-1 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200" onClick={() => resolveIncident(it.id)}>Mark Resolved</button>
                   </>
                 )}
               </div>

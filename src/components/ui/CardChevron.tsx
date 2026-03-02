@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from '@/components/ui/icons';
 
 interface CardChevronProps {
   isOpen: boolean;

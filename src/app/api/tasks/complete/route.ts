@@ -31,19 +31,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'completed_by is required' }, { status: 400 })
     }
 
-    const { data: profile } = await serviceClient
+    // Try to find profile by id first, then by auth_user_id
+    // Use .or() with proper syntax: "field1.eq.value,field2.eq.value"
+    const { data: profile, error: profileError } = await serviceClient
       .from('profiles')
-      .select('id, company_id')
-      .eq('id', completionRecord.completed_by)
-      .or(`auth_user_id.eq.${completionRecord.completed_by}`)
-      .single()
+      .select('id, company_id, auth_user_id, is_platform_admin')
+      .or(`id.eq.${completionRecord.completed_by},auth_user_id.eq.${completionRecord.completed_by}`)
+      .maybeSingle()
 
-    if (!profile) {
-      return NextResponse.json({ error: 'Profile not found for completed_by' }, { status: 404 })
+    if (profileError) {
+      console.error('❌ Profile lookup error:', profileError)
+      return NextResponse.json({ 
+        error: 'Failed to lookup profile',
+        details: profileError.message
+      }, { status: 500 })
     }
 
-    // Verify company_id matches profile's company
-    if (completionRecord.company_id !== profile.company_id) {
+    if (!profile) {
+      console.error('❌ Profile lookup failed:', {
+        completed_by: completionRecord.completed_by,
+        searched_by_id: true,
+        searched_by_auth_user_id: true
+      })
+      return NextResponse.json({ 
+        error: 'Profile not found for completed_by',
+        details: `No profile found with id or auth_user_id matching: ${completionRecord.completed_by}`
+      }, { status: 404 })
+    }
+
+    // If found by auth_user_id, update completed_by to use the profile id
+    if (profile.auth_user_id === completionRecord.completed_by && profile.id !== completionRecord.completed_by) {
+      console.log('🔄 Updating completed_by from auth_user_id to profile id:', {
+        from: completionRecord.completed_by,
+        to: profile.id
+      })
+      completionRecord.completed_by = profile.id
+    }
+
+    // Verify company_id matches profile's company (platform admins bypass)
+    if (!profile.is_platform_admin && completionRecord.company_id !== profile.company_id) {
       return NextResponse.json({ error: 'Company ID mismatch' }, { status: 403 })
     }
 
@@ -199,6 +225,75 @@ export async function POST(request: NextRequest) {
           completed_at: updatedTask.completed_at,
           completed_by: updatedTask.completed_by
         })
+
+        // Handle PPM schedule update for PPM tasks
+        // NOTE: This runs AFTER task is marked as completed, so errors here won't affect task completion
+        // Run asynchronously to avoid blocking the response
+        const taskData = updatedTask.task_data || {}
+        if (taskData.source_type === 'ppm_overdue' || taskData.source_type === 'ppm_followup') {
+          const assetId = taskData.source_id || taskData.asset_id
+          if (assetId) {
+            // Run PPM update asynchronously - don't await, so it doesn't block the response
+            // Errors are caught and logged, but won't affect task completion
+            ;(async () => {
+              try {
+                console.log('🔧 Updating PPM schedule for asset:', assetId)
+                
+                // Find the PPM schedule record for this asset
+                const { data: ppmSchedule, error: ppmError } = await serviceClient
+                  .from('ppm_schedule')
+                  .select('id, frequency_months, next_service_date')
+                  .eq('asset_id', assetId)
+                  .order('next_service_date', { ascending: true })
+                  .limit(1)
+                  .maybeSingle()
+
+                if (ppmError) {
+                  console.error('❌ Error fetching PPM schedule:', ppmError)
+                  return // Exit early on error
+                }
+                
+                if (!ppmSchedule) {
+                  console.warn('⚠️ No PPM schedule found for asset:', assetId)
+                  return // Exit early if no schedule found
+                }
+
+                // Calculate next service date based on frequency_months
+                const completedDate = new Date(completionRecord.completed_at)
+                const nextServiceDate = new Date(completedDate)
+                nextServiceDate.setMonth(nextServiceDate.getMonth() + (ppmSchedule.frequency_months || 12))
+
+                // Update PPM schedule
+                const { error: updatePPMError } = await serviceClient
+                  .from('ppm_schedule')
+                  .update({
+                    last_service_date: completedDate.toISOString().split('T')[0],
+                    next_service_date: nextServiceDate.toISOString().split('T')[0],
+                    status: 'upcoming',
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', ppmSchedule.id)
+
+                if (updatePPMError) {
+                  console.error('❌ Error updating PPM schedule:', updatePPMError)
+                } else {
+                  console.log('✅ PPM schedule updated successfully:', {
+                    ppm_id: ppmSchedule.id,
+                    last_service_date: completedDate.toISOString().split('T')[0],
+                    next_service_date: nextServiceDate.toISOString().split('T')[0],
+                    frequency_months: ppmSchedule.frequency_months
+                  })
+                }
+              } catch (ppmUpdateError: any) {
+                console.error('❌ Error in PPM schedule update:', ppmUpdateError)
+                // Don't fail the task completion - just log the error
+              }
+            })().catch(err => {
+              // Extra safety catch - ensure no unhandled promise rejection
+              console.error('❌ Unhandled error in PPM update:', err)
+            })
+          }
+        }
       } else {
         console.warn('⚠️ Task update returned no data - task may not exist:', {
           task_id: completionRecord.task_id

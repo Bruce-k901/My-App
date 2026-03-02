@@ -6,7 +6,7 @@ export interface Profile {
   id: string;
   full_name: string | null;
   email: string | null;
-  app_role?: 'Admin' | 'Manager' | 'Staff' | 'Owner' | 'General Manager' | null;
+  app_role?: 'admin' | 'manager' | 'staff' | 'owner' | 'general_manager' | null;
   position_title: string | null;
   company_id: string | null;
   site_id: string | null;

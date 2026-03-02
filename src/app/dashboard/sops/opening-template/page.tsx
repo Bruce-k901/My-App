@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, X, Loader2, Clock, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Save, X, Loader2, Clock, CheckCircle2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
 import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
+import TimePicker from '@/components/ui/TimePicker';
 
 export default function OpeningProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -83,17 +84,23 @@ export default function OpeningProcedureTemplatePage() {
     try {
       setLoading(true);
       
-      const [equipmentResult, disposablesResult, sitesResult] = await Promise.all([
+      const [equipmentResult, assetsResult, disposablesResult, sitesResult] = await Promise.all([
         supabase.from('equipment_library').select('id, equipment_name, category').eq('company_id', companyId).order('equipment_name'),
+        supabase.from('assets').select('id, name, category').eq('company_id', companyId).eq('archived', false).order('name'),
         supabase.from('disposables_library').select('id, item_name').eq('company_id', companyId).order('item_name'),
         supabase.from('sites').select('id, name').eq('company_id', companyId).order('name')
       ]);
-      
+
       if (equipmentResult.error) throw equipmentResult.error;
       if (disposablesResult.error) throw disposablesResult.error;
       if (sitesResult.error) throw sitesResult.error;
-      
-      setEquipmentLibrary(equipmentResult.data || []);
+
+      // Merge equipment library and assets into unified list
+      const mergedEquipment = [
+        ...(equipmentResult.data || []),
+        ...(assetsResult.data || []).map(a => ({ id: a.id, equipment_name: a.name, category: a.category, _source: 'assets' }))
+      ];
+      setEquipmentLibrary(mergedEquipment);
       setDisposablesLibrary(disposablesResult.data || []);
       setSites(sitesResult.data || []);
     } catch (error) {
@@ -297,92 +304,92 @@ export default function OpeningProcedureTemplatePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading libraries...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-theme-tertiary">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
       <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-2xl p-6 border border-yellow-500/30">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
           <div>
-            <h1 className="text-lg font-semibold text-white">Opening Procedures Template</h1>
-            <p className="text-sm text-neutral-400">Manage daily opening checklists and procedures</p>
+            <h1 className="text-lg font-semibold text-theme-primary">Opening Procedures Template</h1>
+            <p className="text-sm text-theme-tertiary">Manage daily opening checklists and procedures</p>
           </div>
         </div>
       </div>
 
       {/* SOP Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-yellow-400 mb-4">Procedure Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
             >
-              <option value="Draft" className="bg-neutral-900 text-white">Draft</option>
-              <option value="Published" className="bg-neutral-900 text-white">Published</option>
-              <option value="Archived" className="bg-neutral-900 text-white">Archived</option>
+              <option value="Draft" className="bg-theme-surface text-theme-primary">Draft</option>
+              <option value="Published" className="bg-theme-surface text-theme-primary">Published</option>
+              <option value="Archived" className="bg-theme-surface text-theme-primary">Archived</option>
             </select>
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Procedure Name *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Procedure Name *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Daily Opening Checklist"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Site/Location</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Site/Location</label>
             <select
               value={siteLocation}
               onChange={(e) => setSiteLocation(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
             >
-              <option value="" className="bg-neutral-900 text-white">Select site...</option>
+              <option value="" className="bg-theme-surface text-theme-primary">Select site...</option>
               {sites.map(site => (
-                <option key={site.id} value={site.name} className="bg-neutral-900 text-white">{site.name}</option>
+                <option key={site.id} value={site.name} className="bg-theme-surface text-theme-primary">{site.name}</option>
               ))}
             </select>
           </div>
@@ -390,7 +397,7 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Time-Based Checklist */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400 flex items-center gap-2">
             <Clock size={20} />
@@ -398,7 +405,7 @@ export default function OpeningProcedureTemplatePage() {
           </h2>
           <button
             onClick={addTimeSlot}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Time Slot
@@ -407,13 +414,12 @@ export default function OpeningProcedureTemplatePage() {
 
         <div className="space-y-4">
           {timeSlots.map((slot) => (
-            <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
+            <div key={slot.id} className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="time"
+                <TimePicker
                   value={slot.time}
-                  onChange={(e) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: e.target.value } : ts))}
-                  className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                  onChange={(value) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: value } : ts))}
+                  className=""
                 />
                 <button
                   onClick={() => removeTimeSlot(slot.id)}
@@ -430,14 +436,14 @@ export default function OpeningProcedureTemplatePage() {
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => updateTask(slot.id, task.id, 'completed', e.target.checked)}
-                      className="rounded border-neutral-600"
+                      className="rounded border-theme"
                     />
                     <input
                       type="text"
                       value={task.task}
                       onChange={(e) => updateTask(slot.id, task.id, 'task', e.target.value)}
                       placeholder="Enter task..."
-                      className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                      className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                     />
                     {slot.tasks.length > 1 && (
                       <button
@@ -451,7 +457,7 @@ export default function OpeningProcedureTemplatePage() {
                 ))}
                 <button
                   onClick={() => addTaskToSlot(slot.id)}
-                  className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-300"
+                  className="flex items-center gap-1 text-xs text-theme-tertiary hover:text-theme-tertiary"
                 >
                   <Plus size={12} />
                   Add Task
@@ -463,7 +469,7 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Equipment Startup Sequence */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400 flex items-center gap-2">
             <CheckCircle2 size={20} />
@@ -471,7 +477,7 @@ export default function OpeningProcedureTemplatePage() {
           </h2>
           <button
             onClick={addEquipmentStartup}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Equipment
@@ -482,37 +488,37 @@ export default function OpeningProcedureTemplatePage() {
           {equipmentStartup.map((eq, index) => (
             <div key={eq.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Equipment</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Equipment</label>}
                 <select
                   value={eq.equipment_id}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'equipment_id', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="" className="bg-neutral-900 text-white">Select equipment...</option>
+                  <option value="" className="bg-theme-surface text-theme-primary">Select equipment...</option>
                   {equipmentLibrary.map(equip => (
-                    <option key={equip.id} value={equip.id} className="bg-neutral-900 text-white">{equip.equipment_name}</option>
+                    <option key={equip.id} value={equip.id} className="bg-theme-surface text-theme-primary">{equip.equipment_name}</option>
                   ))}
                 </select>
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Status</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Status</label>}
                 <select
                   value={eq.startup_status}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'startup_status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="" className="bg-neutral-900 text-white">Status...</option>
-                  <option value="Operational" className="bg-neutral-900 text-white">Operational</option>
-                  <option value="Needs Maintenance" className="bg-neutral-900 text-white">Needs Maintenance</option>
-                  <option value="Out of Order" className="bg-neutral-900 text-white">Out of Order</option>
+                  <option value="" className="bg-theme-surface text-theme-primary">Status...</option>
+                  <option value="Operational" className="bg-theme-surface text-theme-primary">Operational</option>
+                  <option value="Needs Maintenance" className="bg-theme-surface text-theme-primary">Needs Maintenance</option>
+                  <option value="Out of Order" className="bg-theme-surface text-theme-primary">Out of Order</option>
                 </select>
               </div>
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={eq.notes}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Optional notes..."
                 />
               </div>
@@ -530,12 +536,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Safety Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Safety Checks</h2>
           <button
             onClick={addSafetyCheck}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Check
@@ -546,40 +552,40 @@ export default function OpeningProcedureTemplatePage() {
           {safetyChecks.map((check, index) => (
             <div key={check.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Check Item</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Check Item</label>}
                 <input
                   value={check.check_item}
                   onChange={(e) => updateSafetyCheck(check.id, 'check_item', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Fire exits clear"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Status</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Status</label>}
                 <select
                   value={check.status}
                   onChange={(e) => updateSafetyCheck(check.id, 'status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="Pending" className="bg-neutral-900 text-white">Pending</option>
-                  <option value="Complete" className="bg-neutral-900 text-white">Complete</option>
-                  <option value="Issue" className="bg-neutral-900 text-white">Issue</option>
+                  <option value="Pending" className="bg-theme-surface text-theme-primary">Pending</option>
+                  <option value="Complete" className="bg-theme-surface text-theme-primary">Complete</option>
+                  <option value="Issue" className="bg-theme-surface text-theme-primary">Issue</option>
                 </select>
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Checked By</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Checked By</label>}
                 <input
                   value={check.checked_by}
                   onChange={(e) => updateSafetyCheck(check.id, 'checked_by', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={check.notes}
                   onChange={(e) => updateSafetyCheck(check.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -596,12 +602,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Stock Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Stock Checks</h2>
           <button
             onClick={addStockCheck}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -612,41 +618,41 @@ export default function OpeningProcedureTemplatePage() {
           {stockChecks.map((item, index) => (
             <div key={item.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Item Name</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Item Name</label>}
                 <input
                   value={item.item_name}
                   onChange={(e) => updateStockCheck(item.id, 'item_name', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Milk"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Qty on Hand</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Qty on Hand</label>}
                 <input
                   value={item.quantity_on_hand}
                   onChange={(e) => updateStockCheck(item.id, 'quantity_on_hand', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Qty"
                 />
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Expiry Check</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Expiry Check</label>}
                 <div className="flex items-center gap-2 h-10">
                   <input
                     type="checkbox"
                     checked={item.expiry_check}
                     onChange={(e) => updateStockCheck(item.id, 'expiry_check', e.target.checked)}
-                    className="rounded border-neutral-600"
+                    className="rounded border-theme"
                   />
-                  <span className="text-xs text-neutral-400">Checked</span>
+                  <span className="text-xs text-theme-tertiary">Checked</span>
                 </div>
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={item.notes}
                   onChange={(e) => updateStockCheck(item.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -663,12 +669,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Final Walkthrough Checklist */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Final Walkthrough Checklist</h2>
           <button
             onClick={addWalkthroughItem}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -682,21 +688,21 @@ export default function OpeningProcedureTemplatePage() {
                 type="checkbox"
                 checked={item.verified}
                 onChange={(ie) => updateWalkthroughItem(item.id, 'verified', ie.target.checked)}
-                className="rounded border-neutral-600"
+                className="rounded border-theme"
               />
               <input
                 type="text"
                 value={item.item}
                 onChange={(e) => updateWalkthroughItem(item.id, 'item', e.target.value)}
                 placeholder="Walkthrough item..."
-                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <input
                 type="text"
                 value={item.notes}
                 onChange={(e) => updateWalkthroughItem(item.id, 'notes', e.target.value)}
                 placeholder="Notes..."
-                className="w-48 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="w-48 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <button
                 onClick={() => removeWalkthroughItem(item.id)}
@@ -710,34 +716,34 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Manager Sign-Off */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-yellow-400 mb-4">Manager Sign-Off</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Verified By</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Verified By</label>
             <input
               value={managerSignOff.verified_by}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, verified_by: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Manager name"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Verification Date</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Verification Date</label>
             <input
               type="date"
               value={managerSignOff.verification_date}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, verification_date: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Notes</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Notes</label>
             <textarea
               value={managerSignOff.notes}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, notes: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               rows={3}
               placeholder="Additional notes..."
             />
@@ -750,7 +756,7 @@ export default function OpeningProcedureTemplatePage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(211, 126, 145,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save Procedure'}

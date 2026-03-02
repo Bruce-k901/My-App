@@ -1,0 +1,50 @@
+'use client'
+
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { usePanelStore } from '@/lib/stores/panel-store'
+import { Messaging } from './Messaging'
+import { Menu, X } from '@/components/ui/icons'
+import { useMobileNav } from '@/components/mobile/MobileNavProvider'
+import { useIsMobile } from '@/hooks/useIsMobile'
+
+export function MessagingPanel() {
+  const { messagingOpen, setMessagingOpen } = usePanelStore()
+  const { openMoreSheet } = useMobileNav()
+  const { isMobile } = useIsMobile()
+
+  return (
+    <Sheet open={messagingOpen} onOpenChange={setMessagingOpen}>
+      <SheetContent
+        side="right"
+        hideClose
+        className="messaging-panel w-full md:w-[85vw] lg:w-[900px] xl:w-[1100px] flex flex-col bg-white dark:bg-[#0a0a0a]"
+      >
+        <SheetHeader className="px-4 py-4 border-b border-theme flex-row items-center justify-between">
+          <SheetTitle className="text-theme-primary">Messages</SheetTitle>
+          <div className="flex items-center gap-2">
+            {isMobile && (
+              <button
+                onClick={() => openMoreSheet()}
+                className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
+                aria-label="Quick Access"
+              >
+                <Menu size={20} />
+              </button>
+            )}
+            <button
+              onClick={() => setMessagingOpen(false)}
+              className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
+          <Messaging />
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}

@@ -1,0 +1,295 @@
+/* ============================================= */
+/* Planly Delivery Notes - Print Styles         */
+/* A4 Portrait: 4 notes per page (2 cols x 2 rows) */
+/* Each note: 105mm x 148.5mm                    */
+/* ============================================= */
+
+/* ===== SCREEN PREVIEW STYLES ===== */
+@media screen {
+  .delivery-notes-print-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .delivery-note-sheet {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+  }
+
+  /* A4 Portrait preview (scaled for readability) */
+  .delivery-note-sheet.sheet-a4-portrait {
+    width: 210mm;
+    height: 297mm;
+    transform: scale(0.85);
+    transform-origin: top center;
+    margin-bottom: calc(-297mm * 0.15);
+  }
+
+  .delivery-note-cell {
+    border: 1px dashed #ccc;
+  }
+
+  /* Cutting markers container - absolutely positioned overlay */
+  .cutting-markers-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Ensure delivery note content is visible */
+  .delivery-note {
+    font-size: 8pt;
+    overflow: visible;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  /* Force light theme and exact colors */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page setup - A4 Portrait (matches globals.css default) */
+  @page {
+    size: A4 portrait !important;
+    margin: 0 !important;
+  }
+
+  /* Hide screen-only UI elements - be specific to avoid hiding note content */
+  .print\:hidden,
+  .no-print,
+  nav:not(.delivery-note nav),
+  body > header,
+  aside,
+  body > footer,
+  button,
+  input,
+  select,
+  [role="navigation"],
+  [role="banner"],
+  .tsqd-open-btn-container,
+  .tsqd-parent-container,
+  [class*="devtools"],
+  [class*="Devtools"],
+  [class*="ReactQuery"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  body {
+    display: block !important;
+  }
+
+  main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  /* Strip all padding/margins from layout wrappers */
+  main > div,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Print area container */
+  .delivery-notes-print-area {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 210mm !important;
+  }
+
+  /* A4 Portrait Sheet - 210mm x 297mm */
+  .delivery-note-sheet {
+    width: 210mm !important;
+    height: 297mm !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    position: relative !important;
+    background: white !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 105mm) !important;
+    grid-template-rows: repeat(2, 148.5mm) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* Cutting markers container - absolutely positioned, not part of grid */
+  .cutting-markers-container {
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    display: block !important;
+    width: 210mm !important;
+    height: 297mm !important;
+  }
+
+  /* Last sheet - no page break */
+  .delivery-note-sheet:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Individual note cell - 105mm x 148.5mm */
+  .delivery-note-cell {
+    width: 105mm !important;
+    height: 148.5mm !important;
+    padding: 3mm !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Cutting markers */
+  .cutting-marker {
+    position: absolute !important;
+    background: #333 !important;
+    z-index: 10 !important;
+    display: block !important;
+  }
+
+  /* Delivery Note styling - 3 column layout */
+  .delivery-note {
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 8pt !important;
+    background: white !important;
+    color: black !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  /* IMPORTANT: Don't hide the delivery note header */
+  .delivery-note-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 0.5pt solid #333 !important;
+    padding-bottom: 1mm !important;
+    margin-bottom: 1mm !important;
+    flex-shrink: 0 !important;
+  }
+
+  .company-logo {
+    max-height: 8mm !important;
+    max-width: 18mm !important;
+  }
+
+  /* Info column (left side - narrower for 3-col) */
+  .info-column {
+    width: 22% !important;
+    font-size: 6pt !important;
+    border-right: 0.5pt solid #ddd !important;
+    padding-right: 1mm !important;
+  }
+
+  .customer-info {
+    flex-shrink: 0 !important;
+  }
+
+  .customer-info > div {
+    font-size: 6pt !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Products columns (two columns, each ~39%) */
+  .products-column {
+    width: 39% !important;
+  }
+
+  /* Products table */
+  .products-table {
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+
+  .products-table table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 6.5pt !important;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 0.3mm 0.5mm !important;
+    text-align: left !important;
+    border-bottom: 0.3pt solid #eee !important;
+    line-height: 1.2 !important;
+  }
+
+  .products-table th {
+    font-weight: 600 !important;
+    border-bottom: 0.5pt solid #333 !important;
+    font-size: 6.5pt !important;
+  }
+
+  /* Category headers */
+  .category-header td {
+    background: #f0f0f0 !important;
+    font-weight: bold !important;
+    font-size: 5.5pt !important;
+    padding: 0.3mm 0.5mm !important;
+    border-top: 0.3pt solid #ccc !important;
+  }
+
+  /* Quantity cells */
+  .quantity-cell {
+    width: 8mm !important;
+    text-align: center !important;
+    border: 0.3pt solid #ccc !important;
+    background: white !important;
+  }
+
+  /* Footer */
+  .note-footer {
+    text-align: center !important;
+    font-size: 5pt !important;
+    color: #666 !important;
+    padding-top: 1mm !important;
+    border-top: 0.3pt solid #ccc !important;
+    flex-shrink: 0 !important;
+    margin-top: auto !important;
+  }
+
+  /* Teal accent for category bullets */
+  .text-module-fg {
+    color: #0d9488 !important;
+  }
+}

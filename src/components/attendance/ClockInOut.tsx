@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Clock, MapPin, LogOut, LogIn } from 'lucide-react';
+import { Clock, MapPin, LogOut, LogIn } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { toast } from 'sonner';
+import ShiftPulseModal from '@/components/teamly/ShiftPulseModal';
 
 interface ShiftStatus {
   onShift: boolean;
@@ -19,6 +20,7 @@ interface ShiftStatus {
 export default function ClockInOut() {
   const { profile, companyId } = useAppContext();
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [sitesLoaded, setSitesLoaded] = useState(false);
   const [shiftStatus, setShiftStatus] = useState<ShiftStatus>({
     onShift: false,
     siteId: null,
@@ -30,6 +32,34 @@ export default function ClockInOut() {
   const [clockingOut, setClockingOut] = useState(false);
   const [shiftNotes, setShiftNotes] = useState('');
   const [showNotesInput, setShowNotesInput] = useState(false);
+  const [showShiftPulse, setShowShiftPulse] = useState(false);
+
+  // Auto-select home site (or site_id) when profile loads and user is not on shift
+  // Try immediately, and also after sites are loaded (in case of timing issues)
+  useEffect(() => {
+    if (!shiftStatus.onShift && !selectedSiteId && profile) {
+      // Prefer home_site, fallback to site_id
+      const defaultSiteId = profile?.home_site || profile?.site_id;
+      if (defaultSiteId) {
+        // Try to set immediately - if sites aren't loaded yet, the dropdown will update when they are
+        console.log('🕐 [ClockInOut] Attempting to auto-select site:', defaultSiteId, {
+          home_site: profile?.home_site,
+          site_id: profile?.site_id,
+          sitesLoaded,
+          onShift: shiftStatus.onShift,
+          currentSelected: selectedSiteId
+        });
+        setSelectedSiteId(defaultSiteId);
+      } else {
+        console.warn('🕐 [ClockInOut] No home_site or site_id found in profile:', {
+          profile_id: profile?.id,
+          home_site: profile?.home_site,
+          site_id: profile?.site_id,
+          profile_keys: profile ? Object.keys(profile) : 'no profile'
+        });
+      }
+    }
+  }, [profile?.home_site, profile?.site_id, shiftStatus.onShift, selectedSiteId, profile?.id]);
 
   // Load shift status on mount and periodically
   useEffect(() => {
@@ -78,6 +108,15 @@ export default function ClockInOut() {
           clockInTime: null,
           hoursOnShift: null,
         });
+        // Auto-select home site (or site_id) when not on shift
+        // Only set if not already selected and sites are loaded
+        if (sitesLoaded && !selectedSiteId) {
+          const defaultSiteId = profile?.home_site || profile?.site_id;
+          if (defaultSiteId) {
+            console.log('🕐 [ClockInOut] Auto-selecting site in loadShiftStatus:', defaultSiteId);
+            setSelectedSiteId(defaultSiteId);
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading shift status:', error);
@@ -176,7 +215,7 @@ export default function ClockInOut() {
   if (loading) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-6">
-        <div className="flex items-center gap-3 text-white/60">
+        <div className="flex items-center gap-3 text-theme-tertiary">
           <Clock className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading shift status...</span>
         </div>
@@ -196,17 +235,17 @@ export default function ClockInOut() {
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             <div>
-              <h3 className="text-white font-semibold">On Shift</h3>
-              <p className="text-white/60 text-sm">
+              <h3 className="text-theme-primary font-semibold">On Shift</h3>
+              <p className="text-theme-tertiary text-sm">
                 {shiftStatus.siteName || 'Unknown Site'}
               </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-white font-mono text-lg">
+            <div className="text-theme-primary font-mono text-lg">
               {formatHours(shiftStatus.hoursOnShift)}
             </div>
-            <p className="text-white/60 text-xs">Time on shift</p>
+            <p className="text-theme-tertiary text-xs">Time on shift</p>
           </div>
         </div>
 
@@ -216,7 +255,7 @@ export default function ClockInOut() {
               value={shiftNotes}
               onChange={(e) => setShiftNotes(e.target.value)}
               placeholder="Add handover notes (optional)..."
-              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               rows={3}
             />
             <div className="flex gap-2">
@@ -244,7 +283,7 @@ export default function ClockInOut() {
         ) : (
           <div className="flex gap-2">
             <Button
-              onClick={() => setShowNotesInput(true)}
+              onClick={() => setShowShiftPulse(true)}
               variant="outline"
               className="flex-1"
             >
@@ -258,6 +297,20 @@ export default function ClockInOut() {
             </Button>
           </div>
         )}
+
+        {/* Shift Pulse Rating Modal — shown before notes/clock-out */}
+        <ShiftPulseModal
+          isOpen={showShiftPulse}
+          onSubmitAndClockOut={() => {
+            setShowShiftPulse(false)
+            setShowNotesInput(true)
+          }}
+          onSkipAndClockOut={() => {
+            setShowShiftPulse(false)
+            setShowNotesInput(true)
+          }}
+          siteId={shiftStatus.siteId}
+        />
       </div>
     );
   }
@@ -268,8 +321,8 @@ export default function ClockInOut() {
       <div className="flex items-center gap-3">
         <div className="w-3 h-3 bg-white/20 rounded-full" />
         <div>
-          <h3 className="text-white font-semibold">Clock In</h3>
-          <p className="text-white/60 text-sm">
+          <h3 className="text-theme-primary font-semibold">Clock In</h3>
+          <p className="text-theme-tertiary text-sm">
             Select a site to start your shift
           </p>
         </div>
@@ -277,11 +330,19 @@ export default function ClockInOut() {
 
       <div className="space-y-3">
         <div>
-          <label className="block text-sm text-white/80 mb-2">Site</label>
+          <label className="block text-sm text-theme-secondary mb-2">Site</label>
           <SiteSelector
             value={selectedSiteId}
-            onChange={setSelectedSiteId}
+            onChange={(siteId) => {
+              console.log('🏢 [ClockInOut] Site selected:', siteId);
+              setSelectedSiteId(siteId);
+              if (siteId) setSitesLoaded(true); // Mark sites as loaded when user selects one
+            }}
             placeholder="Select a site..."
+            onSitesLoaded={() => {
+              console.log('🏢 [ClockInOut] Sites loaded callback fired');
+              setSitesLoaded(true);
+            }}
           />
         </div>
 
@@ -291,6 +352,7 @@ export default function ClockInOut() {
           loading={clockingIn}
           variant="primary"
           fullWidth
+          title={!selectedSiteId ? `No site selected. Profile: home_site=${profile?.home_site}, site_id=${profile?.site_id}, sitesLoaded=${sitesLoaded}` : 'Clock in'}
         >
           <LogIn className="w-4 h-4 mr-2" />
           Clock In

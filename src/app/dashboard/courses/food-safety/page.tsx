@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Play } from '@/components/ui/icons';
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 import { ModuleAccordion, type ModuleSummary } from "@/components/courses/module-accordion";
 import { CourseHeader } from "@/components/courses/CourseHeader";
@@ -201,36 +203,47 @@ export default async function FoodSafetyCoursePage() {
   const finalQuestionCount = finalModule.summary.quizItems;
   const totalDurationLabel = totalDuration ? `~${totalDuration} minutes` : "~4 hours";
 
+  const actions = (
+    <Link
+      href="/learn/uk-l2-food-safety"
+      className="inline-flex items-center gap-2 rounded-lg border border-module-fg bg-transparent px-6 py-2.5 text-sm font-medium text-module-fg transition-all duration-200 ease-in-out hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)]"
+    >
+      <Play className="h-4 w-4" />
+      Start Course
+    </Link>
+  );
+
   return (
     <OrgContentWrapper
       title={course.title}
       subtitle="Self-study programme aligned to UK compliance requirements"
+      actions={actions}
     >
       <CourseHeader />
 
-      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(236,72,153,0.12)]">
+      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(211, 126, 145,0.12)]">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">Course mode</p>
-            <p className="text-xl font-semibold text-white">Self-study (Level 2)</p>
+            <p className="text-xs uppercase tracking-wide text-theme-tertiary">Course mode</p>
+            <p className="text-xl font-semibold text-theme-primary">Self-study (Level 2)</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">Estimated duration</p>
-            <p className="text-xl font-semibold text-white">{totalDurationLabel}</p>
-            <p className="text-xs text-slate-400">Learners can pause and resume as needed</p>
+            <p className="text-xs uppercase tracking-wide text-theme-tertiary">Estimated duration</p>
+            <p className="text-xl font-semibold text-theme-primary">{totalDurationLabel}</p>
+            <p className="text-xs text-theme-tertiary">Learners can pause and resume as needed</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">Assessment</p>
-            <p className="text-xl font-semibold text-white">{course.pass_mark_percent}% pass mark</p>
-            <p className="text-xs text-slate-400">{finalQuestionCount} question final knowledge check</p>
+            <p className="text-xs uppercase tracking-wide text-theme-tertiary">Assessment</p>
+            <p className="text-xl font-semibold text-theme-primary">{course.pass_mark_percent}% pass mark</p>
+            <p className="text-xs text-theme-tertiary">{finalQuestionCount} question final knowledge check</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">Jurisdiction</p>
-            <p className="text-xl font-semibold text-white">United Kingdom</p>
-            <p className="text-xs text-slate-400">Version {course.version}</p>
+            <p className="text-xs uppercase tracking-wide text-theme-tertiary">Jurisdiction</p>
+            <p className="text-xl font-semibold text-theme-primary">United Kingdom</p>
+            <p className="text-xs text-theme-tertiary">Version {course.version}</p>
           </div>
         </div>
-        <div className="mt-6 flex flex-wrap gap-2 text-xs text-slate-200">
+        <div className="mt-6 flex flex-wrap gap-2 text-xs text-theme-primary">
           {deliveryModes.map((mode) => (
             <span key={mode} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 capitalize">
               {mode}
@@ -241,8 +254,8 @@ export default async function FoodSafetyCoursePage() {
 
       <section className="mt-8 grid gap-6 lg:grid-cols-3">
         <div className="rounded-xl border border-white/10 bg-white/5 p-5 lg:col-span-2">
-          <h2 className="text-lg font-semibold text-white">Learning outcomes</h2>
-          <ul className="mt-3 grid gap-2 text-sm text-slate-200 md:grid-cols-2">
+          <h2 className="text-lg font-semibold text-theme-primary">Learning outcomes</h2>
+          <ul className="mt-3 grid gap-2 text-sm text-theme-primary md:grid-cols-2">
             {learningOutcomes.map((outcome) => (
               <li key={outcome} className="flex gap-2">
                 <span aria-hidden className="pt-1 text-magenta-300">•</span>
@@ -254,16 +267,16 @@ export default async function FoodSafetyCoursePage() {
 
         <div className="space-y-4">
           <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-            <h3 className="text-sm font-semibold text-white">Ideal for</h3>
-            <ul className="mt-2 space-y-1 text-sm text-slate-200">
+            <h3 className="text-sm font-semibold text-theme-primary">Ideal for</h3>
+            <ul className="mt-2 space-y-1 text-sm text-theme-primary">
               {targetAudience.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-            <h3 className="text-sm font-semibold text-white">Prerequisites</h3>
-            <ul className="mt-2 space-y-1 text-sm text-slate-200">
+            <h3 className="text-sm font-semibold text-theme-primary">Prerequisites</h3>
+            <ul className="mt-2 space-y-1 text-sm text-theme-primary">
               {prerequisites.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -274,8 +287,8 @@ export default async function FoodSafetyCoursePage() {
 
       <section className="mt-10 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold text-white">Self-study flow</h2>
-          <p className="text-sm text-slate-300">
+          <h2 className="text-lg font-semibold text-theme-primary">Self-study flow</h2>
+          <p className="text-sm text-theme-secondary">
             Each module blends short-form content, interactive challenges, and a topic quiz so learners can progress independently.
           </p>
         </div>
@@ -284,14 +297,14 @@ export default async function FoodSafetyCoursePage() {
 
       <section className="mt-10 grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-          <h3 className="text-sm font-semibold text-white">Final assessment</h3>
-          <p className="mt-2 text-sm text-slate-200">
+          <h3 className="text-sm font-semibold text-theme-primary">Final assessment</h3>
+          <p className="mt-2 text-sm text-theme-primary">
             Learners complete a {finalQuestionCount} question knowledge check with deferred feedback. Completion results are posted straight into the Training Matrix.
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-          <h3 className="text-sm font-semibold text-white">Completion hand-off</h3>
-          <p className="mt-2 text-sm text-slate-200">{completionCopy}</p>
+          <h3 className="text-sm font-semibold text-theme-primary">Completion hand-off</h3>
+          <p className="mt-2 text-sm text-theme-primary">{completionCopy}</p>
         </div>
       </section>
     </OrgContentWrapper>

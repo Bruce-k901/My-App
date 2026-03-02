@@ -64,7 +64,11 @@ export function isTaskOverdue(task: ChecklistTask): boolean {
   if (task.status === 'completed' || task.status === 'skipped') {
     return false
   }
-  return new Date(task.due_date) < new Date()
+  const now = new Date()
+  if (task.due_time) {
+    return now > new Date(`${task.due_date}T${task.due_time}`)
+  }
+  return task.due_date < now.toISOString().split('T')[0]
 }
 
 /**

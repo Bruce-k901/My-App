@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui';
-import { Download, X, CheckCircle2, Smartphone, ExternalLink } from 'lucide-react';
+import { Download, X, CheckCircle2, Smartphone, ExternalLink } from '@/components/ui/icons';
 import { setupInstallPrompt, showInstallPrompt, isInstalled, getPWAStatus } from '@/lib/pwa';
 
 export function InstallPrompt() {
@@ -73,7 +73,7 @@ export function InstallPrompt() {
   // Show manual instructions for DuckDuckGo or unsupported browsers
   if (showManualInstructions && browserInfo) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
+      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-black/10 dark:border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -81,15 +81,15 @@ export function InstallPrompt() {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white mb-1">Install Checkly</h3>
-            <p className="text-sm text-slate-400 mb-3">
-              {browserInfo.isDuckDuckGo 
+            <h3 className="font-semibold text-theme-primary mb-1">Install Opsly</h3>
+            <p className="text-sm text-theme-tertiary mb-3">
+              {browserInfo.isDuckDuckGo
                 ? "DuckDuckGo browser doesn't support automatic installation. Follow these steps:"
-                : "Add Checkly to your home screen manually:"}
+                : "Add Opsly to your home screen manually:"}
             </p>
             
             {browserInfo.isIOS ? (
-              <div className="space-y-2 mb-3 text-sm text-slate-300">
+              <div className="space-y-2 mb-3 text-sm text-theme-secondary">
                 <div className="flex items-start gap-2">
                   <span className="font-semibold text-blue-400">1.</span>
                   <span>Tap the <strong>Share</strong> button <ExternalLink className="inline h-3 w-3" /> at the bottom</span>
@@ -104,7 +104,7 @@ export function InstallPrompt() {
                 </div>
               </div>
             ) : browserInfo.isAndroid ? (
-              <div className="space-y-2 mb-3 text-sm text-slate-300">
+              <div className="space-y-2 mb-3 text-sm text-theme-secondary">
                 <div className="flex items-start gap-2">
                   <span className="font-semibold text-blue-400">1.</span>
                   <span>Tap the <strong>Menu</strong> button (3 dots) in the top-right</span>
@@ -119,7 +119,7 @@ export function InstallPrompt() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-2 mb-3 text-sm text-slate-300">
+              <div className="space-y-2 mb-3 text-sm text-theme-secondary">
                 <div className="flex items-start gap-2">
                   <span className="font-semibold text-blue-400">1.</span>
                   <span>Look for the <strong>Install</strong> icon in your browser's address bar</span>
@@ -136,7 +136,7 @@ export function InstallPrompt() {
                 onClick={handleDismiss} 
                 variant="ghost" 
                 size="sm"
-                className="text-slate-400 hover:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="h-4 w-4 mr-2" />
                 Got it
@@ -150,7 +150,7 @@ export function InstallPrompt() {
 
   // Standard install prompt for supported browsers
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-black/10 dark:border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -158,15 +158,15 @@ export function InstallPrompt() {
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white mb-1">Install Checkly</h3>
-          <p className="text-sm text-slate-400 mb-3">
-            Add Checkly to your home screen for quick access, offline support, and push notifications.
+          <h3 className="font-semibold text-theme-primary mb-1">Install Opsly</h3>
+          <p className="text-sm text-theme-tertiary mb-3">
+            Add Opsly to your home screen for quick access, offline support, and push notifications.
           </p>
           <div className="flex gap-2">
             <Button 
               onClick={handleInstall} 
               size="sm"
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-module-fg hover:bg-module-fg/90 text-white"
             >
               <Download className="h-4 w-4 mr-2" />
               Install
@@ -175,7 +175,7 @@ export function InstallPrompt() {
               onClick={handleDismiss} 
               variant="ghost" 
               size="sm"
-              className="text-slate-400 hover:text-white"
+              className="text-theme-tertiary hover:text-theme-primary"
             >
               <X className="h-4 w-4" />
             </Button>

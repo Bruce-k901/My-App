@@ -41,9 +41,9 @@ export default function CompanySearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Start typing company name..."
-        className="w-full rounded border border-gray-300 p-2 text-black"
+        className="w-full rounded border border-gray-300 p-2 text-theme-primary"
       />
-      {loading && <div className="absolute right-3 top-2 text-xs text-gray-400">...</div>}
+      {loading && <div className="absolute right-3 top-2 text-xs text-theme-tertiary">...</div>}
 
       {results.length > 0 && (
         <ul className="absolute z-50 bg-white border border-gray-200 rounded shadow-md w-full max-h-60 overflow-y-auto">
@@ -57,9 +57,9 @@ export default function CompanySearchBar() {
                 // later: trigger form autofill here
               }}
             >
-              <div className="font-medium text-black">{r.name}</div>
+              <div className="font-medium text-theme-primary">{r.name}</div>
               {r.postcode && (
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-theme-secondary">
                   {r.postcode} • {r.region}
                 </div>
               )}

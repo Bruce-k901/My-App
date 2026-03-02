@@ -20,7 +20,7 @@ export interface MenuSection {
 export const SIDEBAR_MENUS = {
   editTasks: [
     { id: 'my-tasks', label: 'My Tasks', path: '/dashboard/tasks/my-tasks' },
-    { id: 'templates', label: 'Templates', path: '/dashboard/tasks/templates' },
+    { id: 'templates', label: 'Custom Templates', path: '/dashboard/tasks/templates' },
     { id: 'compliance', label: 'Compliance Tasks', path: '/dashboard/tasks/compliance' }
   ],
   todayChecks: [
@@ -30,142 +30,92 @@ export const SIDEBAR_MENUS = {
   ]
 }
 
-// Burger menu sections
+// Burger menu sections - Slimmed down to 12 items across 4 sections
 export const BURGER_MENU_SECTIONS: MenuSection[] = [
+  {
+    id: 'organization',
+    label: 'ORGANIZATION',
+    items: [
+      { id: 'business-setup', label: 'Getting Started', path: '/dashboard/business', icon: 'Rocket' },
+      { id: 'sites', label: 'Sites', path: '/dashboard/sites', icon: 'MapPin' },
+      { id: 'users', label: 'Users & Access', path: '/dashboard/users', icon: 'Users' },
+      { id: 'companies', label: 'Companies & Brands', path: '/settings/companies', icon: 'Building2' },
+      { id: 'documents', label: 'Documents', path: '/dashboard/documents', icon: 'FileText' },
+    ]
+  },
+  {
+    id: 'workspace',
+    label: 'WORKSPACE',
+    items: [
+      { id: 'reports', label: 'Reports', path: '/dashboard/reports', icon: 'BarChart3' },
+      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report', icon: 'ShieldCheck' },
+      { id: 'my-tickets', label: 'My Tickets', path: '/dashboard/support/my-tickets', icon: 'LifeBuoy' },
+      { id: 'archive', label: 'Archive Center', path: '/dashboard/archive', icon: 'Archive' },
+      { id: 'guide-manager', label: 'Manager Guide', path: '/dashboard/guide/manager', icon: 'BookOpen' },
+      { id: 'guide-staff', label: 'Staff Guide', path: '/dashboard/guide/staff', icon: 'BookOpen' },
+    ]
+  },
+  {
+    id: 'settings',
+    label: 'SETTINGS',
+    items: [
+      { id: 'settings', label: 'Settings', path: '/dashboard/settings', icon: 'Settings' },
+      { id: 'billing', label: 'Billing & Plan', path: '/dashboard/billing', icon: 'CreditCard' },
+    ]
+  },
   {
     id: 'account',
     label: 'ACCOUNT',
     items: [
-      { id: 'profile', label: 'My Profile', path: '/dashboard/settings' },
-      { id: 'password', label: 'Change Password', path: '/dashboard/settings' },
-      { id: 'billing', label: 'Billing & Plans', path: '/dashboard/settings' },
-      { id: 'signout', label: 'Sign Out', path: '/' }
-    ]
-  },
-  {
-    id: 'main-navigation',
-    label: 'MAIN NAVIGATION',
-    items: [
-      { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-      { id: 'organization', label: 'Organization', path: '/dashboard/organization' },
-      { id: 'sops', label: 'SOPs', path: '/dashboard/sops' },
-      { id: 'tasks', label: 'Tasks', path: '/dashboard/tasks' },
-      { id: 'assets', label: 'Assets', path: '/dashboard/assets' },
-      { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/compliance/eho' },
-      { id: 'reports', label: 'Reports', path: '/dashboard/reports' },
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' }
-    ]
-  },
-  {
-    id: 'checkly-tasks',
-    label: 'CHECKLY TASKS',
-            items: [
-              { id: 'my-tasks', label: 'My Tasks', path: '/dashboard/tasks/my-tasks' },
-              { id: 'templates', label: 'Templates', path: '/dashboard/tasks/templates' },
-              { id: 'compliance', label: 'Compliance Tasks', path: '/dashboard/tasks/compliance' },
-              { id: 'todays-checks', label: "Today's Checks", path: '/dashboard/tasks/scheduled' },
-              { id: 'compliance-reports', label: 'Compliance Reports', path: '/dashboard/reports' },
-              { id: 'incidents', label: 'Incidents & Accidents', path: '/dashboard/incidents' },
-              { id: 'food-poisoning', label: 'Food Poisoning', path: '/dashboard/incidents/food-poisoning' },
-              { id: 'contractor', label: 'Contractor Callouts', path: '/dashboard/organization' }
-            ]
-  },
-  {
-    id: 'company-settings',
-    label: 'COMPANY SETTINGS',
-    items: [
-      { id: 'sites', label: 'Sites', path: '/dashboard/organization' },
-      { id: 'users', label: 'Users & Permissions', path: '/dashboard/organization' },
-      { id: 'business-hours', label: 'Business Hours', path: '/dashboard/organization' },
-      { id: 'integrations', label: 'Integrations', path: '/dashboard/organization' }
+      { id: 'profile', label: 'My Profile', path: '/dashboard/profile', icon: 'User' },
+      { id: 'signout', label: 'Sign Out', path: '/', icon: 'LogOut' },
     ]
   }
 ]
 
 // Role-based menu filtering
+// - admin: All 4 sections (Organization, Workspace, Settings, Account)
+// - manager: Workspace, Settings (minus Billing), Account
+// - team: Workspace (Reports, EHO Readiness, Archive Center), Account
 export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSection[] => {
   const allSections = [...BURGER_MENU_SECTIONS]
-  
+
   if (role === 'admin') {
+    // Admin sees everything
     return allSections
   }
-  
+
   if (role === 'manager') {
-    return allSections.map(section => {
-      if (section.id === 'main-navigation') {
-        return {
-          ...section,
-          items: section.items.filter(item => 
-            ['dashboard', 'organization', 'sops', 'tasks', 'assets', 'eho-readiness', 'reports'].includes(item.id)
-          )
+    // Manager: Workspace, Settings (minus Billing), Account
+    return allSections
+      .filter(section => ['workspace', 'settings', 'account'].includes(section.id))
+      .map(section => {
+        if (section.id === 'settings') {
+          return {
+            ...section,
+            items: section.items.filter(item => item.id !== 'billing')
+          }
         }
-      }
-      if (section.id === 'checkly-tasks') {
+        return section
+      })
+  }
+
+  // Team role: Workspace (Reports, EHO Readiness, My Tickets, Archive Center, Staff Guide), Account
+  return allSections
+    .filter(section => ['workspace', 'account'].includes(section.id))
+    .map(section => {
+      if (section.id === 'workspace') {
         return {
           ...section,
-          items: section.items.filter(item => 
-            ['edit-tasks', 'todays-checks', 'compliance-reports', 'incidents', 'food-poisoning'].includes(item.id)
-          )
-        }
-      }
-      if (section.id === 'company-settings') {
-        return {
-          ...section,
-          items: section.items.filter(item => 
-            ['sites', 'business-hours'].includes(item.id)
+          items: section.items.filter(item =>
+            ['reports', 'eho-readiness', 'my-tickets', 'archive', 'guide-staff'].includes(item.id)
           )
         }
       }
       return section
     })
-  }
-  
-  // Team role - minimal access
-  return allSections.map(section => {
-    if (section.id === 'main-navigation') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['dashboard', 'tasks', 'eho-readiness'].includes(item.id)
-        )
-      }
-    }
-    if (section.id === 'checkly-tasks') {
-      return {
-        ...section,
-        items: section.items.filter(item => 
-          ['todays-checks', 'incidents', 'food-poisoning'].includes(item.id)
-        )
-      }
-    }
-    if (section.id === 'company-settings') {
-      return {
-        ...section,
-        items: [] // No company settings for team
-      }
-    }
-    return section
-  }).filter(section => section.items.length > 0)
 }
 
 // Tab types
 export type ActiveTab = 'edit-tasks' | 'today-checks'
 
-// Color palette
-export const COLORS = {
-  background: {
-    dark: '#09090B',
-    light: '#141419',
-    hover: '#1A1A20'
-  },
-  border: '#2A2A2F',
-  text: {
-    primary: '#FFFFFF',
-    secondary: '#A3A3A3',
-    tertiary: '#717171'
-  },
-  accent: '#FF006E',
-  success: '#10B981',
-  warning: '#F59E0B',
-  error: '#FF4040'
-}

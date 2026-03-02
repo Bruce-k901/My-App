@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /app/
+Disallow: /_next/
+Disallow: /setup/
+Disallow: /compliance/
+Disallow: /training/
+Disallow: /reports/
+Disallow: /auth/
+Disallow: /admin/

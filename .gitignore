@@ -27,6 +27,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 
 # vercel
 .vercel
@@ -45,8 +46,20 @@ Logo/
 
 # Temporary favicon files
 public/favicon.png
-public/site.webmanifest
 public/web-app-manifest-*.png
 
 # MCP configuration with sensitive credentials
 .cursor/mcp.json
+
+# Playwright test results and auth state
+test-results/
+playwright-report/
+tests/e2e/.auth/
+playwright/.cache/
+
+# Private assets (certificate templates, etc.)
+/private/
+nul
+
+# Docker tutorial (not part of app)
+/welcome-to-docker/

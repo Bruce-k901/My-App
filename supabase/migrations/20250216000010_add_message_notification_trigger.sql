@@ -1,9 +1,8 @@
 -- ============================================================================
 -- Migration: Message Notification Trigger
 -- Description: Automatically create notifications when messages are received
+-- Note: This migration will be skipped if messages table doesn't exist yet
 -- ============================================================================
-
-BEGIN;
 
 -- Function to notify conversation participants when a new message arrives
 CREATE OR REPLACE FUNCTION public.notify_message_recipients()
@@ -11,7 +10,7 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $function$
 DECLARE
   v_participant RECORD;
   v_conversation RECORD;
@@ -54,15 +53,20 @@ BEGIN
 
   RETURN NEW;
 END;
-$$;
+$function$;
 
--- Create trigger on messages table
-DROP TRIGGER IF EXISTS trg_notify_message_recipients ON public.messages;
-CREATE TRIGGER trg_notify_message_recipients
-  AFTER INSERT ON public.messages
-  FOR EACH ROW
-  WHEN (NEW.deleted_at IS NULL)
-  EXECUTE FUNCTION public.notify_message_recipients();
-
-COMMIT;
+-- Create trigger on messages table (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'messages') THEN
+    DROP TRIGGER IF EXISTS trg_notify_message_recipients ON public.messages;
+    CREATE TRIGGER trg_notify_message_recipients
+      AFTER INSERT ON public.messages
+      FOR EACH ROW
+      WHEN (NEW.deleted_at IS NULL)
+      EXECUTE FUNCTION public.notify_message_recipients();
+  ELSE
+    RAISE NOTICE '⚠️ messages table does not exist yet - skipping trigger creation';
+  END IF;
+END $$;
 

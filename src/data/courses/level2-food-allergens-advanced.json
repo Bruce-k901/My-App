@@ -1,0 +1,1849 @@
+{
+  "id": "uk-l2-food-allergens-advanced",
+  "title": "Advanced Allergen Management (UK)",
+  "shortDescription": "Advanced allergen controls – menu engineering, kitchen protocols, and audit readiness.",
+  "description": "Beyond the basics – this course covers advanced allergen management for supervisors and managers, including menu design, kitchen workflow separation, communication systems, supplier verification, and audit compliance.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-allergens-adv",
+  "category": "food-hygiene",
+  "level": "Level 2",
+  "estimatedMinutes": 180,
+  "icon": "ListChecks",
+  "tags": [
+    "allergens",
+    "allergen management",
+    "menu engineering",
+    "audit",
+    "cross-contamination",
+    "PPDS",
+    "Natasha's Law",
+    "allergen matrix",
+    "supplier verification"
+  ],
+  "learningOutcomes": [
+    "Design allergen-safe menus with clear labelling and communication",
+    "Implement kitchen protocols to prevent cross-contact during service",
+    "Establish supplier verification and allergen auditing systems",
+    "Apply PPDS labelling requirements under Natasha's Law",
+    "Prepare for EHO inspections and maintain allergen compliance records",
+    "Investigate allergen incidents and implement corrective actions",
+    "Assess staff competency in allergen management procedures"
+  ],
+  "prerequisite": "uk-l2-allergens",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction and Legal Framework",
+      "description": "The legal landscape for allergen management in UK food businesses – Natasha's Law, EU FIC, and enforcement.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Welcome and Course Overview",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Advanced Allergen Management (UK)\n\nYou already know the 14 allergens and the basics of allergen awareness. This course takes you to the next level – **managing allergens** across your entire operation.\n\n### Why advanced management?\n- **1-2% of UK adults** and **5-8% of children** have a food allergy.\n- Allergic reactions cause approximately **10 deaths per year** in the UK from food.\n- Hospital admissions for food-induced anaphylaxis have **increased by 72%** in the last two decades.\n- **Natasha's Law (Oct 2021)** requires full ingredient labelling on PPDS food.\n- EHOs actively test allergen management during inspections – poor controls damage FHRS ratings.\n\n### This course covers:\n- **Menu engineering** – designing menus and allergen matrices that reduce risk.\n- **Kitchen protocols** – workflow separation, cleaning validation, and equipment controls.\n- **Communication** – robust systems between front-of-house, kitchen, and customers.\n- **Supplier management** – verification, specifications, and change control.\n- **PPDS labelling** – Natasha's Law compliance in detail.\n- **Audit readiness** – documentation, training records, incident investigation, and self-assessment.\n- **Staff competency** – building and assessing allergen capability across teams.",
+              "keyTakeaway": "Allergen management is not just about knowing the 14 allergens – it is about building systems that prevent errors at every stage."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "The Legal Framework",
+          "slides": [
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "UK Allergen Legislation Overview",
+              "content": "## The Legal Landscape\n\nAllergen management in UK food businesses is governed by multiple overlapping pieces of legislation. As a supervisor or manager, you must understand how they work together.\n\n### Key Legislation:\n\n**1. EU Regulation 1169/2011 (retained in UK law)**\nThe Food Information to Consumers (FIC) Regulation requires food businesses to provide allergen information for all food sold or provided. The 14 allergens must be declared, and the information must be **accurate, available, and verifiable**.\n\n**2. Food Information Regulations 2014 (England)**\nTransposes EU FIC into English law. Scotland, Wales, and Northern Ireland have equivalent regulations. Sets out how allergen information must be communicated for non-prepacked food (verbal with written backup).\n\n**3. Natasha's Law – Food Information (Amendment) (England) Regulations 2019**\nEffective 1 October 2021. Named after Natasha Ednan-Laperouse, who died after eating a Pret a Manger baguette containing sesame. Requires **PPDS food** to carry a label with a full ingredients list with allergens emphasised.\n\n**4. Food Safety Act 1990**\nMakes it an offence to sell food that is not of the nature, substance, or quality demanded – this includes undeclared allergens.",
+              "keyTakeaway": "Four key laws work together: EU FIC 1169/2011, Food Information Regulations 2014, Natasha's Law 2019, and the Food Safety Act 1990."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Enforcement and Penalties",
+              "content": "## What Happens When It Goes Wrong\n\n### Enforcement Powers\nEnvironmental Health Officers (EHOs) and Trading Standards can:\n- Issue **Improvement Notices** requiring specific corrective actions within a deadline.\n- Issue **Emergency Prohibition Notices** closing a business immediately if there is an imminent risk.\n- **Prosecute** businesses and individuals under the Food Safety Act 1990.\n\n### Penalties\n- **Unlimited fines** for selling food not of the nature, substance, or quality demanded.\n- **Up to 2 years imprisonment** for offences under the Food Safety Act.\n- **Corporate manslaughter charges** in fatal cases where gross negligence is proven.\n\n### Real-World Cases\n- **Pret a Manger (2016)** – Natasha Ednan-Laperouse died from sesame in a baguette. Led to Natasha's Law.\n- **Indian Garden, Easingwold (2014)** – Mohammed Zaman jailed for 6 years for manslaughter after a customer with a peanut allergy died from a meal containing peanuts.\n- **Royal Spice, Oswaldtwistle (2017)** – Owner jailed for adding peanut powder to meals despite knowing of customer allergies.\n\nThese are not theoretical risks – they are real outcomes of allergen management failure.",
+              "keyTakeaway": "Penalties for allergen failures range from unlimited fines to imprisonment – and in fatal cases, manslaughter charges."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "The Three Food Categories",
+              "content": "## How Food Is Categorised for Allergen Labelling\n\nAllergen information requirements differ by how food is sold:\n\n### 1. Pre-packed Food\nFood sealed in packaging **before being offered for sale** (e.g., supermarket products). Must carry a label with full ingredients list, allergens emphasised in **bold, italics, or CAPITALS**. Governed by EU FIC 1169/2011.\n\n### 2. Non-Pre-packed (Loose) Food\nFood sold **without packaging** or packaged at the customer's request (e.g., restaurant meals, deli counter items). Allergen information can be provided **verbally**, but there must be a **written backup** available and a clear sign directing customers to ask. Governed by Food Information Regulations 2014.\n\n### 3. Prepacked for Direct Sale (PPDS)\nFood packaged **on the same premises where it is sold** before the customer selects or orders it (e.g., sandwiches made and wrapped in-store, boxed salads in a cafe). Since October 2021, PPDS must carry a label with **product name, full ingredients list with allergens emphasised, and business name/address**.\n\n### Common PPDS Examples:\n- Sandwiches wrapped in a deli for customer self-service.\n- Boxed salads in a cafe display fridge.\n- Cakes portioned and wrapped in a bakery.",
+              "keyTakeaway": "PPDS is the category most often misunderstood – if food is packaged on the same premises before the customer chooses it, it needs full allergen labelling."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "The 14 Allergens – Manager's Perspective",
+              "content": "## Beyond Memorisation – Managing the 14\n\nYou should already know the 14 declarable allergens. As a manager, your concern is how they appear across your operation:\n\n### The 14 Allergens:\nCelery, Cereals containing gluten, Crustaceans, Eggs, Fish, Lupin, Milk, Molluscs, Mustard, Nuts (tree nuts), Peanuts, Sesame, Soya, Sulphur dioxide (sulphites >10ppm).\n\n### Hidden Allergens – Common Traps:\n- **Soya** – in bread, chocolate, processed meats, sauces, and vegetable oil.\n- **Milk** – in crisps (whey powder), bread, stock cubes, and wine.\n- **Sulphites** – in dried fruit, wine, vinegar, pickled foods, and some processed meats.\n- **Celery** – in stock cubes, soups, seasoning mixes, and Bloody Mary mix.\n- **Mustard** – in salad dressings, marinades, sauces, and spice blends.\n- **Sesame** – increasingly common in bakery products, hummus, and Asian cuisine.\n- **Lupin** – found in some continental breads and pastries, often imported.\n\n### Manager's Responsibility:\nYou must ensure your allergen matrix captures **every** instance of these allergens, including where they are hidden in compound ingredients and bought-in products.",
+              "keyTakeaway": "Hidden allergens in compound ingredients are the most common source of allergen matrix errors – check every ingredient list, not just the obvious ones."
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Natasha's Law in Practice",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your cafe makes fresh sandwiches each morning and wraps them in cling film with a sticker showing the sandwich name. They are placed in a display fridge for customers to pick up. A new member of staff asks whether these need full allergen labels. What do you tell them?",
+                    "options": [
+                      {
+                        "label": "No – they are loose food, so we just need to tell customers verbally if asked.",
+                        "nextNodeId": "wrong-loose"
+                      },
+                      {
+                        "label": "Yes – these are PPDS under Natasha's Law and need a full ingredient label with allergens emphasised.",
+                        "nextNodeId": "correct-ppds"
+                      },
+                      {
+                        "label": "Only if they contain one of the top 5 allergens like nuts or milk.",
+                        "nextNodeId": "wrong-top5"
+                      }
+                    ]
+                  },
+                  "wrong-loose": {
+                    "text": "Incorrect. These sandwiches are packaged on the same premises before the customer selects them – that makes them PPDS, not loose food. Loose food rules only apply when food is unpackaged or packaged at the customer's request. What should the label include?",
+                    "options": [
+                      {
+                        "label": "Just the sandwich name and price.",
+                        "nextNodeId": "wrong-minimal"
+                      },
+                      {
+                        "label": "Product name, full ingredients list with allergens emphasised, and business name and address.",
+                        "nextNodeId": "correct-label"
+                      }
+                    ]
+                  },
+                  "wrong-top5": {
+                    "text": "Incorrect. All 14 declarable allergens must be declared – there is no distinction between 'top' allergens and others. The law requires full ingredient labelling for PPDS food. What type of food category are these sandwiches?",
+                    "options": [
+                      {
+                        "label": "Pre-packed food (like supermarket products).",
+                        "nextNodeId": "wrong-prepacked"
+                      },
+                      { "label": "Prepacked for Direct Sale (PPDS).", "nextNodeId": "correct-ppds" }
+                    ]
+                  },
+                  "correct-ppds": {
+                    "text": "Correct. Sandwiches made and wrapped on-site before the customer chooses them are PPDS under Natasha's Law. They need a full ingredient label. What must that label include?",
+                    "options": [
+                      {
+                        "label": "Just the sandwich name and a general allergen warning.",
+                        "nextNodeId": "wrong-minimal"
+                      },
+                      {
+                        "label": "Product name, full ingredients list with allergens emphasised, and business name and address.",
+                        "nextNodeId": "correct-label"
+                      }
+                    ]
+                  },
+                  "wrong-prepacked": {
+                    "text": "Not quite. Pre-packed food is sealed before arriving at the premises (e.g., factory-sealed). These sandwiches are made and packed on-site, making them PPDS. The correct answer is Prepacked for Direct Sale.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-label" }]
+                  },
+                  "wrong-minimal": {
+                    "text": "Incorrect. Under Natasha's Law, a PPDS label must include the product name, a FULL ingredients list with allergens emphasised (bold, underline, or capitals), and the business name and address. A sandwich name alone is not compliant.",
+                    "options": [
+                      { "label": "Understood – let me continue.", "nextNodeId": "correct-label" }
+                    ]
+                  },
+                  "correct-label": {
+                    "text": "Correct. A compliant PPDS label must include: (1) the product name, (2) a full ingredients list with all 14 declarable allergens emphasised in bold, underline, or capitals, and (3) the business name and address. This is a legal requirement under Natasha's Law since October 2021.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Legal Responsibility After an Incident",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with a milk allergy orders a vegan curry from your restaurant. The server checks the allergen matrix and confirms it is milk-free. However, the customer has an allergic reaction. Investigation reveals the coconut cream used was recently reformulated by the supplier to include milk protein. Your allergen matrix was last updated 3 months ago. Who bears legal responsibility?",
+                    "options": [
+                      {
+                        "label": "The supplier – they changed the recipe without telling us.",
+                        "nextNodeId": "supplier-only"
+                      },
+                      {
+                        "label": "The business – we failed to keep our allergen matrix up to date and verify supplier information.",
+                        "nextNodeId": "correct-business"
+                      },
+                      {
+                        "label": "The customer – they should carry their own medication and not trust restaurants.",
+                        "nextNodeId": "wrong-customer"
+                      }
+                    ]
+                  },
+                  "supplier-only": {
+                    "text": "Partially correct, but insufficient. While the supplier may share some responsibility, the Food Safety Act 1990 places the primary duty on the business selling food to the consumer. Your due diligence defence depends on having systems to catch such changes. Did you have a supplier change notification agreement?",
+                    "options": [
+                      {
+                        "label": "No – we just used whatever they delivered.",
+                        "nextNodeId": "no-agreement"
+                      },
+                      {
+                        "label": "Yes – but we had not checked specifications for 3 months.",
+                        "nextNodeId": "lapsed-checks"
+                      }
+                    ]
+                  },
+                  "correct-business": {
+                    "text": "Correct. Under the Food Safety Act 1990, the business selling food bears primary responsibility. Even if the supplier failed to notify you, your systems should include regular specification checks. What should you have had in place?",
+                    "options": [
+                      {
+                        "label": "A supplier agreement requiring change notifications, plus regular spec verification.",
+                        "nextNodeId": "correct-systems"
+                      },
+                      {
+                        "label": "Nothing extra – just trust the supplier.",
+                        "nextNodeId": "no-agreement"
+                      }
+                    ]
+                  },
+                  "wrong-customer": {
+                    "text": "Incorrect. While customers with allergies should carry medication, the legal duty to provide accurate allergen information rests entirely with the food business. Blaming the customer provides no legal defence. The Food Safety Act 1990 is clear: the business must ensure food is of the nature, substance, and quality demanded.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-business" }]
+                  },
+                  "no-agreement": {
+                    "text": "This is a significant failing. Without a supplier change notification agreement and regular specification checks, your due diligence defence is severely weakened. The court would likely find that the business did not take all reasonable precautions.",
+                    "options": [
+                      { "label": "What should we put in place?", "nextNodeId": "correct-systems" }
+                    ]
+                  },
+                  "lapsed-checks": {
+                    "text": "Having the agreement is good, but failing to verify for 3 months weakened your position. Due diligence requires ongoing vigilance, not just paperwork. Regular specification audits are essential.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-systems" }]
+                  },
+                  "correct-systems": {
+                    "text": "The correct approach includes: (1) Written supplier agreements requiring advance notification of any ingredient or recipe changes, (2) Regular specification audits – checking labels and specs at least monthly and on every delivery, (3) Immediate allergen matrix updates when changes are identified, (4) Staff training on checking deliveries against approved specifications. This creates a defensible due diligence position under the Food Safety Act 1990.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Menu Engineering for Allergen Safety",
+      "description": "Designing menus, building allergen matrices, and managing recipe changes to minimise allergen risk.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Allergen Matrices and Menu Design",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "The Allergen Matrix",
+              "content": "## Your Single Source of Truth\n\nAn allergen matrix is a grid showing which allergens are present in every dish you serve. It is the foundation of your entire allergen management system.\n\n### Building an Effective Matrix:\n\n**Rows** = Every dish on your menu (mains, starters, sides, desserts, drinks, specials, children's menu, sauces, dressings).\n\n**Columns** = The 14 declarable allergens.\n\n**Cell markings:**\n- **C** (or shaded) = **Contains** – the dish includes this allergen as an ingredient.\n- **MC** (or cross-hatched) = **May Contain** – risk of cross-contact during preparation.\n- **Blank** = Not present and no cross-contact risk.\n\n### Critical Rules:\n1. Every recipe must be **broken down to individual ingredient level** – check compound ingredients.\n2. The matrix must include **bought-in items** (sauces, bread, desserts) using supplier specifications.\n3. **Specials and seasonal dishes** must be added BEFORE they are served.\n4. The matrix must be **version-controlled** – dated, signed, and archived when updated.\n5. A copy must be **accessible to all staff** who serve or handle food.",
+              "keyTakeaway": "An allergen matrix is only as accurate as the ingredient data behind it – always break down compound ingredients and verify against supplier specs."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Menu Design Principles",
+              "content": "## Designing Safer Menus\n\n### The Allergen Statement\nEvery menu must include a prominent allergen statement. The Food Information Regulations 2014 require a clear indication that allergen information is available. Best practice:\n\n*'Food allergies and intolerances: Before ordering, please speak to a member of our team about your requirements.'*\n\n### Menu Simplification Strategies:\n- **Reduce allergen complexity** – Can you reformulate recipes to remove allergens? Swapping soy sauce for tamari removes wheat. Using olive oil instead of generic vegetable oil removes potential soya.\n- **Create genuinely free-from dishes** – Not modified versions but dishes designed from scratch to be allergen-free.\n- **Standardise recipes** – Written recipes with exact brands, quantities, and suppliers. No substitutions without a formal change process.\n- **Use allergen icons** – Visual symbols next to dish names (e.g., GF for gluten-free, V for vegan with no milk/eggs). Always backed by the full matrix.\n- **Separate allergen-dense sections** – Group high-allergen dishes together so staff can quickly identify safer options.\n\n### Digital Menu Management:\nDigital systems (POS-integrated allergen databases) allow real-time updates. When a recipe changes, every screen and printout updates simultaneously – eliminating the risk of outdated paper matrices.",
+              "keyTakeaway": "Designing allergens out of recipes at the menu-planning stage is far more effective than managing contamination risk during service."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Recipe Management and Change Control",
+              "content": "## Controlling Recipe Changes\n\nRecipe changes are one of the highest-risk moments in allergen management. A single undocumented substitution can introduce a new allergen.\n\n### The Change Control Process:\n1. **Proposal** – Any recipe change (new ingredient, different brand, new supplier) must be formally proposed.\n2. **Allergen assessment** – The new ingredient's full specification is checked against the 14 allergens.\n3. **Matrix update** – The allergen matrix is updated to reflect the change.\n4. **Staff communication** – All relevant staff are informed before the changed dish is served.\n5. **Documentation** – The change, date, reason, and who approved it are recorded.\n\n### Common Triggers for Change:\n- Supplier substitution (out of stock, cost saving, new supplier).\n- Recipe modification (chef creativity, seasonal adjustment).\n- Menu additions (specials, events, seasonal menus).\n- Customer feedback leading to recipe tweaks.\n\n### The Golden Rule:\n**No dish may be served with a changed recipe until the allergen matrix has been updated and staff have been informed.** This applies even if the change seems minor – a different brand of the 'same' product may have completely different allergens.\n\n### Under EU FIC 1169/2011 (retained in UK law):\nArticle 9(1)(c) requires that any ingredient or processing aid that causes allergies or intolerances must be indicated. If your matrix does not reflect reality, you are non-compliant.",
+              "keyTakeaway": "No dish should ever be served with a changed recipe until the allergen matrix has been updated and all staff have been informed."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Precautionary Allergen Labelling (PAL)",
+              "content": "## 'May Contain' – When and How\n\nPrecautionary Allergen Labelling (PAL) – commonly known as 'may contain' – is used when there is a **genuine risk of cross-contact** that cannot be eliminated through controls.\n\n### PAL Is NOT a Blanket Disclaimer\nThe FSA and Trading Standards are clear: PAL must only be used after a **thorough risk assessment**. Using 'may contain all 14 allergens' on every dish is:\n- Misleading to consumers.\n- Not a valid due diligence defence.\n- Potentially discriminatory (excluding allergic customers unnecessarily).\n\n### When PAL Is Appropriate:\n- Shared equipment that cannot be fully cleaned between uses (e.g., a fryer used for battered fish and chips).\n- Production environments where airborne allergens are present (e.g., flour dust in a bakery).\n- Ingredients from suppliers who declare 'may contain' on their specifications.\n\n### When PAL Is NOT Appropriate:\n- When cross-contact can be prevented through proper controls.\n- As a substitute for proper allergen management.\n- When you have not done a risk assessment.\n\n### Best Practice:\nFor each 'may contain' declaration, you should be able to explain **specifically** what the cross-contact risk is and **why** it cannot be eliminated. Document this in your HACCP or allergen management plan.",
+              "keyTakeaway": "May contain labels must be based on genuine assessed risk – using them as a blanket disclaimer is not a legal defence and may constitute an offence."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Allergen Communication on Menus",
+              "content": "## Making Information Accessible\n\n### Legal Requirements (Food Information Regulations 2014):\nFor **non-prepacked food** (restaurant meals, takeaway), you must:\n1. Provide a **clear, visible notice** directing customers to ask about allergens.\n2. Be able to provide **accurate allergen information** for every dish.\n3. Have **written documentation** to back up any verbal information given.\n\n### Communication Methods – Ranked by Reliability:\n\n**Most reliable:**\n- Allergens listed directly on the menu next to each dish.\n- Digital menu with real-time allergen filtering.\n- Allergen matrix available at every point of sale.\n\n**Acceptable but higher risk:**\n- Verbal communication from trained staff, backed by a written matrix.\n- Allergen folder or file available on request.\n\n**Not acceptable:**\n- Verbal-only with no written backup.\n- 'Ask staff' sign with untrained staff.\n- Outdated printed matrix at the counter.\n\n### Inclusive Design:\nConsider customers who may not want to announce their allergy publicly. Offering a discreet allergen card or QR code to a digital matrix allows customers to check independently. This is increasingly expected, particularly under the Equality Act 2010, which may consider severe food allergy a disability.",
+              "keyTakeaway": "The most reliable allergen communication puts the information directly on the menu – the fewer steps between the data and the customer, the lower the risk."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Undocumented Substitution",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During Saturday lunch service, the kitchen runs out of the usual gluten-free bread rolls. The sous chef sends a kitchen porter to buy rolls from the supermarket next door. The porter returns with rolls labelled 'wheat-free' but the ingredients list shows they contain barley malt extract (a cereal containing gluten). A customer with coeliac disease has just ordered a burger on a 'gluten-free' roll. What should happen first?",
+                    "options": [
+                      {
+                        "label": "Serve the new rolls – 'wheat-free' is close enough to 'gluten-free'.",
+                        "nextNodeId": "wrong-serve"
+                      },
+                      {
+                        "label": "Stop service of the item immediately and inform the customer the gluten-free rolls are unavailable.",
+                        "nextNodeId": "correct-stop"
+                      },
+                      {
+                        "label": "Serve the rolls but tell the customer there is a small risk of gluten.",
+                        "nextNodeId": "wrong-disclose"
+                      }
+                    ]
+                  },
+                  "wrong-serve": {
+                    "text": "Incorrect and dangerous. 'Wheat-free' and 'gluten-free' are NOT the same thing. Barley, rye, and oats can all contain gluten. Serving these rolls to a coeliac customer could cause a serious reaction. Under the Food Safety Act 1990, serving food not of the quality demanded is an offence.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "correct-stop" }
+                    ]
+                  },
+                  "wrong-disclose": {
+                    "text": "This is not acceptable. For a coeliac customer, even small amounts of gluten cause intestinal damage. Telling them there is a 'small risk' does not remove your legal duty to provide food that matches what was described. A 'gluten-free' menu item must genuinely be gluten-free.",
+                    "options": [
+                      { "label": "What is the correct approach?", "nextNodeId": "correct-stop" }
+                    ]
+                  },
+                  "correct-stop": {
+                    "text": "Correct. The item must be removed from service immediately. What should you do next?",
+                    "options": [
+                      {
+                        "label": "Just cross it off the specials board and move on.",
+                        "nextNodeId": "wrong-minimal"
+                      },
+                      {
+                        "label": "Inform all front-of-house staff, update the allergen matrix to show the item is unavailable, and brief the kitchen.",
+                        "nextNodeId": "correct-communicate"
+                      },
+                      {
+                        "label": "Send the porter back to buy different rolls and wait.",
+                        "nextNodeId": "wrong-wait"
+                      }
+                    ]
+                  },
+                  "wrong-minimal": {
+                    "text": "Insufficient. Just removing the item from a board does not inform all staff. Other servers may still tell customers the roll is available. A systematic communication is needed.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-communicate" }]
+                  },
+                  "wrong-wait": {
+                    "text": "You cannot serve the item while waiting for a replacement. The priority is to inform all staff NOW that the gluten-free roll is unavailable. Sourcing a replacement is secondary to preventing harm.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-communicate" }]
+                  },
+                  "correct-communicate": {
+                    "text": "Correct. The full response is: (1) Stop service of the item immediately, (2) Inform ALL front-of-house and kitchen staff verbally AND in writing, (3) Update or annotate the allergen matrix, (4) Apologise to the customer and offer a safe alternative, (5) Log the incident including what happened, when, and what corrective action was taken, (6) Review the procurement process – unauthorised substitutions should never happen without allergen verification.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Allergen Matrix Audit Finding",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During your monthly self-audit, you discover that the allergen matrix has not been updated for the 3 new specials added over the past 2 weeks. The specials have been served to approximately 200 customers. One of the specials – a Thai green curry – uses a paste that contains peanuts and fish sauce, but neither is marked on the matrix because the dish was never added. What is your first priority?",
+                    "options": [
+                      {
+                        "label": "Add the specials to the matrix now and move on – no one has complained.",
+                        "nextNodeId": "wrong-add-only"
+                      },
+                      {
+                        "label": "Immediately stop serving the specials until their allergens are fully documented, then investigate how the gap occurred.",
+                        "nextNodeId": "correct-stop"
+                      },
+                      {
+                        "label": "Wait until the EHO visit to update everything at once.",
+                        "nextNodeId": "wrong-wait"
+                      }
+                    ]
+                  },
+                  "wrong-add-only": {
+                    "text": "Updating the matrix is necessary but not sufficient. The fact that undocumented dishes were served for 2 weeks represents a systemic failure. You were non-compliant with EU FIC 1169/2011 for that entire period. If anyone had asked about allergens, staff would have given incomplete information. What else needs to happen?",
+                    "options": [
+                      {
+                        "label": "Investigate how the gap occurred and put controls in place to prevent it.",
+                        "nextNodeId": "correct-investigate"
+                      },
+                      {
+                        "label": "Nothing else – updating the matrix is enough.",
+                        "nextNodeId": "wrong-enough"
+                      }
+                    ]
+                  },
+                  "correct-stop": {
+                    "text": "Correct. Stop serving, document, then investigate. What should the investigation cover?",
+                    "options": [
+                      {
+                        "label": "Just find out who forgot to update the matrix and reprimand them.",
+                        "nextNodeId": "wrong-blame"
+                      },
+                      {
+                        "label": "Review the process: why was there no check before specials went on the menu? What system change will prevent this?",
+                        "nextNodeId": "correct-investigate"
+                      }
+                    ]
+                  },
+                  "wrong-wait": {
+                    "text": "Extremely dangerous. Every day you serve undocumented dishes, you risk a customer with an allergy receiving incorrect information. This is an offence under the Food Safety Act 1990 and the Food Information Regulations 2014. Act immediately.",
+                    "options": [{ "label": "What should I do now?", "nextNodeId": "correct-stop" }]
+                  },
+                  "wrong-enough": {
+                    "text": "No. Without understanding why the gap occurred and fixing the system, it will happen again. Root cause analysis is essential for due diligence.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-investigate" }]
+                  },
+                  "wrong-blame": {
+                    "text": "Finding who is responsible is part of the investigation, but blame alone does not fix systemic issues. If the process allowed specials to be served without an allergen check, the process is the primary failure – not the individual.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-investigate" }]
+                  },
+                  "correct-investigate": {
+                    "text": "Correct approach: (1) Stop serving undocumented specials immediately, (2) Complete allergen assessments for all 3 specials using full ingredient breakdowns, (3) Update the matrix and communicate to all staff, (4) Investigate the root cause – was there a process, was it followed, who is responsible for approving specials? (5) Implement a control: no special goes on the board until its allergen assessment is signed off by a named manager, (6) Document the incident, investigation, and corrective actions for your due diligence file, (7) Consider whether any customers who asked about allergens may have received incorrect information – if so, this may be a reportable food safety incident.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Kitchen Protocols and Cross-Contact Prevention",
+      "description": "Preventing allergen cross-contact through workflow design, cleaning validation, and equipment management.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Kitchen Workflow and Separation",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Kitchen Workflow Design",
+              "content": "## Designing Out Cross-Contact Risk\n\nCross-contact occurs when an allergen is unintentionally transferred from one food to another. Unlike cross-contamination (which typically refers to microbiological hazards), cross-contact specifically relates to allergens and cannot be eliminated by cooking.\n\n### Spatial Separation:\n- **Dedicated preparation zones** for allergen-free items where possible. Even a designated section of a worktop is better than nothing.\n- **Separate chopping boards** – colour-coded specifically for allergen-free use (many kitchens use purple or white).\n- **Separate utensils** – clearly marked, stored separately, and never mixed with standard equipment.\n- **Separate fryers** – shared fryers are the **number one source** of gluten cross-contact. Battered fish contaminates the oil with gluten, which then transfers to chips.\n- **Separate toasters** – breadcrumbs in shared toasters are a significant gluten risk.\n\n### Process Separation:\n- Prepare allergen-free items **first** each day, before allergens are introduced to the workspace.\n- Use the **clean-to-dirty principle**: start with allergen-free, then move to allergen-containing items.\n- **Cover allergen-free food** at all times during storage and transport.\n- Never reuse cooking oil, water, or cooking medium that has been used for allergen-containing food.\n\n### Physical Barriers:\n- Enclosed containers for allergen-containing dry goods (flour, nuts).\n- Sneeze guards and covers on service counters.\n- Separate storage areas or clearly marked shelves for allergen-free ingredients.",
+              "keyTakeaway": "Cross-contact cannot be eliminated by cooking – unlike bacteria, allergen proteins survive heat, so prevention must happen during preparation."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Cleaning for Allergen Removal",
+              "content": "## Cleaning Validation\n\nRemoving allergen proteins from surfaces and equipment requires specific cleaning methods. Anti-bacterial sprays and sanitisers kill bacteria but do **not** remove allergen proteins.\n\n### The Allergen Cleaning Protocol:\n1. **Remove visible food debris** – scrape, sweep, or wipe.\n2. **Wash with hot soapy water** – detergent breaks down protein bonds. Water should be at least 55 degrees C.\n3. **Rinse with clean water** – remove soap and loosened residue.\n4. **Sanitise** – apply sanitiser for microbiological safety (this step does not remove allergens but is still needed).\n5. **Dry with a clean disposable cloth or air dry** – do not use cloths that may carry allergen residue.\n\n### Equipment Considerations:\n- **Dismantlable equipment** (mixers, slicers, blenders) must be fully taken apart and each component cleaned separately.\n- **Porous surfaces** (wooden boards, some plastics) are harder to clean effectively – consider replacing with non-porous alternatives for allergen-free prep.\n- **Cloths and sponges** – use disposable cloths for allergen-free areas. If reusable, launder at 60 degrees C+ or higher between uses.\n\n### Cleaning Verification:\n- **Visual inspection** after cleaning – can you see any residue?\n- **ATP swabbing** – measures biological residue. Useful but does not specifically detect allergens.\n- **Allergen-specific lateral flow testing** – rapid tests for specific allergens (e.g., gluten, peanut). Gold standard for high-risk operations.\n- **Cleaning records** – document allergen-focused cleaning with date, time, area, method, and who verified.",
+              "keyTakeaway": "Anti-bacterial spray does not remove allergens – only proper cleaning with hot soapy water followed by rinsing removes allergen proteins from surfaces."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Communication Systems in the Kitchen",
+              "content": "## The Allergen Information Chain\n\nMost allergen incidents in hospitality are caused by communication failures, not lack of knowledge. Building robust communication systems is critical.\n\n### The Chain (Every Link Must Hold):\n1. **Customer** informs server of their allergy.\n2. **Server** records the allergy on the order – highlighted, flagged, or colour-coded. Never rely on memory alone.\n3. **Order reaches kitchen** with the allergen clearly marked on the ticket or screen.\n4. **Chef** checks the allergen matrix, confirms the dish is safe, and prepares with appropriate controls.\n5. **Pass check** – a named person at the pass verifies the allergen-safe dish before it leaves the kitchen.\n6. **Food runner** delivers the dish to the correct customer – ideally with a visual marker (coloured clip, flag, different plate).\n7. **Server** confirms with the customer that the dish is allergen-safe upon delivery.\n\n### Systems That Reduce Error:\n- **Allergen flags on POS systems** – digital orders that trigger kitchen alerts.\n- **Allergen stickers** on printed tickets (e.g., red dot = nut allergy, blue = dairy).\n- **Verbal call-back at the pass** – chef calls 'table 5 is nut-free', pass repeats it.\n- **Written AND verbal** – never just one or the other.\n- **Dedicated crockery** – different coloured plates or bowls for allergen-free dishes.\n\n### What Goes Wrong:\n- Server forgets to flag the allergy on the order.\n- Kitchen is too busy to check the matrix.\n- New or agency staff not trained on the allergen system.\n- Verbal communication lost during a busy service.\n- Food runner delivers to the wrong table.",
+              "keyTakeaway": "Most allergen incidents are communication failures, not knowledge failures – every link in the chain from customer to plate must be verified."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Managing Allergens During Service",
+              "content": "## Service-Time Controls\n\nThe highest risk period for allergen cross-contact is during a busy service. Pre-service preparation and clear protocols are essential.\n\n### Pre-Service Checklist:\n- Allergen matrix is up to date and accessible (kitchen and front-of-house).\n- Allergen-free prep areas and equipment are clean and verified.\n- All staff briefed on today's allergens – including specials and any unavailable items.\n- Allergen flags, stickers, or POS alerts are ready and working.\n- Clean disposable gloves, cloths, and utensils are stocked in the allergen-free area.\n\n### During Service:\n- **One person, one dish** – the same chef should handle an allergen-free order from start to finish.\n- **Fresh gloves** for each allergen-free preparation.\n- **Clean equipment** retrieved from the clean store, not from the bench.\n- **No garnishing** with common allergens (nuts, sesame) near allergen-free dishes.\n- **Plating in a clean area** – not at a pass covered in breadcrumbs or sauce.\n\n### Handling Customer Questions:\nFront-of-house staff should:\n- **Never guess or assume** – always check the matrix or ask the kitchen.\n- **Take every allergy seriously** – whether it is a life-threatening allergy or an intolerance.\n- **Offer to speak with the chef** if the customer wants more detail.\n- **Never use phrases like** 'it should be fine' or 'I think it's OK' – only give confirmed information.\n\n### If In Doubt:\nIf you cannot confirm a dish is safe, tell the customer: *'I cannot guarantee this dish is safe for your allergy. Can I suggest an alternative that I can confirm is safe?'*",
+              "keyTakeaway": "During busy service, one-person-one-dish handling of allergen-free orders prevents the cross-contact errors that happen when multiple people handle the same plate."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Allergen Controls in Different Settings",
+              "content": "## Adapting Controls to Your Operation\n\nAllergen management must be tailored to your specific environment. The principles are the same, but the controls vary.\n\n### Restaurants and Hotels:\n- Full allergen matrix for every menu item.\n- Trained front-of-house staff who can communicate allergen information.\n- Kitchen separation protocols and cleaning schedules.\n- Banqueting and events require separate allergen assessments for each event menu.\n\n### Cafes and Takeaways:\n- PPDS labelling is often critical (sandwiches, wraps, boxed meals).\n- Counter-service increases verbal communication risk – written info at the point of sale.\n- Smaller kitchens mean separation is harder – cleaning between tasks becomes more important.\n\n### Contract Catering and Care Settings:\n- Individual allergen profiles for each resident or service user.\n- Meal planning must cross-reference individual allergen profiles.\n- Higher duty of care – residents may not be able to identify or communicate allergic reactions.\n\n### Food Manufacturing and Central Production:\n- Production scheduling to minimise allergen changeovers.\n- Validated cleaning between allergen runs with testing.\n- Line clearance procedures.\n- Full traceability through batch codes.\n\n### Delivery and Third-Party Platforms:\n- Allergen information must reach the end customer – including via Deliveroo, Just Eat, Uber Eats.\n- Packaging must be secure to prevent cross-contact during transit.\n- Stickers or inserts with allergen information for each dish.",
+              "keyTakeaway": "There is no one-size-fits-all approach to allergen management – controls must be specifically designed for your operation type, size, and risk profile."
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Cross-Contact During Busy Service",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is a Friday evening and the kitchen is at full capacity. A ticket comes through marked with a red allergen flag: 'Table 12 – NUT ALLERGY – Chicken stir-fry, no nuts.' The sous chef picks up the ticket and starts prep. Midway through cooking, you notice them using the same wok that was just used for a satay (peanut sauce) dish. The wok was given a quick wipe but was not properly washed. What do you do?",
+                    "options": [
+                      {
+                        "label": "It has been wiped – the heat from cooking will destroy any peanut residue.",
+                        "nextNodeId": "wrong-heat"
+                      },
+                      {
+                        "label": "Stop the cook immediately. The dish must be discarded and restarted with clean equipment.",
+                        "nextNodeId": "correct-stop"
+                      },
+                      {
+                        "label": "Let the dish go but warn the server to tell the customer there might be traces.",
+                        "nextNodeId": "wrong-warn"
+                      }
+                    ]
+                  },
+                  "wrong-heat": {
+                    "text": "Incorrect. Allergen proteins are NOT destroyed by cooking temperatures. Peanut protein (Ara h 1) is heat-stable and survives frying, boiling, and baking. A wiped wok still carries peanut residue. This dish could cause anaphylaxis.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "correct-stop" }]
+                  },
+                  "wrong-warn": {
+                    "text": "Completely unacceptable. The customer declared a nut allergy and ordered a dish confirmed as nut-free. Telling them 'there might be traces' after the fact does not remove the allergen. This dish is contaminated and must not be served.",
+                    "options": [
+                      { "label": "What is the correct action?", "nextNodeId": "correct-stop" }
+                    ]
+                  },
+                  "correct-stop": {
+                    "text": "Correct. The dish must be stopped and discarded. What happens next?",
+                    "options": [
+                      {
+                        "label": "Restart the dish using a properly cleaned wok and fresh ingredients, then brief the sous chef on the error.",
+                        "nextNodeId": "correct-restart"
+                      },
+                      {
+                        "label": "Restart the dish in the same wok after washing it, and say nothing to avoid embarrassing the sous chef.",
+                        "nextNodeId": "wrong-avoid"
+                      },
+                      {
+                        "label": "Tell the customer we cannot make the dish safely tonight.",
+                        "nextNodeId": "partially-correct"
+                      }
+                    ]
+                  },
+                  "wrong-avoid": {
+                    "text": "Not addressing the error with the sous chef means it will happen again. Allergen safety requires open, blame-free communication. The sous chef needs to understand that a wipe is not sufficient allergen cleaning – not to be punished, but to prevent a future incident.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-restart" }]
+                  },
+                  "partially-correct": {
+                    "text": "This is a safe option, but not ideal. If you can properly clean equipment and restart the dish, you should try. Only refuse the order if you genuinely cannot prepare it safely. Refusing to serve allergic customers without good reason could raise Equality Act concerns.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-restart" }]
+                  },
+                  "correct-restart": {
+                    "text": "Correct. The full response: (1) Discard the contaminated dish, (2) Properly clean the wok (hot soapy water, rinse, sanitise) or use a different clean wok, (3) Start fresh with clean utensils and fresh ingredients, (4) Brief the sous chef – this is a learning moment, not a disciplinary one, (5) Inform the customer of a slight delay and reassure them their safety is your priority, (6) Log the near-miss in your incident book for review. Near-misses are as important as actual incidents for improving systems.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Cleaning Validation Challenge",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your bakery produces both regular and gluten-free cakes. They are made at different times but using the same mixer. After the regular bake, the kitchen team cleans the mixer. A new team member asks how you know the mixer is safe for gluten-free production. You currently rely on visual inspection only. The head baker says 'we've always done it this way and never had a problem.' What is the best approach?",
+                    "options": [
+                      {
+                        "label": "The head baker has years of experience – visual inspection is fine.",
+                        "nextNodeId": "wrong-experience"
+                      },
+                      {
+                        "label": "Visual inspection is a start but should be supplemented with verified cleaning protocols and periodic allergen testing.",
+                        "nextNodeId": "correct-testing"
+                      },
+                      {
+                        "label": "Stop making gluten-free cakes until you have a separate mixer.",
+                        "nextNodeId": "wrong-stop"
+                      }
+                    ]
+                  },
+                  "wrong-experience": {
+                    "text": "Experience alone is not evidence. Gluten residue can be invisible – flour dust can settle in crevices that look clean. 'Never had a problem' may mean 'never been caught' rather than 'never caused harm'. Coeliac damage can be cumulative and asymptomatic.",
+                    "options": [{ "label": "What should we do?", "nextNodeId": "correct-testing" }]
+                  },
+                  "wrong-stop": {
+                    "text": "This is overly cautious. With proper validated cleaning protocols, shared equipment can be used safely for gluten-free production. The FSA does not require separate equipment in all cases – it requires effective controls.",
+                    "options": [
+                      { "label": "What controls are needed?", "nextNodeId": "correct-testing" }
+                    ]
+                  },
+                  "correct-testing": {
+                    "text": "Correct. Visual inspection plus validated protocols is the right approach. What specific measures should you implement?",
+                    "options": [
+                      {
+                        "label": "Write a detailed cleaning SOP and train the team, plus introduce periodic gluten lateral flow tests.",
+                        "nextNodeId": "correct-full"
+                      },
+                      {
+                        "label": "Just buy some antibacterial wipes and use those between batches.",
+                        "nextNodeId": "wrong-wipes"
+                      },
+                      {
+                        "label": "Rinse the mixer with water between uses.",
+                        "nextNodeId": "wrong-rinse"
+                      }
+                    ]
+                  },
+                  "wrong-wipes": {
+                    "text": "Antibacterial wipes kill bacteria but do NOT remove allergen proteins. You need hot soapy water and thorough cleaning of all components. Wipes are not a substitute for proper allergen cleaning.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-full" }]
+                  },
+                  "wrong-rinse": {
+                    "text": "Water alone does not effectively remove gluten proteins. Detergent (hot soapy water) is needed to break the protein bonds. A water rinse may remove visible flour but leave invisible protein residue.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-full" }]
+                  },
+                  "correct-full": {
+                    "text": "Excellent. The complete approach: (1) Written cleaning SOP: dismantle mixer, wash all parts in hot soapy water (55C+), rinse, sanitise, air dry. (2) Train ALL team members who use the mixer – not just the head baker. (3) Introduce periodic gluten lateral flow testing (e.g., monthly or after any concern) to validate cleaning effectiveness. (4) Record cleaning with date, time, person, and verification. (5) Schedule gluten-free production FIRST each day where possible, reducing the cleaning burden. (6) Review and update the SOP at least annually or after any incident.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Supplier Management and PPDS Labelling",
+      "description": "Controlling allergen risk in the supply chain and complying with Natasha's Law for prepacked for direct sale food.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Supplier Verification and PPDS",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Supplier Allergen Specifications",
+              "content": "## Managing Supply Chain Risk\n\nYour allergen matrix is only as good as the information you receive from your suppliers. Supplier management is a critical control point.\n\n### What You Must Hold for Every Ingredient:\n1. **Full ingredient list** – including sub-ingredients of compound ingredients.\n2. **Allergen declaration** – which of the 14 allergens are present.\n3. **Precautionary allergen labelling (PAL)** – any 'may contain' declarations and the basis for them.\n4. **Manufacturing controls** – what the supplier does to prevent cross-contact.\n5. **Date of specification** – when the information was last confirmed.\n\n### Supplier Specification File:\nMaintain a physical or digital file containing:\n- Product specification sheets for every ingredient.\n- Supplier allergen questionnaires (completed and signed).\n- Certificates of analysis where relevant (e.g., gluten-free certification).\n- Correspondence about any changes.\n\n### Verification Frequency:\n- **On first supply** – full specification review before any product is used.\n- **On every delivery** – check labels match approved specifications.\n- **Quarterly** – written confirmation from suppliers that specifications have not changed.\n- **On any reformulation** – immediate re-assessment before the product is used.\n\n### Under EU FIC 1169/2011 (retained in UK law):\nArticle 8 places responsibility on the food business operator to ensure allergen information is accurate. You cannot simply blame a supplier for providing incorrect information if you had no system to verify it.",
+              "keyTakeaway": "Your allergen matrix is only as accurate as the supplier information behind it – verify specifications on first supply, every delivery, and at least quarterly."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Supplier Change Control",
+              "content": "## When Suppliers Change Products\n\nSupplier product reformulations are one of the most common causes of allergen matrix errors. Ingredients change, manufacturing sites change, and cross-contact risks evolve.\n\n### Your Supplier Agreement Must Include:\n1. **Advance notification** of any ingredient or recipe change.\n2. **Advance notification** of any manufacturing site change (different factory = different cross-contact risks).\n3. **Provision of updated specifications** before the changed product is delivered.\n4. **The right to reject** products that do not match approved specifications.\n\n### When You Are Notified of a Change:\n1. **Quarantine** the changed product – do not use it until assessed.\n2. **Review** the new specification against your allergen matrix.\n3. **Update** the allergen matrix if the allergen profile has changed.\n4. **Communicate** any changes to all relevant staff before the product is used.\n5. **Document** the change, assessment, decision, and communication.\n\n### Emergency Substitutions:\nWhen a regular product is out of stock and a substitute is offered:\n- **Never assume** the substitute has the same allergen profile.\n- Obtain the full specification **before accepting delivery**.\n- If the specification is not available, **do not use the product**.\n- Brief all staff on any differences.\n\n### Red Flags on Deliveries:\n- Packaging or label looks different from usual.\n- Product code or batch number format has changed.\n- 'New improved recipe' on the label.\n- Different country of origin.",
+              "keyTakeaway": "If a supplier changes a product and you do not update your matrix, every piece of allergen information you give customers is potentially wrong."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "PPDS Labelling – Natasha's Law in Detail",
+              "content": "## Prepacked for Direct Sale – Getting It Right\n\nNatasha's Law (Food Information (Amendment) (England) Regulations 2019) came into force on 1 October 2021. It is the most significant change to allergen labelling law in a decade.\n\n### What Is PPDS?\nFood that is:\n- **Packaged** on the **same premises** where it is offered for sale.\n- Packaged **before** the customer selects or orders it.\n- Ready for the customer to pick up without further handling.\n\n### Common PPDS Examples:\n- Sandwiches made and wrapped in a cafe for the display fridge.\n- Salad boxes prepared in a restaurant kitchen and placed on a counter.\n- Cakes sliced and boxed in a bakery.\n- Meals prepared and sealed in a care home kitchen for distribution.\n\n### What Is NOT PPDS:\n- Food packaged at the customer's request (this is non-prepacked/loose).\n- Food sealed in a factory and delivered to the shop (this is pre-packed).\n- Food sold openly without packaging (this is non-prepacked/loose).\n\n### Label Requirements:\n1. **Product name** – e.g., 'Chicken and Avocado Sandwich'.\n2. **Full ingredients list** – every ingredient listed, including sub-ingredients of compound ingredients.\n3. **Allergens emphasised** – each allergen must be emphasised within the ingredients list using **bold**, underline, or CAPITALS.\n4. **Business name and address** – the food business operator's name and address.\n\n### Common Mistakes:\n- Listing allergens separately instead of emphasising within the ingredients list.\n- Using a generic 'contains' box instead of a full ingredients list.\n- Forgetting to emphasise allergens in sub-ingredients.\n- Not updating labels when recipes change.",
+              "keyTakeaway": "PPDS labels must contain a FULL ingredients list with allergens emphasised within it – a separate allergen box or summary is not compliant with Natasha's Law."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Creating Compliant PPDS Labels",
+              "content": "## Practical Labelling Guidance\n\n### Example of a Compliant PPDS Label:\n\n**Egg and Cress Sandwich**\nIngredients: Malted bread (**WHEAT** flour, water, yeast, malted barley (**GLUTEN**), salt), free-range **EGG** mayonnaise (rapeseed oil, free-range **EGG** yolk, spirit vinegar, **MUSTARD**, salt, sugar), cress, butter (**MILK**), black pepper.\n\nMade by: The Corner Cafe, 12 High Street, Bristol BS1 1AA\n\n### Key Points:\n- Every allergen is emphasised WITHIN the ingredients list (not in a separate box).\n- Compound ingredients are broken down (bread has its own sub-ingredients listed).\n- Allergens in sub-ingredients are also emphasised (barley/gluten within bread).\n- Business name and full address included.\n\n### Label Systems:\n- **Printed labels** – generated from a recipe management system. Best for consistency.\n- **Handwritten labels** – acceptable but higher risk of error. Must use a template.\n- **Digital label printers** – increasingly affordable. Connect to recipe databases for real-time accuracy.\n\n### Quality Checks:\n- Every label should be **proofread** against the recipe before use.\n- A **second person check** reduces error.\n- **Sample audit** – periodically check labels on display against current recipes.\n- **Version control** – when a recipe changes, ALL old labels must be destroyed and replaced.\n\n### Record Keeping:\nMaintain records of:\n- Current recipes and their corresponding labels.\n- Label change dates and reasons.\n- Staff training on label creation.\n- Any label errors found and corrective actions taken.",
+              "keyTakeaway": "Compound ingredients must be broken down on PPDS labels, with allergens emphasised even when they appear in a sub-ingredient."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Traceability and Recall Procedures",
+              "content": "## Tracing Allergens Through Your Operation\n\n### Why Traceability Matters:\nUnder EU Regulation 178/2002 (retained in UK law), food businesses must be able to identify their suppliers and the businesses they supply – the 'one step back, one step forward' principle. For allergens, this means being able to trace any ingredient to its source.\n\n### Traceability Records Must Include:\n- **Supplier details** – name, address, product description.\n- **Delivery information** – date, batch code, quantity.\n- **Use records** – which batches went into which products/dishes.\n- **Sale/distribution records** – when and where products were sold.\n\n### Allergen Recall Procedures:\nIf you discover an undeclared allergen in a product you have sold:\n1. **Withdraw** the product from sale immediately.\n2. **Notify the local authority** (Environmental Health) without delay.\n3. **Notify customers** where possible – especially if the product has been distributed.\n4. **Identify the scope** – which batches, which products, which dates.\n5. **Investigate the root cause** – supplier error, internal error, labelling error.\n6. **Document everything** – the timeline, actions taken, and outcome.\n\n### FSA Food Alerts:\nThe Food Standards Agency publishes food alerts for allergen recalls. As a food business manager, you should:\n- Subscribe to FSA food alert emails.\n- Check alerts against your stock.\n- Act immediately if an alert affects a product you use.\n\n### The Importance of Batch Codes:\nIf you make PPDS products, consider adding batch codes to your labels. This allows you to recall specific batches rather than all production, minimising waste and disruption.",
+              "keyTakeaway": "Traceability is a legal requirement – you must be able to trace any ingredient one step back to your supplier and one step forward to your customer."
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Supplier Allergen Error",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your regular mayonnaise supplier sends a notification that they have reformulated their product. The new recipe now contains MUSTARD, which was not in the previous formulation. You use this mayonnaise in 12 different dishes and 3 PPDS sandwich lines. The reformulated product was delivered yesterday and has already been used in today's morning production. What is your immediate action?",
+                    "options": [
+                      {
+                        "label": "Note the change and update the allergen matrix when you have time this week.",
+                        "nextNodeId": "wrong-delay"
+                      },
+                      {
+                        "label": "Stop service of all affected products immediately, quarantine remaining stock, and begin a full review.",
+                        "nextNodeId": "correct-stop"
+                      },
+                      {
+                        "label": "Continue using the product but add a general 'may contain mustard' warning to the menu.",
+                        "nextNodeId": "wrong-blanket"
+                      }
+                    ]
+                  },
+                  "wrong-delay": {
+                    "text": "Unacceptable. Products made with the reformulated mayonnaise are already on sale or have been served. Every customer who asked about mustard today received incorrect information. Under EU FIC 1169/2011, you must provide accurate allergen information. This is an immediate food safety issue.",
+                    "options": [
+                      { "label": "What should I do immediately?", "nextNodeId": "correct-stop" }
+                    ]
+                  },
+                  "wrong-blanket": {
+                    "text": "A blanket 'may contain' is not appropriate here. The product definitively CONTAINS mustard – it is not a cross-contact risk, it is an ingredient. Affected dishes must be updated to show 'contains mustard', not 'may contain'. Additionally, PPDS labels must be completely reprinted.",
+                    "options": [
+                      { "label": "What is the correct approach?", "nextNodeId": "correct-stop" }
+                    ]
+                  },
+                  "correct-stop": {
+                    "text": "Correct. Stop, quarantine, and review. What are the next steps in order?",
+                    "options": [
+                      {
+                        "label": "Update the matrix, reprint PPDS labels, brief all staff, check if any customers with mustard allergies were affected, and document everything.",
+                        "nextNodeId": "correct-full"
+                      },
+                      {
+                        "label": "Just update the allergen matrix and carry on.",
+                        "nextNodeId": "wrong-matrix-only"
+                      },
+                      {
+                        "label": "Switch back to the old product and pretend this did not happen.",
+                        "nextNodeId": "wrong-pretend"
+                      }
+                    ]
+                  },
+                  "wrong-matrix-only": {
+                    "text": "Updating the matrix is necessary but only one step. You also need to reprint all affected PPDS labels, brief all staff, assess whether any customers were given incorrect information, and document the entire incident. This may also be a reportable food safety incident.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-full" }]
+                  },
+                  "wrong-pretend": {
+                    "text": "Concealing a known allergen issue is a serious offence. If a customer with a mustard allergy suffers a reaction from food you knew was incorrectly declared, this could result in prosecution under the Food Safety Act 1990 and potentially criminal charges.",
+                    "options": [
+                      { "label": "What should I actually do?", "nextNodeId": "correct-full" }
+                    ]
+                  },
+                  "correct-full": {
+                    "text": "Complete incident response: (1) Stop service of all 12 affected dishes and 3 PPDS lines immediately. (2) Quarantine remaining reformulated mayonnaise. (3) Update the allergen matrix for all 15 affected products. (4) Reprint all PPDS labels to include mustard. (5) Brief all front-of-house and kitchen staff before resuming service. (6) Consider whether any PPDS products sold today need a recall or customer notification. (7) Contact the supplier to confirm the change and request updated specifications. (8) Review your supplier agreement – were you notified in advance as required? (9) Document the entire incident, timeline, and corrective actions in your due diligence file.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: PPDS Label Audit",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "An EHO visits your bakery and examines the PPDS labels on your pre-wrapped brownies. The label reads: 'Chocolate Brownie. Contains: Eggs, Wheat, Milk, Soya. Made by: Best Bakery, 5 Main St, Leeds.' The EHO says the label is non-compliant. Why?",
+                    "options": [
+                      {
+                        "label": "The label is fine – it lists the allergens clearly.",
+                        "nextNodeId": "wrong-fine"
+                      },
+                      {
+                        "label": "The label needs a full ingredients list with allergens emphasised within it, not just a 'contains' box.",
+                        "nextNodeId": "correct-reason"
+                      },
+                      {
+                        "label": "The label needs a best-before date, which is why it fails.",
+                        "nextNodeId": "wrong-date"
+                      }
+                    ]
+                  },
+                  "wrong-fine": {
+                    "text": "Incorrect. Under Natasha's Law, PPDS labels must include a FULL ingredients list – not just a 'contains' summary. Every ingredient must be listed, with allergens emphasised (bold, underline, or capitals) within that list. A 'contains' box alone does not comply.",
+                    "options": [
+                      { "label": "What should the label look like?", "nextNodeId": "correct-label" }
+                    ]
+                  },
+                  "correct-reason": {
+                    "text": "Correct. Natasha's Law requires a full ingredients list, not a summary. What should a compliant label look like?",
+                    "options": [
+                      {
+                        "label": "Chocolate Brownie. Ingredients: Dark chocolate (cocoa mass, sugar, cocoa butter, SOY lecithin), WHEAT flour, free-range EGGS, butter (MILK), sugar, vanilla. Made by: Best Bakery, 5 Main St, Leeds.",
+                        "nextNodeId": "correct-label"
+                      },
+                      {
+                        "label": "Chocolate Brownie. Allergens: Contains Eggs, Wheat, Milk, Soya. Ingredients: chocolate, flour, eggs, butter, sugar, vanilla. Made by: Best Bakery.",
+                        "nextNodeId": "wrong-separate"
+                      }
+                    ]
+                  },
+                  "wrong-date": {
+                    "text": "While a best-before date may be advisable for quality, the EHO's concern is about allergen labelling compliance. The fundamental issue is that Natasha's Law requires a full ingredients list with allergens emphasised within it – not just a 'contains' box.",
+                    "options": [
+                      {
+                        "label": "What does a compliant label look like?",
+                        "nextNodeId": "correct-label"
+                      }
+                    ]
+                  },
+                  "wrong-separate": {
+                    "text": "Almost – but the allergens must be emphasised WITHIN the ingredients list, not in a separate box above it. Also, compound ingredients (like dark chocolate) should be broken down to show their sub-ingredients, with allergens emphasised there too (SOY lecithin within the chocolate listing).",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-label" }]
+                  },
+                  "correct-label": {
+                    "text": "Correct. A compliant label reads: 'Chocolate Brownie. Ingredients: Dark chocolate (cocoa mass, sugar, cocoa butter, SOY lecithin), WHEAT flour, free-range EGGS, butter (MILK), sugar, vanilla extract. Made by: Best Bakery, 5 Main St, Leeds LS1 1AA.' Key points: (1) Full ingredients list in descending order, (2) Compound ingredients broken down, (3) Allergens emphasised in CAPITALS/bold within the list, (4) Full business name and address. The EHO may issue an Improvement Notice requiring you to reprint all labels and demonstrate compliance within a set timeframe.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Incident Investigation and Staff Competency",
+      "description": "Investigating allergen incidents, building staff competency, and maintaining audit-ready documentation.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Incident Investigation and Competency",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Allergen Incident Investigation",
+              "content": "## When Things Go Wrong\n\nAllergen incidents range from near-misses to fatal anaphylaxis. Every incident – including near-misses – must be investigated thoroughly to prevent recurrence.\n\n### Incident Categories:\n- **Near-miss** – An error was caught before food reached the customer (e.g., wrong sauce spotted at the pass).\n- **Minor incident** – Customer received incorrect allergen information but did not suffer a reaction (or suffered a mild reaction).\n- **Serious incident** – Customer suffered an allergic reaction requiring medical attention.\n- **Critical incident** – Customer suffered anaphylaxis or died.\n\n### Investigation Framework (The 5 Whys):\nFor every incident, ask WHY five times to reach the root cause:\n1. Why did the customer have a reaction? *Because the dish contained peanuts.*\n2. Why did it contain peanuts? *Because the sauce recipe was changed.*\n3. Why was the matrix not updated? *Because there is no change control process.*\n4. Why is there no change control process? *Because no one was assigned responsibility.*\n5. Why was no one assigned responsibility? *Because allergen management roles were never formally defined.*\n\n### Root cause = lack of defined allergen management responsibilities.\n\n### Investigation Record Must Include:\n- Date, time, and location of the incident.\n- What happened (factual description).\n- Who was involved (staff and customer, anonymised).\n- What the root cause was.\n- What corrective actions were taken.\n- What preventive actions were implemented.\n- Who signed off the investigation and when.",
+              "keyTakeaway": "Near-misses are as important to investigate as actual incidents – they reveal the system failures that will eventually cause harm."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Reporting and Regulatory Notification",
+              "content": "## When to Report\n\n### Internal Reporting:\nEvery allergen incident and near-miss should be logged internally. Use an incident report form or digital system. The log should be reviewed regularly by management to identify patterns.\n\n### Regulatory Reporting:\nYou must notify your local authority (Environmental Health) if:\n- A customer suffers a serious allergic reaction from food you provided.\n- You discover undeclared allergens in products you have sold.\n- You become aware of a food safety hazard that has affected or could affect consumers.\n\n### NHS Reporting:\nIf a customer suffers anaphylaxis on your premises:\n- **Call 999 immediately** – anaphylaxis is a medical emergency.\n- **Administer first aid** – if the customer has an adrenaline auto-injector (EpiPen), assist them in using it if they consent.\n- **Do not delay** – anaphylaxis can be fatal within minutes without treatment.\n- **Preserve the food** – keep a sample of the dish and its packaging for investigation.\n\n### HSE Reporting (RIDDOR):\nIf a customer or employee dies or suffers a major injury as a result of an allergen incident at your premises, this is reportable under the Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013 (RIDDOR).\n\n### Insurance:\nNotify your insurer of any serious allergen incident. Failure to do so promptly may invalidate your liability cover.",
+              "keyTakeaway": "Call 999 immediately for anaphylaxis – do not wait for symptoms to worsen. Then preserve the food for investigation."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "Staff Competency and Training",
+              "content": "## Building an Allergen-Competent Team\n\nAllergen management is only as strong as the people who implement it. Training must go beyond awareness to build genuine competency.\n\n### Training Levels:\n\n**Level 1 – All food handlers:**\n- The 14 declarable allergens.\n- How to respond when a customer declares an allergy.\n- Where to find the allergen matrix.\n- When to escalate (if unsure, ask a manager).\n- Basic cross-contact prevention.\n\n**Level 2 – Supervisors and experienced staff:**\n- Allergen matrix management and updates.\n- Recipe change control.\n- Cleaning for allergen removal.\n- Communication systems (ordering, kitchen, pass, service).\n- Handling customer questions in detail.\n\n**Level 3 – Managers and allergen champions:**\n- Legal framework (EU FIC, Food Information Regs, Natasha's Law, Food Safety Act).\n- Supplier management and specification verification.\n- PPDS labelling compliance.\n- Incident investigation and root cause analysis.\n- Audit preparation and self-assessment.\n- Training programme design and delivery.\n\n### Competency Assessment:\nTraining is not complete until competency is demonstrated:\n- **Observation** – watch the staff member handle an allergen order during service.\n- **Questioning** – ask them to identify allergens in specific dishes from the matrix.\n- **Scenario testing** – present them with a realistic situation and assess their response.\n\n### Training Records:\nFor each staff member, maintain:\n- Date of training.\n- Topics covered.\n- Assessment method and outcome.\n- Trainer name and signature.\n- Next refresher date.",
+              "keyTakeaway": "Training alone does not equal competency – you must observe, question, and scenario-test each staff member to verify they can apply what they have learned."
+            },
+            {
+              "id": "m5-s4",
+              "type": "text-graphic-split",
+              "title": "Audit Readiness and Self-Assessment",
+              "content": "## Being Inspection-Ready Every Day\n\nAn EHO can visit at any time without notice. Your allergen management system must be inspection-ready every day, not just when you know they are coming.\n\n### What EHOs Check:\n- **Allergen matrix** – current, accurate, accessible to all staff.\n- **Recipes** – written, standardised, matching the matrix.\n- **Supplier information** – specifications and ingredient lists on file and current.\n- **Staff knowledge** – EHOs will ask random staff members about allergens in specific dishes.\n- **PPDS labelling** – correct, complete, and up to date.\n- **Cleaning records** – evidence of allergen-focused cleaning.\n- **Training records** – documented, with evidence of competency assessment.\n- **Incident records** – any past incidents and the actions taken.\n\n### Self-Assessment Checklist (Monthly):\n- Allergen matrix covers every dish, including specials, sides, desserts, drinks.\n- All recipes are written with exact ingredients, brands, and suppliers.\n- Staff training is documented, current, and competency-assessed.\n- Supplier specs are on file and have been verified in the last 3 months.\n- The communication system from customer to kitchen to plate is working.\n- Cleaning protocols for allergen removal are followed and documented.\n- PPDS items are correctly labelled with full ingredients and emphasised allergens.\n- The allergen statement is displayed on menus and at service points.\n- Incident and near-miss log is up to date.\n- A named person is responsible for allergen management overall.\n\n### Due Diligence File:\nKeep a folder (physical or digital) containing all allergen documentation. In the event of an incident or prosecution, this file is your primary defence.",
+              "keyTakeaway": "Audit readiness is a daily standard, not a preparation exercise – if your systems only work when you know inspectors are coming, they do not work."
+            },
+            {
+              "id": "m5-s5",
+              "type": "text-graphic-split",
+              "title": "Continuous Improvement and Culture",
+              "content": "## Building an Allergen-Safe Culture\n\nThe most effective allergen management systems are built on culture, not just compliance. When every team member understands WHY allergen safety matters, they make better decisions under pressure.\n\n### Elements of a Strong Allergen Safety Culture:\n\n**Leadership commitment:**\n- A named allergen champion at management level.\n- Allergen management as a standing agenda item at team meetings.\n- Investment in training, equipment, and systems.\n\n**Open reporting:**\n- Staff feel safe reporting near-misses without fear of blame.\n- Near-misses are treated as learning opportunities.\n- The incident log is reviewed regularly and actions are followed up.\n\n**Continuous learning:**\n- Annual refresher training for all staff.\n- Updates when legislation or guidance changes.\n- Learning from industry incidents (FSA alerts, news reports, prosecutions).\n\n**Customer focus:**\n- Every allergic customer's experience should feel safe and welcoming.\n- Staff should never make customers feel like a burden for declaring an allergy.\n- Offer alternatives when a dish cannot be made safe, rather than simply refusing to serve.\n\n### Key Performance Indicators for Allergen Management:\n- Number of near-misses reported (higher is better – it means reporting culture is strong).\n- Allergen matrix update frequency.\n- Staff training completion and competency pass rates.\n- Self-audit scores over time.\n- Customer feedback related to allergen handling.\n\n### Remember:\nAn allergic customer trusting your restaurant with their safety is an act of faith. Honour it with systems, training, and culture that justify that trust.",
+              "keyTakeaway": "A strong allergen safety culture means staff report near-misses freely, leadership invests in systems, and allergic customers feel safe and welcomed."
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Investigating a Serious Incident",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with a severe peanut allergy ate a dessert described as 'peanut-free' on the allergen matrix. They suffered an anaphylactic reaction and were taken to hospital by ambulance. Paramedics have left and the customer is stable. You are the duty manager. What is your first priority now?",
+                    "options": [
+                      {
+                        "label": "Continue service as normal – the customer is being treated and there is nothing more you can do.",
+                        "nextNodeId": "wrong-continue"
+                      },
+                      {
+                        "label": "Preserve the remaining dessert and all associated ingredients as evidence, then stop serving that dessert to any other customer.",
+                        "nextNodeId": "correct-preserve"
+                      },
+                      {
+                        "label": "Throw away all remaining dessert so no one else is affected.",
+                        "nextNodeId": "wrong-destroy"
+                      }
+                    ]
+                  },
+                  "wrong-continue": {
+                    "text": "Incorrect. Other customers may have ordered or be about to order the same dessert. It must be withdrawn immediately. Additionally, evidence must be preserved for investigation by Environmental Health, police, and your insurer.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "correct-preserve" }]
+                  },
+                  "wrong-destroy": {
+                    "text": "Do not destroy evidence. The remaining dessert, its ingredients, packaging, and preparation records are critical evidence for the investigation. Destroying them could constitute obstruction and will weaken your defence. Withdraw from service but preserve for analysis.",
+                    "options": [
+                      { "label": "What is the correct approach?", "nextNodeId": "correct-preserve" }
+                    ]
+                  },
+                  "correct-preserve": {
+                    "text": "Correct. Preserve evidence and stop service of the item. What should you do in the next hour?",
+                    "options": [
+                      {
+                        "label": "Notify Environmental Health, your insurer, and senior management. Secure all evidence. Begin an initial investigation.",
+                        "nextNodeId": "correct-notify"
+                      },
+                      {
+                        "label": "Wait to see if Environmental Health contacts you – no need to self-report.",
+                        "nextNodeId": "wrong-wait"
+                      },
+                      {
+                        "label": "Carry out a full investigation before contacting anyone, so you have all the facts.",
+                        "nextNodeId": "wrong-delay-report"
+                      }
+                    ]
+                  },
+                  "wrong-wait": {
+                    "text": "You have a legal duty to report food safety incidents to your local authority. Waiting for them to contact you demonstrates a lack of due diligence. Proactive reporting is expected and will be viewed favourably if enforcement action follows.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-notify" }]
+                  },
+                  "wrong-delay-report": {
+                    "text": "Do not delay reporting to complete your investigation. Notify the authorities promptly with the facts you have and update them as your investigation progresses. Delayed reporting raises suspicion and weakens your position.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-notify" }]
+                  },
+                  "correct-notify": {
+                    "text": "Correct. The full incident response: (1) Preserve the dessert, ingredients, labels, recipes, and preparation records as evidence, (2) Withdraw the item from service immediately, (3) Notify Environmental Health, senior management, and your insurer, (4) Record the timeline: when the order was placed, who prepared it, what ingredients were used, what allergen information was given, (5) Interview staff involved while memories are fresh, (6) Review the allergen matrix, recipe, and supplier specs for the dessert, (7) Identify the root cause using the 5 Whys, (8) Implement corrective actions, (9) Prepare a full written report, (10) Review whether RIDDOR reporting is required. This incident file will be critical if prosecution or civil action follows.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Staff Competency Gap",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are conducting a spot-check competency assessment of your front-of-house team. You ask a server who has worked for you for 6 months to tell you which allergens are in the fish pie. They say: 'It has fish in it, obviously. And probably dairy. I am not sure about anything else – I usually just tell customers to check the folder.' The allergen matrix shows fish pie contains: fish, milk, wheat (in the pastry), celery (in the sauce), and mustard (in the sauce). What does this tell you?",
+                    "options": [
+                      {
+                        "label": "This is acceptable – they directed the customer to the folder, which is the written backup.",
+                        "nextNodeId": "wrong-acceptable"
+                      },
+                      {
+                        "label": "There is a competency gap – the server cannot provide accurate allergen information and their fallback approach is inadequate.",
+                        "nextNodeId": "correct-gap"
+                      },
+                      {
+                        "label": "This is normal – you cannot expect servers to memorise every dish.",
+                        "nextNodeId": "wrong-normal"
+                      }
+                    ]
+                  },
+                  "wrong-acceptable": {
+                    "text": "Partially – directing to the folder is better than guessing. But the Food Information Regulations 2014 require that staff can provide allergen information or can reliably direct the customer to where they can find it. If the server tells the customer 'it has fish and dairy' without checking, the customer may assume those are the ONLY allergens – missing wheat, celery, and mustard.",
+                    "options": [
+                      {
+                        "label": "What should the server do differently?",
+                        "nextNodeId": "correct-gap"
+                      }
+                    ]
+                  },
+                  "wrong-normal": {
+                    "text": "It is unrealistic to memorise every allergen in every dish. However, it IS reasonable to expect staff to know they MUST check the matrix rather than guessing. Saying 'it has fish and probably dairy' is giving incomplete information – which is worse than saying 'let me check for you'.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-gap" }]
+                  },
+                  "correct-gap": {
+                    "text": "Correct. There is a competency gap. What is the appropriate response?",
+                    "options": [
+                      {
+                        "label": "Give the server a formal warning for not knowing the allergens.",
+                        "nextNodeId": "wrong-warning"
+                      },
+                      {
+                        "label": "Retrain the server, focusing on the process (always check the matrix) rather than memorisation, then reassess competency.",
+                        "nextNodeId": "correct-retrain"
+                      },
+                      {
+                        "label": "Remove the server from food service duties permanently.",
+                        "nextNodeId": "wrong-remove"
+                      }
+                    ]
+                  },
+                  "wrong-warning": {
+                    "text": "A formal warning is disproportionate for a first competency gap. The issue may be with the training programme, not the individual. If the training did not adequately cover the process of checking the matrix every time, the system failed the server – not the other way around.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-retrain" }]
+                  },
+                  "wrong-remove": {
+                    "text": "Removing the server is an overreaction. With proper retraining and competency assessment, this gap can be closed. Removing staff for competency gaps rather than retraining them creates a blame culture where people hide mistakes instead of learning.",
+                    "options": [{ "label": "Continue", "nextNodeId": "correct-retrain" }]
+                  },
+                  "correct-retrain": {
+                    "text": "Correct. The response should be: (1) Retrain the server – focus on the critical message: 'If a customer asks about allergens, ALWAYS check the matrix. Never guess.' (2) Practise with real scenarios: present dishes and have them demonstrate checking the matrix. (3) Reassess competency within 2 weeks using observation during a real service. (4) Document the gap, retraining, and reassessment outcome. (5) Review your induction training – if a 6-month employee has this gap, others may too. (6) Consider a team refresher session. (7) Check that the allergen matrix is easily accessible at the point of service – if it is hidden in a back office, staff will not use it under pressure.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Test your advanced allergen management knowledge.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m6-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "Natasha's Law applies to which category of food?",
+        "options": [
+          "All restaurant meals served at the table",
+          "Prepacked for Direct Sale (PPDS) food",
+          "Only takeaway food sold via delivery apps",
+          "Food sold at farmers' markets"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "An allergen matrix should be updated:",
+        "options": [
+          "Once a year during the annual review",
+          "Every time a recipe, ingredient, or supplier changes",
+          "Only when the EHO visits for inspection",
+          "Monthly, regardless of whether anything has changed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "Anti-bacterial spray is effective at removing allergen proteins from surfaces.",
+        "options": [
+          "True – it kills allergen proteins like bacteria",
+          "False – hot soapy water is needed to remove allergen proteins",
+          "True – if applied twice and left for 5 minutes",
+          "True – but only on stainless steel surfaces"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "What is the number one source of gluten cross-contact in catering kitchens?",
+        "options": [
+          "Bread boards used for sandwiches",
+          "Shared deep fryers",
+          "Staff hands after handling bread",
+          "Flour stored near gluten-free products"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "On a PPDS label, allergens must be:",
+        "options": [
+          "Listed in a separate 'contains' box at the bottom of the label",
+          "Emphasised (bold, underline, or capitals) within the full ingredients list",
+          "Only listed if the customer specifically asks",
+          "Listed on the shelf label, not the product itself"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "The allergen information chain in a restaurant runs from:",
+        "options": [
+          "Chef to customer only",
+          "Customer to server to kitchen to pass to food runner to server to customer",
+          "Customer to kitchen directly via the menu",
+          "Server to chef – no other steps needed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "When a supplier changes an ingredient in a product you use:",
+        "options": [
+          "It does not affect your allergen matrix if the product name stays the same",
+          "You must update your allergen matrix and all affected PPDS labels before the changed product is used",
+          "You only need to update if a customer asks about that specific ingredient",
+          "You should wait for the next routine matrix review"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "During an inspection, an EHO will assess allergen management including:",
+        "options": [
+          "Only kitchen cleanliness and hand washing",
+          "Staff training records, matrix accuracy, PPDS labelling, and cleaning records",
+          "Only the menu wording and signage",
+          "Only whether the manager can name the 14 allergens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "What should a server do when a customer declares a food allergy?",
+        "options": [
+          "Tell the customer to choose a different dish from the menu",
+          "Record it on the order and flag it clearly to the kitchen via the established system",
+          "Say the chef will sort it out and not worry about documenting it",
+          "Tell the customer the kitchen cannot guarantee anything"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "Allergen-free items should ideally be prepared:",
+        "options": [
+          "At the same time as allergen-containing items to save time",
+          "First each day, before allergens are introduced to the workspace",
+          "Last, after all other prep is completed",
+          "Only by agency staff who are not involved in other prep"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "Verbal-only allergen communication during service is:",
+        "options": [
+          "Fine during busy periods when there is no time to write things down",
+          "Unreliable and must always be backed up in writing on the order",
+          "The preferred method as it is faster",
+          "Acceptable as long as the chef acknowledges verbally"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "How many allergens must be declared by law in the UK?",
+        "options": ["10 allergens", "14 allergens", "20 allergens", "12 allergens"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "Visual markers (flags, coloured plates) for allergen-free dishes help to:",
+        "options": [
+          "Make the presentation more attractive for customers",
+          "Prevent allergen-free dishes being mixed up during service delivery",
+          "Keep the kitchen organised for efficiency",
+          "Identify which dishes are more expensive"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "A new team member should receive allergen training:",
+        "options": [
+          "After completing their probation period (typically 3 months)",
+          "Before they serve or handle food – during induction",
+          "Only if they specifically request it",
+          "Within their first year of employment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "Supplier specifications for ingredients should include:",
+        "options": [
+          "Price and delivery schedule only",
+          "Full ingredient lists with allergen declarations, 'may contain' info, and manufacturing controls",
+          "Just the product name and supplier contact details",
+          "Nutritional information only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "'May contain' (precautionary allergen labelling) indicates:",
+        "options": [
+          "The product definitely contains the allergen as a deliberate ingredient",
+          "There is a genuine assessed risk of cross-contact during manufacturing",
+          "The allergen was present but has been removed during processing",
+          "The product was tested and found to be free from the allergen"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Recipe standardisation is important for allergen safety because:",
+        "options": [
+          "It makes cooking faster and reduces labour costs",
+          "It ensures the allergen matrix remains accurate and any deviations are detectable",
+          "It reduces food wastage and portion sizes",
+          "It is required by employment law for kitchen staff"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Specials and daily menu changes require:",
+        "options": [
+          "No allergen update until the next scheduled matrix review",
+          "The allergen matrix to be updated and communicated BEFORE the dish is served",
+          "A verbal mention to the head chef, who will decide about allergens",
+          "An update to the matrix within 48 hours of the dish being served"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "Separate chopping boards for allergen-free preparation should be:",
+        "options": [
+          "The same colour as standard boards to avoid confusion",
+          "Colour-coded and clearly identifiable, stored separately from standard boards",
+          "Wooden, as wood is naturally antibacterial",
+          "Used once and then disposed of"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Regular self-auditing of allergen procedures:",
+        "options": [
+          "Is a waste of management time that could be spent on service",
+          "Prevents surprises at official inspections and identifies gaps before they cause harm",
+          "Should only happen after an incident has occurred",
+          "Is only necessary for large restaurant chains"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "Under the Food Information Regulations 2014, the allergen statement on menus should:",
+        "options": [
+          "State: 'We try our best but cannot guarantee anything'",
+          "Direct customers to speak to a member of staff about allergies before ordering",
+          "Say nothing – customers should know to ask",
+          "List all 14 allergens in small print at the bottom of the menu"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "Disposable cloths are preferred over reusable cloths in allergen-free areas because:",
+        "options": [
+          "They are cheaper to purchase in bulk",
+          "They reduce the risk of spreading allergen residues between cleaning tasks",
+          "They look more professional to EHO inspectors",
+          "They are more absorbent than reusable cloths"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "FHRS stands for:",
+        "options": [
+          "Food Handling Rating System",
+          "Food Hygiene Rating Scheme",
+          "First Hand Review System",
+          "Food Hazard Reporting Standard"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "If you are uncertain whether a dish is safe for an allergic customer, you should:",
+        "options": [
+          "Serve it and hope for the best – most allergies are mild",
+          "Inform the customer you cannot guarantee safety and offer a confirmed safe alternative",
+          "Guess based on the recipe name and common sense",
+          "Refuse to serve the customer entirely and ask them to leave"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "Staff allergen training records should be:",
+        "options": [
+          "Not necessary if staff have verbally confirmed they understand",
+          "Documented, signed, and kept on file with evidence of competency assessment",
+          "Verbal records only, noted in the manager's diary",
+          "Only kept for the first 3 months of employment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "When checking deliveries against approved specifications, you should verify:",
+        "options": [
+          "Products match approved specifications and check for any labelling changes",
+          "Only the quantity delivered matches the order",
+          "The delivery driver's identification badge",
+          "Only the best-before dates on perishable items"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q27",
+        "text": "Assuming regular customers 'always have the same thing' is:",
+        "options": [
+          "Good customer service that shows you remember them",
+          "Dangerous – their allergies, your recipes, or your suppliers may have changed",
+          "Efficient and helps speed up busy service",
+          "Acceptable as long as you have served them at least 5 times before"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "Approximately how many deaths per year in the UK are caused by food allergies?",
+        "options": ["About 10", "About 100", "About 1,000", "About 2"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q29",
+        "text": "An allergen matrix should cover:",
+        "options": [
+          "Main courses only",
+          "Every dish including specials, sides, desserts, sauces, dressings, and drinks",
+          "Only dishes that are known to contain one of the top 5 allergens",
+          "Only dishes served to customers who declare an allergy"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "The purpose of this advanced course is to:",
+        "options": [
+          "Replace Level 2 Allergen Awareness training entirely",
+          "Build advanced management systems on top of basic allergen knowledge",
+          "Teach the 14 allergens from scratch for beginners",
+          "Provide a quick refresher that can be completed in 30 minutes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "EU Regulation 1169/2011 (retained in UK law) requires food businesses to:",
+        "options": [
+          "Only label pre-packed food with allergens",
+          "Provide allergen information for ALL food sold or provided, including loose and PPDS",
+          "Label food with nutritional information only",
+          "Provide allergen information only when specifically requested by a customer"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "Natasha's Law was introduced following the death of:",
+        "options": [
+          "A child who consumed peanuts at a school canteen",
+          "Natasha Ednan-Laperouse, who died after eating a Pret a Manger baguette containing sesame",
+          "A hotel guest who was served shellfish despite declaring an allergy",
+          "A factory worker exposed to airborne wheat flour"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "Under the Food Safety Act 1990, the maximum penalty for selling food not of the nature, substance, or quality demanded is:",
+        "options": [
+          "A fixed penalty of 500 pounds",
+          "An unlimited fine and/or up to 2 years imprisonment",
+          "A written warning for a first offence",
+          "A 1,000 pound fine and a 6-month trading ban"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "Which of the following is classified as PPDS (Prepacked for Direct Sale)?",
+        "options": [
+          "A steak cooked to order and plated at the customer's table",
+          "A sandwich made on-site, wrapped, and placed in a display fridge for customer self-service",
+          "A frozen pizza sealed in a factory and sold in a supermarket",
+          "A portion of chips served loose in a takeaway container at the customer's request"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "The 'one step back, one step forward' traceability principle means:",
+        "options": [
+          "You must be able to trace ingredients one step back to your supplier and one step forward to your customer",
+          "You should keep records for one year before and one year after production",
+          "You must test each ingredient one step before and one step after cooking",
+          "You should check the supplier's supplier and the customer's customer"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q36",
+        "text": "Which allergen is commonly hidden in stock cubes, soups, and seasoning mixes?",
+        "options": ["Peanuts", "Crustaceans", "Celery", "Lupin"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q37",
+        "text": "Cross-contact differs from cross-contamination in that cross-contact:",
+        "options": [
+          "Only occurs between raw and cooked food",
+          "Specifically refers to allergen transfer and cannot be eliminated by cooking",
+          "Only happens in factory settings, not restaurants",
+          "Is less serious than cross-contamination"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "When cleaning equipment for allergen-free production, the correct sequence is:",
+        "options": [
+          "Sanitise, rinse, wash with soapy water, dry",
+          "Remove debris, wash with hot soapy water, rinse, sanitise, dry with clean cloth",
+          "Spray with anti-bacterial, wipe, air dry",
+          "Rinse with cold water, apply sanitiser, air dry"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "Allergen-specific lateral flow tests are used to:",
+        "options": [
+          "Test customers for allergies before they eat",
+          "Detect specific allergen proteins on cleaned surfaces to validate cleaning effectiveness",
+          "Measure the severity of a customer's allergic reaction",
+          "Test staff knowledge of the 14 allergens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "A supplier sends you a product with 'New improved recipe' on the label. You should:",
+        "options": [
+          "Use it immediately – improvements are always positive",
+          "Quarantine the product and check the updated specification before use",
+          "Return it and insist on the old recipe",
+          "Add 'may contain all 14 allergens' to your matrix for that product"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "The Food Information Regulations 2014 require that for non-prepacked (loose) food, allergen information:",
+        "options": [
+          "Does not need to be available – it is the customer's responsibility",
+          "Can be given verbally but must have a written backup available",
+          "Must be printed on every plate or serving dish",
+          "Only needs to be available in English, regardless of the customer base"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "In a restaurant, the 'pass check' for allergen-safe dishes means:",
+        "options": [
+          "The customer checks the dish before accepting it",
+          "A named person at the pass verifies the dish is allergen-safe before it leaves the kitchen",
+          "The head chef tastes every dish for allergens",
+          "The food runner decides if the dish looks safe"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "Using 'may contain all 14 allergens' as a blanket declaration on every dish is:",
+        "options": [
+          "Best practice – it covers all possibilities",
+          "Not acceptable – PAL must be based on genuine assessed risk, and blanket disclaimers are misleading",
+          "Required by law for restaurants that serve more than 50 covers",
+          "Acceptable as long as the EHO has been informed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q44",
+        "text": "'Wheat-free' and 'gluten-free' mean the same thing.",
+        "options": [
+          "True – wheat is the only source of gluten",
+          "False – barley, rye, and some oats also contain gluten, so wheat-free does not guarantee gluten-free",
+          "True – in UK law they are interchangeable terms",
+          "False – but the difference is not relevant for food safety purposes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q45",
+        "text": "The '5 Whys' technique is used in allergen incident investigation to:",
+        "options": [
+          "Identify the 5 most common allergens involved in incidents",
+          "Drill down from the immediate cause to the root cause of the failure",
+          "Question 5 different staff members about what happened",
+          "Determine the 5 steps needed to resolve the incident"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "In the event of a customer suffering anaphylaxis on your premises, the first action is to:",
+        "options": [
+          "Consult the allergen matrix to confirm whether an error was made",
+          "Call 999 immediately – anaphylaxis is a life-threatening emergency",
+          "Contact your insurer before doing anything else",
+          "Ask the customer to describe their symptoms for your records"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "Allergen near-misses should be:",
+        "options": [
+          "Ignored – no harm was done so there is nothing to investigate",
+          "Logged, investigated, and used as learning opportunities to prevent future incidents",
+          "Only recorded if a manager witnessed them",
+          "Reported to the FSA within 24 hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "Competency assessment for allergen management should include:",
+        "options": [
+          "A written test only – practical observation is not necessary",
+          "Observation during service, questioning on specific dishes, and scenario testing",
+          "Simply asking the staff member if they feel confident",
+          "Only checking whether they attended the training session"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "A PPDS label for an egg and cress sandwich must include:",
+        "options": [
+          "Just the product name and a list of allergens present",
+          "Product name, full ingredients list with allergens emphasised, and business name and address",
+          "Product name, price, and best-before date only",
+          "A QR code linking to allergen information online"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "Sulphites must be declared when present at concentrations above:",
+        "options": [
+          "1 ppm (parts per million)",
+          "10 ppm (parts per million)",
+          "50 ppm (parts per million)",
+          "100 ppm (parts per million)"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "Which of the following is NOT one of the 14 declarable allergens in UK law?",
+        "options": ["Lupin", "Kiwi", "Molluscs", "Mustard"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "During a busy service, a chef cannot find the allergen matrix. They should:",
+        "options": [
+          "Prepare the allergen-free order from memory – they know the menu well",
+          "Stop and locate the matrix before preparing the dish – never prepare an allergen order without checking",
+          "Ask another chef what they think is in the dish",
+          "Serve the dish with a verbal warning that they could not confirm allergens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "A food business's 'due diligence' defence for allergen safety depends on:",
+        "options": [
+          "Having a good reputation in the local community",
+          "Being able to demonstrate that all reasonable precautions were taken and documented",
+          "Having an expensive allergen management software system",
+          "Never having had a previous allergen incident"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Which piece of legislation makes it an offence to sell food not of the nature, substance, or quality demanded?",
+        "options": [
+          "The Equality Act 2010",
+          "The Food Safety Act 1990",
+          "The Health and Safety at Work Act 1974",
+          "The Consumer Rights Act 2015"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "Peanut protein (Ara h 1) is:",
+        "options": [
+          "Destroyed by cooking at temperatures above 75 degrees C",
+          "Heat-stable and survives frying, boiling, and baking",
+          "Only dangerous when consumed raw",
+          "Deactivated by freezing for 24 hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "For shared equipment (e.g., a mixer used for regular and gluten-free baking), the recommended cleaning validation is:",
+        "options": [
+          "A visual inspection by the baker is sufficient",
+          "A documented cleaning SOP supplemented by periodic allergen-specific lateral flow testing",
+          "Rinsing with water between uses",
+          "Wiping with antibacterial cloths between batches"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "When designing a menu, the most effective allergen risk reduction strategy is:",
+        "options": [
+          "Adding 'may contain' warnings to every dish on the menu",
+          "Designing allergens out of recipes at the menu-planning stage where possible",
+          "Requiring all customers to sign a waiver before ordering",
+          "Serving only pre-packed factory food to avoid preparation risks"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "A supplier agreement for allergen management should include:",
+        "options": [
+          "Only the price, delivery schedule, and payment terms",
+          "Advance notification of ingredient changes, provision of specifications, and the right to reject non-conforming products",
+          "A clause stating the supplier takes full legal responsibility for all allergen issues",
+          "An agreement to supply the cheapest available product at all times"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "Under RIDDOR 2013, an allergen incident must be reported to the HSE when:",
+        "options": [
+          "Any customer reports feeling unwell after eating",
+          "A customer or employee dies or suffers a major injury as a result of the incident",
+          "A customer uses an EpiPen on the premises, regardless of outcome",
+          "Any near-miss involving allergens is identified"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "Lupin is most commonly found in which type of product?",
+        "options": [
+          "Dairy products and cheese",
+          "Some continental breads, pastries, and flour blends",
+          "Fresh fruit and vegetables",
+          "Meat and poultry products"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "The best approach to allergen management during a banqueting or events service is:",
+        "options": [
+          "Use the same allergen matrix as the restaurant menu – the kitchen is the same",
+          "Conduct a separate allergen assessment for each event menu, confirming individual guest requirements in advance",
+          "Ask guests with allergies to bring their own food to the event",
+          "Only check allergens for the main course, not starters or desserts"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "A customer asks about allergens via a third-party delivery app (e.g., Deliveroo, Just Eat). Your responsibility is:",
+        "options": [
+          "None – the delivery platform is responsible for allergen information",
+          "To ensure accurate allergen information reaches the end customer, including via the platform and any packaging inserts",
+          "To direct the customer to visit the restaurant in person to discuss their allergy",
+          "To add a disclaimer that you cannot guarantee allergen safety for deliveries"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q63",
+        "text": "In a care home setting, allergen management has a higher duty of care because:",
+        "options": [
+          "Care home food is subject to different legislation than restaurant food",
+          "Residents may not be able to identify, communicate, or respond to allergic reactions independently",
+          "Care homes do not need to follow PPDS labelling requirements",
+          "Care home staff do not need allergen training"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "What is the minimum temperature for water used in allergen cleaning?",
+        "options": [
+          "Room temperature (approximately 20 degrees C)",
+          "At least 55 degrees C with detergent",
+          "At least 82 degrees C (boiling point)",
+          "Temperature does not matter if detergent is used"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "ATP swabbing after cleaning tells you about:",
+        "options": [
+          "The specific allergens present on the surface",
+          "The general biological cleanliness of the surface (but not specifically allergen presence)",
+          "Whether the surface has been sanitised against bacteria",
+          "The pH level of cleaning chemicals used"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "When investigating an allergen incident using the '5 Whys', the goal is to identify:",
+        "options": [
+          "The individual staff member who made the mistake so they can be disciplined",
+          "The root cause – the underlying system or process failure that allowed the error to occur",
+          "Five different versions of events from five different witnesses",
+          "The five most important facts to include in the incident report"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "How often should supplier specifications be formally verified (written confirmation that nothing has changed)?",
+        "options": [
+          "Annually, at the contract renewal date",
+          "At least quarterly, plus on any delivery where something looks different",
+          "Only when a customer complains about an allergen",
+          "Every 5 years, in line with food safety management plan reviews"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "A server tells a customer with a nut allergy: 'It should be fine – I think the chef uses sunflower oil, not nut oil.' This response is:",
+        "options": [
+          "Helpful and shows good product knowledge",
+          "Unacceptable – 'I think' and 'should be' are not confirmed information and could be fatal",
+          "Appropriate as a first response before checking further",
+          "Correct – sunflower oil never contains nuts"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "Digital POS systems that flag allergens on orders are beneficial because they:",
+        "options": [
+          "Eliminate the need for an allergen matrix entirely",
+          "Automate the communication of allergen information from order to kitchen, reducing human error",
+          "Allow restaurants to operate without allergen-trained staff",
+          "Are legally required under Natasha's Law"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "In the context of allergen management, 'version control' of the allergen matrix means:",
+        "options": [
+          "Keeping the matrix in a locked cabinet so no one can change it",
+          "Dating, signing, and archiving each version so you can track changes over time",
+          "Creating a new matrix every day regardless of whether anything changed",
+          "Only allowing the head chef to view the current version"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "A compound ingredient on a PPDS label must be:",
+        "options": [
+          "Listed by its common name only (e.g., 'mayonnaise')",
+          "Broken down into its individual sub-ingredients, with allergens emphasised at every level",
+          "Listed only if it contains one of the 14 allergens",
+          "Excluded from the label if it makes up less than 2% of the product"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "Which of the following is a 'red flag' when checking deliveries?",
+        "options": [
+          "The product arrives at the correct temperature",
+          "The packaging or label looks different from the usual product",
+          "The delivery driver has the correct paperwork",
+          "The quantity matches the order"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q73",
+        "text": "The Equality Act 2010 may be relevant to allergen management because:",
+        "options": [
+          "It requires all restaurants to serve allergen-free food",
+          "Severe food allergy may be considered a disability, requiring reasonable adjustments",
+          "It mandates that all food businesses employ an allergen specialist",
+          "It sets the 14 allergens that must be declared"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "An allergen incident file should be reviewed by management:",
+        "options": [
+          "Only after a fatal incident",
+          "Regularly (at least monthly) to identify patterns and trends",
+          "Once a year during the annual audit",
+          "Never – incident files are confidential and should be sealed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "A high number of allergen near-miss reports in a business indicates:",
+        "options": [
+          "The business has serious allergen management problems and should be shut down",
+          "A strong reporting culture where staff feel safe flagging issues – this is positive",
+          "Staff are making too many mistakes and need to be replaced",
+          "The allergen matrix is completely wrong and should be discarded"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "When a customer suffers anaphylaxis in your restaurant, you should preserve the food because:",
+        "options": [
+          "You need to test it to see if it was good quality",
+          "It is critical evidence for the investigation by Environmental Health, police, and your insurer",
+          "You can serve it to another customer who does not have allergies",
+          "It helps the customer's doctor identify a treatment plan"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "Soya is commonly found as a hidden allergen in all of the following EXCEPT:",
+        "options": [
+          "Bread and bakery products",
+          "Processed meats and sausages",
+          "Fresh whole fruits and vegetables",
+          "Chocolate and confectionery"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "The 'one person, one dish' principle for allergen-free orders means:",
+        "options": [
+          "Only one customer per table can have an allergen-free meal",
+          "The same chef handles the allergen-free order from start to finish to maintain control",
+          "Only one dish on the menu can be made allergen-free",
+          "One person in the restaurant is responsible for all allergen decisions"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "Article 8 of EU FIC 1169/2011 (retained in UK law) places responsibility for allergen information accuracy on:",
+        "options": [
+          "The customer, who should always carry their own allergen information",
+          "The food business operator selling the food to the consumer",
+          "The food supplier or manufacturer exclusively",
+          "The local authority or Environmental Health department"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "Which statement about allergen management culture is correct?",
+        "options": [
+          "A blame culture encourages staff to report mistakes quickly",
+          "A strong allergen culture means staff feel safe reporting near-misses, leadership invests in systems, and allergic customers feel welcomed",
+          "Allergen management culture is only relevant for large chain restaurants",
+          "Culture does not matter as long as the paperwork is complete"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

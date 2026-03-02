@@ -35,28 +35,28 @@ export default function PersistentHeader() {
   return (
     <GlassCard className="flex items-center justify-between">
       <div>
-        <p className="text-xs text-white/60">Today</p>
+        <p className="text-xs text-theme-tertiary">Today</p>
         <div className="flex items-end gap-3">
           <h1 className="text-xl md:text-2xl font-semibold">Welcome{greeting ? `, ${greeting}` : ""}</h1>
-          <span className="text-sm text-white/50">{today}</span>
+          <span className="text-sm text-theme-tertiary">{today}</span>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => go("/tasks")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-theme-primary hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           View Tasks
         </button>
         <button
           onClick={() => go("/notifications")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-theme-primary hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           Notifications
         </button>
         <button
           onClick={() => go("/reports")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-theme-primary hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           Reports
         </button>

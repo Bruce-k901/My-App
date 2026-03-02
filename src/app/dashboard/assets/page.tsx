@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import AssetForm from '@/components/assets/AssetForm';
 import AssetCard from '@/components/assets/AssetCard';
@@ -8,8 +8,10 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import SiteSelector from "@/components/ui/SiteSelector";
+import { useSiteFilter } from '@/hooks/useSiteFilter';
 import Link from "next/link";
-import { Plus, Upload, Download, Archive } from "lucide-react";
+import { Plus, Upload, Download, Archive, X } from '@/components/ui/icons';
+import { AssetBulkUploadWizard } from '@/components/assets/bulk-upload/AssetBulkUploadWizard';
 
 type Asset = {
   id: string;
@@ -38,15 +40,17 @@ type Asset = {
   notes: string | null;
   working_temp_min: number | null;
   working_temp_max: number | null;
+  ppm_group_id: string | null;
+  ppm_group_name: string | null;
 };
 
 export default function AssetsPage() {
   const { companyId, loading: authLoading, session } = useAppContext();
+  const { applySiteFilter, createRecord, selectedSiteId, isAllSites } = useSiteFilter();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [query, setQuery] = useState("");
-  const [selectedSite, setSelectedSite] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
   const { showToast } = useToast();
 
   const fetchAssets = async () => {
@@ -64,12 +68,13 @@ export default function AssetsPage() {
     
     // Use direct query approach for better reliability
     console.log("Fetching assets with direct query...");
-    const { data: assetsData, error: assetsError } = await supabase
-      .from('assets')
-      .select('*')
-      .eq('company_id', companyId)
-      .eq('archived', false)
-      .order('name');
+    const { data: assetsData, error: assetsError } = await applySiteFilter(
+      supabase
+        .from('assets')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('archived', false)
+    ).order('name');
       
       console.log("Direct query result:", { data: assetsData, error: assetsError });
       
@@ -91,15 +96,20 @@ export default function AssetsPage() {
         ...assetsData.map(asset => asset.warranty_contractor_id).filter(Boolean)
       ])];
       
-      // Fetch sites and contractors in parallel
-      const [sitesResult, contractorsResult] = await Promise.all([
+      // Get unique PPM group IDs
+      const groupIds = [...new Set(assetsData.map(asset => asset.ppm_group_id).filter(Boolean))];
+
+      // Fetch sites, contractors, and PPM groups in parallel
+      const [sitesResult, contractorsResult, groupsResult] = await Promise.all([
         siteIds.length > 0 ? supabase.from('sites').select('id, name').in('id', siteIds) : { data: [] },
-        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] }
+        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] },
+        groupIds.length > 0 ? supabase.from('ppm_groups').select('id, name').in('id', groupIds) : { data: [] }
       ]);
-      
+
       // Create lookup maps
       const sitesMap = new Map((sitesResult.data || []).map(site => [site.id, site.name]));
       const contractorsMap = new Map((contractorsResult.data || []).map(contractor => [contractor.id, contractor.name]));
+      const groupsMap = new Map((groupsResult.data || []).map(g => [g.id, g.name]));
       
       // Transform the data to match the expected format
       const transformedData = assetsData.map((asset: any) => ({
@@ -108,40 +118,37 @@ export default function AssetsPage() {
         ppm_contractor_name: asset.ppm_contractor_id ? contractorsMap.get(asset.ppm_contractor_id) || null : null,
         reactive_contractor_name: asset.reactive_contractor_id ? contractorsMap.get(asset.reactive_contractor_id) || null : null,
         warranty_contractor_name: asset.warranty_contractor_id ? contractorsMap.get(asset.warranty_contractor_id) || null : null,
+        ppm_group_id: asset.ppm_group_id || null,
+        ppm_group_name: asset.ppm_group_id ? groupsMap.get(asset.ppm_group_id) || null : null,
       }));
       
-      // Filter by site if selected
-      let filteredData = transformedData;
-      if (selectedSite) {
-        filteredData = transformedData.filter((asset: any) => asset.site_id === selectedSite);
-      }
-      
-      return filteredData as Asset[];
+      // Site filtering is now handled by applySiteFilter in the query
+      return transformedData as Asset[];
   };
 
   const { data: assets = [], isLoading, isError, error } = useQuery({
-    queryKey: ["assets", companyId, selectedSite],
+    queryKey: ["assets", companyId, selectedSiteId],
     queryFn: fetchAssets,
     staleTime: 1000 * 60 * 5, // cache for 5 min
     enabled: !authLoading && !!companyId && !!session?.user?.id,
   });
   
   // Wait for auth to load before proceeding
-  if (authLoading) return <div className="p-8 text-white">Loading...</div>;
+  if (authLoading) return <div className="p-8 text-theme-primary">Loading...</div>;
 
   if (!companyId) {
     return (
       <div className="p-8">
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-yellow-400 mb-2">
+        <div className="bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
             Company Setup Required
           </h2>
-          <p className="text-white/80 mb-4">
+          <p className="text-theme-secondary mb-4">
             Please complete your company setup to access this page.
           </p>
-          <a 
-            href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+          <a
+            href="/dashboard/business"
+            className="inline-block px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-all duration-200"
           >
             Complete Setup
           </a>
@@ -217,126 +224,6 @@ export default function AssetsPage() {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !companyId) return;
-
-    try {
-      const text = await file.text();
-      const lines = text.split('\n').filter(line => line.trim());
-      if (lines.length < 2) return; // Need header + at least one data row
-
-      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-      const rows = lines.slice(1);
-
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const values = row.split(',').map(v => v.trim().replace(/"/g, ''));
-        const rowData: any = {};
-
-        headers.forEach((header, index) => {
-          const value = values[index];
-          if (value && value !== '') {
-            rowData[header] = value;
-          }
-        });
-
-        function generateAssetCode(index: number) {
-          const num = String(index + 1).padStart(5, "0");
-          return `AST-${num}`;
-        }
-
-        function toISODate(dateStr: string | null) {
-          if (!dateStr) return null;
-          // if already in ISO, return as is
-          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-          const [day, month, year] = dateStr.split("/");
-          if (!day || !month || !year) return null;
-          return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-        }
-
-        function mapAssetType(uiValue: string) {
-          if (!uiValue) return "other";
-          const t = uiValue.trim().toLowerCase();
-          switch (t) {
-            case "refrigeration":
-            case "display fridge":
-            case "fridge":
-              return "refrigeration";
-
-            case "cooking":
-            case "cooking equipment":
-            case "oven":
-            case "hob":
-              return "cooking";
-
-            case "dishwashing":
-            case "pot washer":
-              return "dishwashing";
-
-            case "coffee":
-            case "coffee machine":
-            case "beverage":
-              return "coffee";
-
-            case "safety":
-            case "fire safety":
-              return "safety";
-
-            case "other":
-              return "other";
-
-            default:
-              // fallback to enum-safe label
-              return "other";
-          }
-        }
-
-        const assetData = {
-          company_id: companyId,
-          site_id: rowData.site_id ?? null,
-          label: rowData.label ?? "",
-          name: rowData.name || rowData.label || "",
-          model: rowData.model ?? "",
-          serial_number: rowData.serial_number ?? "",
-          brand: rowData.brand ?? "",
-          category: mapAssetType(rowData.category || rowData.type),
-          install_date: toISODate(rowData.install_date || rowData.date_of_purchase),
-          warranty_end: toISODate(rowData.warranty_end),
-          next_service_date: toISODate(rowData.next_service_date || rowData.next_service_due),
-          status: rowData.status || "Active",
-          notes: rowData.notes ?? "",
-        };
-
-        // Insert the asset
-        const { error } = await supabase.from("assets").insert(assetData);
-        if (error) {
-          console.error("Error inserting asset:", error.message, error.details, error.hint);
-        }
-      }
-
-      // Refresh the assets list
-      await queryClient.invalidateQueries({ queryKey: ["assets"] });
-      
-      // Clear the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
-      showToast({ 
-        title: "Assets imported successfully", 
-        description: `Imported assets from CSV`, 
-        type: "success" 
-      });
-    } catch (error) {
-      console.error("Error processing CSV file:", error);
-      showToast({ 
-        title: "Import failed", 
-        description: "Failed to process CSV file", 
-        type: "error" 
-      });
-    }
-  };
 
   const q = (query || "").toLowerCase().trim();
   const filteredAssets = q
@@ -355,47 +242,44 @@ export default function AssetsPage() {
       {/* Header with Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold text-white">Assets</h1>
-          {/* Site Selector and Search Bar next to Assets header */}
-          <SiteSelector
-            value={selectedSite}
-            onChange={setSelectedSite}
-            placeholder="All Sites"
-            className="h-11 min-w-[120px]"
-          />
-          <input 
-            value={query} 
-            onChange={(e) => setQuery(e.target.value)} 
-            placeholder="Search assets..." 
-            className="h-11 w-64 px-4 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40" 
+          <h1 className="text-3xl font-bold text-theme-primary">Assets</h1>
+          {/* Site filtering is handled by SiteContext - see header SiteFilter component */}
+          {isAllSites && (
+            <span className="text-sm text-theme-tertiary">(Viewing all sites)</span>
+          )}
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search assets..."
+ className="h-11 w-64 px-4 rounded-lg border border-theme bg-theme-surface text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.25] focus:border-module-fg/[0.50]"
           />
         </div>
         <div className="flex items-center gap-2">
           {/* Action Buttons with unified height and 2mm spacing */}
           <button
             onClick={handleAdd}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg/[0.50] text-module-fg bg-transparent hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out"
             aria-label="Add Asset"
           >
             <Plus className="h-5 w-5" />
           </button>
           <Link
             href="/dashboard/archived-assets"
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-500/10 transition-all duration-150 ease-in-out hover:shadow-[0_0_8px_#ff9500]"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg/[0.30] text-module-fg/70 bg-transparent hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out"
             title="View archived assets"
           >
             <Archive className="h-5 w-5" />
           </Link>
           <button
             onClick={handleDownload}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
             aria-label="Download Assets"
           >
             <Download className="h-5 w-5" />
           </button>
           <button
-            onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+            onClick={() => setShowBulkUpload(true)}
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
             aria-label="Upload Assets"
           >
             <Upload className="h-5 w-5" />
@@ -403,24 +287,17 @@ export default function AssetsPage() {
         </div>
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".csv"
-        onChange={handleFileUpload}
-        style={{ display: "none" }}
-      />
 
       {isError && (
-        <div className="mb-4 rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
-          <p className="text-sm text-red-400">{error?.message || "Failed to load assets"}</p>
+        <div className="mb-4 rounded-xl bg-red-50 dark:bg-white/[0.06] border border-red-200 dark:border-white/[0.1] px-4 py-3">
+          <p className="text-sm text-red-600 dark:text-red-400">{error?.message || "Failed to load assets"}</p>
         </div>
       )}
 
       {isLoading ? (
-        <div className="text-slate-400">Loading assets…</div>
+        <div className="text-theme-tertiary">Loading assets…</div>
       ) : filteredAssets.length === 0 ? (
-        <p className="text-gray-400 p-6">No assets yet. Add one to get started.</p>
+        <p className="text-theme-tertiary p-6">No assets yet. Add one to get started.</p>
       ) : (
         <div className="space-y-4">
           {filteredAssets.map((asset) => (
@@ -469,6 +346,28 @@ export default function AssetsPage() {
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
         />
+      )}
+
+      {showBulkUpload && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-theme-surface-elevated rounded-2xl border border-theme shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 m-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-theme-primary">Import Assets</h2>
+              <button
+                onClick={() => setShowBulkUpload(false)}
+                className="text-theme-tertiary hover:text-theme-primary transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <AssetBulkUploadWizard
+              onComplete={() => {
+                setShowBulkUpload(false);
+                queryClient.invalidateQueries({ queryKey: ['assets'] });
+              }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

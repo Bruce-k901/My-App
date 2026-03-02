@@ -1,0 +1,1757 @@
+{
+  "id": "uk-l2-safeguarding",
+  "title": "Safeguarding Awareness Level 2 (UK)",
+  "shortDescription": "Recognising abuse, reporting concerns, and your duty of care for vulnerable people.",
+  "description": "Essential safeguarding training covering types of abuse, signs and indicators, reporting procedures, record keeping, professional boundaries, DBS checks, whistleblowing, the Prevent duty, and modern slavery awareness for all staff working with children or vulnerable adults. Aligned to the Children Act 1989/2004, Care Act 2014, Safeguarding Vulnerable Groups Act 2006, and Mental Capacity Act 2005.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-safeguarding",
+  "category": "people",
+  "level": "Level 2",
+  "estimatedMinutes": 210,
+  "icon": "Heart",
+  "tags": [
+    "safeguarding",
+    "child protection",
+    "vulnerable adults",
+    "Prevent",
+    "DBS",
+    "duty of care",
+    "abuse",
+    "neglect",
+    "modern slavery",
+    "whistleblowing",
+    "professional boundaries",
+    "radicalisation"
+  ],
+  "learningOutcomes": [
+    "Define safeguarding and explain your legal duty of care under key UK legislation",
+    "Identify the seven main types of abuse and recognise their signs and indicators",
+    "Follow correct reporting procedures using the 5 Rs framework and maintain accurate records",
+    "Explain the role of DBS checks, professional boundaries, and codes of conduct",
+    "Understand whistleblowing protections and when to escalate concerns externally",
+    "Recognise signs of modern slavery, county lines, and criminal exploitation",
+    "Apply the Prevent duty to identify and report radicalisation concerns",
+    "Describe safeguarding responsibilities specific to hospitality and food-service environments"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "What is Safeguarding?",
+      "description": "Definitions, legislation, duty of care, and your responsibilities in a hospitality setting.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Safeguarding",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Safeguarding Awareness Level 2 (UK)\n\nSafeguarding means **protecting people's health, wellbeing, and human rights** -- enabling them to live free from harm, abuse, and neglect.\n\n### Who does safeguarding apply to?\n- **Children** -- anyone under 18 years of age.\n- **Adults at risk** -- anyone aged 18 or over who has needs for care and support, is experiencing or at risk of abuse or neglect, and as a result of those care needs is unable to protect themselves.\n\n### Why does it matter in hospitality?\nHospitality venues are public-facing environments where staff regularly interact with families, children, elderly customers, people with disabilities, and vulnerable individuals. Consider:\n- A hotel receptionist noticing a child who appears frightened of their companion.\n- A restaurant server observing an elderly customer whose carer controls all their money.\n- A pub worker seeing a young person who appears to be under the control of an older adult.\n- Kitchen or cleaning staff who may witness concerning behaviour in staff areas.\n\n### Your responsibility\nEvery person who works with or comes into contact with children or adults at risk has a **duty of care** to safeguard them. This includes all hospitality roles -- front-of-house, kitchen, housekeeping, management, maintenance, and delivery drivers.\n\n**If you see something, say something.** You do not need to be certain -- you just need to be concerned.",
+              "keyTakeaway": "Safeguarding is everyone's responsibility -- not just managers or designated leads. Every role in hospitality has a part to play."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "Key Legislation -- Children",
+              "content": "## The Legal Framework for Children\n\nSeveral laws create the framework for safeguarding children in England and Wales. You do not need to memorise every section, but you must understand the principles.\n\n### Children Act 1989\nThe foundational piece of child protection law. Key principles:\n- The **welfare of the child is paramount** -- it comes before all other considerations.\n- Children are best looked after within their families, but intervention is justified when a child is suffering or likely to suffer **significant harm**.\n- Introduced **Section 47** enquiries -- local authorities' duty to investigate when they have reasonable cause to suspect significant harm.\n\n### Children Act 2004\nStrengthened the 1989 Act following the Victoria Climbie inquiry. Key changes:\n- Created the role of **Children's Commissioner** for England.\n- Established **Local Safeguarding Children Boards** (now replaced by multi-agency safeguarding partnerships).\n- Introduced **Section 11** -- a duty on key organisations (including hospitality businesses working with children) to make arrangements to safeguard and promote the welfare of children.\n\n### Working Together to Safeguard Children 2018 (updated 2023)\n- Statutory guidance setting out how organisations and individuals should work together to safeguard children.\n- Emphasises the importance of **information sharing** between agencies.\n- Introduced **multi-agency safeguarding partnerships** replacing Local Safeguarding Children Boards.\n\n### Children and Social Work Act 2017\n- Established the **Child Safeguarding Practice Review Panel** for serious cases.\n- Strengthened multi-agency working requirements.",
+              "keyTakeaway": "The welfare of the child is always the paramount consideration -- this principle underpins all child protection law in the UK."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Key Legislation -- Adults",
+              "content": "## The Legal Framework for Adults at Risk\n\n### Care Act 2014\nThe most important piece of adult safeguarding legislation. It:\n- Placed adult safeguarding on a **statutory footing** for the first time.\n- Established **Safeguarding Adults Boards (SABs)** in every local authority area.\n- Defined the **six safeguarding principles**: empowerment, prevention, proportionality, protection, partnership, and accountability.\n- Gave local authorities a duty to make enquiries (or cause enquiries to be made) where they suspect an adult at risk is experiencing or at risk of abuse or neglect (**Section 42 enquiry**).\n\n### Mental Capacity Act 2005\n- Protects people who lack the mental capacity to make specific decisions for themselves.\n- A person must be assumed to have capacity unless it is established otherwise.\n- Any decision made on behalf of someone lacking capacity must be in their **best interests**.\n- Created the **Court of Protection** and the role of **Independent Mental Capacity Advocates (IMCAs)**.\n- The **Deprivation of Liberty Safeguards (DoLS)** provide legal protection for people in care homes or hospitals who lack capacity to consent to their care.\n\n### Safeguarding Vulnerable Groups Act 2006\n- Established the **Disclosure and Barring Service (DBS)** system.\n- Created the legal framework for barring individuals from working with children or vulnerable adults.\n- Defines **regulated activity** -- work that a barred person must not do.\n\n### Human Rights Act 1998\n- **Article 3**: No one shall be subjected to torture or inhuman or degrading treatment.\n- **Article 5**: Right to liberty and security.\n- **Article 8**: Right to respect for private and family life.\n- Underpins the entire safeguarding framework.",
+              "keyTakeaway": "The Care Act 2014 put adult safeguarding on a statutory footing for the first time -- it is now a legal duty, not just good practice."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "DBS Checks and Regulated Activity",
+              "content": "## Disclosure and Barring Service (DBS)\n\nThe DBS helps employers make safer recruitment decisions by providing criminal record checks.\n\n### Three levels of DBS check\n- **Basic** -- Shows unspent convictions and conditional cautions only. Available for any role.\n- **Standard** -- Shows spent and unspent convictions, cautions, reprimands, and warnings. Required for roles like security staff.\n- **Enhanced** -- Shows everything on a Standard check plus any relevant police intelligence. Required for anyone working in **regulated activity** with children or adults at risk.\n- **Enhanced with barred list** -- Additionally checks whether the person is on the children's or adults' barred list. Required for roles involving close, unsupervised contact.\n\n### What is regulated activity?\nFor **children**: Teaching, training, care, supervision, advice, treatment, or transport provided by the same person frequently (once a week or more), intensively (4+ days in a 30-day period), or overnight. Also includes healthcare and personal care.\n\nFor **adults**: Healthcare, personal care (washing, dressing, eating), social work, assistance with finances, conveying (transport related to care).\n\n### Hospitality examples\n- A hotel running a children's club needs Enhanced DBS checks for the club supervisors.\n- A care home kitchen worker serving meals directly to residents may need a DBS check.\n- A pub offering regular youth football coaching needs Enhanced checks for coaches.\n\n### Important points\n- DBS checks are a snapshot in time -- they do not guarantee ongoing suitability.\n- Employers must also conduct **references, interviews, and ongoing supervision**.\n- It is a **criminal offence** for a barred person to seek or engage in regulated activity.",
+              "keyTakeaway": "A DBS check is one part of safer recruitment -- it must be combined with references, interviews, probation periods, and ongoing supervision."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "The Six Safeguarding Principles",
+              "content": "## Care Act 2014 -- Six Principles\n\nThe Care Act 2014 established six principles that should underpin all adult safeguarding work. These principles also represent good practice for safeguarding children.\n\n### 1. Empowerment\nPeople are supported and encouraged to make their own decisions and give **informed consent**.\n*\"I am asked what I want as the outcomes from the safeguarding process.\"*\n\n### 2. Prevention\nIt is better to take action **before** harm occurs. Training, awareness, and vigilance are all preventive.\n*\"I receive clear, simple information about what abuse is, how to recognise it, and what I can do to seek help.\"*\n\n### 3. Proportionality\nThe **least intrusive response** appropriate to the risk presented.\n*\"I am sure that the professionals will work in my interest and only get involved as much as needed.\"*\n\n### 4. Protection\nSupport and representation for those in **greatest need**.\n*\"I get help and support to report abuse. I get help to take part in the safeguarding process.\"*\n\n### 5. Partnership\nLocal solutions through services working together within their communities. Communities have a part to play in preventing, detecting, and reporting abuse.\n*\"I know that staff treat any personal and sensitive information in confidence.\"*\n\n### 6. Accountability\nAccountability and **transparency** in delivering safeguarding.\n*\"I understand the role of everyone involved in my life and so do they.\"*\n\nThese six principles provide a framework for evaluating whether safeguarding responses are appropriate and person-centred.",
+              "keyTakeaway": "The six safeguarding principles -- empowerment, prevention, proportionality, protection, partnership, accountability -- guide every safeguarding decision."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Safeguarding Scenarios",
+          "slides": [
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unaccompanied Child",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You work at a hotel front desk. A child of about 8 years old approaches you at 10pm, clearly upset, saying they cannot find their parent. They appear to have been crying for some time. What do you do?",
+                    "options": [
+                      {
+                        "label": "Tell the child to go and look for their parent -- they're probably in the bar.",
+                        "nextNodeId": "dismiss"
+                      },
+                      {
+                        "label": "Stay with the child in a visible area, reassure them, and contact your manager and hotel security immediately.",
+                        "nextNodeId": "stay_visible"
+                      },
+                      {
+                        "label": "Take the child to a back office so they can calm down, then search for the parent yourself.",
+                        "nextNodeId": "back_office"
+                      }
+                    ]
+                  },
+                  "dismiss": {
+                    "text": "You send the child away. Thirty minutes later, security finds the child alone in a stairwell, increasingly distressed. The parent is eventually located intoxicated in the hotel bar, unaware the child had left the room.",
+                    "options": [{ "label": "What went wrong?", "nextNodeId": "dismiss_reflect" }]
+                  },
+                  "dismiss_reflect": {
+                    "text": "An unaccompanied, distressed child is a safeguarding concern. You had a duty of care to keep the child safe. Sending them away put them at risk. Under the Children Act 1989, the welfare of the child is the paramount consideration. You should have stayed with the child and escalated immediately.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "stay_visible": {
+                    "text": "You stay with the child at the front desk -- a visible, public area. You speak calmly and reassuringly while your colleague contacts the duty manager and security. Security locates the parent, who was in the hotel bar. The duty manager assesses the situation.",
+                    "options": [
+                      { "label": "What should happen next?", "nextNodeId": "stay_followup" }
+                    ]
+                  },
+                  "stay_followup": {
+                    "text": "Correct. The duty manager should assess whether the child is safe to return to the parent. If there are ongoing concerns (e.g. the parent is heavily intoxicated and the child is distressed), the hotel should consider contacting children's social services or police. A safeguarding record should be completed regardless, noting the time, circumstances, and actions taken.",
+                    "options": []
+                  },
+                  "back_office": {
+                    "text": "Taking a child to a private area, even with good intentions, creates a safeguarding risk for both you and the child. You could be accused of inappropriate behaviour, and the child is no longer visible to other staff or CCTV.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "back_office_reflect" }
+                    ]
+                  },
+                  "back_office_reflect": {
+                    "text": "Always stay in a public, visible area with the child. This protects both the child and you. Never be alone with a child in a private space unless it is an emergency and others are on their way. Contact your manager and security immediately -- do not try to resolve the situation alone.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The DBS Dilemma",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You manage a pub that hosts a weekly children's craft club on Saturday mornings. A new volunteer, Sarah, is enthusiastic and experienced. She asks if she can start helping this weekend. Her DBS application was submitted two weeks ago but the certificate has not arrived yet. What do you do?",
+                    "options": [
+                      {
+                        "label": "Let Sarah start immediately -- she seems trustworthy and the club needs help.",
+                        "nextNodeId": "let_start"
+                      },
+                      {
+                        "label": "Allow Sarah to help but only under constant direct supervision by a DBS-checked member of staff, never left alone with children.",
+                        "nextNodeId": "supervised"
+                      },
+                      {
+                        "label": "Refuse to let Sarah near the club until the DBS certificate arrives.",
+                        "nextNodeId": "refuse"
+                      }
+                    ]
+                  },
+                  "let_start": {
+                    "text": "Sarah begins working unsupervised with the children. Two weeks later her DBS comes back with a relevant conviction. The children were unsupervised with someone who should not have had unsupervised access. This is a serious safeguarding failure.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "let_start_reflect" }
+                    ]
+                  },
+                  "let_start_reflect": {
+                    "text": "Under the Safeguarding Vulnerable Groups Act 2006, it is an offence to knowingly allow a barred person to engage in regulated activity. While Sarah may not be barred, you did not know that. Allowing unsupervised access before the check was complete exposed the children to risk and you to criminal liability.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "supervised": {
+                    "text": "You explain to Sarah that she is welcome to help, but until her DBS certificate arrives she must be accompanied at all times by a DBS-checked staff member and must never be left alone with children. Sarah understands and agrees. You document this arrangement in writing.",
+                    "options": [
+                      { "label": "Is this the right approach?", "nextNodeId": "supervised_confirm" }
+                    ]
+                  },
+                  "supervised_confirm": {
+                    "text": "Correct. This is the recommended approach when a DBS check is pending. The key safeguards are: constant direct supervision by someone who has been DBS-checked, never being left alone with children, and documenting the arrangement. If the DBS later reveals concerns, the children were protected throughout.",
+                    "options": []
+                  },
+                  "refuse": {
+                    "text": "While this is a cautious approach and not wrong, it may be overly restrictive. Government guidance permits individuals to begin work before a DBS check is received provided they are appropriately supervised. The risk can be managed without excluding Sarah entirely.",
+                    "options": [
+                      { "label": "What is the better approach?", "nextNodeId": "refuse_redirect" }
+                    ]
+                  },
+                  "refuse_redirect": {
+                    "text": "The better approach is to allow Sarah to help under constant direct supervision by a DBS-checked member of staff. She must never be left alone with children, and the arrangement should be documented in writing. This manages the risk proportionately while still benefiting from her help.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Types and Signs of Abuse",
+      "description": "Recognising the seven main types of abuse, their signs and indicators, and understanding the impact on victims.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Physical, Emotional, and Sexual Abuse",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Physical Abuse",
+              "content": "## Physical Abuse\n\nPhysical abuse involves the deliberate use of force that results in injury, pain, or impairment. It includes hitting, slapping, pushing, kicking, shaking, burning, scalding, biting, poisoning, drowning, suffocating, and any other form of physical harm.\n\n### Signs and indicators in children\n- Unexplained bruises, burns, or fractures, especially in unusual locations (inner arms, back, buttocks, face).\n- Injuries that do not match the explanation given.\n- Flinching when approached or touched.\n- Wearing long sleeves or covering up in warm weather.\n- Fear of going home or being collected by a specific person.\n- Aggressive or withdrawn behaviour.\n\n### Signs and indicators in adults\n- Unexplained or recurring injuries.\n- Injuries inconsistent with the person's lifestyle or level of mobility.\n- Finger-mark bruising on arms.\n- Fear or anxiety around a particular carer or family member.\n- History of frequent A&E visits.\n- The person being prevented from speaking privately.\n\n### Hospitality context\n- A child at a family restaurant who flinches when a parent raises their hand.\n- A hotel housekeeper noticing blood on bed linen in a room occupied by an elderly guest and their carer.\n- A pub regular who appears with unexplained injuries and whose partner always speaks for them.\n\n**Remember: One sign on its own may not mean abuse. A pattern of signs should heighten your concern.**",
+              "keyTakeaway": "Physical abuse leaves visible signs -- unexplained injuries, flinching, and fear are all indicators that should trigger a safeguarding concern."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Emotional and Psychological Abuse",
+              "content": "## Emotional and Psychological Abuse\n\nEmotional abuse is the persistent emotional maltreatment of a person. It is sometimes called psychological abuse and can have severe and lasting effects on a person's mental health and development.\n\n### What does it include?\n- **Threats and intimidation** -- making someone afraid through verbal aggression, threatening gestures, or controlling behaviour.\n- **Humiliation** -- deliberately belittling, ridiculing, or undermining someone in front of others.\n- **Isolation** -- cutting someone off from friends, family, or social networks.\n- **Controlling behaviour** -- dictating what someone can wear, eat, where they can go, who they can see.\n- **Gaslighting** -- manipulating someone into questioning their own reality, memory, or perceptions.\n- **Coercive control** -- a pattern of behaviour that strips away autonomy (a criminal offence under the Serious Crime Act 2015, Section 76).\n- **Witnessing domestic abuse** -- for children, seeing or hearing domestic abuse is a recognised form of emotional abuse.\n\n### Signs and indicators\n- Low self-esteem, excessive self-criticism, or self-blame.\n- Withdrawal from social interaction.\n- Sleep disturbances, bedwetting (children), or changes in appetite.\n- Self-harm or suicidal thoughts.\n- Overly compliant or eager to please.\n- Sudden changes in behaviour or mood.\n- Fear of making mistakes.\n\n### Hospitality context\n- A colleague whose partner constantly phones during shifts, becoming angry if calls are not answered immediately.\n- A young apprentice whose supervisor consistently belittles them in front of other staff.\n- A child in a restaurant who is spoken to with contempt by their parent.",
+              "keyTakeaway": "Emotional abuse is invisible but devastating. Coercive control has been a criminal offence since 2015 under the Serious Crime Act."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Sexual Abuse",
+              "content": "## Sexual Abuse\n\nSexual abuse involves forcing or enticing a child, young person, or adult at risk to take part in sexual activities, whether or not the person is aware of what is happening.\n\n### Forms of sexual abuse\n- **Contact abuse**: Touching, penetration, forcing someone to perform sexual acts.\n- **Non-contact abuse**: Exposing a person to sexual material, voyeurism, sexual comments or messages, forcing someone to watch sexual acts.\n- **Online abuse**: Sharing sexual images, grooming through social media or messaging, live-streaming abuse.\n- **Child Sexual Exploitation (CSE)**: A form of abuse where a child is manipulated or coerced into sexual activity in exchange for something -- attention, gifts, money, alcohol, drugs, or status.\n\n### Signs and indicators\n- Inappropriate sexual knowledge or behaviour for the person's age.\n- Fear of specific individuals or reluctance to be alone with certain people.\n- Physical symptoms: pain, bruising, or bleeding in genital areas.\n- Behavioural changes: withdrawal, aggression, regression to younger behaviour.\n- Sexually transmitted infections in children.\n- Self-harm, eating disorders, or substance misuse.\n- Secretive online activity or possession of unexplained gifts.\n\n### Hospitality context\n- A young person working in hospitality being targeted by an older colleague through messages.\n- A hotel worker noticing guests bringing different young people to their room.\n- A manager making inappropriate sexual comments to junior staff (this is also a safeguarding concern if the staff member is under 18 or vulnerable).\n\n### Legal note\nThe **Sexual Offences Act 2003** provides the legal framework. The age of consent in the UK is 16, but people in positions of trust (e.g. teachers, carers) cannot engage in sexual activity with anyone under 18 in their care.",
+              "keyTakeaway": "Sexual abuse includes contact, non-contact, and online abuse. Child Sexual Exploitation involves manipulation in exchange for something the child needs or wants."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Neglect",
+              "content": "## Neglect\n\nNeglect is the persistent failure to meet a person's basic physical or psychological needs, likely to result in serious impairment of health or development.\n\n### Types of neglect\n- **Physical neglect**: Failure to provide adequate food, clothing, shelter, or medical care.\n- **Emotional neglect**: Failure to provide love, comfort, attention, or stimulation.\n- **Educational neglect** (children): Failure to ensure a child receives an education.\n- **Medical neglect**: Failure to seek or follow through with medical treatment.\n- **Supervisory neglect** (children): Failure to provide appropriate supervision.\n- **Self-neglect** (adults): Neglecting one's own health, hygiene, or environment. Under the Care Act 2014, self-neglect is recognised as a safeguarding concern.\n\n### Signs and indicators in children\n- Persistent hunger, stealing food, or hoarding food.\n- Poor hygiene, body odour, dirty or inadequate clothing.\n- Untreated medical or dental problems.\n- Constant tiredness, falling asleep at inappropriate times.\n- Frequently left unsupervised or left with inappropriate carers.\n- Poor school attendance.\n\n### Signs and indicators in adults\n- Malnutrition, dehydration, or significant weight loss.\n- Pressure sores, untreated medical conditions.\n- Poor hygiene, unsuitable clothing for the weather.\n- Unsafe, unclean, or inadequate living conditions.\n- Withdrawal of previously provided care without replacement.\n\n### Hospitality context\n- A child who comes to the restaurant with their family appearing malnourished while other family members eat well.\n- A care home resident brought to your cafe by a carer who ignores the resident's requests for food.\n- A hotel guest discovering an elderly person in a neighbouring room who appears to have been left alone for days.",
+              "keyTakeaway": "Neglect is the most common form of child abuse in the UK. Self-neglect in adults is now a safeguarding concern under the Care Act 2014."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Financial Abuse and Discriminatory Abuse",
+              "content": "## Financial and Material Abuse\n\nFinancial abuse involves theft, fraud, exploitation, or coercion in relation to money, property, or other financial affairs. It is most commonly associated with vulnerable adults, particularly the elderly.\n\n### Forms\n- Theft of money, possessions, or property.\n- Fraud or scams targeting vulnerable people.\n- Coercion to change wills, sign documents, or hand over money.\n- Misuse of a person's money, bank account, or benefits.\n- Controlling access to finances or benefits.\n- Internet or telephone scams.\n\n### Signs and indicators\n- Unexplained loss of money or inability to pay for essentials.\n- Sudden changes to financial documents (wills, power of attorney).\n- Unusual bank account activity or large, unexplained withdrawals.\n- The person being accompanied by someone who insists on handling all financial transactions.\n- Unpaid bills despite apparently adequate income.\n- Reluctance to spend money on themselves.\n\n### Discriminatory Abuse\nAbuse motivated by a person's age, disability, race, religion, gender, sexual orientation, or other protected characteristic.\n\n### Signs and indicators\n- The person being treated differently or denied services because of a protected characteristic.\n- Verbal abuse, harassment, or hate crime.\n- Being denied access to communication aids, cultural or religious practice.\n- Unequal treatment in a care setting.\n\n### Hospitality context\n- A carer bringing an elderly customer to a restaurant and taking their bank card to 'pay' but keeping the change.\n- A hotel guest with a learning disability being spoken to dismissively or excluded from activities.\n- A staff member making derogatory comments about a colleague's disability.",
+              "keyTakeaway": "Financial abuse often goes undetected because victims are ashamed or unaware it is happening. Watch for someone else controlling a person's money."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Abuse Scenarios",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Worried Child",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You work as a server in a family restaurant. A girl of about 9 years old comes to the counter alone while her family is seated. She whispers: 'My daddy hurts me when he's angry. Please don't tell him I said that.' She lifts her sleeve and you can see a bruise shaped like finger marks on her upper arm. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Promise her you will keep it a secret, so she feels safe talking to you.",
+                        "nextNodeId": "promise_secret"
+                      },
+                      {
+                        "label": "Listen calmly, tell her she was brave to speak up, and explain you may need to tell someone who can help.",
+                        "nextNodeId": "listen_calmly"
+                      },
+                      {
+                        "label": "Go straight to the father's table and confront him about the bruise.",
+                        "nextNodeId": "confront"
+                      }
+                    ]
+                  },
+                  "promise_secret": {
+                    "text": "You promise to keep the secret. The girl returns to the table. You feel uncomfortable but feel bound by your promise. You do not report it. The abuse continues.",
+                    "options": [{ "label": "Why was this wrong?", "nextNodeId": "promise_reflect" }]
+                  },
+                  "promise_reflect": {
+                    "text": "You must NEVER promise to keep a disclosure secret. Explain honestly, in age-appropriate language, that you need to tell someone who can help. Keeping it secret may leave the child in danger. Your duty to safeguard overrides any promise of confidentiality. Under the Children Act 1989, the welfare of the child is the paramount consideration.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "listen_calmly": {
+                    "text": "You listen without interrupting. You tell the girl: 'Thank you for telling me. That was very brave. I need to tell someone who can help keep you safe.' You do not ask leading questions. The girl seems relieved. What do you do next?",
+                    "options": [
+                      {
+                        "label": "Write down exactly what she said, using her own words, and report to your Designated Safeguarding Lead immediately.",
+                        "nextNodeId": "report_dsl"
+                      },
+                      {
+                        "label": "Wait until the end of your shift and then think about whether to report it.",
+                        "nextNodeId": "wait_shift"
+                      }
+                    ]
+                  },
+                  "report_dsl": {
+                    "text": "You make a brief note of the girl's exact words, the bruise you observed, the date and time. You report to your Designated Safeguarding Lead (or manager if no DSL is designated) immediately. The DSL contacts children's social services who make enquiries under Section 47 of the Children Act 1989.",
+                    "options": [
+                      {
+                        "label": "Was this the right course of action?",
+                        "nextNodeId": "correct_confirm"
+                      }
+                    ]
+                  },
+                  "correct_confirm": {
+                    "text": "Correct. You followed the proper procedure: Listen, Reassure, Report, Record. You used the child's own words, did not lead or investigate, and reported promptly. Your actions may have protected this child from further harm. Well done.",
+                    "options": []
+                  },
+                  "wait_shift": {
+                    "text": "Waiting is dangerous. The family may leave before action can be taken. Your memory of the child's exact words will fade. The child is returning to the person she has disclosed is hurting her. Delayed reporting can allow further harm. Always report as soon as practicable.",
+                    "options": [{ "label": "Try again", "nextNodeId": "listen_calmly" }]
+                  },
+                  "confront": {
+                    "text": "You approach the father and accuse him of hurting his daughter. He becomes aggressive, denies everything, and leaves the restaurant immediately with the child. The child is now at greater risk -- the abuser knows she has spoken to someone, and there is no record or report.",
+                    "options": [{ "label": "What went wrong?", "nextNodeId": "confront_reflect" }]
+                  },
+                  "confront_reflect": {
+                    "text": "NEVER confront the alleged abuser. This can put the child at greater risk, destroy evidence, and make investigation more difficult. Your role is to listen, record, and report -- not to investigate. The investigation is for trained professionals in social services and the police.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Elderly Regular",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You work in a cafe. An elderly regular, Mr. Thomas, used to come in alone, well-dressed, and cheerful. Over the past month, he has started coming in with his nephew, who moved in with him recently. Mr. Thomas now appears unkempt, has lost weight, and seems anxious. When you serve him, the nephew orders for him and handles all the money. Today, Mr. Thomas whispers to you: 'He's taken my bank cards. I can't buy my own shopping anymore.' What do you do?",
+                    "options": [
+                      {
+                        "label": "It is a family matter -- stay out of it.",
+                        "nextNodeId": "family_matter"
+                      },
+                      {
+                        "label": "Listen to Mr. Thomas, take his concern seriously, and report to your manager as a potential safeguarding issue.",
+                        "nextNodeId": "take_seriously"
+                      },
+                      {
+                        "label": "Confront the nephew and demand he return the bank cards.",
+                        "nextNodeId": "confront_nephew"
+                      }
+                    ]
+                  },
+                  "family_matter": {
+                    "text": "You decide not to get involved. Over the following weeks, Mr. Thomas stops coming to the cafe. You later learn he was admitted to hospital malnourished and dehydrated. His nephew had been withdrawing large sums from his accounts.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "family_reflect" }
+                    ]
+                  },
+                  "family_reflect": {
+                    "text": "Financial abuse of vulnerable adults is a serious safeguarding concern under the Care Act 2014. The signs were clear: change in appearance, weight loss, anxiety, someone else controlling finances, and a direct disclosure. You had enough information to raise a concern. 'It is not my business' is never an acceptable reason to ignore potential abuse.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "take_seriously": {
+                    "text": "You listen carefully to Mr. Thomas without the nephew hearing. You tell him: 'Thank you for telling me. I take this seriously and I want to make sure you are safe.' You report to your manager immediately. What happens next?",
+                    "options": [
+                      {
+                        "label": "Your manager contacts adult social services to make a safeguarding referral.",
+                        "nextNodeId": "referral_made"
+                      },
+                      {
+                        "label": "Your manager decides to monitor the situation for a few more weeks before doing anything.",
+                        "nextNodeId": "monitor_delay"
+                      }
+                    ]
+                  },
+                  "referral_made": {
+                    "text": "Correct. Your manager contacts the local authority adult safeguarding team who make a Section 42 enquiry under the Care Act 2014. They investigate and discover the nephew has been withdrawing significant sums. Mr. Thomas receives support and his finances are protected. Your prompt action made the difference.",
+                    "options": []
+                  },
+                  "monitor_delay": {
+                    "text": "Monitoring without reporting is dangerous when there has been a direct disclosure. Mr. Thomas told you his bank cards have been taken -- this is financial abuse. The Care Act 2014 requires that where there is reasonable cause to suspect abuse, a referral should be made promptly. Waiting risks further harm and loss of assets.",
+                    "options": [{ "label": "Try again", "nextNodeId": "take_seriously" }]
+                  },
+                  "confront_nephew": {
+                    "text": "You approach the nephew and accuse him of taking Mr. Thomas's bank cards. The nephew becomes hostile, denies everything, and takes Mr. Thomas out of the cafe. Mr. Thomas appears frightened. They do not return. The nephew now knows someone is suspicious, which may lead to further isolation of Mr. Thomas.",
+                    "options": [
+                      {
+                        "label": "What should I have done instead?",
+                        "nextNodeId": "confront_reflect"
+                      }
+                    ]
+                  },
+                  "confront_reflect": {
+                    "text": "Never confront the alleged abuser. This can escalate the situation, put the victim at greater risk, and make it harder for professionals to investigate. Your role is to listen, record, and report to your manager or directly to adult social services. The investigation is for trained professionals.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Reporting, Recording, and Whistleblowing",
+      "description": "How to report concerns, keep accurate records, and understand whistleblowing protections.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "The 5 Rs and Reporting Procedures",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "The 5 Rs of Safeguarding",
+              "content": "## The 5 Rs Framework\n\nThe 5 Rs provide a clear, memorable framework for responding to safeguarding concerns.\n\n### 1. Recognise\nBe alert to the signs and indicators of abuse and neglect. Trust your instincts -- if something does not feel right, it probably is not.\n- Changes in behaviour, appearance, or mood.\n- Physical signs such as injuries, weight loss, or poor hygiene.\n- Disclosures -- something a person tells you directly.\n- Things you observe -- interactions, control, fear.\n\n### 2. Respond\nIf someone discloses abuse to you:\n- **Listen** carefully and let them speak at their own pace.\n- **Stay calm** -- do not show shock, disgust, or disbelief.\n- **Reassure** -- tell them they did the right thing by telling you.\n- **Do not promise confidentiality** -- explain you may need to tell someone who can help.\n- **Do not ask leading questions** -- use open questions like \"Can you tell me what happened?\" rather than \"Did he hit you?\"\n- **Do not investigate** -- that is for social services and the police.\n\n### 3. Report\nReport your concern to your **Designated Safeguarding Lead (DSL)** immediately. If the DSL is unavailable:\n- Report to your line manager.\n- Contact children's or adult social services directly.\n- If someone is in **immediate danger**, call **999**.\n\n### 4. Record\nMake a written record as soon as practicable (see next slide).\n\n### 5. Refer\nThe DSL will decide whether to make a formal referral to the local authority children's or adult social services team.",
+              "keyTakeaway": "Recognise, Respond, Report, Record, Refer -- follow the 5 Rs every time you have a safeguarding concern."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Making a Safeguarding Record",
+              "content": "## Recording Safeguarding Concerns\n\nA clear, accurate, timely record is essential. It may be used in child protection or adult safeguarding proceedings, and in some cases as evidence in criminal court.\n\n### What to record\n- **Date and time** of the concern, observation, or disclosure.\n- **Date and time** you are making the record (if different).\n- **Who is involved** -- the child or adult at risk (name, age if known), the alleged perpetrator (name, relationship if known).\n- **What happened** -- describe exactly what you saw, heard, or were told. Use the person's **own words** in quotation marks.\n- **What you observed** -- visible signs (describe injuries, behaviour, demeanour, emotional state).\n- **What action you took** -- who you spoke to, who you reported to, and when.\n- **Your name, role, and signature.**\n\n### Recording rules\n- Write the record **as soon as possible** -- ideally within the hour.\n- Use **factual language** -- record what you saw and heard, not your interpretation or opinion.\n- **Do not** include jargon, assumptions, or judgements.\n- If recording on paper, use **ink** and do not erase or use correction fluid. Draw a single line through errors and initial them.\n- Store records **securely** -- locked cabinet or encrypted digital system.\n- Records are **confidential** -- share only on a need-to-know basis with your DSL or the authorities.\n\n### Common mistakes to avoid\n- Waiting until the end of your shift (details become blurred).\n- Paraphrasing what the person said instead of using their exact words.\n- Including your personal opinions about the family or situation.\n- Sharing the record with colleagues who do not need to know.",
+              "keyTakeaway": "Record facts, not opinions. Use the person's own words in quotation marks. Write it down within the hour -- your memory fades fast."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Responding to a Disclosure",
+              "content": "## How to Respond When Someone Tells You About Abuse\n\n### The TED approach to questioning\nIf the person is willing to share more, use open prompts:\n- **T**ell me...\n- **E**xplain...\n- **D**escribe...\n\nNever use closed or leading questions such as \"Did your father do this?\" or \"Was it the same person as last time?\" These can contaminate evidence and may cause a criminal case to fail.\n\n### What to say\n- \"Thank you for telling me. You have done the right thing.\"\n- \"This is not your fault.\"\n- \"I need to tell someone who can help, but I will only tell people who need to know.\"\n- \"I will do my best to keep you safe.\"\n\n### What NOT to say\n- \"I promise I will not tell anyone.\" (You cannot promise this.)\n- \"Why did you not tell someone sooner?\" (This implies blame.)\n- \"Are you sure that is what happened?\" (This implies disbelief.)\n- \"I will sort this out myself.\" (You are not trained to investigate.)\n\n### After a disclosure\n- Make your record immediately.\n- Report to the DSL without delay.\n- Do not discuss the disclosure with colleagues.\n- Look after yourself -- hearing disclosures can be distressing. Seek support from your manager or an employee assistance programme.\n\n### If a child or adult is in immediate danger\nCall **999**. Do not wait for the DSL. You can also call:\n- **NSPCC Helpline**: 0808 800 5000 (for concerns about children)\n- **Childline**: 0800 1111\n- **Local authority** children's or adult social services",
+              "keyTakeaway": "Use TED (Tell me, Explain, Describe) to encourage open disclosure. Never promise confidentiality and never ask leading questions."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Whistleblowing",
+              "content": "## Whistleblowing and Escalation\n\n### What is whistleblowing?\nWhistleblowing is when a worker reports a concern about wrongdoing, malpractice, or danger within their organisation. In safeguarding, this might include:\n- A colleague abusing a child or vulnerable adult.\n- Management failing to act on reported safeguarding concerns.\n- Unsafe practices that put children or adults at risk.\n- Deliberate falsification of safeguarding records.\n\n### Legal protection\nThe **Public Interest Disclosure Act 1998** (PIDA) protects workers who raise genuine concerns from being dismissed or penalised. To be protected, the disclosure must be made:\n- In **good faith** and in the **public interest**.\n- To the **right person** -- your employer, a prescribed regulator, or (in certain circumstances) the media.\n\n### When to escalate externally\nIf your employer does not act on your concern, or if the concern involves your employer, you can report directly to:\n- **Local authority** children's or adult safeguarding team.\n- **Ofsted** (for children's services).\n- **Care Quality Commission (CQC)** (for adult care services).\n- **Police** (if a criminal offence may have been committed).\n- **NSPCC Whistleblowing Helpline**: 0800 028 0285 (for concerns about children).\n\n### Important principles\n- You do **not** need proof -- a genuine concern is enough.\n- You **cannot** be punished for raising a concern in good faith, even if it turns out to be unfounded.\n- Failure to report a safeguarding concern is more serious than reporting a concern that turns out to be wrong.\n- **Confidentiality is not an excuse** for failing to share safeguarding information. The welfare of the child or adult at risk overrides confidentiality.",
+              "keyTakeaway": "The Public Interest Disclosure Act 1998 protects you if you blow the whistle. You cannot be punished for raising a genuine safeguarding concern."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Information Sharing",
+              "content": "## Sharing Safeguarding Information\n\n### The key principle\nThe **Data Protection Act 2018** and **UK GDPR** do not prevent you from sharing information for safeguarding purposes. The welfare of the child or adult at risk is the overriding consideration.\n\n### Seven golden rules for information sharing (HM Government)\n1. **Remember that GDPR and the Data Protection Act 2018 are not barriers** to justified information sharing.\n2. **Be open and honest** about how and why information will be shared (unless this would put someone at risk).\n3. **Seek advice** from your DSL or safeguarding team if you are unsure.\n4. **Share with informed consent** where appropriate, but do not let refusal of consent prevent sharing if a child or adult is at risk.\n5. **Consider safety and wellbeing** -- share information to prevent harm.\n6. **Necessary, proportionate, relevant, adequate, accurate, timely, and secure** -- the information you share should meet these criteria.\n7. **Keep a record** of your decision and the reasons for it, whether you decide to share or not.\n\n### Common barriers to sharing\n- \"I'm not sure it's that serious\" -- if in doubt, share the concern and let professionals decide.\n- \"It might affect my relationship with the family\" -- the child's welfare comes first.\n- \"I might get in trouble for breaching data protection\" -- you are legally protected when sharing for safeguarding purposes.\n- \"It's just my opinion, I don't have proof\" -- professionals need your observations, not proof.\n\n### Multi-agency working\nEffective safeguarding depends on different organisations sharing information. Failures to share information have been a recurring theme in serious case reviews (e.g. the Victoria Climbie, Peter Connelly, and Daniel Pelka cases).",
+              "keyTakeaway": "GDPR is not a barrier to sharing safeguarding information. If a child or adult is at risk, share the information -- and record your decision."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Reporting Scenarios",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Reluctant Manager",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You work as a kitchen porter in a hotel. You notice a young apprentice, aged 17, flinching whenever the head chef raises his voice. The apprentice has bruises on his wrists. You report your concern to your manager. Your manager says: 'It's just banter in the kitchen. He probably got those bruises at football. Don't worry about it.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Accept your manager's view -- they know the kitchen better than you.",
+                        "nextNodeId": "accept_manager"
+                      },
+                      {
+                        "label": "Escalate the concern to a more senior manager, the DSL, or contact social services directly.",
+                        "nextNodeId": "escalate"
+                      },
+                      {
+                        "label": "Confront the head chef and ask if he has been hurting the apprentice.",
+                        "nextNodeId": "confront_chef"
+                      }
+                    ]
+                  },
+                  "accept_manager": {
+                    "text": "You drop the concern. Three weeks later, the apprentice is hospitalised with a fractured arm. An investigation reveals the head chef had been physically assaulting him for months. Your original report was never recorded or acted on.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "accept_reflect" }
+                    ]
+                  },
+                  "accept_reflect": {
+                    "text": "When a manager dismisses a safeguarding concern, you have a duty to escalate. The 17-year-old is a child in law. Under the Children Act 2004, organisations must safeguard children. You can go to a more senior manager, the DSL, or contact children's social services directly. The NSPCC whistleblowing helpline (0800 028 0285) can also advise you.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "escalate": {
+                    "text": "You explain to your manager that you feel the concern is serious and you would like it recorded formally. When your manager refuses, you contact the hotel's Designated Safeguarding Lead. What does the DSL do?",
+                    "options": [
+                      {
+                        "label": "The DSL takes the concern seriously, speaks to the apprentice privately, and makes a referral to children's social services.",
+                        "nextNodeId": "dsl_acts"
+                      },
+                      {
+                        "label": "The DSL also dismisses your concern.",
+                        "nextNodeId": "dsl_dismisses"
+                      }
+                    ]
+                  },
+                  "dsl_acts": {
+                    "text": "Correct. The DSL follows up, the apprentice discloses physical abuse by the head chef, and a safeguarding referral is made. The police are informed. The apprentice receives support. Your persistence made the difference. You are protected under the Public Interest Disclosure Act 1998.",
+                    "options": []
+                  },
+                  "dsl_dismisses": {
+                    "text": "If both your manager and the DSL dismiss your concern, you should escalate externally. You can contact children's social services directly, call the NSPCC whistleblowing helpline on 0800 028 0285, or in an emergency call 999. You have a duty to safeguard this child regardless of what your employer says.",
+                    "options": [
+                      {
+                        "label": "I understand -- I would escalate externally",
+                        "nextNodeId": "dsl_acts"
+                      }
+                    ]
+                  },
+                  "confront_chef": {
+                    "text": "Confronting the alleged abuser is dangerous. The chef denies everything and subsequently treats the apprentice even worse, threatening him not to speak to anyone. The abuse escalates. Evidence may also be destroyed.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "confront_reflect" }
+                    ]
+                  },
+                  "confront_reflect": {
+                    "text": "Never confront the alleged abuser. Report your concern through the proper channels. If your immediate manager does not act, escalate to a more senior manager, the DSL, or contact external authorities directly. Your role is to recognise and report -- not to investigate.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Recording Challenge",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a receptionist at a leisure centre. A mother approaches you, visibly upset, and says: 'I think the swimming instructor has been touching my daughter inappropriately. She's been having nightmares and won't go to swimming lessons anymore.' You listen carefully and reassure her. Now you need to make a record. Which approach is correct?",
+                    "options": [
+                      {
+                        "label": "Write it up at the end of your shift when things are quieter, summarising what you remember in your own words.",
+                        "nextNodeId": "end_of_shift"
+                      },
+                      {
+                        "label": "Record it immediately using the mother's exact words, note the date, time, your name, and report to the DSL within minutes.",
+                        "nextNodeId": "immediate_record"
+                      },
+                      {
+                        "label": "Ask the mother to write it down herself and give it to you tomorrow.",
+                        "nextNodeId": "mother_writes"
+                      }
+                    ]
+                  },
+                  "end_of_shift": {
+                    "text": "By the end of your shift, four hours have passed. You can no longer remember the mother's exact words. Your summary omits key details. When the case is investigated, the vagueness of your record weakens the evidence.",
+                    "options": [
+                      { "label": "Why is this a problem?", "nextNodeId": "shift_reflect" }
+                    ]
+                  },
+                  "shift_reflect": {
+                    "text": "Safeguarding records should be made as soon as practicable -- ideally within the hour. Memory deteriorates rapidly. Using the person's exact words (in quotation marks) preserves the evidence. A paraphrased summary four hours later may misrepresent what was actually said.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "immediate_record": {
+                    "text": "You write: Date: [today]. Time: 14:35. Mother stated: [her exact words in quotation marks]. Mother appeared [your observation of her emotional state]. Daughter's name and age. Name of swimming instructor identified. You sign and date the record, and hand it to the DSL at 14:50.",
+                    "options": [{ "label": "What happens next?", "nextNodeId": "record_followup" }]
+                  },
+                  "record_followup": {
+                    "text": "Correct. Your prompt, accurate record gives the DSL the information needed to make a referral to the Local Authority Designated Officer (LADO), who handles allegations against people who work with children. The police may also be contacted. Your record may ultimately be used as evidence. Its accuracy and timeliness strengthen the case.",
+                    "options": []
+                  },
+                  "mother_writes": {
+                    "text": "Asking the mother to come back tomorrow delays the report. The mother may not return, or may decide not to take it further. Meanwhile, the swimming instructor continues to have access to children. Additionally, the record should be your own account of what the mother told you, not delegated to her.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "mother_reflect" }
+                    ]
+                  },
+                  "mother_reflect": {
+                    "text": "You should make the record yourself, immediately, using the mother's own words. It is your account of what was reported to you. Report to the DSL without delay. The mother can provide her own statement to the authorities later, but your responsibility is to record and report now.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Professional Boundaries and Safer Working",
+      "description": "Maintaining professional boundaries, understanding positions of trust, and safer working practices.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Professional Boundaries",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "What Are Professional Boundaries?",
+              "content": "## Professional Boundaries\n\nProfessional boundaries are the limits that define an appropriate and safe relationship between workers and the children or adults at risk they interact with. Crossing these boundaries -- even with good intentions -- can cause harm, create safeguarding risks, and expose you to allegations.\n\n### Why boundaries matter\n- They protect **children and adults at risk** from exploitation and inappropriate relationships.\n- They protect **you** from false allegations and misunderstandings.\n- They maintain **trust** in your organisation.\n\n### Examples of appropriate boundaries\n- Keeping communication professional and work-related.\n- Not sharing your personal phone number, social media accounts, or home address with children or service users.\n- Meeting in open, visible areas -- not behind closed doors unnecessarily.\n- Not giving or receiving personal gifts to/from children or vulnerable people.\n- Maintaining appropriate physical contact -- and only when necessary (e.g. first aid).\n- Not developing personal or romantic relationships with people in your care.\n\n### Positions of trust\nUnder the **Sexual Offences Act 2003** (Sections 16-19), it is a criminal offence for a person in a position of trust to engage in sexual activity with a person under 18 in their care, even if the younger person appears to consent. The age of consent (16) does not apply when there is a position of trust.\n\nIn hospitality, this may apply to managers supervising young workers, activity leaders working with under-18s, or hotel staff responsible for children's clubs.",
+              "keyTakeaway": "Professional boundaries protect both the people you serve and you. Never allow boundaries to blur, even with good intentions."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Safer Working Practices",
+              "content": "## Safer Working Practices in Hospitality\n\nSafer working practices are behaviours and procedures that reduce the risk of harm to children and adults at risk, and protect staff from allegations.\n\n### Key practices\n\n**Physical contact**\n- Avoid unnecessary physical contact with children or vulnerable adults.\n- If physical contact is necessary (e.g. first aid, assisting with mobility), explain what you are doing and why.\n- Be aware of how physical contact may be perceived.\n\n**One-to-one situations**\n- Avoid being alone with a child or vulnerable adult behind closed doors.\n- If a one-to-one meeting is necessary, use a room with a window or open door, tell a colleague where you are, and keep it as brief as possible.\n\n**Communication and social media**\n- Do not connect with under-18s or service users on personal social media accounts.\n- All communication should be through work channels and transparent.\n- Do not send personal messages, photos, or jokes to children or vulnerable people.\n\n**Photography and images**\n- Follow your organisation's policy on photographing children or vulnerable adults.\n- Never use a personal device to photograph children.\n- Obtain appropriate parental/carer consent before taking photographs.\n\n**Dress and behaviour**\n- Dress appropriately and maintain professional conduct at all times.\n- Do not use inappropriate language, including sexual innuendo, around children or vulnerable people.\n\n**Gifts and favouritism**\n- Do not give or accept personal gifts.\n- Treat all children and service users fairly without favouritism.\n- If you receive a gift, report it to your manager.",
+              "keyTakeaway": "Safer working practices protect everyone. Avoid one-to-one situations behind closed doors, never use personal devices for photos, and keep all communication professional."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Allegations Against Staff",
+              "content": "## What Happens When an Allegation is Made Against a Member of Staff\n\nAllegations of abuse against staff must be taken seriously and handled swiftly. Failing to do so can allow abuse to continue and damage trust.\n\n### The LADO\nThe **Local Authority Designated Officer (LADO)** manages allegations against people who work with children. Every local authority has a LADO.\n\nAn allegation should be referred to the LADO when a person who works with children has:\n- Behaved in a way that has **harmed or may have harmed** a child.\n- Possibly committed a **criminal offence** against a child.\n- Behaved towards a child in a way that indicates they may pose a **risk of harm** to children.\n- Behaved in a way in their personal life that raises safeguarding concerns about their suitability to work with children.\n\n### The process\n1. The concern is reported to the employer's senior safeguarding lead.\n2. The employer contacts the LADO within **one working day**.\n3. The LADO coordinates the response -- which may involve the police, children's social services, and the employer.\n4. The staff member may be suspended (this is a neutral act, not a disciplinary measure).\n5. A multi-agency strategy meeting may be convened.\n\n### For allegations involving adults at risk\nAllegations are referred to the local authority adult safeguarding team. The Safeguarding Adults Board coordinates the response.\n\n### Your role\n- Report any allegation or concern about a colleague to your DSL or senior manager immediately.\n- Do not discuss the allegation with the person concerned or other colleagues.\n- Keep detailed records of what you have observed or been told.\n- Cooperate fully with any investigation.",
+              "keyTakeaway": "Allegations against staff must be reported to the LADO within one working day. Suspension is a neutral act to protect all parties during investigation."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Codes of Conduct",
+              "content": "## Codes of Conduct and Organisational Policies\n\nEvery organisation that works with children or adults at risk should have clear policies and codes of conduct that set out expected behaviour.\n\n### What your organisation's policy should cover\n- **Safeguarding policy** -- roles, responsibilities, reporting procedures, and the identity of the DSL.\n- **Code of conduct** -- expected behaviour for all staff, volunteers, and contractors.\n- **Safer recruitment** -- how the organisation ensures people working with children or adults at risk are suitable (DBS checks, references, interview questions).\n- **Whistleblowing policy** -- how to raise concerns about colleagues or the organisation.\n- **Social media and communication policy** -- rules about contact with children and service users.\n- **Photography and image policy** -- consent requirements and storage of images.\n- **Complaints procedure** -- how children, parents, or adults at risk can raise concerns.\n\n### Your responsibilities\n- **Read and understand** your organisation's safeguarding policy and code of conduct.\n- **Attend training** -- safeguarding training must be refreshed at least annually.\n- **Follow the policies** -- they exist to protect you and the people you work with.\n- **Report breaches** -- if you see a colleague breaching the code of conduct, report it.\n- **Keep yourself safe** -- do not put yourself in situations that could be misinterpreted.\n\n### Induction\nAll new staff should receive safeguarding training as part of their induction, including:\n- The identity and contact details of the DSL.\n- How to recognise and report concerns.\n- The organisation's code of conduct.\n- What to do in an emergency.\n\nThis is a legal requirement, not optional good practice.",
+              "keyTakeaway": "Your organisation's safeguarding policy and code of conduct are not optional reading. Know them, follow them, and report breaches."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Self-Care and Support",
+              "content": "## Looking After Yourself\n\nSafeguarding work can be emotionally demanding. Hearing disclosures, witnessing distress, and dealing with the consequences of abuse can take a toll on your mental health.\n\n### The impact on you\n- **Vicarious trauma** -- experiencing trauma responses from hearing about others' traumatic experiences.\n- **Compassion fatigue** -- emotional exhaustion from caring for distressed individuals.\n- **Stress and anxiety** -- worrying about whether you did the right thing, whether the child is safe, or whether you will face consequences.\n- **Sleep disturbances** -- replaying events or conversations in your mind.\n\n### What you can do\n- **Talk to your manager or DSL** -- debrief after a difficult situation.\n- **Use your Employee Assistance Programme (EAP)** -- many hospitality employers offer confidential counselling.\n- **Talk to trusted friends or family** about your feelings (without sharing confidential details of the case).\n- **Recognise your limits** -- it is okay to ask for help.\n- **Maintain work-life boundaries** -- safeguarding concerns should be reported and handed to the appropriate people, not carried home.\n\n### Organisational support\nGood organisations:\n- Provide regular safeguarding supervision.\n- Offer debriefing after significant incidents.\n- Ensure staff have access to wellbeing support.\n- Create a culture where raising concerns is welcomed, not punished.\n\n### Remember\nYour wellbeing matters. You cannot safeguard others if you are not looking after yourself. Seeking support is a sign of professionalism, not weakness.",
+              "keyTakeaway": "Safeguarding work is emotionally demanding. Seek support from your manager, EAP, or trusted colleagues -- looking after yourself is not a weakness."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Boundaries Scenarios",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Social Media Request",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You manage a hotel that runs a summer kids' club for guests' children aged 8-15. One of the activity leaders, Jake (aged 22), mentions that several of the older children (aged 13-14) have sent him friend requests on Instagram. He says he has accepted some because 'it's just social media and they seem like nice kids.' What do you do?",
+                    "options": [
+                      {
+                        "label": "It is just social media -- there is no harm in it as long as he keeps his content appropriate.",
+                        "nextNodeId": "no_harm"
+                      },
+                      {
+                        "label": "Ask Jake to remove the connections immediately and remind him of the organisation's social media policy and professional boundaries.",
+                        "nextNodeId": "remove_connections"
+                      },
+                      {
+                        "label": "Report Jake to the police immediately for grooming.",
+                        "nextNodeId": "report_police"
+                      }
+                    ]
+                  },
+                  "no_harm": {
+                    "text": "You allow the connections to continue. Over the summer, Jake starts private messaging some of the children. A parent discovers the messages, which are inappropriate in tone. The parent complains to the hotel. The LADO is contacted. Jake is suspended and investigated. The hotel faces serious reputational damage.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "no_harm_reflect" }
+                    ]
+                  },
+                  "no_harm_reflect": {
+                    "text": "Personal social media connections between staff and children they work with are a clear breach of professional boundaries. They create private, unmonitored communication channels that can be exploited. Even if Jake had no ill intent, the connections created an unacceptable risk. You should have acted immediately.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "remove_connections": {
+                    "text": "You explain to Jake that connecting with children on personal social media is a breach of professional boundaries and the organisation's policy. You ask him to remove the connections and show you he has done so. You remind him that all communication with children must be through work channels and transparent. You make a record of the conversation.",
+                    "options": [
+                      { "label": "Should I do anything else?", "nextNodeId": "remove_followup" }
+                    ]
+                  },
+                  "remove_followup": {
+                    "text": "Correct. You should also review any messages that were exchanged to satisfy yourself there is nothing of concern. If any messages are inappropriate, this becomes a LADO referral. Remind all staff of the social media policy. Consider adding this to the kids' club induction training. Document everything.",
+                    "options": []
+                  },
+                  "report_police": {
+                    "text": "While your vigilance is commendable, accepting friend requests from children is a boundary breach, not necessarily grooming. The proportionate response is to address it immediately with Jake, remove the connections, and investigate further. If the investigation reveals inappropriate messages or behaviour, then a LADO referral and potentially police involvement would be appropriate.",
+                    "options": [
+                      {
+                        "label": "What is the proportionate response?",
+                        "nextNodeId": "police_redirect"
+                      }
+                    ]
+                  },
+                  "police_redirect": {
+                    "text": "The proportionate response is to: (1) Instruct Jake to remove all social media connections with children immediately. (2) Review any messages exchanged. (3) Remind him of the social media policy and professional boundaries. (4) Make a record. (5) If inappropriate content is found, refer to the LADO. Apply the safeguarding principle of proportionality -- the least intrusive response appropriate to the risk.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Gift",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a care worker who regularly visits an elderly client, Mrs. Patel, in her home to help prepare meals. She is lonely and you have built a good rapport. One day she offers you her late husband's gold watch, saying: 'You're the only one who is kind to me. Please take it -- I want you to have it.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Accept the watch -- she wants you to have it and it would be rude to refuse.",
+                        "nextNodeId": "accept_watch"
+                      },
+                      {
+                        "label": "Thank her warmly but explain that your organisation's policy does not allow you to accept personal gifts, and report the offer to your manager.",
+                        "nextNodeId": "decline_report"
+                      },
+                      {
+                        "label": "Accept the watch but hide it and do not tell anyone.",
+                        "nextNodeId": "hide_watch"
+                      }
+                    ]
+                  },
+                  "accept_watch": {
+                    "text": "You accept the watch. Mrs. Patel's daughter visits the following week and notices the watch is missing. She contacts your employer and accuses you of financial abuse. You are suspended pending investigation. Even though Mrs. Patel offered the watch willingly, the power dynamic between a care worker and a vulnerable client means accepting valuable gifts is considered financial abuse.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "accept_reflect" }
+                    ]
+                  },
+                  "accept_reflect": {
+                    "text": "Under the Care Act 2014, financial abuse includes putting pressure on a vulnerable adult in relation to their property. Even when a gift is freely offered, accepting valuable items from a person you care for is a breach of professional boundaries and may constitute financial abuse. The Mental Capacity Act 2005 also raises questions about whether Mrs. Patel had the capacity to make this decision, particularly if she is lonely and emotionally dependent on you.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "decline_report": {
+                    "text": "You thank Mrs. Patel warmly for her kindness and explain gently: 'I really appreciate the thought, but my work does not allow me to accept personal gifts. Your friendship means more than any gift.' You report the offer to your manager, who records it. The manager may also consider whether Mrs. Patel's loneliness and emotional dependency indicate she needs additional support.",
+                    "options": [
+                      { "label": "Was this the right approach?", "nextNodeId": "decline_confirm" }
+                    ]
+                  },
+                  "decline_confirm": {
+                    "text": "Correct. You maintained professional boundaries while being kind and respectful. Reporting the offer to your manager is essential because: (1) it creates transparency, (2) it protects you from future allegations, and (3) it may highlight that Mrs. Patel needs additional social support to combat loneliness. This is a textbook example of maintaining professional boundaries while showing compassion.",
+                    "options": []
+                  },
+                  "hide_watch": {
+                    "text": "Hiding the watch is the worst option. You have accepted a valuable item from a vulnerable person and concealed it. If discovered, this will be treated as theft or financial abuse. You will face disciplinary action and potentially criminal charges. Concealment demonstrates awareness that accepting the gift was wrong.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Modern Slavery, Exploitation, and the Prevent Duty",
+      "description": "Recognising modern slavery, county lines, criminal exploitation, and understanding the Prevent duty to counter radicalisation.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Modern Slavery and Exploitation",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Modern Slavery",
+              "content": "## Modern Slavery\n\nModern slavery is a serious crime that affects thousands of people in the UK. The **Modern Slavery Act 2015** consolidated and strengthened existing offences.\n\n### What is modern slavery?\n- **Human trafficking** -- recruiting, transporting, transferring, harbouring, or receiving a person through force, fraud, or coercion for the purpose of exploitation.\n- **Forced labour** -- making someone work through threats, violence, or coercion.\n- **Domestic servitude** -- forcing someone to work in a household with little or no pay, restricted freedom, and abusive conditions.\n- **Sexual exploitation** -- forcing someone into prostitution or sexual services.\n- **Criminal exploitation** -- forcing someone to commit crimes such as drug dealing, cannabis cultivation, or theft.\n\n### Modern slavery in hospitality\nThe hospitality sector is identified by the **Gangmasters and Labour Abuse Authority (GLAA)** as a high-risk industry for labour exploitation. Warning signs include:\n- Workers who appear **malnourished, exhausted, or fearful**.\n- Workers who **live on the premises** or are transported to and from work as a group.\n- Workers who **do not speak for themselves** -- someone else always answers questions.\n- Workers who have no access to their **passport or identity documents**.\n- Workers who are **paid below minimum wage** or whose wages are paid to someone else.\n- Workers who show signs of **physical abuse or untreated injuries**.\n- Workers who are **unable to leave** their employment or accommodation freely.\n\n### The National Referral Mechanism (NRM)\nIf you suspect someone is a victim of modern slavery, they can be referred to the NRM, which is the UK's system for identifying and supporting victims. You can also call the **Modern Slavery Helpline: 08000 121 700**.",
+              "keyTakeaway": "Modern slavery is happening in UK hospitality right now. If a worker cannot leave freely, has no documents, and someone else controls their wages -- raise the alarm."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "County Lines and Criminal Exploitation",
+              "content": "## County Lines and Criminal Exploitation\n\n### What are county lines?\nCounty lines is a form of criminal exploitation where urban gangs use children and vulnerable adults to transport and sell drugs in smaller towns and rural areas. The term comes from the dedicated phone lines used to take drug orders.\n\n### How does it work?\n- Gangs **target vulnerable children and adults** -- those in care, excluded from school, experiencing family breakdown, or with mental health issues.\n- Victims are **groomed** with gifts, money, attention, and a sense of belonging.\n- Once drawn in, victims are **coerced** through violence, threats, and debt bondage.\n- Victims are sent to **other areas** to sell drugs, often staying in the homes of local vulnerable adults (\"cuckooing\").\n\n### Signs to look for\n- A young person with **unexplained money, new expensive items, or multiple phones**.\n- **Missing from home or school** for periods.\n- Travelling to areas they have no obvious connection to.\n- Changes in behaviour -- **withdrawal, aggression, fearfulness**.\n- Signs of physical violence -- **injuries they cannot explain**.\n- **New friendships** with older individuals.\n- **Cuckooing indicators** -- a vulnerable adult whose home suddenly has frequent visitors, drug paraphernalia, or evidence of others staying.\n\n### Hospitality relevance\n- Hotels and B&Bs may be used as temporary bases for county lines operations.\n- Fast food outlets may be used as meeting points.\n- Vulnerable young staff may be targeted for recruitment.\n- Cuckooed adults may be regulars at your pub or cafe who suddenly change behaviour.\n\n### What to do\nReport concerns to your DSL, manager, or the police. You can also contact **Crimestoppers: 0800 555 111** anonymously.",
+              "keyTakeaway": "County lines exploits children and vulnerable adults to move drugs. Hotels, fast food outlets, and pubs can all be used as part of these operations."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "The Prevent Duty",
+              "content": "## The Prevent Duty\n\nThe **Counter-Terrorism and Security Act 2015** places a duty on specified authorities to have **due regard to the need to prevent people from being drawn into terrorism**. This is known as the Prevent duty.\n\n### What is radicalisation?\nThe process by which a person comes to support terrorism or violent extremism, or is drawn into terrorist-related activity. It can happen to anyone of any age, gender, ethnicity, or religion.\n\n### What is extremism?\nVocal or active opposition to **fundamental British values**: democracy, the rule of law, individual liberty, mutual respect, and tolerance of different faiths and beliefs.\n\n### Who is at risk?\nAnyone can be radicalised, but vulnerability factors include:\n- Feelings of **isolation, anger, or injustice**.\n- **Searching for identity, belonging, or purpose**.\n- Experiencing **significant life events** (bereavement, job loss, relationship breakdown).\n- **Grievances** -- real or perceived -- against a particular group or society.\n- Exposure to **extremist content** online or through personal contacts.\n- **Mental health vulnerabilities** that make a person susceptible to manipulation.\n\n### Types of extremism\nRadicalisation is not limited to any single ideology. It includes:\n- **Islamist extremism** -- groups promoting violent jihad.\n- **Far-right extremism** -- white supremacism, neo-Nazism, anti-immigrant violence.\n- **Far-left extremism** -- violent anarchism.\n- **Incel (involuntary celibate) ideology** -- violence motivated by hatred of women or perceived social rejection.\n- **Single-issue extremism** -- animal rights, environmental, or anti-government violence.\n\nThe Prevent duty is about **safeguarding** -- it is not about surveillance or targeting any community.",
+              "keyTakeaway": "Radicalisation can affect anyone. Prevent is a safeguarding duty -- it is about supporting vulnerable people, not spying on communities."
+            },
+            {
+              "id": "m5-s4",
+              "type": "text-graphic-split",
+              "title": "Recognising Radicalisation",
+              "content": "## Recognising the Signs of Radicalisation\n\nNo single sign means someone is being radicalised. Look for a combination of changes over time.\n\n### Behavioural changes\n- Expressing **sympathy for violent extremist causes** or justifying the use of violence.\n- **Isolating** themselves from friends, family, or their usual social groups.\n- Becoming **increasingly secretive**, especially about online activity.\n- **Changes in appearance** -- adopting symbols, clothing, or imagery associated with extremist groups.\n- Using **dehumanising language** about a group of people (\"us versus them\").\n- Expressing a desire to **travel to conflict zones** or support fighters.\n\n### Online indicators\n- Accessing or sharing **extremist material** -- videos, manifestos, social media posts.\n- Engaging with **extremist groups or forums** online.\n- Having **multiple social media profiles** or using encrypted messaging for secretive communications.\n- Expressing views online that they would not express in person.\n\n### What to do\n1. **Do not investigate** -- radicalisation concerns should be handled by trained professionals.\n2. **Report** to your DSL, manager, or the **Prevent helpline** on the local police non-emergency line (101).\n3. **Channel** is the UK programme for supporting people identified as vulnerable to radicalisation. It provides tailored support and mentoring. Referral to Channel is voluntary and supportive, not criminal.\n4. In an **emergency** (e.g. an attack is imminent), call **999** and the Anti-Terrorist Hotline: **0800 789 321**.\n\n### Important\n- Having strong political or religious views is not the same as radicalisation.\n- Challenging authority or questioning society is normal, especially for young people.\n- Radicalisation becomes a concern when views turn to supporting or planning violence.",
+              "keyTakeaway": "Channel is a support programme, not a criminal process. Referring someone to Channel could be the intervention that saves their life."
+            },
+            {
+              "id": "m5-s5",
+              "type": "text-graphic-split",
+              "title": "Safeguarding in Hospitality -- Putting It All Together",
+              "content": "## Your Role in Hospitality Safeguarding\n\nHospitality workers are uniquely placed to identify safeguarding concerns because you interact with a wide cross-section of the public every day.\n\n### Your venue as a safeguarding environment\n- **Hotels**: Guests may include victims of trafficking, children at risk, or adults being exploited. Unusual booking patterns, guests who appear controlled, or rooms used for commercial sexual exploitation are all indicators.\n- **Restaurants and cafes**: Family interactions are visible. Signs of abuse, neglect, or controlling behaviour may be observed.\n- **Pubs and bars**: Vulnerable adults may be targeted by those who exploit them financially or sexually. County lines activity may use pubs as meeting points.\n- **Events and functions**: Large gatherings can expose children and vulnerable adults to risks, especially where alcohol is involved.\n- **Kitchens and back-of-house**: Young workers and migrant workers may be particularly vulnerable to exploitation, bullying, or abuse.\n\n### Creating a safeguarding culture\n- **Display** information about safeguarding, including helpline numbers.\n- **Train** all staff, including agency and casual workers.\n- **Empower** staff to raise concerns without fear.\n- **Designate** a Safeguarding Lead and ensure everyone knows who they are.\n- **Review** your safeguarding policy regularly.\n- **Record** and follow up on all concerns.\n\n### Key numbers to remember\n- **Emergency**: 999\n- **NSPCC**: 0808 800 5000\n- **Childline**: 0800 1111\n- **Modern Slavery Helpline**: 08000 121 700\n- **Anti-Terrorist Hotline**: 0800 789 321\n- **NSPCC Whistleblowing Line**: 0800 028 0285\n- **Crimestoppers**: 0800 555 111",
+              "keyTakeaway": "Hospitality workers see things others do not. Your observations, your courage to report, and your knowledge of safeguarding could protect a life."
+            }
+          ]
+        },
+        {
+          "id": "m5-l2",
+          "title": "Exploitation and Prevent Scenarios",
+          "slides": [
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Hotel Housekeeper",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a housekeeper at a large hotel. While cleaning a room, you notice that a guest who has been staying for two weeks appears to have several young women staying with him. The women look tired, avoid eye contact, and you have never seen them outside the room. Today you notice the 'Do Not Disturb' sign is always on the door, and when you do enter the room, you find multiple phones, the women's passports in the guest's suitcase, and signs that far more people are sleeping in the room than booked. What do you do?",
+                    "options": [
+                      {
+                        "label": "It is not your business what guests do in their rooms -- respect their privacy.",
+                        "nextNodeId": "privacy"
+                      },
+                      {
+                        "label": "Report your observations to the hotel duty manager or Designated Safeguarding Lead immediately.",
+                        "nextNodeId": "report_manager"
+                      },
+                      {
+                        "label": "Approach the young women directly and ask if they are okay.",
+                        "nextNodeId": "approach_women"
+                      }
+                    ]
+                  },
+                  "privacy": {
+                    "text": "You say nothing. Weeks later, police raid the hotel and discover the room was being used for sexual exploitation and trafficking. The women were victims of modern slavery. Investigators ask hotel staff what they observed. It emerges that multiple staff members noticed signs but did not report them.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "privacy_reflect" }
+                    ]
+                  },
+                  "privacy_reflect": {
+                    "text": "Guest privacy does not override safeguarding. Under the Modern Slavery Act 2015, hotels have a responsibility to be vigilant. The signs you observed -- multiple women controlled by one person, passports being held, exhaustion, and avoidance of eye contact -- are classic indicators of human trafficking. Your report could have triggered an earlier intervention.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "report_manager": {
+                    "text": "You report your observations to the duty manager factually: the number of people, the passports, the multiple phones, the behaviour of the women. The duty manager contacts the hotel's safeguarding lead. What should happen next?",
+                    "options": [
+                      {
+                        "label": "The safeguarding lead contacts the police Modern Slavery unit and the Modern Slavery Helpline.",
+                        "nextNodeId": "police_contacted"
+                      },
+                      {
+                        "label": "The manager decides to monitor the situation for a few more days.",
+                        "nextNodeId": "monitor_delay"
+                      }
+                    ]
+                  },
+                  "police_contacted": {
+                    "text": "Correct. The police specialist unit investigates discreetly. The women are identified as victims of trafficking. They are rescued and referred to the National Referral Mechanism for support. The perpetrator is arrested. Your observation and courage to report made this possible.",
+                    "options": []
+                  },
+                  "monitor_delay": {
+                    "text": "Monitoring a potential trafficking situation without involving the police is dangerous. Every day of delay means the victims continue to be exploited. Once you have a reasonable suspicion of modern slavery, the police should be contacted. The Modern Slavery Helpline (08000 121 700) can also provide immediate guidance.",
+                    "options": [{ "label": "Try again", "nextNodeId": "report_manager" }]
+                  },
+                  "approach_women": {
+                    "text": "Approaching the women directly could put them and you at risk. The trafficker may be nearby, and the women may have been threatened with violence if they speak to anyone. If the trafficker discovers you have spoken to the women, he may move them before the police can intervene. Your safety and theirs depends on discreet reporting.",
+                    "options": [
+                      { "label": "What is the safer approach?", "nextNodeId": "approach_reflect" }
+                    ]
+                  },
+                  "approach_reflect": {
+                    "text": "The safer approach is to report your observations to your duty manager or DSL, who will contact the police. Let trained officers handle the situation. Your role is to observe, record what you have seen (factually), and report through proper channels.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Radicalised Colleague",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You work in a large restaurant kitchen. A colleague, Ryan (aged 19), has changed over the past few months. He used to be sociable but has become withdrawn and angry. He has made comments about 'immigrants ruining the country' and 'people needing to take action.' He shares far-right content on social media and has started wearing clothing with symbols you recognise as being associated with a far-right group. Today he says: 'Something big needs to happen. People will remember my name.' What do you do?",
+                    "options": [
+                      {
+                        "label": "He is just frustrated -- everyone gets angry about politics sometimes. Ignore it.",
+                        "nextNodeId": "ignore_ryan"
+                      },
+                      {
+                        "label": "Challenge Ryan directly, telling him his views are wrong and he needs to stop.",
+                        "nextNodeId": "challenge_ryan"
+                      },
+                      {
+                        "label": "Report your concerns to your manager or DSL immediately, noting his specific comments and behaviour changes.",
+                        "nextNodeId": "report_ryan"
+                      }
+                    ]
+                  },
+                  "ignore_ryan": {
+                    "text": "You dismiss the comments. Two weeks later, Ryan is arrested after being identified online planning an attack with others from a far-right group. Colleagues are interviewed by counter-terrorism police. They ask: 'Did anyone notice changes in his behaviour?' Several staff members had, but no one reported it.",
+                    "options": [
+                      { "label": "What should I have done?", "nextNodeId": "ignore_reflect" }
+                    ]
+                  },
+                  "ignore_reflect": {
+                    "text": "The signs were escalating: ideological content, dehumanising language about immigrants, far-right symbols, social withdrawal, anger, and then a direct statement about being remembered for 'something big.' Each sign alone might be explainable, but the pattern combined with the escalating language was a clear cause for concern. Under the Prevent duty, this should have been reported.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "challenge_ryan": {
+                    "text": "Ryan becomes defensive and aggressive. He accuses you of 'being part of the problem.' He now knows you are aware of his views and becomes more secretive. He may accelerate his plans or take steps to avoid detection. Direct confrontation can be counterproductive and potentially dangerous.",
+                    "options": [
+                      {
+                        "label": "What should I have done instead?",
+                        "nextNodeId": "challenge_reflect"
+                      }
+                    ]
+                  },
+                  "challenge_reflect": {
+                    "text": "While it is natural to want to challenge extremist views, direct confrontation is not the recommended approach. The Prevent guidance advises reporting concerns through proper channels. Trained professionals can assess the risk and provide appropriate support through the Channel programme. Confrontation may push the person further towards extremism.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "report_ryan": {
+                    "text": "You report to your manager, describing the specific behavioural changes, the social media content, the symbols, and Ryan's exact words about 'something big.' Your manager contacts the local Prevent team. What happens next?",
+                    "options": [
+                      {
+                        "label": "Ryan is referred to the Channel programme for assessment and support.",
+                        "nextNodeId": "channel_referral"
+                      },
+                      { "label": "Ryan is immediately arrested.", "nextNodeId": "arrest_clarify" }
+                    ]
+                  },
+                  "channel_referral": {
+                    "text": "Correct. The Channel panel assesses Ryan and determines he is vulnerable to radicalisation. He is offered voluntary, tailored support including mentoring, counselling, and help addressing the grievances that made him vulnerable. Channel is about safeguarding -- helping Ryan before he crosses the line into criminal activity. If he accepts support, it could change his trajectory entirely.",
+                    "options": []
+                  },
+                  "arrest_clarify": {
+                    "text": "A Prevent referral does not automatically lead to arrest. Channel is a voluntary support programme, not a criminal process. Ryan would be assessed by the Channel panel, which includes safeguarding professionals, and offered support. Police would only be involved in a criminal capacity if there was evidence of a specific criminal offence or imminent threat. The purpose of Prevent is early intervention -- safeguarding, not criminalisation.",
+                    "options": [{ "label": "I understand", "nextNodeId": "channel_referral" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Test your safeguarding knowledge across all modules.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m6-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What is the primary principle of the Children Act 1989?",
+        "options": [
+          "The rights of the parent are paramount",
+          "The welfare of the child is the paramount consideration",
+          "Children should always remain with their families",
+          "Criminal prosecution should be the first response"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "The Care Act 2014 established which of the following?",
+        "options": [
+          "Safeguarding Adults Boards in every local authority area",
+          "A national police safeguarding unit",
+          "Mandatory DBS checks for all employees",
+          "The right of children to leave home at 16"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q3",
+        "text": "What does DBS stand for?",
+        "options": [
+          "Department of Business Standards",
+          "Disclosure and Barring Service",
+          "Data Backup System",
+          "Domestic and Business Security"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "Under the Safeguarding Vulnerable Groups Act 2006, what is it an offence for a barred person to do?",
+        "options": [
+          "Vote in local elections",
+          "Apply for any job in the UK",
+          "Engage in regulated activity with children or vulnerable adults",
+          "Travel outside the UK without permission"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q5",
+        "text": "Which legislation protects workers who raise genuine safeguarding concerns from being dismissed?",
+        "options": [
+          "Employment Rights Act 1996",
+          "Public Interest Disclosure Act 1998",
+          "Care Act 2014",
+          "Health and Safety at Work Act 1974"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "What is a Section 47 enquiry?",
+        "options": [
+          "An employer's duty to carry out a risk assessment",
+          "A local authority's duty to investigate when a child may be suffering significant harm",
+          "A police investigation into fraud",
+          "A health and safety inspection of premises"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "Under the Mental Capacity Act 2005, what must be assumed about a person?",
+        "options": [
+          "They lack capacity until proven otherwise",
+          "They have capacity unless it is established otherwise",
+          "Their family should make decisions for them",
+          "They cannot consent to any treatment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "How many safeguarding principles are established by the Care Act 2014?",
+        "options": ["Three", "Four", "Six", "Eight"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q9",
+        "text": "Which of the following is NOT one of the six safeguarding principles?",
+        "options": ["Empowerment", "Prevention", "Punishment", "Proportionality"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q10",
+        "text": "What is the first of the 5 Rs of safeguarding?",
+        "options": ["Report", "Recognise", "Refer", "Record"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "When a child discloses abuse, what should you say first?",
+        "options": [
+          "Tell me exactly who did this to you",
+          "I promise I will not tell anyone",
+          "Thank you for telling me -- you did the right thing",
+          "Are you sure that is what really happened?"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q12",
+        "text": "If a child discloses abuse to you, you should NEVER:",
+        "options": [
+          "Listen calmly and let them speak",
+          "Promise to keep it a secret",
+          "Reassure them it is not their fault",
+          "Report to the Designated Safeguarding Lead"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "What type of questions should you use when a person is making a disclosure?",
+        "options": [
+          "Closed questions with yes/no answers",
+          "Leading questions that suggest what happened",
+          "Open questions using Tell, Explain, Describe (TED)",
+          "Multiple choice questions to narrow down the details"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q14",
+        "text": "How soon after a disclosure should you make a written record?",
+        "options": [
+          "Within 24 hours",
+          "At the end of your shift",
+          "As soon as practicable -- ideally within the hour",
+          "Within one week"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q15",
+        "text": "When recording a disclosure, you should:",
+        "options": [
+          "Use your own words to paraphrase what was said",
+          "Record the person's exact words in quotation marks",
+          "Include your personal opinion about the family",
+          "Wait until you have investigated before recording"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "Safeguarding records should be stored:",
+        "options": [
+          "On the staff notice board for transparency",
+          "In a locked cabinet or encrypted digital system",
+          "In your personal bag until you can file them",
+          "On a shared drive accessible to all staff"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Who should you report a safeguarding concern to FIRST?",
+        "options": [
+          "The police in all cases",
+          "Your Designated Safeguarding Lead or manager",
+          "The alleged abuser to give them a chance to explain",
+          "The child's parents or the adult's family"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "If your DSL is unavailable and a child is in immediate danger, you should:",
+        "options": [
+          "Wait until the DSL returns to work",
+          "Email the DSL and wait for a response",
+          "Call 999 immediately",
+          "Ask the child to come back another day"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q19",
+        "text": "Which of the following is an example of physical abuse?",
+        "options": [
+          "Persistent humiliation in front of others",
+          "Deliberate burning or scalding",
+          "Withholding food as a lifestyle choice",
+          "Accessing someone's bank account without permission"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Coercive control became a criminal offence under which legislation?",
+        "options": [
+          "Children Act 2004",
+          "Care Act 2014",
+          "Serious Crime Act 2015, Section 76",
+          "Mental Capacity Act 2005"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q21",
+        "text": "What is a common sign of emotional abuse in a child?",
+        "options": [
+          "High self-esteem and confidence",
+          "Excessive willingness to please and fear of making mistakes",
+          "Strong friendships with peers",
+          "Regular attendance at school"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "Child Sexual Exploitation (CSE) involves:",
+        "options": [
+          "A child being manipulated into sexual activity in exchange for something",
+          "A child watching age-appropriate educational content",
+          "A child being physically disciplined by a parent",
+          "A child being left alone for short periods"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q23",
+        "text": "Under the Sexual Offences Act 2003, a person in a position of trust cannot engage in sexual activity with someone under:",
+        "options": ["16", "18", "21", "25"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "Which is the most common form of child abuse in the UK?",
+        "options": ["Physical abuse", "Sexual abuse", "Neglect", "Financial abuse"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q25",
+        "text": "Self-neglect in adults is recognised as a safeguarding concern under which legislation?",
+        "options": [
+          "Children Act 1989",
+          "Care Act 2014",
+          "Mental Health Act 1983",
+          "Criminal Justice Act 2003"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "Signs of neglect in a child may include:",
+        "options": [
+          "Expensive clothing and latest gadgets",
+          "Persistent hunger, poor hygiene, and untreated medical conditions",
+          "Strong academic performance",
+          "Regular participation in after-school activities"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "Financial abuse is most commonly associated with:",
+        "options": [
+          "Children under 5",
+          "Teenagers",
+          "Vulnerable adults, particularly the elderly",
+          "Young professionals"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q28",
+        "text": "Which of the following is a sign of financial abuse?",
+        "options": [
+          "A person buying luxury items they can clearly afford",
+          "Unexplained loss of money and someone else controlling all financial transactions",
+          "A person saving money in a bank account",
+          "A person choosing not to spend money on non-essentials"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "Discriminatory abuse is motivated by:",
+        "options": [
+          "A person's job title",
+          "A person's protected characteristic such as race, disability, or sexual orientation",
+          "A person's income level",
+          "A person's postcode"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "What is the NSPCC helpline number?",
+        "options": ["0800 1111", "0808 800 5000", "08000 121 700", "0800 789 321"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "What is the Childline number?",
+        "options": ["0808 800 5000", "0800 1111", "08000 121 700", "999"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "What is the Modern Slavery Helpline number?",
+        "options": ["0800 789 321", "0800 555 111", "08000 121 700", "0808 800 5000"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q33",
+        "text": "Professional boundaries exist to:",
+        "options": [
+          "Make the job less enjoyable",
+          "Protect children, adults at risk, and staff from harm and allegations",
+          "Prevent staff from forming any relationships at work",
+          "Ensure managers have more power than frontline staff"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "A hotel activity leader accepting friend requests from children on personal social media is:",
+        "options": [
+          "Fine as long as the content is appropriate",
+          "A breach of professional boundaries that creates unmonitored communication channels",
+          "Required to build rapport with the children",
+          "Only a concern if the children are under 13"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "If a vulnerable adult offers you a valuable personal gift, you should:",
+        "options": [
+          "Accept it to avoid offending them",
+          "Accept it but report it later",
+          "Thank them but explain your organisation's policy prevents you accepting personal gifts, and report the offer to your manager",
+          "Accept it and keep it secret"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q36",
+        "text": "What is the LADO?",
+        "options": [
+          "A legal aid department for offenders",
+          "The Local Authority Designated Officer who manages allegations against people who work with children",
+          "A local ambulance dispatch operation",
+          "A law against discriminatory offences"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q37",
+        "text": "An allegation against a staff member who works with children should be referred to the LADO within:",
+        "options": ["One hour", "One working day", "One week", "One month"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "When a staff member is suspended during a safeguarding investigation, suspension is:",
+        "options": [
+          "A disciplinary punishment",
+          "An admission of guilt",
+          "A neutral act to protect all parties during the investigation",
+          "A permanent removal from the role"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q39",
+        "text": "Safer working practices include:",
+        "options": [
+          "Meeting alone with children behind closed doors to maintain privacy",
+          "Avoiding unnecessary physical contact and being visible when working with children",
+          "Sharing your personal phone number to build trust",
+          "Keeping safeguarding concerns to yourself to protect the child's privacy"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "When photographing children at a venue, you should:",
+        "options": [
+          "Use your personal phone for convenience",
+          "Follow your organisation's photography policy and obtain appropriate consent",
+          "Post photos on your personal social media to promote the venue",
+          "Avoid telling parents their children are being photographed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "The Public Interest Disclosure Act 1998 protects workers who:",
+        "options": [
+          "Refuse to work overtime",
+          "Raise genuine concerns about wrongdoing in the public interest",
+          "Complain about their salary",
+          "Request a transfer to another department"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "If your employer fails to act on a safeguarding concern you have raised, you should:",
+        "options": [
+          "Accept their decision and move on",
+          "Escalate to an external body such as local authority safeguarding, Ofsted, or the police",
+          "Post about it on social media",
+          "Resign from your job"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "The NSPCC whistleblowing helpline number for concerns about children is:",
+        "options": ["0800 028 0285", "0808 800 5000", "0800 1111", "999"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q44",
+        "text": "When sharing information for safeguarding purposes, the Data Protection Act 2018 and UK GDPR:",
+        "options": [
+          "Prevent all information sharing without written consent",
+          "Are not barriers to justified information sharing for safeguarding",
+          "Require a court order before any information can be shared",
+          "Only apply to information about adults, not children"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q45",
+        "text": "How many golden rules for information sharing does HM Government guidance include?",
+        "options": ["Three", "Five", "Seven", "Ten"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q46",
+        "text": "Which of the following is a barrier to information sharing that you should overcome?",
+        "options": [
+          "Following your organisation's data protection policy",
+          "Thinking 'it is not my business' when a child may be at risk",
+          "Seeking advice from your DSL before sharing",
+          "Recording your decision and the reasons for it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "Failures to share information have been a recurring theme in:",
+        "options": [
+          "Annual business reviews",
+          "Serious case reviews such as Victoria Climbie and Daniel Pelka",
+          "Employee satisfaction surveys",
+          "Building safety inspections"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "The Modern Slavery Act was passed in:",
+        "options": ["2005", "2010", "2015", "2020"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q49",
+        "text": "Which sector has been identified by the GLAA as high-risk for labour exploitation?",
+        "options": ["Financial services", "Hospitality", "Information technology", "Aerospace"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "A worker in a hotel who has no access to their passport, is paid below minimum wage, and appears unable to leave freely may be a victim of:",
+        "options": [
+          "Poor management",
+          "Modern slavery",
+          "A zero-hours contract dispute",
+          "Cultural differences in employment practice"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "The National Referral Mechanism (NRM) is:",
+        "options": [
+          "A system for referring patients between hospitals",
+          "The UK's system for identifying and supporting victims of modern slavery",
+          "A complaints mechanism for government services",
+          "A referral system for job seekers"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "What are county lines?",
+        "options": [
+          "Bus routes connecting rural towns",
+          "A form of criminal exploitation where gangs use children and vulnerable adults to transport and sell drugs",
+          "The geographical boundaries between local authority areas",
+          "Telephone helplines for reporting crime"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "What is 'cuckooing'?",
+        "options": [
+          "A type of bird watching activity",
+          "When gangs take over a vulnerable person's home to use as a base for drug dealing",
+          "A children's game played in parks",
+          "A method of cooking used in professional kitchens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Signs that a young person may be involved in county lines include:",
+        "options": [
+          "Good school attendance and stable friendships",
+          "Unexplained money, multiple phones, and going missing from home",
+          "Active participation in organised sports",
+          "A close relationship with their parents"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "The Prevent duty is established under which legislation?",
+        "options": [
+          "Children Act 2004",
+          "Care Act 2014",
+          "Counter-Terrorism and Security Act 2015",
+          "Modern Slavery Act 2015"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q56",
+        "text": "What is radicalisation?",
+        "options": [
+          "Having strong political views",
+          "The process by which a person comes to support terrorism or violent extremism",
+          "Voting for a minority political party",
+          "Protesting peacefully about a political issue"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "Which of the following is NOT a type of extremism covered by the Prevent duty?",
+        "options": [
+          "Islamist extremism",
+          "Far-right extremism",
+          "Democratic political activism",
+          "Incel ideology"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q58",
+        "text": "Fundamental British values include:",
+        "options": [
+          "Wealth creation, property ownership, and free markets",
+          "Democracy, the rule of law, individual liberty, and mutual respect",
+          "The monarchy, the armed forces, and the Church of England",
+          "English language, British food, and traditional sports"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "The Channel programme is:",
+        "options": [
+          "A television broadcast service",
+          "A voluntary support programme for people identified as vulnerable to radicalisation",
+          "A criminal prosecution process for suspected terrorists",
+          "A surveillance programme monitoring online activity"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "Signs of radicalisation may include:",
+        "options": [
+          "Joining a mainstream political party",
+          "Expressing sympathy for violent extremist causes and isolating from friends and family",
+          "Reading newspapers with different political viewpoints",
+          "Attending a place of worship regularly"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "The Anti-Terrorist Hotline number is:",
+        "options": ["999", "0800 789 321", "101", "0808 800 5000"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "If you suspect a colleague is being radicalised, you should:",
+        "options": [
+          "Investigate by checking their social media and phone",
+          "Confront them and tell them their views are dangerous",
+          "Report your concerns to your manager or DSL, noting specific behavioural changes",
+          "Ignore it because everyone is entitled to their opinion"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "A safeguarding concern about a child should be reported to:",
+        "options": [
+          "Only the police -- no one else",
+          "Your Designated Safeguarding Lead, or children's social services if the DSL is unavailable",
+          "The child's school -- it is their responsibility",
+          "No one -- wait and see if it happens again"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "A Section 42 enquiry under the Care Act 2014 is:",
+        "options": [
+          "A financial audit of a care home",
+          "A local authority's duty to make enquiries when an adult at risk may be experiencing abuse",
+          "A police investigation into a crime",
+          "A health and safety inspection"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "Which of the following is a vulnerability factor for radicalisation?",
+        "options": [
+          "Having a large network of supportive friends and family",
+          "Feelings of isolation, anger, or searching for identity and belonging",
+          "Being in full-time employment with good career prospects",
+          "Having a stable and happy home life"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "In hospitality, which staff members have safeguarding responsibilities?",
+        "options": [
+          "Only the Designated Safeguarding Lead",
+          "Only managers and supervisors",
+          "All staff, including front-of-house, kitchen, housekeeping, and maintenance",
+          "Only staff who work directly with children"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q67",
+        "text": "Safeguarding training should be refreshed at least:",
+        "options": ["Every 5 years", "Every 3 years", "Every year", "Only when an incident occurs"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q68",
+        "text": "Which of the following is an indicator of human trafficking in a hotel?",
+        "options": [
+          "A guest who orders room service frequently",
+          "A guest whose companions appear controlled, tired, and whose passports are held by the guest",
+          "A guest who requests extra towels",
+          "A guest who complains about the room temperature"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "A vulnerable adult is someone over 18 who:",
+        "options": [
+          "Lives alone",
+          "Has care and support needs and as a result is unable to protect themselves from abuse or neglect",
+          "Earns below the national average wage",
+          "Has never had a DBS check"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "When recording a safeguarding concern on paper, if you make an error you should:",
+        "options": [
+          "Use correction fluid to cover it",
+          "Scribble over it completely",
+          "Draw a single line through the error and initial it",
+          "Start a completely new record from scratch"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q71",
+        "text": "Self-harm in a young person may be a sign of:",
+        "options": [
+          "Attention-seeking that should be ignored",
+          "Emotional or psychological distress that may indicate abuse",
+          "A physical illness requiring medication",
+          "Normal teenage behaviour that requires no action"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "Which of the following is true about safeguarding?",
+        "options": [
+          "You need proof of abuse before you can report a concern",
+          "Only social workers can make safeguarding referrals",
+          "Anyone can raise a safeguarding concern -- you only need a concern, not proof",
+          "Safeguarding concerns should only be reported during business hours"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "The Deprivation of Liberty Safeguards (DoLS) were introduced under which legislation?",
+        "options": [
+          "Children Act 2004",
+          "Mental Capacity Act 2005",
+          "Care Act 2014",
+          "Modern Slavery Act 2015"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "Working Together to Safeguard Children 2018 emphasises the importance of:",
+        "options": [
+          "Keeping information confidential between agencies at all times",
+          "Information sharing between agencies to protect children",
+          "Only sharing information after a criminal conviction",
+          "Allowing parents to veto information sharing"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "What level of DBS check is required for someone working in regulated activity with children?",
+        "options": ["Basic", "Standard", "Enhanced", "No check is required"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q76",
+        "text": "Vicarious trauma is:",
+        "options": [
+          "Trauma experienced by witnessing a road traffic accident",
+          "Experiencing trauma responses from hearing about others' traumatic experiences",
+          "A type of physical injury",
+          "A legal term for secondary liability"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "The Crimestoppers anonymous reporting number is:",
+        "options": ["999", "101", "0800 555 111", "0808 800 5000"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "Which of these statements about DBS checks is true?",
+        "options": [
+          "A DBS check guarantees a person is safe to work with children",
+          "A DBS check is a snapshot in time and does not guarantee ongoing suitability",
+          "A DBS check is only valid for one year",
+          "A DBS check is only required for teachers and social workers"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "If you confront an alleged abuser when a child has made a disclosure:",
+        "options": [
+          "The abuser will usually confess",
+          "You may put the child at greater risk and destroy evidence",
+          "The police will thank you for your help",
+          "It shows the child you are taking their concern seriously"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "Under the Human Rights Act 1998, Article 3 states:",
+        "options": [
+          "Everyone has the right to education",
+          "No one shall be subjected to torture or inhuman or degrading treatment",
+          "Everyone has the right to free speech",
+          "Everyone has the right to own property"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

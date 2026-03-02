@@ -34,9 +34,9 @@ export default function RoleHeader() {
     <header className="border-b border-neutral-800 bg-[#0b0d13]">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <Link href="/dashboard" className="font-semibold">
-          Checkly
+          Opsly
         </Link>
-        <nav className="flex gap-4 text-sm text-slate-300">
+        <nav className="flex gap-4 text-sm text-theme-secondary">
           {items.map((i) => (
             <Link key={i.href} href={i.href} className="hover:text-white">
               {i.label}

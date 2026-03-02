@@ -1,20 +1,36 @@
 -- ============================================================================
 -- Migration: 20250205000015_add_food_poisoning_investigation_template.sql
 -- Description: Comprehensive food poisoning incident management system
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 -- ============================================================================
 
--- Clean up existing template if it exists
-DELETE FROM template_repeatable_labels 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'food_poisoning_investigation');
+-- Clean up existing template if it exists (only if tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Delete repeatable labels if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_repeatable_labels') THEN
+      DELETE FROM template_repeatable_labels 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'food_poisoning_investigation');
+    END IF;
+    
+    -- Delete template fields if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      DELETE FROM template_fields 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'food_poisoning_investigation');
+    END IF;
+    
+    -- Delete template
+    DELETE FROM task_templates 
+    WHERE slug = 'food_poisoning_investigation';
+  END IF;
+END $$;
 
-DELETE FROM template_fields 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'food_poisoning_investigation');
-
-DELETE FROM task_templates 
-WHERE slug = 'food_poisoning_investigation';
-
--- Create comprehensive food poisoning investigation template
-INSERT INTO task_templates (
+-- Create comprehensive food poisoning investigation template (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    INSERT INTO task_templates (
   company_id,
   name,
   slug,
@@ -179,180 +195,230 @@ Remember: Thorough documentation protects your business and helps prevent future
   TRUE,
   'food_safety_consultant',
   TRUE,
-  TRUE,
-  TRUE
-);
+      TRUE,
+      TRUE
+    );
+  END IF;
+END $$;
 
 -- ============================================================================
 -- INCIDENT DETAILS SECTION
 -- ============================================================================
+-- Add template fields (only if both tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'incident_date', 'date', 'Incident Report Date', TRUE, 1, 
+      'Date when the food poisoning concern was first reported.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'incident_date');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'incident_date', 'date', 'Incident Report Date', TRUE, 1, 
-  'Date when the food poisoning concern was first reported.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'reported_by_customer', 'text', 'Reported By (Customer Name)', TRUE, 2,
+      'Name of customer who reported the concern.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'reported_by_customer');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'reported_by_customer', 'text', 'Reported By (Customer Name)', TRUE, 2,
-  'Name of customer who reported the concern.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'customer_contact', 'text', 'Customer Contact Details', TRUE, 3,
+      'Phone number and/or email address for follow-up.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'customer_contact');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'customer_contact', 'text', 'Customer Contact Details', TRUE, 3,
-  'Phone number and/or email address for follow-up.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    -- ============================================================================
+    -- SYMPTOM & TIMING ANALYSIS
+    -- ============================================================================
 
--- ============================================================================
--- SYMPTOM & TIMING ANALYSIS
--- ============================================================================
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'symptom_onset', 'select', 'Symptom Onset Time After Eating', TRUE, 10,
+      'Time between eating and first symptoms - helps identify potential cause.',
+      jsonb_build_array(
+        jsonb_build_object('value', '1-6_hours', 'label', '1-6 hours (Possible Staphylococcus, Bacillus)'),
+        jsonb_build_object('value', '6-24_hours', 'label', '6-24 hours (Possible Clostridium, Salmonella)'),
+        jsonb_build_object('value', '24-48_hours', 'label', '24-48 hours (Possible Norovirus, E.coli)'),
+        jsonb_build_object('value', '2-5_days', 'label', '2-5 days (Possible Campylobacter, Listeria)'),
+        jsonb_build_object('value', 'unknown', 'label', 'Unknown timing')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'symptom_onset');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'symptom_onset', 'select', 'Symptom Onset Time After Eating', TRUE, 10,
-  'Time between eating and first symptoms - helps identify potential cause.',
-  jsonb_build_array(
-    jsonb_build_object('value', '1-6_hours', 'label', '1-6 hours (Possible Staphylococcus, Bacillus)'),
-    jsonb_build_object('value', '6-24_hours', 'label', '6-24 hours (Possible Clostridium, Salmonella)'),
-    jsonb_build_object('value', '24-48_hours', 'label', '24-48 hours (Possible Norovirus, E.coli)'),
-    jsonb_build_object('value', '2-5_days', 'label', '2-5 days (Possible Campylobacter, Listeria)'),
-    jsonb_build_object('value', 'unknown', 'label', 'Unknown timing')
-  )
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'primary_symptoms', 'select', 'Primary Symptoms Reported', TRUE, 11,
+      'Main symptoms experienced by affected person(s).',
+      jsonb_build_array(
+        jsonb_build_object('value', 'vomiting', 'label', '🤮 Vomiting (often rapid onset)'),
+        jsonb_build_object('value', 'diarrhea', 'label', '💩 Diarrhea'),
+        jsonb_build_object('value', 'nausea', 'label', '😵 Nausea'),
+        jsonb_build_object('value', 'fever', 'label', '🌡️ Fever'),
+        jsonb_build_object('value', 'abdominal_pain', 'label', '🩺 Abdominal Pain'),
+        jsonb_build_object('value', 'other', 'label', '❓ Other Symptoms')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'primary_symptoms');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'primary_symptoms', 'select', 'Primary Symptoms Reported', TRUE, 11,
-  'Main symptoms experienced by affected person(s).',
-  jsonb_build_array(
-    jsonb_build_object('value', 'vomiting', 'label', '🤮 Vomiting (often rapid onset)'),
-    jsonb_build_object('value', 'diarrhea', 'label', '💩 Diarrhea'),
-    jsonb_build_object('value', 'nausea', 'label', '😵 Nausea'),
-    jsonb_build_object('value', 'fever', 'label', '🌡️ Fever'),
-    jsonb_build_object('value', 'abdominal_pain', 'label', '🩺 Abdominal Pain'),
-    jsonb_build_object('value', 'other', 'label', '❓ Other Symptoms')
-  )
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'hospital_treatment', 'pass_fail', 'Hospital Treatment Required?', TRUE, 12,
+      'YES if affected person required hospital treatment or medical attention.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'hospital_treatment');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'hospital_treatment', 'pass_fail', 'Hospital Treatment Required?', TRUE, 12,
-  'YES if affected person required hospital treatment or medical attention.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    -- ============================================================================
+    -- FOOD CONSUMPTION INVESTIGATION
+    -- ============================================================================
 
--- ============================================================================
--- FOOD CONSUMPTION INVESTIGATION
--- ============================================================================
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'suspected_menu_items', 'text', 'Suspected Menu Items', TRUE, 20,
+      'List all menu items consumed by affected person(s). Include specific dishes, ingredients, and preparation details.',
+      'e.g., "Chicken Caesar Salad - contained raw egg in dressing, cooked chicken, fresh lettuce. Consumed at 7:30pm on 15/11/2024"'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'suspected_menu_items');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'suspected_menu_items', 'text', 'Suspected Menu Items', TRUE, 20,
-  'List all menu items consumed by affected person(s). Include specific dishes, ingredients, and preparation details.',
-  'e.g., "Chicken Caesar Salad - contained raw egg in dressing, cooked chicken, fresh lettuce. Consumed at 7:30pm on 15/11/2024"'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'other_affected_persons', 'pass_fail', 'Other People Affected?', TRUE, 21,
+      'YES if other customers or staff reported similar symptoms after consuming same/similar items.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'other_affected_persons');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'other_affected_persons', 'pass_fail', 'Other People Affected?', TRUE, 21,
-  'YES if other customers or staff reported similar symptoms after consuming same/similar items.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'unaffected_comparison', 'text', 'Unaffected Persons Comparison', FALSE, 22,
+      'List people who ate similar items but did not get sick. This helps identify the specific cause.',
+      'e.g., "Table 12 had same chicken salad - no issues. Table 14 had vegetarian option - no issues."'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'unaffected_comparison');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'unaffected_comparison', 'text', 'Unaffected Persons Comparison', FALSE, 22,
-  'List people who ate similar items but did not get sick. This helps identify the specific cause.',
-  'e.g., "Table 12 had same chicken salad - no issues. Table 14 had vegetarian option - no issues."'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    -- ============================================================================
+    -- EVIDENCE PRESERVATION & ACTIONS
+    -- ============================================================================
 
--- ============================================================================
--- EVIDENCE PRESERVATION & ACTIONS
--- ============================================================================
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'samples_preserved', 'pass_fail', 'Food Samples Preserved?', TRUE, 30,
+      'YES if you have isolated and preserved samples of suspected food items.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'samples_preserved');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'samples_preserved', 'pass_fail', 'Food Samples Preserved?', TRUE, 30,
-  'YES if you have isolated and preserved samples of suspected food items.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'eho_notified', 'pass_fail', 'Environmental Health Notified?', TRUE, 31,
+      'YES if incident meets criteria for Environmental Health notification (multiple cases, hospitalization, etc.)'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'eho_notified');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'eho_notified', 'pass_fail', 'Environmental Health Notified?', TRUE, 31,
-  'YES if incident meets criteria for Environmental Health notification (multiple cases, hospitalization, etc.)'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'immediate_corrective_actions', 'text', 'Immediate Corrective Actions', TRUE, 32,
+      'What immediate actions have been taken to prevent further incidents?',
+      'e.g., "Removed suspect batch from service, increased temperature monitoring, staff retraining on specific procedure..."'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'immediate_corrective_actions');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'immediate_corrective_actions', 'text', 'Immediate Corrective Actions', TRUE, 32,
-  'What immediate actions have been taken to prevent further incidents?',
-  'e.g., "Removed suspect batch from service, increased temperature monitoring, staff retraining on specific procedure..."'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    -- ============================================================================
+    -- CUSTOMER MANAGEMENT
+    -- ============================================================================
 
--- ============================================================================
--- CUSTOMER MANAGEMENT
--- ============================================================================
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'customer_response_sent', 'select', 'Customer Response Sent', TRUE, 40,
+      'Which customer communication template has been sent?',
+      jsonb_build_array(
+        jsonb_build_object('value', 'initial_acknowledgment', 'label', 'Template A - Initial Acknowledgment'),
+        jsonb_build_object('value', 'investigation_update', 'label', 'Template B - Investigation Update'),
+        jsonb_build_object('value', 'resolution_offer', 'label', 'Template C - Resolution Offer'),
+        jsonb_build_object('value', 'not_sent', 'label', 'Not Yet Sent')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'customer_response_sent');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'customer_response_sent', 'select', 'Customer Response Sent', TRUE, 40,
-  'Which customer communication template has been sent?',
-  jsonb_build_array(
-    jsonb_build_object('value', 'initial_acknowledgment', 'label', 'Template A - Initial Acknowledgment'),
-    jsonb_build_object('value', 'investigation_update', 'label', 'Template B - Investigation Update'),
-    jsonb_build_object('value', 'resolution_offer', 'label', 'Template C - Resolution Offer'),
-    jsonb_build_object('value', 'not_sent', 'label', 'Not Yet Sent')
-  )
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'compensation_offered', 'select', 'Compensation Offered', FALSE, 41,
+      'What type of compensation has been offered to the customer?',
+      jsonb_build_array(
+        jsonb_build_object('value', 'full_refund', 'label', 'Full Refund'),
+        jsonb_build_object('value', 'voucher', 'label', 'Gift Voucher'),
+        jsonb_build_object('value', 'future_discount', 'label', 'Future Discount'),
+        jsonb_build_object('value', 'goodwill_gesture', 'label', 'Goodwill Gesture (No Admission)'),
+        jsonb_build_object('value', 'none', 'label', 'No Compensation Offered')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'compensation_offered');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'compensation_offered', 'select', 'Compensation Offered', FALSE, 41,
-  'What type of compensation has been offered to the customer?',
-  jsonb_build_array(
-    jsonb_build_object('value', 'full_refund', 'label', 'Full Refund'),
-    jsonb_build_object('value', 'voucher', 'label', 'Gift Voucher'),
-    jsonb_build_object('value', 'future_discount', 'label', 'Future Discount'),
-    jsonb_build_object('value', 'goodwill_gesture', 'label', 'Goodwill Gesture (No Admission)'),
-    jsonb_build_object('value', 'none', 'label', 'No Compensation Offered')
-  )
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    -- ============================================================================
+    -- FOLLOW-UP TASK SELECTION
+    -- ============================================================================
 
--- ============================================================================
--- FOLLOW-UP TASK SELECTION
--- ============================================================================
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'generate_follow_up_tasks', 'pass_fail', 'Generate Follow-up Tasks', TRUE, 50,
+      'YES to automatically create follow-up tasks for investigation, procedure updates, and staff training.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'generate_follow_up_tasks');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'generate_follow_up_tasks', 'pass_fail', 'Generate Follow-up Tasks', TRUE, 50,
-  'YES to automatically create follow-up tasks for investigation, procedure updates, and staff training.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'investigation_complete', 'pass_fail', 'Investigation Complete', TRUE, 60,
+      'PASS when all investigation phases are complete and corrective actions implemented. FAIL if further action required.'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'investigation_complete');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'investigation_complete', 'pass_fail', 'Investigation Complete', TRUE, 60,
-  'PASS when all investigation phases are complete and corrective actions implemented. FAIL if further action required.'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
-
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'final_report_summary', 'text', 'Final Investigation Summary', TRUE, 61,
-  'Brief summary of investigation findings, root cause, and preventive measures implemented.',
-  'e.g., "Investigation concluded issue was likely cross-contamination during preparation. Implemented new colour-coded cutting board system and additional staff training."'
-FROM task_templates WHERE slug = 'food_poisoning_investigation';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'final_report_summary', 'text', 'Final Investigation Summary', TRUE, 61,
+      'Brief summary of investigation findings, root cause, and preventive measures implemented.',
+      'e.g., "Investigation concluded issue was likely cross-contamination during preparation. Implemented new colour-coded cutting board system and additional staff training."'
+    FROM task_templates t
+    WHERE t.slug = 'food_poisoning_investigation'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'final_report_summary');
+  END IF;
+END $$;
 
 -- ============================================================================
 -- VERIFICATION
 -- ============================================================================
-
+-- Verification (only if tables exist)
 DO $$
 DECLARE
   template_record RECORD;
   field_count INTEGER;
 BEGIN
-  SELECT * INTO template_record
-  FROM task_templates 
-  WHERE slug = 'food_poisoning_investigation';
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    SELECT * INTO template_record
+    FROM task_templates 
+    WHERE slug = 'food_poisoning_investigation';
+    
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      SELECT COUNT(*) INTO field_count
+      FROM template_fields
+      WHERE template_id = template_record.id;
+    ELSE
+      field_count := 0;
+    END IF;
   
-  SELECT COUNT(*) INTO field_count
-  FROM template_fields
-  WHERE template_id = template_record.id;
-  
-  IF template_record.id IS NOT NULL THEN
-    RAISE NOTICE '✅ Food Poisoning Investigation template created successfully';
-    RAISE NOTICE '   Template ID: %', template_record.id;
-    RAISE NOTICE '   Features: 5-phase investigation + Customer management + Auto-task generation';
-    RAISE NOTICE '   Template fields: %', field_count;
-    RAISE NOTICE '   ✅ Symptom analysis with pathogen identification guidance';
-    RAISE NOTICE '   ✅ Customer communication templates';
-    RAISE NOTICE '   ✅ Environmental health notification protocols';
-    RAISE NOTICE '   ✅ Evidence preservation procedures';
-    RAISE NOTICE '   ✅ Automatic follow-up task generation';
+    IF template_record.id IS NOT NULL THEN
+      RAISE NOTICE '✅ Food Poisoning Investigation template created successfully';
+      RAISE NOTICE '   Template ID: %', template_record.id;
+      RAISE NOTICE '   Features: 5-phase investigation + Customer management + Auto-task generation';
+      RAISE NOTICE '   Template fields: %', field_count;
+      RAISE NOTICE '   ✅ Symptom analysis with pathogen identification guidance';
+      RAISE NOTICE '   ✅ Customer communication templates';
+      RAISE NOTICE '   ✅ Environmental health notification protocols';
+      RAISE NOTICE '   ✅ Evidence preservation procedures';
+      RAISE NOTICE '   ✅ Automatic follow-up task generation';
+    ELSE
+      RAISE NOTICE '⚠️ Template not found (may not exist yet)';
+    END IF;
   ELSE
-    RAISE WARNING '⚠️ Template creation may have failed. Template not found.';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 

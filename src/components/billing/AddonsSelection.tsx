@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { CheckCircle2, Loader2, Plus, X, ChevronDown, ChevronUp, Copy, Edit2, Save, Zap, TrendingUp, Award, Sparkles } from "lucide-react";
+import { CheckCircle2, Loader2, Plus, X, ChevronDown, ChevronUp, Copy, Edit2, Save, Zap, TrendingUp, Award, Sparkles } from "@/components/ui/icons";
 import { Button, Input } from "@/components/ui";
 import GlassCard from "@/components/ui/GlassCard";
 import { toast } from "sonner";
@@ -185,19 +185,11 @@ export default function AddonsSelection({
       purchasedWithAddons.forEach((p: any) => {
         const perSiteQty = siteQuantitiesMap[p.id] || {};
         
-        if (p.addon?.name?.startsWith('smart_sensor_')) {
-          // If no per-site quantities exist, initialize with quantity_per_site for all sites
-          if (Object.keys(perSiteQty).length === 0 && sites.length > 0) {
-            const defaultQty = p.quantity_per_site || p.quantity || 1;
-            const defaultMap: Record<string, number> = {};
-            sites.forEach(site => {
-              defaultMap[site.id] = defaultQty;
-            });
-            sensorQtyMap[p.addon_id] = defaultMap;
-          } else {
-            sensorQtyMap[p.addon_id] = perSiteQty;
-          }
-        } else if (p.addon?.name?.startsWith('maintenance_kit_')) {
+        if (p.addon?.name?.startsWith('smart_sensor_pack_')) {
+          // Hardware packs don't need per-site quantities
+        } else if (p.addon?.name?.startsWith('smart_sensor_software_') || (p.addon?.name?.startsWith('smart_sensor_') && !p.addon?.name?.startsWith('smart_sensor_pack_'))) {
+          // Software tiers don't need per-site quantities (they're per site automatically)
+        } else if (p.addon?.name?.startsWith('maintenance_kit_') || p.addon?.name?.startsWith('asset_tags_pack_')) {
           // If no per-site quantities exist, initialize with quantity_per_site for all sites
           if (Object.keys(perSiteQty).length === 0 && sites.length > 0) {
             const defaultQty = p.quantity_per_site || p.quantity || 1;
@@ -229,18 +221,15 @@ export default function AddonsSelection({
     let perSiteQuantities: Record<string, number> | null = null;
     let averageQuantity = quantity;
     
-    if (addonName.startsWith('smart_sensor_')) {
-      perSiteQuantities = sensorQuantities[addonId] || {};
-      // Calculate average quantity for backwards compatibility
-      const siteQtyValues = Object.values(perSiteQuantities).filter(q => q > 0);
-      if (siteQtyValues.length > 0) {
-        averageQuantity = Math.round(siteQtyValues.reduce((a, b) => a + b, 0) / siteQtyValues.length);
-      }
-      if (averageQuantity < 1) {
-        toast.error('Please enter at least 1 sensor for at least one site');
-        return;
-      }
-    } else if (addonName.startsWith('maintenance_kit_')) {
+    if (addonName.startsWith('smart_sensor_pack_')) {
+      // Hardware packs are fixed price, no per-site quantities needed
+      perSiteQuantities = null;
+      averageQuantity = 1;
+    } else if (addonName.startsWith('smart_sensor_software_') || (addonName.startsWith('smart_sensor_') && !addonName.startsWith('smart_sensor_pack_'))) {
+      // Software tiers are monthly per site, no per-site quantities needed (they're per site automatically)
+      perSiteQuantities = null;
+      averageQuantity = 1;
+    } else if (addonName.startsWith('maintenance_kit_') || addonName.startsWith('asset_tags_pack_')) {
       perSiteQuantities = tagQuantities[addonId] || {};
       // Calculate average quantity for backwards compatibility
       const siteQtyValues = Object.values(perSiteQuantities).filter(q => q > 0);
@@ -377,7 +366,7 @@ export default function AddonsSelection({
         toast.error('Please enter at least 1 sensor for at least one site');
         return;
       }
-    } else if (addonName.startsWith('maintenance_kit_')) {
+    } else if (addonName.startsWith('maintenance_kit_') || addonName.startsWith('asset_tags_pack_')) {
       perSiteQuantities = tagQuantities[addonId] || {};
       const siteQtyValues = Object.values(perSiteQuantities).filter(q => q > 0);
       if (siteQtyValues.length > 0) {
@@ -485,10 +474,16 @@ export default function AddonsSelection({
       return `£${hardwareCost.toFixed(2)} + £${monthlyCost.toFixed(2)}/mo`;
     }
 
-    // For Maintenance Kits: hardware cost only (one-time)
-    if (addon.name.startsWith('maintenance_kit_')) {
+    // For Asset Tag Packs: hardware cost only (one-time)
+    if (addon.name.startsWith('maintenance_kit_') || addon.name.startsWith('asset_tags_pack_')) {
       const hardwareCost = getHardwareCost(addon, perSiteQuantities);
       return `£${hardwareCost.toFixed(2)}`;
+    }
+
+    // For Asset Tags Software Tiers: monthly management cost only
+    if (addon.name.startsWith('asset_tags_software_')) {
+      const monthlyCost = getMonthlyManagementCost(addon);
+      return `£${monthlyCost.toFixed(2)}/mo`;
     }
 
     // Other addons (white-label reports, etc.)
@@ -519,9 +514,15 @@ export default function AddonsSelection({
       return `Hardware: £${addon.hardware_cost.toFixed(2)}/sensor × ${totalQuantity} total sensors (across ${sitesWithQuantity} sites) = £${getHardwareCost(addon, perSiteQuantities).toFixed(2)} one-time\nManagement: £${addon.monthly_management_cost.toFixed(2)}/site/month × ${activeSiteCount} sites = £${getMonthlyManagementCost(addon).toFixed(2)}/month`;
     }
 
-    // Maintenance Kits: hardware cost only
-    if (addon.name.startsWith('maintenance_kit_') && addon.hardware_cost) {
-      return `£${addon.hardware_cost.toFixed(2)}/tag × ${totalQuantity} total tags (across ${sitesWithQuantity} sites) = £${getHardwareCost(addon, perSiteQuantities).toFixed(2)} one-time`;
+    // Maintenance Kits / Asset Tag Packs: hardware cost only
+    if ((addon.name.startsWith('maintenance_kit_') || addon.name.startsWith('asset_tags_pack_')) && addon.hardware_cost) {
+      return `£${addon.hardware_cost.toFixed(2)} one-time`;
+    }
+
+    // Asset Tags Software Tiers: monthly per site
+    if (addon.name.startsWith('asset_tags_software_') && addon.monthly_management_cost) {
+      const activeSiteCount = siteCount > 0 ? siteCount : (sites.length > 0 ? sites.length : 1);
+      return `£${addon.monthly_management_cost.toFixed(2)}/site/month × ${activeSiteCount} sites = £${getMonthlyManagementCost(addon).toFixed(2)}/month`;
     }
 
     // Other addons
@@ -555,8 +556,8 @@ export default function AddonsSelection({
       return `£${addon.hardware_cost.toFixed(2)}/sensor + £${addon.monthly_management_cost.toFixed(2)}/month per site`;
     }
 
-    // Maintenance Kits: hardware per site
-    if (addon.name.startsWith('maintenance_kit_') && addon.hardware_cost) {
+    // Asset Tag Packs: hardware per site
+    if ((addon.name.startsWith('maintenance_kit_') || addon.name.startsWith('asset_tags_pack_')) && addon.hardware_cost) {
       // Show average hardware per site if quantities vary
       if (perSiteQuantities && typeof perSiteQuantities === 'object') {
         const sitesWithQty = Object.values(perSiteQuantities).filter(qty => qty > 0).length;
@@ -578,15 +579,30 @@ export default function AddonsSelection({
   }
 
   function isAddonInTierGroup(addon: Addon): boolean {
-    return addon.name.startsWith('smart_sensor_') || addon.name.startsWith('maintenance_kit_');
+    return addon.name.startsWith('smart_sensor_pack_') || 
+           addon.name.startsWith('smart_sensor_software_') ||
+           addon.name.startsWith('smart_sensor_') || // Backward compatibility
+           addon.name.startsWith('maintenance_kit_') ||
+           addon.name.startsWith('asset_tags_pack_') ||
+           addon.name.startsWith('asset_tags_software_');
   }
 
   function getTierGroup(addon: Addon): string {
-    if (addon.name.startsWith('smart_sensor_')) {
-      return 'smart_sensor';
+    if (addon.name.startsWith('smart_sensor_pack_')) {
+      return 'smart_sensor_pack';
     }
-    if (addon.name.startsWith('maintenance_kit_')) {
-      return 'maintenance_kit';
+    if (addon.name.startsWith('smart_sensor_software_')) {
+      return 'smart_sensor_software';
+    }
+    if (addon.name.startsWith('smart_sensor_')) {
+      // Backward compatibility - treat old smart_sensor_ as software tier
+      return 'smart_sensor_software';
+    }
+    if (addon.name.startsWith('maintenance_kit_') || addon.name.startsWith('asset_tags_pack_')) {
+      return 'asset_tags_pack';
+    }
+    if (addon.name.startsWith('asset_tags_software_')) {
+      return 'asset_tags_software';
     }
     return '';
   }
@@ -595,8 +611,10 @@ export default function AddonsSelection({
     if (!tierGroup) return false;
     return purchasedAddons.some(p => {
       const addonName = p.addon?.name || '';
-      return (tierGroup === 'smart_sensor' && addonName.startsWith('smart_sensor_')) ||
-             (tierGroup === 'maintenance_kit' && addonName.startsWith('maintenance_kit_'));
+      return (tierGroup === 'smart_sensor_pack' && addonName.startsWith('smart_sensor_pack_')) ||
+             (tierGroup === 'smart_sensor_software' && (addonName.startsWith('smart_sensor_software_') || addonName.startsWith('smart_sensor_'))) ||
+             (tierGroup === 'asset_tags_pack' && (addonName.startsWith('maintenance_kit_') || addonName.startsWith('asset_tags_pack_'))) ||
+             (tierGroup === 'asset_tags_software' && addonName.startsWith('asset_tags_software_'));
     });
   }
 
@@ -604,8 +622,10 @@ export default function AddonsSelection({
     if (!tierGroup) return null;
     const purchased = purchasedAddons.find(p => {
       const addonName = p.addon?.name || '';
-      return (tierGroup === 'smart_sensor' && addonName.startsWith('smart_sensor_')) ||
-             (tierGroup === 'maintenance_kit' && addonName.startsWith('maintenance_kit_'));
+      return (tierGroup === 'smart_sensor_pack' && addonName.startsWith('smart_sensor_pack_')) ||
+             (tierGroup === 'smart_sensor_software' && (addonName.startsWith('smart_sensor_software_') || addonName.startsWith('smart_sensor_'))) ||
+             (tierGroup === 'asset_tags_pack' && (addonName.startsWith('maintenance_kit_') || addonName.startsWith('asset_tags_pack_'))) ||
+             (tierGroup === 'asset_tags_software' && addonName.startsWith('asset_tags_software_'));
     });
     return purchased?.addon_id || null;
   }
@@ -616,21 +636,41 @@ export default function AddonsSelection({
     : addons.filter(a => a.category === selectedCategory);
 
   // Always get tiered addons regardless of category filter
-  // Sort sensor tiers: basic, pro, observatory
-  const smartSensorAddons = addons
-    .filter(a => a.name.startsWith('smart_sensor_'))
+  // Sort sensor hardware packs: starter, standard, professional
+  const smartSensorPackAddons = addons
+    .filter(a => a.name.startsWith('smart_sensor_pack_'))
     .sort((a, b) => {
-      const tierOrder = { 'basic': 1, 'pro': 2, 'observatory': 3 };
+      const tierOrder = { 'starter': 1, 'standard': 2, 'professional': 3 };
+      const aTier = a.name.split('_').pop() || '';
+      const bTier = b.name.split('_').pop() || '';
+      return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
+    });
+
+  // Sort sensor software tiers: essential, professional, business
+  const smartSensorSoftwareAddons = addons
+    .filter(a => a.name.startsWith('smart_sensor_software_') || (a.name.startsWith('smart_sensor_') && !a.name.startsWith('smart_sensor_pack_')))
+    .sort((a, b) => {
+      const tierOrder = { 'essential': 1, 'professional': 2, 'business': 3, 'basic': 1, 'pro': 2, 'observatory': 3 };
       const aTier = a.name.split('_').pop() || '';
       const bTier = b.name.split('_').pop() || '';
       return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
     });
   
-  // Sort maintenance kit tiers: basic, pro, observatory
-  const maintenanceKitAddons = addons
-    .filter(a => a.name.startsWith('maintenance_kit_'))
+  // Sort asset tag pack tiers: starter, professional, premium (backward compatible with maintenance_kit_)
+  const assetTagPackAddons = addons
+    .filter(a => a.name.startsWith('maintenance_kit_') || a.name.startsWith('asset_tags_pack_'))
     .sort((a, b) => {
-      const tierOrder = { 'basic': 1, 'pro': 2, 'observatory': 3 };
+      const tierOrder = { 'basic': 1, 'starter': 1, 'pro': 2, 'professional': 2, 'observatory': 3, 'premium': 3 };
+      const aTier = a.name.split('_').pop() || '';
+      const bTier = b.name.split('_').pop() || '';
+      return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
+    });
+
+  // Sort asset tags software tiers: essential, professional, business
+  const assetTagsSoftwareAddons = addons
+    .filter(a => a.name.startsWith('asset_tags_software_'))
+    .sort((a, b) => {
+      const tierOrder = { 'essential': 1, 'professional': 2, 'business': 3 };
       const aTier = a.name.split('_').pop() || '';
       const bTier = b.name.split('_').pop() || '';
       return (tierOrder[aTier as keyof typeof tierOrder] || 99) - (tierOrder[bTier as keyof typeof tierOrder] || 99);
@@ -639,30 +679,30 @@ export default function AddonsSelection({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[#EC4899]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#D37E91]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">Add-ons & Offers</h2>
-        <p className="text-white/70 text-base leading-relaxed max-w-3xl">
+    <div className="space-y-4 sm:space-y-5 md:space-y-6">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-theme-primary mb-2 sm:mb-3">Add-ons & Offers</h2>
+        <p className="text-theme-secondary text-sm sm:text-base leading-relaxed max-w-3xl">
           Enhance your plan with additional features and services. Choose one tier per category (Smart Sensors and Maintenance Kits).
         </p>
       </div>
 
       {/* Category Filter - only for non-tiered addons */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 overflow-x-auto pb-2">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
               selectedCategory === category
-                ? 'bg-[#EC4899] text-white'
-                : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
+                ? 'bg-[#D37E91] text-white'
+                : 'bg-white/[0.05] text-theme-tertiary hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
             {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -675,7 +715,7 @@ export default function AddonsSelection({
         <div className="space-y-4 mb-10">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <h3 className="text-xl font-bold text-white">Your Active Add-ons</h3>
+            <h3 className="text-xl font-bold text-theme-primary">Your Active Add-ons</h3>
           </div>
           {purchasedAddons.map((purchase) => {
             const qtyPerSite = (purchase as any).quantity_per_site || purchase.quantity || 1;
@@ -698,22 +738,22 @@ export default function AddonsSelection({
                         <CheckCircle2 className="w-5 h-5 text-green-400" />
                       </div>
                       <div>
-                        <h4 className="text-lg font-bold text-white">{purchase.addon.display_name}</h4>
+                        <h4 className="text-lg font-bold text-theme-primary">{purchase.addon.display_name}</h4>
                         <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full mt-1 inline-block">
                           Active
                         </span>
                       </div>
                     </div>
-                    <p className="text-sm text-white/70 mb-4 ml-11">{purchase.addon.description}</p>
+                    <p className="text-sm text-theme-secondary mb-4 ml-11">{purchase.addon.description}</p>
                     <div className="space-y-3 text-sm ml-11">
                       {hardwareTotal && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Hardware Cost (one-time)</span>
-                            <span className="text-lg font-bold text-white">£{parseFloat(hardwareTotal.toString()).toFixed(2)}</span>
+                            <span className="text-theme-secondary">Hardware Cost (one-time)</span>
+                            <span className="text-lg font-bold text-theme-primary">£{parseFloat(hardwareTotal.toString()).toFixed(2)}</span>
                           </div>
-                          {(purchase.addon.name?.startsWith('smart_sensor_') || purchase.addon.name?.startsWith('maintenance_kit_')) && (
-                            <p className="text-xs text-white/50 mt-1.5">
+                          {(purchase.addon.name?.startsWith('smart_sensor_') || purchase.addon.name?.startsWith('maintenance_kit_') || purchase.addon.name?.startsWith('asset_tags_pack_')) && (
+                            <p className="text-xs text-theme-tertiary mt-1.5">
                               {qtyPerSite} {purchase.addon.name?.startsWith('smart_sensor_') ? 'sensors' : 'tags'}/site × {siteCount} sites
                             </p>
                           )}
@@ -722,10 +762,10 @@ export default function AddonsSelection({
                       {monthlyRecurring && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Monthly Management</span>
-                            <span className="text-lg font-bold text-[#EC4899]">£{parseFloat(monthlyRecurring.toString()).toFixed(2)}/month</span>
+                            <span className="text-theme-secondary">Monthly Management</span>
+                            <span className="text-lg font-bold text-[#D37E91]">£{parseFloat(monthlyRecurring.toString()).toFixed(2)}/month</span>
                           </div>
-                          <p className="text-xs text-white/50 mt-1.5">
+                          <p className="text-xs text-theme-tertiary mt-1.5">
                             £{purchase.addon.monthly_management_cost?.toFixed(2) || '0.00'}/site/month × {siteCount} sites
                           </p>
                         </div>
@@ -733,8 +773,8 @@ export default function AddonsSelection({
                       {!hardwareTotal && !monthlyRecurring && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Price</span>
-                            <span className="text-lg font-bold text-white">£{purchase.total_price.toFixed(2)}</span>
+                            <span className="text-theme-secondary">Price</span>
+                            <span className="text-lg font-bold text-theme-primary">£{purchase.total_price.toFixed(2)}</span>
                           </div>
                         </div>
                       )}
@@ -745,7 +785,7 @@ export default function AddonsSelection({
                       variant="outline"
                       size="sm"
                       onClick={() => handleEditAddon(purchase)}
-                      className="border-[#EC4899]/50 text-[#EC4899] hover:bg-[#EC4899]/10 hover:shadow-[0_0_12px_rgba(236,72,153,0.3)] transition-all"
+                      className="border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-module-glow transition-all"
                     >
                       <Edit2 className="w-4 h-4 mr-1.5" />
                       Edit
@@ -771,31 +811,44 @@ export default function AddonsSelection({
       <div className="space-y-6">
         {/* Tiered Addons - Always Show These First */}
         <div className="space-y-8">
-          <div className="bg-gradient-to-r from-[#EC4899]/10 to-transparent border-l-4 border-[#EC4899] rounded-r-lg p-4 mb-6">
+          <div className="bg-gradient-to-r from-[#D37E91]/10 to-transparent border-l-4 border-[#D37E91] rounded-r-lg p-4 mb-6">
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-5 h-5 text-[#EC4899]" />
-              <h3 className="text-2xl font-bold text-white">Smart Sensor Bundles</h3>
+              <Zap className="w-5 h-5 text-[#D37E91]" />
+              <h3 className="text-2xl font-bold text-theme-primary">Smart Temperature Sensors</h3>
             </div>
-            <p className="text-white/70 text-sm ml-7">
-              Choose <strong className="text-white">one tier</strong> for temperature monitoring. All tiers include automatic logging and compliance reports. You can switch tiers at any time.
+            <p className="text-theme-secondary text-sm ml-7 mb-4">
+              Plug-and-play temperature monitoring for fridges, freezers, and prep areas. Automatic logging, instant breach alerts, and EHO-ready compliance reports. Stop worrying about stock losses.
             </p>
+            {/* How It Works - Combined */}
+            <div className="ml-7 mt-4">
+              <div className="bg-gradient-to-r from-[#D37E91]/10 to-blue-500/10 rounded-xl p-4 border border-[#D37E91]/20">
+                <p className="text-sm font-semibold text-theme-primary mb-2 text-center">How It Works:</p>
+                <p className="text-xs text-theme-tertiary text-center">
+                  Choose <strong className="text-theme-primary">one hardware pack</strong> (physical sensors) + <strong className="text-theme-primary">one software tier</strong> (monitoring features). The hardware pack is a one-time purchase, and the software tier is billed monthly per site.
+                </p>
+              </div>
+            </div>
           </div>
-          
-          {smartSensorAddons.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {smartSensorAddons.map((addon) => {
-                const isPurchased = addon.id === getPurchasedTierInGroup('smart_sensor');
-                const isPurchasing = purchasing === addon.id;
-                const hasPurchased = hasTierPurchased('smart_sensor');
-                const isEditing = editingPurchase === addon.id;
-                const purchasedAddon = purchasedAddons.find(p => p.addon_id === addon.id && p.status === 'active');
 
-                const tierIcons = {
-                  'basic': TrendingUp,
-                  'pro': Sparkles,
-                  'observatory': Award,
-                };
-                const TierIcon = tierIcons[addon.name.split('_').pop() as keyof typeof tierIcons] || Zap;
+          {/* Sensor Hardware Packs - One-time purchase */}
+          {smartSensorPackAddons.length > 0 && (
+            <div className="mb-8">
+              <div className="text-center mb-6">
+                <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 1: Choose Your Hardware Pack</h4>
+                <p className="text-theme-tertiary text-sm">One-time purchase • Free replacement for faulty units within warranty period</p>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {smartSensorPackAddons.map((addon) => {
+                  const isPurchased = addon.id === getPurchasedTierInGroup('smart_sensor_pack');
+                  const isPurchasing = purchasing === addon.id;
+                  const hasPurchased = hasTierPurchased('smart_sensor_pack');
+
+                  const tierIcons = {
+                    'starter': TrendingUp,
+                    'standard': Sparkles,
+                    'professional': Award,
+                  };
+                  const TierIcon = tierIcons[addon.name.split('_').pop() as keyof typeof tierIcons] || Zap;
                 
                 return (
                   <GlassCard
@@ -803,12 +856,12 @@ export default function AddonsSelection({
                     key={addon.id}
                     className={`flex flex-col relative transition-all duration-300 ${
                       editingPurchase === addon.id
-                        ? 'border-2 border-[#EC4899] shadow-[0_0_24px_rgba(236,72,153,0.5)] scale-[1.02]'
+                        ? 'border-2 border-[#D37E91] shadow-[0_0_24px_rgba(211,126,145,0.5)] scale-[1.02]'
                         : isPurchased
                         ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                         : hasPurchased
                         ? 'opacity-60 border-white/20'
-                        : 'border border-white/20 hover:border-[#EC4899]/60 hover:shadow-[0_0_20px_rgba(236,72,153,0.25)] hover:scale-[1.01] cursor-pointer'
+                        : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                     }`}
                   >
                     {isPurchased && (
@@ -817,8 +870,8 @@ export default function AddonsSelection({
                         Active
                       </div>
                     )}
-                    {addon.name.includes('pro') && !isPurchased && !hasPurchased && (
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#EC4899] to-pink-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                    {addon.name.includes('standard') && !isPurchased && !hasPurchased && (
+                      <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#D37E91] to-[#D37E91] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                         Most Popular
                       </div>
                     )}
@@ -826,278 +879,55 @@ export default function AddonsSelection({
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
                         <div className={`p-2.5 rounded-xl ${
-                          isPurchased ? 'bg-green-500/20' : 'bg-[#EC4899]/20'
+                          isPurchased ? 'bg-green-500/20' : 'bg-[#D37E91]/20'
                         }`}>
                           <TierIcon className={`w-5 h-5 ${
-                            isPurchased ? 'text-green-400' : 'text-[#EC4899]'
+                            isPurchased ? 'text-green-400' : 'text-[#D37E91]'
                           }`} />
                         </div>
-                        <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                        <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                       </div>
-                      <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                      <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
-                      {/* Features List - Match pricing page */}
+                      {/* Features List */}
                       {addon.features && addon.features.length > 0 && (
                         <div className="mb-6">
-                          <p className="text-sm font-medium text-white mb-3">
-                            {addon.name.includes('pro') || addon.name.includes('observatory') 
-                              ? 'Everything in Basic plus:' 
-                              : 'What you get:'}
-                          </p>
+                          <p className="text-sm font-medium text-theme-primary mb-3">What's included:</p>
                           <ul className="space-y-2">
                             {addon.features.slice(0, 6).map((feature: string, i: number) => (
                               <li key={i} className="flex items-start gap-2">
                                 <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm text-gray-300">{feature}</span>
+                                <span className="text-sm text-theme-tertiary">{feature}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                       )}
 
-                      {/* Per-Site Quantity Configuration */}
-                      <div className="mb-4">
-                        {sites.length > 0 ? (
-                          <div className="space-y-3">
-                            {/* Summary Header - Always Visible */}
-                            <div 
-                              className="flex items-center justify-between cursor-pointer bg-white/[0.03] rounded-lg p-3 border border-white/[0.1] hover:bg-white/[0.05] transition-colors"
-                              onClick={() => setExpandedSites(prev => ({
-                                ...prev,
-                                [addon.id]: !prev[addon.id]
-                              }))}
-                            >
-                              <div className="flex-1">
-                                <label className="block text-sm font-medium text-white/90 mb-1">
-                                  Sensor quantities per site
-                                </label>
-                                {(() => {
-                                  const quantities = sensorQuantities[addon.id] || {};
-                                  const configuredSites = Object.values(quantities).filter(qty => qty > 0).length;
-                                  const totalSensors = Object.values(quantities).reduce((sum, qty) => sum + (qty || 0), 0);
-                                  
-                                  if (configuredSites === 0) {
-                                    return <p className="text-xs text-white/50">Click to configure quantities</p>;
-                                  }
-                                  return (
-                                    <p className="text-xs text-white/60">
-                                      {configuredSites} of {sites.length} sites configured • {totalSensors} total sensors
-                                    </p>
-                                  );
-                                })()}
-                              </div>
-                              {expandedSites[addon.id] ? (
-                                <ChevronUp className="w-4 h-4 text-white/60 ml-2" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4 text-white/60 ml-2" />
-                              )}
-                            </div>
-
-                            {/* Expanded Site Quantity Inputs */}
-                            {expandedSites[addon.id] && (
-                              <div className="space-y-3 pt-2 border-t border-white/10">
-                                {/* Quick Action: Apply to All */}
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    placeholder="Apply same quantity to all sites"
-                                    className="bg-white/[0.05] border-white/[0.1] text-white text-sm flex-1"
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        const val = parseInt((e.target as HTMLInputElement).value) || 0;
-                                        if (val >= 0) {
-                                          const defaultMap: Record<string, number> = {};
-                                          sites.forEach(site => {
-                                            defaultMap[site.id] = val;
-                                          });
-                                          setSensorQuantities(prev => ({
-                                            ...prev,
-                                            [addon.id]: defaultMap,
-                                          }));
-                                          (e.target as HTMLInputElement).value = '';
-                                          toast.success(`Applied ${val} sensors to all ${sites.length} sites`);
-                                        }
-                                      }
-                                    }}
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      const input = document.querySelector(`input[placeholder*="Apply same quantity to all sites"]`) as HTMLInputElement;
-                                      const val = parseInt(input?.value || '0') || 0;
-                                      if (val >= 0 && input) {
-                                        const defaultMap: Record<string, number> = {};
-                                        sites.forEach(site => {
-                                          defaultMap[site.id] = val;
-                                        });
-                                        setSensorQuantities(prev => ({
-                                          ...prev,
-                                          [addon.id]: defaultMap,
-                                        }));
-                                        input.value = '';
-                                        toast.success(`Applied ${val} sensors to all ${sites.length} sites`);
-                                      }
-                                    }}
-                                    className="border-white/[0.2] text-white/70 hover:bg-white/[0.1] whitespace-nowrap"
-                                  >
-                                    <Copy className="w-3 h-3 mr-1" />
-                                    Apply to All
-                                  </Button>
-                                </div>
-
-                                {/* Site Quantity Table */}
-                                <div className="bg-white/[0.03] rounded-lg border border-white/[0.1]">
-                                  <div className="space-y-0">
-                                    <div className="divide-y divide-white/10">
-                                      {sites.map((site) => {
-                                        const siteQty = sensorQuantities[addon.id]?.[site.id] || 0;
-                                        return (
-                                          <div key={site.id} className="flex items-center justify-between px-4 py-3 hover:bg-white/[0.05] transition-colors">
-                                            <label className="text-sm text-white/80 flex-1 min-w-0 pr-4">
-                                              {site.name}
-                                            </label>
-                                            <div className="flex items-center gap-3">
-                                              <Input
-                                                type="number"
-                                                min="0"
-                                                value={siteQty || ''}
-                                                onChange={(e) => {
-                                                  const val = parseInt(e.target.value) || 0;
-                                                  setSensorQuantities(prev => {
-                                                    const addonQty = prev[addon.id] || {};
-                                                    return {
-                                                      ...prev,
-                                                      [addon.id]: {
-                                                        ...addonQty,
-                                                        [site.id]: val,
-                                                      },
-                                                    };
-                                                  });
-                                                }}
-                                                placeholder="0"
-                                                className="bg-white/[0.08] border-white/[0.15] text-white w-24 text-sm text-center"
-                                                onClick={(e) => e.stopPropagation()}
-                                              />
-                                              <span className="text-xs text-white/60 min-w-[60px] text-right">
-                                                {siteQty > 0 ? `£${((addon.hardware_cost || 0) * siteQty).toFixed(2)}` : '-'}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="bg-white/[0.05] rounded-lg p-3 border border-white/10">
-                            <p className="text-sm text-white/60">No sites available. Add sites first to configure sensor quantities.</p>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Pricing - Match pricing page structure */}
+                      {/* Pricing - Hardware packs are fixed price */}
                       <div className="mb-6">
-                        <div className="bg-gradient-to-br from-[#EC4899]/20 to-[#EC4899]/10 rounded-xl p-6 border-2 border-[#EC4899]/30 text-center">
-                          {addon.monthly_management_cost ? (
+                        <div className="bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 rounded-xl p-6 border-2 border-[#D37E91]/30 text-center">
+                          {addon.hardware_cost ? (
                             <>
-                              <p className="text-3xl font-bold text-white mb-1">
-                                £{addon.monthly_management_cost.toFixed(0)}
-                              </p>
-                              <p className="text-sm text-white/70 mb-2">per site / month</p>
-                              {addon.hardware_cost && (
-                                <p className="text-xs text-white/60 mt-2 pt-2 border-t border-white/10">
-                                  + £{addon.hardware_cost.toFixed(0)}/sensor one-time hardware
-                                </p>
-                              )}
-                            </>
-                          ) : addon.hardware_cost ? (
-                            <>
-                              <p className="text-3xl font-bold text-white mb-1">
+                              <p className="text-4xl font-bold text-theme-primary mb-2">
                                 £{addon.hardware_cost.toFixed(0)}
                               </p>
-                              <p className="text-sm text-white/70">per site (one-time)</p>
+                              <p className="text-sm text-theme-secondary">one-time</p>
                             </>
-                          ) : (
+                          ) : addon.price ? (
                             <>
-                              <p className="text-3xl font-bold text-white mb-1">
+                              <p className="text-4xl font-bold text-theme-primary mb-2">
                                 £{addon.price.toFixed(0)}
                               </p>
-                              <p className="text-sm text-white/70">
-                                {addon.price_type === 'monthly' ? 'per month' : 'one-time'}
-                              </p>
+                              <p className="text-sm text-theme-secondary">one-time</p>
                             </>
-                          )}
+                          ) : null}
                         </div>
-                        
-                        {/* Hardware Cost Breakdown - Only show if quantities configured */}
-                        {addon.hardware_cost && (() => {
-                          const quantities = sensorQuantities[addon.id] || {};
-                          const sitesWithQty = Object.entries(quantities).filter(([_, qty]) => qty > 0);
-                          
-                          if (sitesWithQty.length === 0) {
-                            return null;
-                          }
-                          
-                          const totalQty = sitesWithQty.reduce((sum, [_, qty]) => sum + (qty || 0), 0);
-                          const totalHardware = getTotalOneTimeCost(addon, quantities);
-                          
-                          return (
-                            <div className="mt-4 bg-white/[0.05] rounded-lg p-4 border border-white/10">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm text-white/70">Total Hardware Cost</span>
-                                <span className="text-xl font-bold text-white">£{totalHardware.toFixed(2)}</span>
-                              </div>
-                              <p className="text-xs text-white/50">
-                                {totalQty} sensors × £{addon.hardware_cost.toFixed(0)}/sensor
-                              </p>
-                            </div>
-                          );
-                        })()}
                       </div>
                     </div>
 
                     <div className="mt-auto pt-5 border-t border-white/15">
-                      {isEditing && purchasedAddon ? (
-                        <div className="space-y-2">
-                          <Button
-                            variant="outline"
-                            fullWidth
-                            onClick={() => handleUpdateAddon(purchasedAddon.id, addon.id, addon.name)}
-                            disabled={isPurchasing || !sensorQuantities[addon.id] || Object.values(sensorQuantities[addon.id] || {}).every(qty => qty < 1)}
-                            className="border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {isPurchasing ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Saving...
-                              </>
-                            ) : (
-                              <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save Changes
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            fullWidth
-                            onClick={() => {
-                              setEditingPurchase(null);
-                              loadData(); // Reset quantities to original
-                            }}
-                            disabled={isPurchasing}
-                            className="border-white/20 text-white/60 hover:bg-white/10"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      ) : isPurchased ? (
+                      {isPurchased ? (
                         <Button variant="outline" fullWidth disabled className="border-green-500/50 text-green-400">
                           ✓ Active
                         </Button>
@@ -1110,54 +940,19 @@ export default function AddonsSelection({
                         <Button
                           variant="outline"
                           fullWidth
-                          onClick={async () => {
-                            // If switching tiers, load existing quantities from the purchased tier
-                            if (hasPurchased) {
-                              const currentPurchased = purchasedAddons.find(p => 
-                                p.addon?.name?.startsWith('smart_sensor_') && p.status === 'active'
-                              );
-                              
-                              if (currentPurchased) {
-                                const { data: existingQuantities } = await supabase
-                                  .from('company_addon_site_quantities')
-                                  .select('site_id, quantity')
-                                  .eq('company_addon_purchase_id', currentPurchased.id);
-                                
-                                if (existingQuantities && existingQuantities.length > 0) {
-                                  const qtyMap: Record<string, number> = {};
-                                  existingQuantities.forEach(sq => {
-                                    qtyMap[sq.site_id] = sq.quantity;
-                                  });
-                                  setSensorQuantities(prev => ({ ...prev, [addon.id]: qtyMap }));
-                                  setExpandedSites(prev => ({ ...prev, [addon.id]: true }));
-                                } else if (currentPurchased.quantity_per_site) {
-                                  const defaultQty = currentPurchased.quantity_per_site || currentPurchased.quantity || 1;
-                                  const defaultMap: Record<string, number> = {};
-                                  sites.forEach(site => {
-                                    defaultMap[site.id] = defaultQty;
-                                  });
-                                  setSensorQuantities(prev => ({ ...prev, [addon.id]: defaultMap }));
-                                }
-                              }
-                              // Wait for state update
-                              await new Promise(resolve => setTimeout(resolve, 100));
-                            }
-                            
-                            // Proceed with purchase
-                            handlePurchaseAddon(addon.id, addon.name, 1);
-                          }}
+                          onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
                           disabled={isPurchasing}
-                          className="bg-[#EC4899] text-white border-[#EC4899] hover:bg-[#EC4899]/90 hover:shadow-[0_0_16px_rgba(236,72,153,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                          className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                         >
                           {hasPurchased ? (
                             <>
                               <Plus className="w-5 h-5 mr-2" />
-                              Switch to This Tier
+                              Switch to This Pack
                             </>
                           ) : (
                             <>
                               <Plus className="w-5 h-5 mr-2" />
-                              Select This Tier
+                              Select This Pack
                             </>
                           )}
                         </Button>
@@ -1165,32 +960,224 @@ export default function AddonsSelection({
                     </div>
                   </GlassCard>
                 );
-              })}
+                })}
+              </div>
             </div>
           )}
+
+            {/* Connecting Arrow/Divider */}
+            {smartSensorPackAddons.length > 0 && smartSensorSoftwareAddons.length > 0 && (
+              <div className="flex items-center justify-center my-8">
+                <div className="flex items-center gap-4">
+                  <div className="h-px bg-gradient-to-r from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
+                  <div className="bg-[#D37E91]/20 border border-[#D37E91]/40 rounded-full px-3 py-1.5">
+                    <span className="text-xs sm:text-sm font-semibold text-theme-primary">+</span>
+                  </div>
+                  <div className="h-px bg-gradient-to-l from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Monitoring Software Tiers - Monthly per site */}
+            {smartSensorSoftwareAddons.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-white/10">
+                <div className="text-center mb-6">
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 2: Choose Your Software Tier</h4>
+                  <p className="text-theme-tertiary text-sm">Monthly per site • Cancel anytime • Works with any hardware pack</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {smartSensorSoftwareAddons.map((addon) => {
+                    const isPurchased = addon.id === getPurchasedTierInGroup('smart_sensor_software');
+                    const isPurchasing = purchasing === addon.id;
+                    const hasPurchased = hasTierPurchased('smart_sensor_software');
+
+                    const tierIcons = {
+                      'essential': TrendingUp,
+                      'professional': Sparkles,
+                      'business': Award,
+                      'basic': TrendingUp, // Backward compatibility
+                      'pro': Sparkles,
+                      'observatory': Award,
+                    };
+                    const TierIcon = tierIcons[addon.name.split('_').pop() as keyof typeof tierIcons] || Zap;
+
+                    return (
+                      <GlassCard
+                        key={addon.id}
+                        className={`flex flex-col relative transition-all duration-300 ${
+                          isPurchased
+                            ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
+                            : hasPurchased
+                            ? 'opacity-60 border-white/20'
+                            : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
+                        }`}
+                      >
+                        {isPurchased && (
+                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-green-400 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Active
+                          </div>
+                        )}
+                        {(addon.name.includes('professional') || addon.name.includes('pro')) && !isPurchased && !hasPurchased && (
+                          <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#D37E91] to-[#D37E91] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                            Most Popular
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className={`p-2.5 rounded-xl ${
+                              isPurchased ? 'bg-green-500/20' : 'bg-[#D37E91]/20'
+                            }`}>
+                              <TierIcon className={`w-5 h-5 ${
+                                isPurchased ? 'text-green-400' : 'text-[#D37E91]'
+                              }`} />
+                            </div>
+                            <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
+                          </div>
+                          <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
+
+                          {/* Features List */}
+                          {addon.features && addon.features.length > 0 && (
+                            <div className="mb-6">
+                              <p className="text-sm font-medium text-theme-primary mb-3">
+                                {(addon.name.includes('professional') || addon.name.includes('pro') || addon.name.includes('business') || addon.name.includes('observatory'))
+                                  ? addon.name.includes('business') || addon.name.includes('observatory')
+                                    ? 'Everything in Professional, plus:'
+                                    : 'Everything in Essential, plus:'
+                                  : 'Features:'}
+                              </p>
+                              <ul className="space-y-2">
+                                {addon.features.slice(0, 6).map((feature: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-theme-tertiary">{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Pricing - Monthly per site */}
+                          <div className="mb-6">
+                            <div className="bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 rounded-xl p-6 border-2 border-[#D37E91]/30 text-center">
+                              {addon.monthly_management_cost ? (
+                                <>
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
+                                    £{addon.monthly_management_cost.toFixed(0)}
+                                  </p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
+                                </>
+                              ) : addon.price ? (
+                                <>
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
+                                    £{addon.price.toFixed(0)}
+                                  </p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
+                                </>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-auto pt-5 border-t border-white/15">
+                          {isPurchased ? (
+                            <Button variant="outline" fullWidth disabled className="border-green-500/50 text-green-400">
+                              ✓ Active
+                            </Button>
+                          ) : isPurchasing ? (
+                            <Button variant="outline" fullWidth disabled>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {hasPurchased ? 'Switching...' : 'Adding...'}
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              fullWidth
+                              onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
+                              disabled={isPurchasing}
+                              className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                            >
+                              {hasPurchased ? (
+                                <>
+                                  <Plus className="w-5 h-5 mr-2" />
+                                  Switch to This Tier
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="w-5 h-5 mr-2" />
+                                  Select This Tier
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      </GlassCard>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="pt-8 border-t border-white/15 mt-8">
             <div className="bg-gradient-to-r from-blue-500/10 to-transparent border-l-4 border-blue-500 rounded-r-lg p-4 mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-5 h-5 text-blue-400" />
-                <h3 className="text-2xl font-bold text-white">Maintenance Hardware Kits</h3>
+                <h3 className="text-2xl font-bold text-theme-primary">Asset Tags</h3>
               </div>
-              <p className="text-white/70 text-sm ml-7">
-                Choose <strong className="text-white">one tier</strong> for asset tagging. Give every asset a digital passport for fault reporting and PPM check-ins. You can switch tiers at any time.
+              <p className="text-theme-secondary text-sm ml-7 mb-4">
+                Give your equipment a digital passport. Physical tags that staff and contractors scan to access service history, report faults, and log maintenance visits. No more chasing paperwork or forgotten serial numbers.
               </p>
+              {/* How It Works - Combined */}
+              <div className="ml-7 mt-4">
+                <div className="bg-gradient-to-r from-[#D37E91]/10 to-blue-500/10 rounded-xl p-4 border border-[#D37E91]/20">
+                  <p className="text-sm font-semibold text-theme-primary mb-2 text-center">How It Works:</p>
+                  <p className="text-xs text-theme-tertiary text-center mb-3">
+                    Choose <strong className="text-theme-primary">one tag pack</strong> (physical tags) + <strong className="text-theme-primary">one software tier</strong> (scanning features). The tag pack is a one-time purchase, and the software tier is billed monthly per site.
+                  </p>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-left mt-3">
+                    <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                      <p className="text-xs font-semibold text-theme-primary mb-1">1. Choose</p>
+                      <p className="text-xs text-theme-tertiary">Select tag pack & software tier</p>
+                    </div>
+                    <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                      <p className="text-xs font-semibold text-theme-primary mb-1">2. Ship</p>
+                      <p className="text-xs text-theme-tertiary">We send tags with setup guide</p>
+                    </div>
+                    <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                      <p className="text-xs font-semibold text-theme-primary mb-1">3. Link</p>
+                      <p className="text-xs text-theme-tertiary">Connect tags to assets in Opsly</p>
+                    </div>
+                    <div className="bg-white/8 rounded-lg p-2 border border-white/20">
+                      <p className="text-xs font-semibold text-theme-primary mb-1">4. Scan</p>
+                      <p className="text-xs text-theme-tertiary">Staff & contractors access everything</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            {maintenanceKitAddons.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                {maintenanceKitAddons.map((addon) => {
-                  const isPurchased = addon.id === getPurchasedTierInGroup('maintenance_kit');
+
+            {/* Asset Tag Packs - One-time purchase */}
+            {assetTagPackAddons.length > 0 && (
+              <div className="mb-8">
+                <div className="text-center mb-6">
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 1: Choose Your Tag Pack</h4>
+                  <p className="text-theme-tertiary text-sm">One-time purchase • Free replacement tags included</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                  {assetTagPackAddons.map((addon) => {
+                  const isPurchased = addon.id === getPurchasedTierInGroup('asset_tags_pack');
                   const isPurchasing = purchasing === addon.id;
-                  const hasPurchased = hasTierPurchased('maintenance_kit');
+                  const hasPurchased = hasTierPurchased('asset_tags_pack');
 
                   const tierIcons = {
                     'basic': TrendingUp,
+                    'starter': TrendingUp,
                     'pro': Sparkles,
+                    'professional': Sparkles,
                     'observatory': Award,
+                    'premium': Award,
                   };
                   const TierIcon = tierIcons[addon.name.split('_').pop() as keyof typeof tierIcons] || Zap;
 
@@ -1202,7 +1189,7 @@ export default function AddonsSelection({
                           ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                           : hasPurchased
                           ? 'opacity-60 border-white/20'
-                          : 'border border-white/20 hover:border-blue-500/60 hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:scale-[1.01] cursor-pointer'
+                          : 'border border-white/20 hover:border-blue-500/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                       }`}
                     >
                       {isPurchased && (
@@ -1211,7 +1198,7 @@ export default function AddonsSelection({
                           Active
                         </div>
                       )}
-                      {addon.name.includes('pro') && !isPurchased && !hasPurchased && (
+                      {(addon.name.includes('pro') || addon.name.includes('professional')) && !isPurchased && !hasPurchased && (
                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">
                           Most Popular
                         </div>
@@ -1226,222 +1213,48 @@ export default function AddonsSelection({
                               isPurchased ? 'text-green-400' : 'text-blue-400'
                             }`} />
                           </div>
-                          <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                          <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                         </div>
-                        <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                        <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
                         {/* Features List - Match pricing page */}
                         {addon.features && addon.features.length > 0 && (
                           <div className="mb-6">
-                            <p className="text-sm font-medium text-white mb-3">
-                              {addon.name.includes('pro') || addon.name.includes('observatory') 
-                                ? 'Everything in Basic plus:' 
+                            <p className="text-sm font-medium text-theme-primary mb-3">
+                              {(addon.name.includes('pro') || addon.name.includes('professional') || addon.name.includes('observatory') || addon.name.includes('premium'))
+                                ? 'Everything in Starter plus:' 
                                 : 'What\'s included:'}
                             </p>
                             <ul className="space-y-2">
                               {addon.features.slice(0, 6).map((feature: string, i: number) => (
                                 <li key={i} className="flex items-start gap-2">
                                   <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                  <span className="text-sm text-gray-300">{feature}</span>
+                                  <span className="text-sm text-theme-tertiary">{feature}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
                         )}
 
-                        {/* Per-Site Quantity Configuration */}
-                        <div className="mb-4">
-                          {sites.length > 0 ? (
-                            <div className="space-y-3">
-                              {/* Summary Header - Always Visible */}
-                              <div 
-                                className="flex items-center justify-between cursor-pointer bg-white/[0.03] rounded-lg p-3 border border-white/[0.1] hover:bg-white/[0.05] transition-colors"
-                                onClick={() => setExpandedSites(prev => ({
-                                  ...prev,
-                                  [`tag_${addon.id}`]: !prev[`tag_${addon.id}`]
-                                }))}
-                              >
-                                <div className="flex-1">
-                                  <label className="block text-sm font-medium text-white/90 mb-1">
-                                    Tag quantities per site
-                                  </label>
-                                  {(() => {
-                                    const quantities = tagQuantities[addon.id] || {};
-                                    const configuredSites = Object.values(quantities).filter(qty => qty > 0).length;
-                                    const totalTags = Object.values(quantities).reduce((sum, qty) => sum + (qty || 0), 0);
-                                    
-                                    if (configuredSites === 0) {
-                                      return <p className="text-xs text-white/50">Click to configure quantities</p>;
-                                    }
-                                    return (
-                                      <p className="text-xs text-white/60">
-                                        {configuredSites} of {sites.length} sites configured • {totalTags} total tags
-                                      </p>
-                                    );
-                                  })()}
-                                </div>
-                                {expandedSites[`tag_${addon.id}`] ? (
-                                  <ChevronUp className="w-4 h-4 text-white/60 ml-2" />
-                                ) : (
-                                  <ChevronDown className="w-4 h-4 text-white/60 ml-2" />
-                                )}
-                              </div>
-
-                              {/* Expanded Site Quantity Inputs */}
-                              {expandedSites[`tag_${addon.id}`] && (
-                                <div className="space-y-3 pt-2 border-t border-white/10">
-                                  {/* Quick Action: Apply to All */}
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      placeholder="Apply same quantity to all sites"
-                                      className="bg-white/[0.05] border-white/[0.1] text-white text-sm flex-1"
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          const val = parseInt((e.target as HTMLInputElement).value) || 0;
-                                          if (val >= 0) {
-                                            const defaultMap: Record<string, number> = {};
-                                            sites.forEach(site => {
-                                              defaultMap[site.id] = val;
-                                            });
-                                            setTagQuantities(prev => ({
-                                              ...prev,
-                                              [addon.id]: defaultMap,
-                                            }));
-                                            (e.target as HTMLInputElement).value = '';
-                                            toast.success(`Applied ${val} tags to all ${sites.length} sites`);
-                                          }
-                                        }
-                                      }}
-                                    />
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        const inputs = Array.from(document.querySelectorAll(`input[placeholder*="Apply same quantity to all sites"]`)) as HTMLInputElement[];
-                                        const input = inputs[inputs.length - 1]; // Get the last one (this section)
-                                        const val = parseInt(input?.value || '0') || 0;
-                                        if (val >= 0 && input) {
-                                          const defaultMap: Record<string, number> = {};
-                                          sites.forEach(site => {
-                                            defaultMap[site.id] = val;
-                                          });
-                                          setTagQuantities(prev => ({
-                                            ...prev,
-                                            [addon.id]: defaultMap,
-                                          }));
-                                          input.value = '';
-                                          toast.success(`Applied ${val} tags to all ${sites.length} sites`);
-                                        }
-                                      }}
-                                      className="border-white/[0.2] text-white/70 hover:bg-white/[0.1] whitespace-nowrap"
-                                    >
-                                      <Copy className="w-3 h-3 mr-1" />
-                                      Apply to All
-                                    </Button>
-                                  </div>
-
-                                  {/* Site Quantity Table */}
-                                  <div className="bg-white/[0.03] rounded-lg border border-white/[0.1]">
-                                    <div className="space-y-0">
-                                      <div className="divide-y divide-white/10">
-                                        {sites.map((site) => {
-                                          const siteQty = tagQuantities[addon.id]?.[site.id] || 0;
-                                          return (
-                                            <div key={site.id} className="flex items-center justify-between px-4 py-3 hover:bg-white/[0.05] transition-colors">
-                                              <label className="text-sm text-white/80 flex-1 min-w-0 pr-4">
-                                                {site.name}
-                                              </label>
-                                              <div className="flex items-center gap-3">
-                                                <Input
-                                                  type="number"
-                                                  min="0"
-                                                  value={siteQty || ''}
-                                                  onChange={(e) => {
-                                                    const val = parseInt(e.target.value) || 0;
-                                                    setTagQuantities(prev => {
-                                                      const addonQty = prev[addon.id] || {};
-                                                      return {
-                                                        ...prev,
-                                                        [addon.id]: {
-                                                          ...addonQty,
-                                                          [site.id]: val,
-                                                        },
-                                                      };
-                                                    });
-                                                  }}
-                                                  placeholder="0"
-                                                  className="bg-white/[0.08] border-white/[0.15] text-white w-24 text-sm text-center"
-                                                  onClick={(e) => e.stopPropagation()}
-                                                />
-                                                <span className="text-xs text-white/60 min-w-[60px] text-right">
-                                                  {siteQty > 0 ? `£${((addon.hardware_cost || 0) * siteQty).toFixed(2)}` : '-'}
-                                                </span>
-                                              </div>
-                                            </div>
-                                          );
-                                        })}
-                                    </div>
-                                  </div>
-                                </div>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="bg-white/[0.05] rounded-lg p-3 border border-white/10">
-                              <p className="text-sm text-white/60">No sites available. Add sites first to configure tag quantities.</p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Pricing - Match pricing page structure */}
+                        {/* Pricing - Tag packs are fixed price */}
                         <div className="mb-6">
                           <div className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl p-6 border-2 border-blue-500/30 text-center">
                             {addon.hardware_cost ? (
                               <>
-                                <p className="text-3xl font-bold text-white mb-1">
+                                <p className="text-4xl font-bold text-theme-primary mb-2">
                                   £{addon.hardware_cost.toFixed(0)}
                                 </p>
-                                <p className="text-sm text-white/70">per site (one-time)</p>
+                                <p className="text-sm text-theme-secondary">one-time</p>
                               </>
-                            ) : (
+                            ) : addon.price ? (
                               <>
-                                <p className="text-3xl font-bold text-white mb-1">
+                                <p className="text-4xl font-bold text-theme-primary mb-2">
                                   £{addon.price.toFixed(0)}
                                 </p>
-                                <p className="text-sm text-white/70">
-                                  {addon.price_type === 'monthly' ? 'per month' : 'one-time'}
-                                </p>
+                                <p className="text-sm text-theme-secondary">one-time</p>
                               </>
-                            )}
+                            ) : null}
                           </div>
-                          
-                          {/* Hardware Cost Breakdown - Only show if quantities configured */}
-                          {addon.hardware_cost && (() => {
-                            const quantities = tagQuantities[addon.id] || {};
-                            const sitesWithQty = Object.entries(quantities).filter(([_, qty]) => qty > 0);
-                            
-                            if (sitesWithQty.length === 0) {
-                              return null;
-                            }
-                            
-                            const totalQty = sitesWithQty.reduce((sum, [_, qty]) => sum + (qty || 0), 0);
-                            const totalHardware = getTotalOneTimeCost(addon, quantities);
-                            
-                            return (
-                              <div className="mt-4 bg-white/[0.05] rounded-lg p-4 border border-white/10">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm text-white/70">Total Hardware Cost</span>
-                                  <span className="text-xl font-bold text-white">£{totalHardware.toFixed(2)}</span>
-                                </div>
-                                <p className="text-xs text-white/50">
-                                  {totalQty} tags × £{addon.hardware_cost.toFixed(0)}/tag
-                                </p>
-                              </div>
-                            );
-                          })()}
                         </div>
 
                       </div>
@@ -1464,7 +1277,7 @@ export default function AddonsSelection({
                               // If switching tiers, load existing quantities from the purchased tier
                               if (hasPurchased) {
                                 const currentPurchased = purchasedAddons.find(p => 
-                                  p.addon?.name?.startsWith('maintenance_kit_') && p.status === 'active'
+                                  (p.addon?.name?.startsWith('maintenance_kit_') || p.addon?.name?.startsWith('asset_tags_pack_')) && p.status === 'active'
                                 );
                                 
                                 if (currentPurchased) {
@@ -1497,7 +1310,7 @@ export default function AddonsSelection({
                               handlePurchaseAddon(addon.id, addon.name, 1);
                             }}
                             disabled={isPurchasing}
-                            className="bg-blue-500 text-white border-blue-500 hover:bg-blue-500/90 hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                            className="bg-blue-500 text-white border-blue-500 hover:bg-module-fg/10 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                           >
                             {hasPurchased ? (
                               <>
@@ -1517,17 +1330,177 @@ export default function AddonsSelection({
                   );
                 })}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
-        {/* Non-tiered Add-ons */}
-        {filteredAddons.filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_')).length > 0 && (
+            {/* Connecting Arrow/Divider */}
+            {assetTagPackAddons.length > 0 && assetTagsSoftwareAddons.length > 0 && (
+              <div className="flex items-center justify-center my-8">
+                <div className="flex items-center gap-4">
+                  <div className="h-px bg-gradient-to-r from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
+                  <div className="bg-[#D37E91]/20 border border-[#D37E91]/40 rounded-full px-3 py-1.5">
+                    <span className="text-xs sm:text-sm font-semibold text-theme-primary">+</span>
+                  </div>
+                  <div className="h-px bg-gradient-to-l from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Asset Tags Software Tiers - Monthly per site */}
+            {assetTagsSoftwareAddons.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-white/10">
+                <div className="text-center mb-6">
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 2: Choose Your Software Tier</h4>
+                  <p className="text-theme-tertiary text-sm">Monthly per site • Cancel anytime • Works with any tag pack</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {assetTagsSoftwareAddons.map((addon) => {
+                    const isPurchased = addon.id === getPurchasedTierInGroup('asset_tags_software');
+                    const isPurchasing = purchasing === addon.id;
+                    const hasPurchased = hasTierPurchased('asset_tags_software');
+
+                    const tierIcons = {
+                      'essential': TrendingUp,
+                      'professional': Sparkles,
+                      'business': Award,
+                    };
+                    const TierIcon = tierIcons[addon.name.split('_').pop() as keyof typeof tierIcons] || Zap;
+
+                    return (
+                      <GlassCard
+                        key={addon.id}
+                        className={`flex flex-col relative transition-all duration-300 ${
+                          isPurchased
+                            ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
+                            : hasPurchased
+                            ? 'opacity-60 border-white/20'
+                            : 'border border-white/20 hover:border-blue-500/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
+                        }`}
+                      >
+                        {isPurchased && (
+                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-green-400 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Active
+                          </div>
+                        )}
+                        {addon.name.includes('professional') && !isPurchased && !hasPurchased && (
+                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                            Most Popular
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className={`p-2.5 rounded-xl ${
+                              isPurchased ? 'bg-green-500/20' : 'bg-blue-500/20'
+                            }`}>
+                              <TierIcon className={`w-5 h-5 ${
+                                isPurchased ? 'text-green-400' : 'text-blue-400'
+                              }`} />
+                            </div>
+                            <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
+                          </div>
+                          <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
+
+                          {/* Features List */}
+                          {addon.features && addon.features.length > 0 && (
+                            <div className="mb-6">
+                              <p className="text-sm font-medium text-theme-primary mb-3">
+                                {addon.name.includes('professional') || addon.name.includes('business')
+                                  ? addon.name.includes('business') 
+                                    ? 'Everything in Professional, plus:'
+                                    : 'Everything in Essential, plus:'
+                                  : 'Features:'}
+                              </p>
+                              <ul className="space-y-2">
+                                {addon.features.slice(0, 6).map((feature: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-theme-tertiary">{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Pricing - Monthly per site */}
+                          <div className="mb-6">
+                            <div className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl p-6 border-2 border-blue-500/30 text-center">
+                              {addon.monthly_management_cost ? (
+                                <>
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
+                                    £{addon.monthly_management_cost.toFixed(0)}
+                                  </p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
+                                </>
+                              ) : addon.price ? (
+                                <>
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
+                                    £{addon.price.toFixed(0)}
+                                  </p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
+                                </>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-auto pt-5 border-t border-white/15">
+                          {isPurchased ? (
+                            <Button variant="outline" fullWidth disabled className="border-green-500/50 text-green-400">
+                              ✓ Active
+                            </Button>
+                          ) : isPurchasing ? (
+                            <Button variant="outline" fullWidth disabled>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {hasPurchased ? 'Switching...' : 'Adding...'}
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              fullWidth
+                              onClick={async () => {
+                                if (hasPurchased) {
+                                  const currentPurchased = purchasedAddons.find(p => 
+                                    p.addon?.name?.startsWith('asset_tags_software_') && p.status === 'active'
+                                  );
+                                  if (currentPurchased) {
+                                    await new Promise(resolve => setTimeout(resolve, 100));
+                                  }
+                                }
+                                handlePurchaseAddon(addon.id, addon.name, 1);
+                              }}
+                              disabled={isPurchasing}
+                              className="bg-blue-500 text-white border-blue-500 hover:bg-module-fg/10 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                            >
+                              {hasPurchased ? (
+                                <>
+                                  <Plus className="w-5 h-5 mr-2" />
+                                  Switch to This Tier
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="w-5 h-5 mr-2" />
+                                  Select This Tier
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      </GlassCard>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+          {/* Non-tiered Add-ons */}
+          {filteredAddons.filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_') && !a.name.startsWith('asset_tags_pack_') && !a.name.startsWith('asset_tags_software_')).length > 0 && (
           <div className="pt-6 border-t border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">Other Add-ons</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">Other Add-ons</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredAddons
-                .filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_'))
+                .filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_') && !a.name.startsWith('asset_tags_pack_') && !a.name.startsWith('asset_tags_software_'))
                 .map((addon) => {
                   const isPurchased = isAddonPurchased(addon.id);
                   const isPurchasing = purchasing === addon.id;
@@ -1538,25 +1511,25 @@ export default function AddonsSelection({
                       className={`flex flex-col min-h-[300px] ${
                         isPurchased
                           ? 'border-green-500/50'
-                          : 'hover:border-[#EC4899]/50 hover:shadow-[0_0_12px_rgba(236,72,153,0.2)]'
+                          : 'hover:border-[#D37E91]/50 hover:shadow-module-glow'
                       }`}
                     >
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-lg font-semibold text-white">{addon.display_name}</h4>
+                          <h4 className="text-lg font-semibold text-theme-primary">{addon.display_name}</h4>
                           {isPurchased && (
                             <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">
                               Purchased
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-white/60 mb-4">{addon.description}</p>
+                        <p className="text-sm text-theme-tertiary mb-4">{addon.description}</p>
 
                         <div className="mb-4">
-                          <p className="text-2xl font-bold text-[#EC4899] mb-1">
+                          <p className="text-2xl font-bold text-[#D37E91] mb-1">
                             {getAddonPrice(addon, 1)}
                           </p>
-                          <p className="text-xs text-white/60">{getAddonPriceDescription(addon, 1)}</p>
+                          <p className="text-xs text-theme-tertiary">{getAddonPriceDescription(addon, 1)}</p>
                         </div>
 
                         {addon.features.length > 0 && (
@@ -1564,7 +1537,7 @@ export default function AddonsSelection({
                             {addon.features.slice(0, 3).map((feature, i) => (
                               <li key={i} className="flex items-start gap-2">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-400 mt-0.5 flex-shrink-0" />
-                                <span className="text-xs text-white/70">{feature}</span>
+                                <span className="text-xs text-theme-secondary">{feature}</span>
                               </li>
                             ))}
                           </ul>
@@ -1586,7 +1559,7 @@ export default function AddonsSelection({
                             variant="outline"
                             fullWidth
                             onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
-                            className="border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+                            className="border-[#D37E91] text-[#D37E91] hover:shadow-module-glow"
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Add to Plan
@@ -1598,7 +1571,8 @@ export default function AddonsSelection({
                 })}
             </div>
           </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

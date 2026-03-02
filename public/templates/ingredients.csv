@@ -1,0 +1,10 @@
+ingredient_name,category,allergens,unit,unit_cost,supplier,pack_size,notes
+Flour,Dry Goods,"Gluten, Wheat",kg,2.50,Wholesale Co,25kg,"White bread flour"
+Tomatoes,Fresh Produce,,kg,3.20,Local Farm,10kg,Fresh vine tomatoes
+Chicken Breast,Meat,,kg,8.50,Meat Supplier,5kg,"Free range, skinless"
+Olive Oil,Condiments,,L,12.00,Food Distributor,5L,Extra virgin
+Garlic,Herbs & Spices,,kg,5.00,Local Farm,1kg,Fresh bulbs
+Cheddar Cheese,Dairy,"Milk, Lactose",kg,7.80,Cheese Co,2kg,"Mature, grated"
+Salt,Spices,,kg,1.50,Food Supplier,10kg,Sea salt
+Bell Peppers,Fresh Produce,,kg,4.50,Local Farm,5kg,"Mixed colors"
+

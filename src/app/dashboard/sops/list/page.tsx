@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox, ArrowLeft } from '@/components/ui/icons';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 const CATEGORY_GROUPS = {
   'FOH': {
@@ -23,8 +24,8 @@ const CATEGORY_GROUPS = {
   'Cleaning': {
     label: 'Cleaning & Maintenance',
     categories: ['Cleaning'],
-    bgColor: 'bg-teal-500/20',
-    iconColor: 'text-teal-400'
+    bgColor: 'bg-module-fg/20',
+    iconColor: 'text-module-fg'
   },
   'Opening': {
     label: 'Opening/Closing Procedures',
@@ -40,10 +41,13 @@ const CATEGORY_GROUPS = {
   }
 };
 
-export default function SOPsListPage() {
+function SOPsListContent() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
+  const { isMobile } = useIsMobile();
+  const searchParams = useSearchParams();
+  const sopIdParam = searchParams?.get('sop_id');
   
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -57,6 +61,7 @@ export default function SOPsListPage() {
     Opening: true,
     Drinks: true
   });
+  const [highlightedSopId, setHighlightedSopId] = useState<string | null>(null);
 
   // Load existing SOPs - only show latest version of each SOP
   useEffect(() => {
@@ -126,10 +131,51 @@ export default function SOPsListPage() {
     };
 
     loadSOPs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [companyId]);
 
-  const handleEditSOP = (sop: any) => {
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (sopIdParam && sops.length > 0) {
+      const sop = sops.find((s: any) => s.id === sopIdParam);
+      if (sop) {
+        // Find which category this SOP belongs to
+        const categoryKey = Object.keys(CATEGORY_GROUPS).find(key => 
+          CATEGORY_GROUPS[key].categories.includes(sop.category)
+        );
+        
+        if (categoryKey) {
+          // Expand the category
+          setExpandedCategories(prev => ({ ...prev, [categoryKey]: true }));
+        }
+        
+        // Highlight the SOP
+        setHighlightedSopId(sopIdParam);
+        
+        // Scroll to the SOP after a short delay
+        setTimeout(() => {
+          const element = document.getElementById(`sop-row-${sopIdParam}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+              setHighlightedSopId(null);
+            }, 5000);
+          }
+        }, 500);
+      }
+    }
+  }, [sopIdParam, sops]);
+
+  const handleViewSOP = (sop: any) => {
+    // Navigate to simplified view page
+    router.push(`/dashboard/sops/view/${sop.id}`);
+  };
+
+  const handleEditSOP = (sop: any, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation(); // Prevent triggering view
+    }
     // Determine which template to navigate to based on category
     // Support both old and new category names for backward compatibility
     const templateMap: Record<string, string> = {
@@ -152,59 +198,50 @@ export default function SOPsListPage() {
   };
 
   const handleArchiveSOP = async (sopId: string) => {
-    if (!confirm('Archive this SOP? The original version (001) will be moved to archived SOPs.')) return;
+    if (!confirm('Archive this SOP? All versions will be moved to archived SOPs.')) return;
 
     try {
       setArchivingId(sopId);
-      
-      // Find the current SOP to get its ref_code base
-      const { data: currentSOP, error: fetchError } = await supabase
-        .from('sop_entries')
-        .select('ref_code, parent_id')
-        .eq('id', sopId)
-        .eq('company_id', companyId)
-        .single();
 
-      if (fetchError) throw fetchError;
-      if (!currentSOP) throw new Error('SOP not found');
-
-      // Extract base pattern from ref_code (e.g., PREP-BESH-002 -> PREP-BESH)
-      const refCode = currentSOP.ref_code;
+      // Find the base pattern for this SOP so we archive ALL versions
+      const sop = sops.find((s: any) => s.id === sopId);
+      const refCode = sop?.ref_code || '';
       const baseMatch = refCode.match(/^(.+)-\d+$/);
       const basePattern = baseMatch ? baseMatch[1] : refCode;
 
-      // Find the original 001 version (version_number = 1 or ref_code ends with -001)
-      const { data: originalVersion, error: findError } = await supabase
+      // Archive ALL versions of this SOP (matching base pattern) so older versions don't resurface
+      const { data: allVersions, error: fetchError } = await supabase
         .from('sop_entries')
         .select('id')
         .eq('company_id', companyId)
-        .like('ref_code', `${basePattern}-001`)
-        .eq('version_number', 1)
-        .maybeSingle();
+        .neq('status', 'Archived')
+        .like('ref_code', `${basePattern}-%`);
 
-      if (findError) throw findError;
+      if (fetchError) throw fetchError;
 
-      // Archive the original 001 version if found, otherwise archive current
-      const versionToArchive = originalVersion?.id || sopId;
+      const idsToArchive = (allVersions || []).map((v: any) => v.id);
+      if (idsToArchive.length === 0) idsToArchive.push(sopId);
 
       const { error } = await supabase
         .from('sop_entries')
-        .update({ status: 'Archived' })
-        .eq('id', versionToArchive)
+        .update({
+          status: 'Archived',
+          archived_at: new Date().toISOString()
+        })
+        .in('id', idsToArchive)
         .eq('company_id', companyId);
 
       if (error) throw error;
 
-      // Remove from local state (remove all versions of this SOP base)
-      setSops(prev => prev.filter(sop => {
-        const sopBaseMatch = sop.ref_code.match(/^(.+)-\d+$/);
-        const sopBasePattern = sopBaseMatch ? sopBaseMatch[1] : sop.ref_code;
-        return sopBasePattern !== basePattern;
-      }));
+      // Remove all archived versions from local state
+      const archivedSet = new Set(idsToArchive);
+      setSops(prev => prev.filter((s: any) => !archivedSet.has(s.id)));
 
       showToast({
         title: 'SOP archived',
-        description: 'Original version (001) has been moved to archived SOPs',
+        description: idsToArchive.length > 1
+          ? `${idsToArchive.length} versions moved to archived SOPs`
+          : 'SOP has been moved to archived SOPs',
         type: 'success'
       });
     } catch (error: any) {
@@ -230,6 +267,8 @@ export default function SOPsListPage() {
     const matchesSearch = sop.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          sop.ref_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || sop.status === filterStatus;
+    // On mobile, only show published SOPs
+    if (isMobile && sop.status !== 'Published') return false;
     return matchesSearch && matchesStatus;
   });
 
@@ -240,52 +279,70 @@ export default function SOPsListPage() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20', text: 'text-green-400' },
-      'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-      'Archived': { icon: Archive, color: 'gray', bg: 'bg-neutral-700', text: 'text-neutral-400' }
+      'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400' },
+      'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400' },
+'Archived': { icon: Archive, color:'gray', bg:'bg-[rgb(var(--surface-elevated))]', text:'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}
     };
     return badges[status] || badges['Draft'];
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-4 md:space-y-6">
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="flex items-center gap-3 px-1 pt-2">
+          <button onClick={() => router.back()} className="p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+            <ArrowLeft size={20} className="text-theme-primary" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-theme-primary">SOPs</h1>
+            <p className="text-xs text-theme-tertiary">{filteredSOPs.length} published procedure{filteredSOPs.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+      )}
+
       {/* Search and Filter */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+ <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"size={18} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search SOPs by title or reference code..."
-            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+            placeholder="Search SOPs..."
+            className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))]"
           />
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
-        >
-          <option value="all">All Status</option>
-          <option value="Published">Published</option>
-          <option value="Draft">Draft</option>
-        </select>
-        <button
-          onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 border border-neutral-600 rounded-lg text-neutral-300 flex items-center gap-2 transition-colors"
-        >
-          <Archive size={16} />
-          Archived SOPs
-        </button>
+        {!isMobile && (
+          <>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
+            >
+              <option value="all">All Status</option>
+              <option value="Published">Published</option>
+              <option value="Draft">Draft</option>
+            </select>
+            <button
+              onClick={() => router.push('/dashboard/sops/archive')}
+              className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-theme-surface-elevated border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-secondary))] flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+            >
+              <Archive size={16} />
+              <span className="hidden sm:inline">Archived SOPs</span>
+              <span className="sm:hidden">Archive</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* SOPs List */}
       {loading ? (
-        <div className="text-neutral-400 text-center py-8">Loading SOPs...</div>
+ <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-center py-8">Loading SOPs...</div>
       ) : filteredSOPs.length === 0 ? (
-        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-          <FileText size={48} className="text-neutral-600 mx-auto mb-3" />
-          <p className="text-neutral-400">No SOPs found.</p>
+        <div className="bg-[rgb(var(--surface-elevated))]/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-theme">
+          <FileText size={48} className="text-[rgb(var(--text-tertiary))] mx-auto mb-3" />
+ <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">No SOPs found.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -296,22 +353,22 @@ export default function SOPsListPage() {
             const Icon = isExpanded ? ChevronUp : ChevronDown;
             
             return (
-              <div key={key} className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+              <div key={key} className="bg-[rgb(var(--surface-elevated))]/50 rounded-xl border border-[rgb(var(--border))] dark:border-theme overflow-hidden">
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(key)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors"
+                  className="w-full flex items-center justify-between p-4 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${group.bgColor}`}>
                       <FileText size={20} className={group.iconColor} />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-lg font-semibold text-white">{group.label}</h3>
-                      <p className="text-sm text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">{group.label}</h3>
+ <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{groupSOPs.length} SOP{groupSOPs.length !== 1 ?'s':''}</p>
                     </div>
                   </div>
-                  <Icon size={20} className="text-neutral-400" />
+ <Icon size={20} className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
                 </button>
 
                 {/* SOPs List */}
@@ -321,55 +378,73 @@ export default function SOPsListPage() {
                       const statusBadge = getStatusBadge(sop.status);
                       const StatusIcon = statusBadge.icon;
                       
+                      const isHighlighted = highlightedSopId === sop.id;
+                      
                       return (
                         <div
+                          id={`sop-row-${sop.id}`}
                           key={sop.id}
-                          className="bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-700 rounded-lg p-4 flex items-center justify-between group transition-colors"
+                          onClick={() => handleViewSOP(sop)}
+                          className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors cursor-pointer ${
+                            isHighlighted
+                              ? 'bg-blue-500/20 dark:bg-blue-500/20 border-2 border-blue-500/60 dark:border-blue-500/60 shadow-lg shadow-blue-500/20 dark:shadow-blue-500/20 animate-pulse'
+                              : 'bg-theme-surface/50 hover:bg-theme-surface-elevated border border-[rgb(var(--border))] dark:border-theme'
+                          }`}
                         >
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className={`p-2 rounded-lg ${statusBadge.bg}`}>
+                          <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div className={`p-2 rounded-lg flex-shrink-0 ${statusBadge.bg}`}>
                               <StatusIcon size={20} className={statusBadge.text} />
                             </div>
-                            <div className="text-left flex-1">
-                              <h4 className="text-white font-medium group-hover:text-magenta-400 transition-colors">
+                            <div className="text-left flex-1 min-w-0">
+                              <h4 className="text-[rgb(var(--text-primary))] font-medium group-hover:text-module-fg dark:group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-neutral-400 mt-1">
-                                <span>{sop.ref_code}</span>
-                                <span>•</span>
-                                <span>{sop.category}</span>
-                                <span>•</span>
-                                <span className={`px-2 py-0.5 rounded-full text-xs ${statusBadge.bg} ${statusBadge.text}`}>
+ <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">
+                                <span className="whitespace-nowrap">{sop.ref_code}</span>
+                                <span className="hidden sm:inline">•</span>
+                                <span className="break-words">{sop.category}</span>
+                                <span className="hidden sm:inline">•</span>
+                                <span className={`px-2 py-0.5 rounded-full text-xs whitespace-nowrap ${statusBadge.bg} ${statusBadge.text}`}>
                                   {sop.status}
                                 </span>
                               </div>
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-1 sm:hidden">
+                                Created {new Date(sop.created_at).toLocaleDateString()} by {sop.author}
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="text-right text-sm text-neutral-400">
+                          {!isMobile && (
+                          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
+ <div className="text-right text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hidden sm:block">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
                               <div className="text-xs">by {sop.author}</div>
                             </div>
-                            <button
-                              onClick={() => handleEditSOP(sop)}
-                              className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
-                            >
-                              <Edit size={16} />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleArchiveSOP(sop.id)}
-                              disabled={archivingId === sop.id}
-                              className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
-                              title="Archive SOP"
-                            >
-                              {archivingId === sop.id ? (
-                                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <FileBox size={18} />
-                              )}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => handleEditSOP(sop, e)}
+                                className="px-2 sm:px-3 py-2 bg-module-fg/20 dark:bg-magenta-500/20 hover:bg-module-fg/30 dark:hover:bg-magenta-500/30 border border-module-fg/40 dark:border-magenta-500/40 rounded-lg text-module-fg dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                              >
+                                <Edit size={16} />
+                                <span className="hidden sm:inline">Edit</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleArchiveSOP(sop.id);
+                                }}
+                                disabled={archivingId === sop.id}
+                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 dark:border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                title="Archive SOP"
+                              >
+                                {archivingId === sop.id ? (
+                                  <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <FileBox size={18} />
+                                )}
+                              </button>
+                            </div>
                           </div>
+                          )}
                         </div>
                       );
                     })}
@@ -381,6 +456,14 @@ export default function SOPsListPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SOPsListPage() {
+  return (
+    <Suspense fallback={<div className="text-theme-tertiary text-center py-8">Loading...</div>}>
+      <SOPsListContent />
+    </Suspense>
   );
 }
 

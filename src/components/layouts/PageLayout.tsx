@@ -42,7 +42,7 @@ export default function PageLayout({
             type="text"
             placeholder={searchPlaceholder}
             value={search}
-            className="bg-neutral-900 text-white border-neutral-700 focus:border-pink-500"
+            className="bg-white dark:bg-neutral-900 text-theme-primary border-theme focus:border-[#D37E91]"
             onChange={(e: any) => setSearch(e.target.value)}
           />
         </motion.div>

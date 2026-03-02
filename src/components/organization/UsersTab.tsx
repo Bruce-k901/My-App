@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import UserEntityCard from "@/components/users/UserEntityCard";
-import LazyAddUserModal from "@/components/users/LazyAddUserModal";
-import { Plus, Search, Archive, ChevronLeft } from "lucide-react";
+import AddUserModal from "@/components/users/AddUserModal";
+import { Plus, Search, Archive, ChevronLeft, Download } from '@/components/ui/icons';
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import * as XLSX from "xlsx";
 
 interface User {
   id: string;
@@ -15,21 +16,11 @@ interface User {
   app_role: string | null;
   position_title: string | null;
   site_id: string | null;
-  home_site?: string | null; // Mapped from site_id for UI compatibility
+  home_site?: string | null;
   phone_number: string | null;
   pin_code: string | null;
   last_login: string | null;
-  // Training certificate fields
-  food_safety_level?: number | null;
-  food_safety_expiry_date?: string | null;
-  h_and_s_level?: number | null;
-  h_and_s_expiry_date?: string | null;
-  fire_marshal_trained?: boolean | null;
-  fire_marshal_expiry_date?: string | null;
-  first_aid_trained?: boolean | null;
-  first_aid_expiry_date?: string | null;
-  cossh_trained?: boolean | null;
-  cossh_expiry_date?: string | null;
+  status?: string | null;
 }
 
 interface Site {
@@ -38,7 +29,10 @@ interface Site {
 }
 
 export default function UsersTab() {
-  const { companyId, role } = useAppContext();
+  const { companyId, role, company } = useAppContext();
+
+  const effectiveCompanyId = company?.id || companyId;
+
   const [users, setUsers] = useState<User[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,15 +43,14 @@ export default function UsersTab() {
   const [viewArchived, setViewArchived] = useState(false);
 
   const fetchUsers = useCallback(async () => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     try {
       if (viewArchived) {
-        // Fetch archived users - only select columns that exist
         const { data, error } = await supabase
           .from("archived_users")
           .select("id, original_id, full_name, email, app_role, position, site_id, archived_at")
-          .eq("company_id", companyId)
+          .eq("company_id", effectiveCompanyId)
           .order("archived_at", { ascending: false });
 
         if (error) {
@@ -66,18 +59,17 @@ export default function UsersTab() {
           return;
         }
 
-        // Map archived users to User format
         const mappedData = (data || []).map(archived => ({
           id: archived.original_id,
           full_name: archived.full_name,
           email: archived.email,
           app_role: archived.app_role,
-          position_title: archived.position || null, // Use position field
+          position_title: archived.position || null,
           site_id: archived.site_id,
-          home_site: archived.site_id, // Use site_id as home_site fallback
-          phone_number: null, // Not available in archived_users
-          pin_code: null, // Not available in archived_users
-          last_login: null, // Not available in archived_users
+          home_site: archived.site_id,
+          phone_number: null,
+          pin_code: null,
+          last_login: null,
           archived_at: archived.archived_at,
           isArchived: true,
         }));
@@ -85,86 +77,72 @@ export default function UsersTab() {
         return;
       }
 
-      // First try to fetch with all columns including training certificates
-      // If migration hasn't been run, fall back to base columns
-      let { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
-        .eq("company_id", companyId)
-        .order("full_name");
+      // Use RPC function to bypass RLS and get all company profiles
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_company_profiles', {
+        p_company_id: effectiveCompanyId
+      });
 
-      // If error suggests missing columns (training certificates), try with base columns only
-      if (error && (error.message?.includes('column') || error.code === 'PGRST116' || error.message?.includes('does not exist'))) {
-        // Check if it's a training certificate column error
-        const isTrainingCertError = error.message?.includes('food_safety') || 
-                                  error.message?.includes('h_and_s') || 
-                                  error.message?.includes('fire_marshal') || 
-                                  error.message?.includes('first_aid') || 
-                                  error.message?.includes('cossh');
-        
-        if (isTrainingCertError) {
-          console.warn("Training certificate columns not found, using base columns only. Run migration to enable certificate tracking.");
-          const baseResult = await supabase
-            .from("profiles")
-            .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login")
-            .eq("company_id", companyId)
-            .order("full_name");
-          
-          data = baseResult.data;
-          error = baseResult.error;
-          
-          // Add default values for training certificate fields
-          if (data && !error) {
-            data = data.map(user => ({
-              ...user,
-              food_safety_level: null,
-              food_safety_expiry_date: null,
-              h_and_s_level: null,
-              h_and_s_expiry_date: null,
-              fire_marshal_trained: false,
-              fire_marshal_expiry_date: null,
-              first_aid_trained: false,
-              first_aid_expiry_date: null,
-              cossh_trained: false,
-              cossh_expiry_date: null,
-            }));
-          }
-        }
+      let data: any[] = [];
+      let error: any = null;
+
+      if (rpcError) {
+        console.error("RPC function error:", rpcError);
+        // Fallback to direct query (will only work if RLS policy allows)
+        const fallbackResult = await supabase
+          .from("profiles")
+          .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, status")
+          .eq("company_id", effectiveCompanyId)
+          .order("full_name");
+
+        data = fallbackResult.data || [];
+        error = fallbackResult.error;
+      } else if (rpcData) {
+        data = rpcData.map((p: any) => ({
+          id: p.profile_id,
+          full_name: p.full_name,
+          email: p.email,
+          app_role: p.app_role,
+          position_title: p.position_title,
+          site_id: p.home_site,
+          home_site: p.home_site,
+          phone_number: p.phone_number,
+          pin_code: null,
+          last_login: null,
+          status: p.status,
+        }));
       }
 
       if (error) {
         console.error("Failed to fetch users:", error);
-        const errorMessage = error.message || error.code || "Unknown error";
-        console.error("Full error details:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
+        if (error.code === 'PGRST116' || error.message?.includes('406') || (error as any).status === 406) {
+          console.error("RLS is blocking user list query. Check profiles_select_company policy.");
+        }
         setUsers([]);
         setLoading(false);
         return;
       }
 
-      setUsers(data || []);
+      if (data) {
+        setUsers(data);
+      } else {
+        setUsers([]);
+      }
       setLoading(false);
     } catch (error: any) {
       console.error("Failed to fetch users:", error);
-      const errorMessage = error?.message || "Unknown error";
-      console.error("Exception details:", errorMessage);
       setUsers([]);
       setLoading(false);
     }
-  }, [companyId, viewArchived]);
+  }, [effectiveCompanyId, viewArchived]);
 
   const fetchSites = useCallback(async () => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
 
     try {
       const { data, error } = await supabase
         .from("sites")
         .select("id, name")
-        .eq("company_id", companyId)
+        .eq("company_id", effectiveCompanyId)
         .order("name");
 
       if (error) throw error;
@@ -172,7 +150,7 @@ export default function UsersTab() {
     } catch (error: any) {
       console.error("Failed to fetch sites:", error);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -188,40 +166,24 @@ export default function UsersTab() {
     try {
       const dbUpdates: any = { ...updates };
 
-      // Try to update with all fields
-      let { error } = await supabase
+      // CRITICAL: Keep site_id and home_site in sync
+      if (dbUpdates.home_site !== undefined) {
+        dbUpdates.site_id = dbUpdates.home_site;
+      }
+      if (dbUpdates.site_id !== undefined && dbUpdates.home_site === undefined) {
+        dbUpdates.home_site = dbUpdates.site_id;
+      }
+
+      // Handle explicit null values (moving to head office)
+      if (dbUpdates.site_id === null || dbUpdates.home_site === null) {
+        dbUpdates.site_id = null;
+        dbUpdates.home_site = null;
+      }
+
+      const { error } = await supabase
         .from("profiles")
         .update(dbUpdates)
         .eq("id", userId);
-
-      // If error suggests missing columns (training certificate columns), 
-      // filter them out and try again with base columns only
-      if (error && (error.message?.includes('column') || error.code === 'PGRST116')) {
-        const isTrainingCertError = error.message?.includes('food_safety') || 
-                                  error.message?.includes('h_and_s') || 
-                                  error.message?.includes('fire_marshal') || 
-                                  error.message?.includes('first_aid') || 
-                                  error.message?.includes('cossh');
-        
-        if (isTrainingCertError) {
-          console.warn("Training certificate columns not found. Saving base fields only.");
-          const baseFields = ['full_name', 'email', 'app_role', 'position_title', 'site_id', 'home_site', 'phone_number', 'pin_code', 'boh_foh'];
-          const filteredUpdates: any = {};
-          Object.keys(dbUpdates).forEach(key => {
-            if (baseFields.includes(key)) {
-              filteredUpdates[key] = dbUpdates[key];
-            }
-          });
-          
-          if (Object.keys(filteredUpdates).length > 0) {
-            const baseResult = await supabase
-              .from("profiles")
-              .update(filteredUpdates)
-              .eq("id", userId);
-            error = baseResult.error;
-          }
-        }
-      }
 
       if (error) {
         console.error("Failed to update user:", error);
@@ -229,7 +191,7 @@ export default function UsersTab() {
       }
 
       // Update local state
-      setUsers(prev => prev.map(user => 
+      setUsers(prev => prev.map(user =>
         user.id === userId ? { ...user, ...updates } : user
       ));
 
@@ -249,7 +211,6 @@ export default function UsersTab() {
 
   const handleUserArchive = async (userId: string) => {
     try {
-      // Get the user profile first
       const { data: userProfile, error: fetchError } = await supabase
         .from("profiles")
         .select("*")
@@ -258,11 +219,9 @@ export default function UsersTab() {
 
       if (fetchError) throw fetchError;
 
-      // Get current user for archived_by
       const { data: { session } } = await supabase.auth.getSession();
       const archivedBy = session?.user?.id || null;
 
-      // Insert into archived_users table
       const { error: archiveError } = await supabase
         .from("archived_users")
         .insert({
@@ -271,9 +230,9 @@ export default function UsersTab() {
           email: userProfile.email,
           full_name: userProfile.full_name,
           company_id: userProfile.company_id,
-          site_id: userProfile.site_id || userProfile.home_site, // Use site_id or home_site
+          site_id: userProfile.site_id || userProfile.home_site,
           role: userProfile.app_role,
-          position: userProfile.position_title, // Use position field (not position_title)
+          position: userProfile.position_title,
           boh_foh: userProfile.boh_foh,
           last_login: userProfile.last_login,
           pin_code: userProfile.pin_code,
@@ -285,7 +244,6 @@ export default function UsersTab() {
 
       if (archiveError) throw archiveError;
 
-      // Delete from profiles table
       const { error: deleteError } = await supabase
         .from("profiles")
         .delete()
@@ -293,9 +251,7 @@ export default function UsersTab() {
 
       if (deleteError) throw deleteError;
 
-      // Remove from local state
       setUsers(prev => prev.filter(user => user.id !== userId));
-
       console.log("User archived successfully");
     } catch (error: any) {
       console.error("Failed to archive user:", error);
@@ -307,7 +263,6 @@ export default function UsersTab() {
     try {
       if (!confirm("Restore this user? They'll be moved back to active users.")) return;
 
-      // Get the archived user - userId is the original_id when viewing archived
       const { data: archivedUser, error: fetchError } = await supabase
         .from("archived_users")
         .select("*")
@@ -318,7 +273,6 @@ export default function UsersTab() {
 
       if (fetchError) throw fetchError;
 
-      // Restore to profiles table
       const { error: restoreError } = await supabase
         .from("profiles")
         .insert({
@@ -328,9 +282,9 @@ export default function UsersTab() {
           full_name: archivedUser.full_name,
           company_id: archivedUser.company_id,
           site_id: archivedUser.site_id,
-          home_site: archivedUser.site_id, // Use site_id as home_site fallback
+          home_site: archivedUser.site_id,
           app_role: archivedUser.app_role,
-          position_title: archivedUser.position || null, // Use position field from archived_users
+          position_title: archivedUser.position || null,
           boh_foh: archivedUser.boh_foh,
           last_login: archivedUser.last_login,
           pin_code: archivedUser.pin_code,
@@ -339,7 +293,6 @@ export default function UsersTab() {
 
       if (restoreError) throw restoreError;
 
-      // Delete from archived_users
       const { error: deleteError } = await supabase
         .from("archived_users")
         .delete()
@@ -347,15 +300,67 @@ export default function UsersTab() {
 
       if (deleteError) throw deleteError;
 
-      // Refresh users list
       await fetchUsers();
-
-      console.log("User unarchived successfully");
-      // Show success message
       alert("User restored successfully");
     } catch (error: any) {
       console.error("Failed to unarchive user:", error);
       alert(`Failed to restore user: ${error.message || 'Unknown error'}`);
+    }
+  };
+
+  const handleDownload = () => {
+    try {
+      const fields = [
+        "full_name",
+        "email",
+        "app_role",
+        "position_title",
+        "phone_number",
+        "site_id",
+      ];
+
+      const activeUsers = viewArchived ? users : users.filter(user => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          user.full_name?.toLowerCase().includes(query) ||
+          user.email?.toLowerCase().includes(query) ||
+          user.app_role?.toLowerCase().includes(query) ||
+          user.position_title?.toLowerCase().includes(query)
+        );
+      });
+
+      const rows = activeUsers.map((user: User) => {
+        const row: Record<string, any> = {};
+        for (const f of fields) {
+          const value = user[f as keyof User];
+          row[f] = value ?? "";
+        }
+        if (user.site_id) {
+          const site = sites.find(s => s.id === user.site_id);
+          row["site_name"] = site?.name || "";
+        } else {
+          row["site_name"] = "";
+        }
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows, { header: [...fields, "site_name"] });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Users");
+      const xlsxArray = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([xlsxArray], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `users_export${viewArchived ? '_archived' : ''}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      console.error("Export failed:", e?.message || "Unable to export");
+      alert(`Export failed: ${e?.message || "Unable to export"}`);
     }
   };
 
@@ -373,7 +378,7 @@ export default function UsersTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-slate-400">Loading users...</div>
+        <div className="text-gray-500 dark:text-theme-tertiary">Loading users...</div>
       </div>
     );
   }
@@ -383,16 +388,16 @@ export default function UsersTab() {
       {/* Header with search, toggle, and add button */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-4 h-4" />
           <input
             type="text"
             placeholder={viewArchived ? "Search archived users..." : "Search users..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
           {/* Archive Toggle Button */}
           <Tooltip label={viewArchived ? "Back to Users" : "Archived"} side="top">
@@ -400,16 +405,14 @@ export default function UsersTab() {
               onClick={async () => {
                 const newViewArchived = !viewArchived;
                 setViewArchived(newViewArchived);
-                setSearchQuery(""); // Clear search when toggling
-                // Explicitly fetch users after state update
+                setSearchQuery("");
                 setLoading(true);
                 try {
                   if (newViewArchived) {
-                    // Fetch archived users - only select columns that exist
                     const { data, error } = await supabase
                       .from("archived_users")
                       .select("id, original_id, full_name, email, app_role, position, site_id, archived_at")
-                      .eq("company_id", companyId)
+                      .eq("company_id", effectiveCompanyId)
                       .order("archived_at", { ascending: false });
 
                     if (error) {
@@ -421,60 +424,23 @@ export default function UsersTab() {
                         full_name: archived.full_name,
                         email: archived.email,
                         app_role: archived.app_role,
-                        position_title: archived.position || null, // Use position field
+                        position_title: archived.position || null,
                         site_id: archived.site_id,
-                        home_site: archived.site_id, // Use site_id as home_site fallback
-                        phone_number: null, // Not available in archived_users
-                        pin_code: null, // Not available in archived_users
-                        last_login: null, // Not available in archived_users
+                        home_site: archived.site_id,
+                        phone_number: null,
+                        pin_code: null,
+                        last_login: null,
                         archived_at: archived.archived_at,
                         isArchived: true,
                       }));
                       setUsers(mappedData);
                     }
                   } else {
-                    // Fetch active users - inline to avoid stale closure
-                    let { data, error } = await supabase
+                    const { data, error } = await supabase
                       .from("profiles")
-                      .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, food_safety_level, food_safety_expiry_date, h_and_s_level, h_and_s_expiry_date, fire_marshal_trained, fire_marshal_expiry_date, first_aid_trained, first_aid_expiry_date, cossh_trained, cossh_expiry_date")
-                      .eq("company_id", companyId)
+                      .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login, status")
+                      .eq("company_id", effectiveCompanyId)
                       .order("full_name");
-
-                    // Handle training certificate columns fallback
-                    if (error && (error.message?.includes('column') || error.code === 'PGRST116' || error.message?.includes('does not exist'))) {
-                      const isTrainingCertError = error.message?.includes('food_safety') || 
-                                                error.message?.includes('h_and_s') || 
-                                                error.message?.includes('fire_marshal') || 
-                                                error.message?.includes('first_aid') || 
-                                                error.message?.includes('cossh');
-                      
-                      if (isTrainingCertError) {
-                        const baseResult = await supabase
-                          .from("profiles")
-                          .select("id, full_name, email, app_role, position_title, site_id, home_site, phone_number, pin_code, last_login")
-                          .eq("company_id", companyId)
-                          .order("full_name");
-                        
-                        data = baseResult.data;
-                        error = baseResult.error;
-                        
-                        if (data && !error) {
-                          data = data.map(user => ({
-                            ...user,
-                            food_safety_level: null,
-                            food_safety_expiry_date: null,
-                            h_and_s_level: null,
-                            h_and_s_expiry_date: null,
-                            fire_marshal_trained: false,
-                            fire_marshal_expiry_date: null,
-                            first_aid_trained: false,
-                            first_aid_expiry_date: null,
-                            cossh_trained: false,
-                            cossh_expiry_date: null,
-                          }));
-                        }
-                      }
-                    }
 
                     if (error) {
                       console.error("Failed to fetch users:", error);
@@ -489,8 +455,8 @@ export default function UsersTab() {
               }}
               className={`inline-flex items-center justify-center h-11 w-11 rounded-lg border transition-all duration-150 ease-in-out ${
                 viewArchived
-                  ? "border-[#EC4899] text-[#EC4899] bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
-                  : "border-orange-400 text-orange-400 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_8px_#fb923c]"
+                  ? "border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow"
+                  : "border-orange-400 text-orange-400 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_8px_#fb923c]"
               }`}
               aria-label={viewArchived ? "Back to Users" : "View Archived"}
             >
@@ -500,32 +466,45 @@ export default function UsersTab() {
 
           {/* Add User Button - hidden when viewing archived */}
           {(role === "Admin" || role === "Manager") && !viewArchived && (
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
-            >
-              <Plus className="w-4 h-4" />
-              Add User
-            </button>
+            <Tooltip label="Add User" side="top">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-module-glow"
+                aria-label="Add User"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </Tooltip>
           )}
+
+          {/* Download Button */}
+          <Tooltip label="Download Users" side="top">
+            <button
+              onClick={handleDownload}
+              className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-module-glow"
+              aria-label="Download Users"
+            >
+              <Download className="h-5 w-5" />
+            </button>
+          </Tooltip>
         </div>
       </div>
 
       {/* Users list */}
       <div className="space-y-4">
         {filteredUsers.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            {searchQuery 
-              ? `No ${viewArchived ? 'archived ' : ''}users found matching your search.` 
-              : viewArchived 
-                ? "No archived users found." 
+          <div className="text-center py-12 text-gray-500 dark:text-theme-tertiary">
+            {searchQuery
+              ? `No ${viewArchived ? 'archived ' : ''}users found matching your search.`
+              : viewArchived
+                ? "No archived users found."
                 : "No users found."}
           </div>
         ) : (
           filteredUsers.map((user) => {
             const isExpanded = expandedUsers.has(user.id);
             const editForm = editForms[user.id] || user;
-            
+
             return (
               <UserEntityCard
                 key={user.id}
@@ -550,32 +529,54 @@ export default function UsersTab() {
                   }));
                 }}
                 roleOptions={[
-                  { label: "Admin", value: "Admin" },
+                  { label: "Staff", value: "Staff" },
                   { label: "Manager", value: "Manager" },
-                  { label: "Staff", value: "Staff" }
+                  { label: "Admin", value: "Admin" },
+                  { label: "Owner", value: "Owner" },
+                  { label: "CEO", value: "CEO" },
+                  { label: "Managing Director", value: "Managing Director" },
+                  { label: "COO", value: "COO" },
+                  { label: "CFO", value: "CFO" },
+                  { label: "HR Manager", value: "HR Manager" },
+                  { label: "Operations Manager", value: "Operations Manager" },
+                  { label: "Finance Manager", value: "Finance Manager" },
+                  { label: "Regional Manager", value: "Regional Manager" },
+                  { label: "Area Manager", value: "Area Manager" }
                 ]}
-                onRoleChange={(userId: string, role: string) => {
+                onRoleChange={(userId: string, newRole: string) => {
                   setEditForms(prev => ({
                     ...prev,
-                    [userId]: { ...prev[userId], app_role: role }
+                    [userId]: { ...prev[userId], app_role: newRole }
                   }));
                 }}
                 onSave={() => handleUserUpdate(user.id, editForm)}
                 onCancel={() => {
                   setEditForms(prev => ({ ...prev, [user.id]: { ...user } }));
                 }}
-                showPinEdit={false}
-                onPinEditToggle={() => {}}
-                onPinGenerate={() => {
-                  const newPin = Math.floor(1000 + Math.random() * 9000).toString();
-                  setEditForms(prev => ({
-                    ...prev,
-                    [user.id]: { ...prev[user.id], pin_code: newPin }
-                  }));
-                }}
                 siteOptions={sites.map(site => ({ label: site.name, value: site.id }))}
                 onArchive={viewArchived ? undefined : handleUserArchive}
                 onUnarchive={viewArchived ? handleUserUnarchive : undefined}
+                onSendInvite={async (userId: string, email: string) => {
+                  try {
+                    const res = await fetch("/api/users/resend-invite", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, userId, companyId: effectiveCompanyId }),
+                    });
+
+                    const json = await res.json();
+
+                    if (!res.ok) {
+                      alert(`Failed to send invite: ${json.error || "Unknown error"}`);
+                      return;
+                    }
+
+                    alert(`Invitation email sent to ${email}`);
+                  } catch (err: any) {
+                    console.error("Error sending invite:", err);
+                    alert(`Failed to send invite: ${err?.message || "Unknown error"}`);
+                  }
+                }}
               />
             );
           })
@@ -584,10 +585,10 @@ export default function UsersTab() {
 
       {/* Add User Modal */}
       {showAddModal && companyId && (
-        <LazyAddUserModal
+        <AddUserModal
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
-          companyId={companyId}
+          companyId={effectiveCompanyId}
           onRefresh={fetchUsers}
         />
       )}

@@ -2,47 +2,538 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme CSS Variables */
+:root {
+  /* Mobile layout tokens */
+  --bottom-tab-height: 3.5rem;
+  --above-tab-bar: calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px));
+
+  --background: 10 10 10; /* neutral near-black (matches neutral-950) */
+  --foreground: 255 255 255;
+  --surface: 23 23 23; /* neutral charcoal (matches neutral-900) */
+  --surface-elevated: 38 38 38; /* neutral mid (matches neutral-800) */
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255 / 0.8;
+  --text-tertiary: 255 255 255 / 0.6;
+  --text-disabled: 255 255 255 / 0.4;
+  --border: 255 255 255 / 0.06;
+  --border-hover: 255 255 255 / 0.12;
+
+  /* Module colours — single source of truth
+     Change a module colour here and it updates everywhere. */
+  --module-checkly: 241 225 148; /* #F1E194 */
+  --module-stockly: 120 154 153; /* #789A99 */
+  --module-teamly: 211 126 145; /* #D37E91 */
+  --module-planly: 172 200 162; /* #ACC8A2 */
+  --module-assetly: 243 231 217; /* #F3E7D9 */
+  --module-msgly: 203 221 233; /* #CBDDE9 */
+
+  /* Module dark variants — for text on light backgrounds */
+  --module-checkly-dark: 91 14 20; /* #5B0E14 */
+  --module-stockly-dark: 78 125 124; /* #4e7d7c */
+  --module-teamly-dark: 176 96 122; /* #b0607a */
+  --module-planly-dark: 26 37 23; /* #1A2517 */
+  --module-assetly-dark: 84 67 73; /* #544349 */
+  --module-msgly-dark: 40 114 161; /* #2872A1 */
+  --module-forecastly: 124 58 237; /* #7C3AED */
+
+  /* Sidebar tints — dark theme (colour-shifted dark backgrounds) */
+  --sidebar-checkly: 18 20 14; /* #12140e warm olive-black */
+  --sidebar-stockly: 13 20 20; /* #0d1414 cool teal-black */
+  --sidebar-teamly: 20 16 14; /* #14100e warm rose-black */
+  --sidebar-planly: 14 18 13; /* #0e120d green-black */
+  --sidebar-assetly: 19 17 16; /* #131110 warm brown-black */
+  --sidebar-msgly: 13 17 20; /* #0d1114 steel-black */
+
+  /* Sidebar tints — light theme */
+  --sidebar-checkly-light: 248 241 232; /* #f8f1e8 warm cream */
+  --sidebar-stockly-light: 237 243 243; /* #edf3f3 cool mint */
+  --sidebar-teamly-light: 246 239 241; /* #f6eff1 soft rose */
+  --sidebar-planly-light: 239 243 238; /* #eff3ee sage mist */
+  --sidebar-assetly-light: 245 242 239; /* #f5f2ef warm linen */
+  --sidebar-msgly-light: 238 242 245; /* #eef2f5 ice blue */
+
+  /* Active module defaults (overridden by .module-* class on layout wrapper) */
+  --module-fg: var(--module-checkly);
+  --module-bg-tint: var(--sidebar-checkly);
+
+  /* Theme background tokens — CSS vars so hover:/focus: Tailwind variants work in both themes */
+  --theme-bg-button: rgba(255, 255, 255, 0.03);
+  --theme-bg-button-hover: rgba(255, 255, 255, 0.06);
+  --theme-bg-muted: rgba(255, 255, 255, 0.08);
+  --theme-bg-muted-strong: rgba(255, 255, 255, 0.12);
+  --theme-bg-hover: rgba(255, 255, 255, 0.05);
+
+  /* Density tokens (comfortable = default) */
+  --spacing-card: 1rem;
+  --spacing-row: 0.75rem;
+  --row-height: 3rem;
+}
+
+/* ─── Active Module Variable System ─── */
+/* Apply .module-{name} to a layout wrapper — children use text-module-fg, bg-module-fg/[0.04], etc. */
+.module-checkly {
+  --module-fg: var(--module-checkly);
+  --module-bg-tint: var(--sidebar-checkly);
+}
+.module-stockly {
+  --module-fg: var(--module-stockly);
+  --module-bg-tint: var(--sidebar-stockly);
+}
+.module-teamly {
+  --module-fg: var(--module-teamly);
+  --module-bg-tint: var(--sidebar-teamly);
+}
+.module-planly {
+  --module-fg: var(--module-planly);
+  --module-bg-tint: var(--sidebar-planly);
+}
+.module-assetly {
+  --module-fg: var(--module-assetly);
+  --module-bg-tint: var(--sidebar-assetly);
+}
+.module-msgly {
+  --module-fg: var(--module-msgly);
+  --module-bg-tint: var(--sidebar-msgly);
+}
+
+.light .module-checkly {
+  --module-fg: var(--module-checkly-dark);
+  --module-bg-tint: var(--sidebar-checkly-light);
+}
+.light .module-stockly {
+  --module-fg: var(--module-stockly-dark);
+  --module-bg-tint: var(--sidebar-stockly-light);
+}
+.light .module-teamly {
+  --module-fg: var(--module-teamly-dark);
+  --module-bg-tint: var(--sidebar-teamly-light);
+}
+.light .module-planly {
+  --module-fg: var(--module-planly-dark);
+  --module-bg-tint: var(--sidebar-planly-light);
+}
+.light .module-assetly {
+  --module-fg: var(--module-assetly-dark);
+  --module-bg-tint: var(--sidebar-assetly-light);
+}
+.light .module-msgly {
+  --module-fg: var(--module-msgly-dark);
+  --module-bg-tint: var(--sidebar-msgly-light);
+}
+
+/* ─── Module Page Text Overrides ─── */
+/* All text colours derive from the active module colour                 */
+/* so there is NEVER generic black/white text on any module page.        */
+[class*="module-"] {
+  --text-primary: var(--module-fg);
+  --text-secondary: var(--module-fg) / 0.82;
+  --text-tertiary: var(--module-fg) / 0.65;
+  --text-disabled: var(--module-fg) / 0.45;
+}
+
+/* High-contrast override for module pages (fixes specificity vs descendant wrapper) */
+.high-contrast [class*="module-"] {
+  --text-secondary: var(--module-fg) / 0.95;
+  --text-tertiary: var(--module-fg) / 0.85;
+  --text-disabled: var(--module-fg) / 0.65;
+}
+
+/* Module-adaptive form controls (checkbox/radio tick matches module colour) */
+[class*="module-"] input[type="checkbox"],
+[class*="module-"] input[type="radio"] {
+  accent-color: rgb(var(--module-fg));
+}
+
+/* Module-adaptive scrollbar (auto-adapts to current module) */
+.module-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.module-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.module-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-fg) / 0.2);
+  border-radius: 9999px;
+}
+.module-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-fg) / 0.4);
+}
+.module-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-fg) / 0.2) transparent;
+}
+
+/* Module hover shadow utility */
+.shadow-module-glow {
+  box-shadow: 0 0 15px rgb(var(--module-fg) / 0.15);
+}
+
+/* ----------------------------- */
+/* Compact density mode          */
+/* ----------------------------- */
+.compact {
+  --spacing-card: 0.625rem;
+  --spacing-row: 0.375rem;
+  --row-height: 2.25rem;
+}
+
+/* Global compact density overrides for common UI patterns */
+.compact .p-4 {
+  padding: var(--spacing-card) !important;
+}
+.compact .p-6 {
+  padding: calc(var(--spacing-card) * 1.25) !important;
+}
+.compact .gap-2\.5 {
+  gap: 0.375rem !important;
+}
+.compact .gap-3 {
+  gap: 0.5rem !important;
+}
+.compact .gap-4 {
+  gap: 0.625rem !important;
+}
+.compact .py-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.compact .py-4 {
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+.compact .mb-6 {
+  margin-bottom: 1rem !important;
+}
+.compact .mb-8 {
+  margin-bottom: 1.25rem !important;
+}
+.compact .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: 1rem !important;
+}
+/* Table row density */
+.compact tr td,
+.compact tr th {
+  padding-top: var(--spacing-row) !important;
+  padding-bottom: var(--spacing-row) !important;
+}
+.compact .min-h-\[3rem\] {
+  min-height: var(--row-height) !important;
+}
+
+/* ----------------------------- */
+/* Font size scaling              */
+/* ----------------------------- */
+html {
+  font-size: 14px;
+}
+.font-size-small {
+  font-size: 13px !important;
+}
+.font-size-large {
+  font-size: 16px !important;
+}
+
+/* ----------------------------------------- */
+/* Messaging Panel - Fixed size (like WhatsApp) */
+/* ----------------------------------------- */
+/* Lock text sizes to default pixel values regardless of root font-size setting */
+.messaging-panel .text-xs {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+.messaging-panel .text-sm {
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+.messaging-panel .text-base {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+.messaging-panel .text-lg {
+  font-size: 18px !important;
+  line-height: 28px !important;
+}
+.messaging-panel .text-xl {
+  font-size: 20px !important;
+  line-height: 28px !important;
+}
+
+/* ----------------------------- */
+/* Reduce animations              */
+/* ----------------------------- */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.reduce-motion-off) *,
+  html:not(.reduce-motion-off) *::before,
+  html:not(.reduce-motion-off) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.light {
+  --background: 250 250 247; /* Warm light gray #FAFAF7 */
+  --foreground: 17 17 19; /* Darker, richer dark gray #111113 */
+  --surface: 255 255 255; /* Pure white for cards */
+  --surface-elevated: 255 255 255; /* White for elevated surfaces */
+  --text-primary: 17 17 19; /* Darker, richer dark gray #111113 for better contrast */
+  --text-secondary: 55 55 55; /* Darker medium gray #373737 for better readability */
+  --text-tertiary: 82 82 82; /* Medium gray #525252 */
+  --text-disabled: 163 163 163; /* Disabled gray */
+  --border: 0 0 0 / 0.12; /* Slightly more visible borders */
+  --border-hover: 0 0 0 / 0.18; /* More visible hover borders */
+  --module-fg: var(--module-checkly-dark);
+  --module-bg-tint: var(--sidebar-checkly-light);
+  --theme-bg-button: rgba(0, 0, 0, 0.03);
+  --theme-bg-button-hover: rgba(0, 0, 0, 0.05);
+  --theme-bg-muted: rgba(0, 0, 0, 0.05);
+  --theme-bg-muted-strong: rgba(0, 0, 0, 0.1);
+  --theme-bg-hover: rgba(0, 0, 0, 0.04);
+}
+
+/* ----------------------------- */
+/* High contrast mode             */
+/* Placed AFTER .light so cascade + specificity both guarantee override */
+/* ----------------------------- */
+.light.high-contrast {
+  --text-primary: 0 0 0;
+  --text-secondary: 20 20 20;
+  --text-tertiary: 40 40 40;
+  --text-disabled: 70 70 70;
+  --border: 0 0 0 / 0.35;
+  --border-hover: 0 0 0 / 0.5;
+}
+
+.dark.high-contrast,
+:root.high-contrast:not(.light) {
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255;
+  --text-tertiary: 255 255 255 / 0.92;
+  --text-disabled: 255 255 255 / 0.7;
+  --border: 255 255 255 / 0.3;
+  --border-hover: 255 255 255 / 0.45;
+}
+
+/* Theme-Aware Utility Classes */
+/* All use CSS custom properties so Tailwind hover:/focus:/group-hover: variants work in BOTH themes */
+@layer utilities {
+  /* Text Colors */
+  .text-theme-primary {
+    color: rgb(var(--text-primary));
+  }
+  .text-theme-secondary {
+    color: rgb(var(--text-secondary));
+  }
+  .text-theme-tertiary {
+    color: rgb(var(--text-tertiary));
+  }
+  .text-theme-disabled {
+    color: rgb(var(--text-disabled));
+  }
+
+  /* Background Colors — all driven by CSS vars so hover: works in both themes */
+  .bg-theme-surface {
+    background-color: rgb(var(--surface));
+  }
+  .bg-theme-surface-elevated {
+    background-color: rgb(var(--surface-elevated));
+  }
+  .bg-theme-button {
+    background-color: var(--theme-bg-button);
+  }
+  .bg-theme-button-hover {
+    background-color: var(--theme-bg-button-hover);
+  }
+  .bg-theme-muted {
+    background-color: var(--theme-bg-muted);
+  }
+  .bg-theme-muted-strong {
+    background-color: var(--theme-bg-muted-strong);
+  }
+  .bg-theme-hover {
+    background-color: var(--theme-bg-hover);
+  }
+
+  /* Border Colors */
+  .border-theme {
+    border-color: rgb(var(--border));
+  }
+  .border-theme-hover {
+    border-color: rgb(var(--border-hover));
+  }
+}
+
+/* Ensure native select dropdown arrows never overlap text */
+select {
+  padding-right: 2.5rem !important;
+}
+
+/* Safe area for mobile bottom nav */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Bottom nav safe spacing for all mobile pages */
+@media (max-width: 1023px) {
+  .dashboard-page main {
+    padding-bottom: var(--above-tab-bar) !important;
+  }
+  /* Neutralise min-h-screen (100vh) inside mobile dashboard —
+     100vh > 100dvh on mobile Safari, causing excess scroll space.
+     Pages fill naturally; .dashboard-page background covers the rest. */
+  .dashboard-page main .min-h-screen {
+    min-height: auto !important;
+  }
+  /* Sheet/Dialog portals should NOT get bottom nav padding */
+  [data-radix-portal] main {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* Global Select/Dropdown Styling - Theme-aware */
+/* Base rules have NO !important so inline styles on components can override */
+select {
+  color: rgb(var(--text-primary));
+  background-color: rgb(var(--surface));
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em 1em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid rgb(var(--border));
+  border-radius: 0.375rem;
+}
+
+.dark select {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* .light MUST come after .dark so it wins when both classes are on <html> */
+html.light select {
+  color: #111113 !important;
+  background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  border: 1px solid #9ca3af !important;
+}
+
+select:focus {
+  outline: none;
+  border-color: #d37e91;
+  box-shadow: 0 0 0 2px rgba(211, 126, 145, 0.5);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Style option elements for better theme support */
+/* Base rule has NO !important so .light/.dark overrides work */
+select option {
+  background-color: rgb(var(--surface-elevated));
+  color: rgb(var(--text-primary));
+  padding: 0.5rem;
+}
+
+.dark select option {
+  background-color: #0b0d13 !important;
+  color: white !important;
+}
+
+/* .light MUST come after .dark so it wins when both classes are on <html> */
+html.light select option {
+  background-color: #ffffff !important;
+  color: #111113 !important;
+}
+
+/* Firefox specific option styling */
+@-moz-document url-prefix() {
+  .dark select option {
+    background-color: #0b0d13;
+    color: white;
+  }
+  html.light select option {
+    background-color: #ffffff;
+    color: #111113;
+  }
+}
+
+/* Note: Some browsers (especially Safari) have limited option styling support */
+/* The browser's native dropdown may use system defaults, but the select input itself will be theme-aware */
+
 /* iOS Safari Sticky Header Fix */
 .ios-sticky-header {
-  position: -webkit-sticky; /* Safari fallback */
-  position: sticky;
+  position: fixed; /* Fixed positioning for mobile app-like feel */
   top: 0;
-  z-index: 50;
+  z-index: 60; /* Higher than sidebar (z-50) to ensure header is on top */
   /* Force hardware acceleration for iOS */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   will-change: transform;
   /* Ensure background is opaque */
   background-color: #0b0d13 !important;
+  /* Prevent header from being scrollable */
+  width: 100%;
+}
+
+/* On desktop, header starts after sidebar */
+@media (min-width: 1024px) {
+  .ios-sticky-header {
+    left: 5rem; /* 80px - matches sidebar width */
+    width: calc(100% - 5rem);
+  }
 }
 
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
   .ios-sticky-header {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed; /* Keep fixed on iOS for app-like feel */
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
+}
 
-  /* Ensure parent containers don't break sticky */
+/* Mobile viewport height — apply universally, not just iOS */
+@media (max-width: 1023px) {
   .dashboard-page {
-    overflow: visible;
+    width: 100%;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
   }
 
-  .dashboard-page > div {
-    overflow: visible;
+  .dashboard-page > main {
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
   }
 }
 
 /* PWA Standalone Mode - Improved Mobile Padding */
 @media (display-mode: standalone) {
   /* Better padding for standalone PWA on mobile */
+  /* padding-bottom intentionally omitted — handled by the mobile @media rule with var(--above-tab-bar) */
   .dashboard-page main {
     padding-left: 1rem;
     padding-right: 1rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
   }
 
   @media (min-width: 640px) {
@@ -68,8 +559,7 @@
 
   /* iOS PWA sticky header fix */
   .ios-sticky-header {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed; /* Keep fixed for app-like feel */
     top: 0;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -111,9 +601,9 @@
   opacity: 1;
 }
 
-/* Custom magenta glow utility */
+/* Custom brand glow utility */
 .hover\:shadow-magenta-glow:hover {
-  box-shadow: 0 0 10px 2px rgba(255, 0, 150, 0.5);
+  box-shadow: 0 0 10px 2px rgba(211, 126, 145, 0.5);
 }
 
 /* react-datepicker styles will be imported via component */
@@ -175,7 +665,7 @@
 }
 
 .regulation-badge {
-  background: #ff006e;
+  background: #544349;
   color: #ffffff;
 }
 
@@ -192,7 +682,7 @@
 }
 
 .deploy-button {
-  background: #ff006e;
+  background: #d37e91;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
@@ -204,8 +694,8 @@
 }
 
 .deploy-button:hover {
-  background: #e60060;
-  box-shadow: 0 0 12px rgba(255, 0, 110, 0.3);
+  background: #b0607a;
+  box-shadow: 0 0 12px rgba(211, 126, 145, 0.3);
 }
 
 .templates-grid {
@@ -256,8 +746,28 @@
 /* ----------------------------- */
 
 body {
-  @apply font-sans text-white;
-  background: radial-gradient(circle at 20% 30%, #0b0d13 0%, #090a0f 80%);
+  @apply font-sans;
+  font-family: var(--font-poppins), "Poppins", "Century Gothic", system-ui, sans-serif;
+  color: rgb(var(--text-primary));
+  background: rgb(var(--background));
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Dark mode backgrounds — html gets solid fallback for PWA safe-area edges */
+.dark html {
+  background: #0c0a09;
+}
+.dark body {
+  background: radial-gradient(circle at 20% 30%, #110f0d 0%, #0c0a09 80%);
+  color: rgb(var(--text-primary));
+}
+
+/* Light mode body background (solid warm gray) */
+.light body {
+  background: rgb(var(--background));
+  color: rgb(var(--text-primary));
 }
 
 /* Disable browser autofill overlay and preserve dark theme styling */
@@ -273,12 +783,101 @@ input:-webkit-autofill:focus {
 
 /* Smooth scrollbar behaviour; hide when not needed */
 html {
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Match body background so safe-area edges don't show a gap in PWA standalone mode */
+  background: rgb(var(--background));
 }
 
-/* Hide scrollbar track in WebKit browsers while preserving wheel scroll */
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* Prevent any child from causing horizontal scroll on mobile */
+@media (max-width: 1023px) {
+  html,
+  body {
+    position: relative;
+    overscroll-behavior-x: none;
+  }
+
+  main,
+  [role="main"],
+  .dashboard-page {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  .dashboard-page > main {
+    min-width: 0;
+  }
+}
+
+/* Order Book scrollbar - uses stockly module colour */
+.order-book-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.order-book-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.order-book-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.5);
+  border-radius: 9999px;
+}
+.order-book-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.7);
+}
+.order-book-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent;
+}
+
+/* Prevent body scrolling on dashboard pages - app-like experience */
+body:has(.dashboard-page) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  position: fixed;
+  width: 100%;
+  touch-action: none; /* Prevent pull-to-refresh and overscroll on mobile */
+}
+
+/* In PWA standalone, use -webkit-fill-available as height (not min-height)
+   to fill the screen correctly without creating extra space beyond the viewport */
+@media (display-mode: standalone) {
+  body:has(.dashboard-page) {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Ensure html doesn't scroll when dashboard is active */
+html:has(body:has(.dashboard-page)) {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Fallback for browsers that don't support :has() - add .no-scroll class manually if needed */
+body.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  position: fixed;
+  width: 100%;
+  touch-action: none;
+}
+
+/* Body scrollbar — inherits from global app scrollbar styles */
 body::-webkit-scrollbar {
-  width: 0px;
+  width: 6px;
+}
+body::-webkit-scrollbar-track {
   background: transparent;
 }
 
@@ -291,7 +890,7 @@ h3 {
 
 p {
   font-weight: 400;
-  color: #cbd5e1;
+  color: rgb(var(--text-secondary));
 }
 
 /* ----------------------------- */
@@ -312,7 +911,7 @@ p {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(236, 72, 153, 0.25), rgba(37, 99, 235, 0.2));
+    background: linear-gradient(120deg, rgba(211, 126, 145, 0.25), rgba(120, 154, 153, 0.2));
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -322,11 +921,11 @@ p {
   }
 
   .btn-glass:hover {
-    @apply border-magenta-400;
+    border-color: #d37e91;
     transform: scale(1.04);
     box-shadow:
-      0 0 16px rgba(236, 72, 153, 0.25),
-      0 0 24px rgba(37, 99, 235, 0.15);
+      0 0 16px rgba(211, 126, 145, 0.25),
+      0 0 24px rgba(120, 154, 153, 0.15);
   }
 
   .btn-glass:active {
@@ -347,7 +946,7 @@ p {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(236, 72, 153, 0.35), rgba(37, 99, 235, 0.3));
+    background: linear-gradient(120deg, rgba(211, 126, 145, 0.35), rgba(120, 154, 153, 0.3));
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -357,11 +956,11 @@ p {
   }
 
   .btn-glass-cta:hover {
-    @apply border-magenta-400;
+    border-color: #d37e91;
     transform: scale(1.05);
     box-shadow:
-      0 0 20px rgba(236, 72, 153, 0.3),
-      0 0 30px rgba(37, 99, 235, 0.25);
+      0 0 20px rgba(211, 126, 145, 0.3),
+      0 0 30px rgba(120, 154, 153, 0.25);
   }
 
   .btn-glass-cta:active {
@@ -403,31 +1002,30 @@ p {
 /* ----------------------------- */
 
 .hover-glow:hover {
-  box-shadow: 0 0 6px rgba(236, 72, 153, 0.4);
+  box-shadow: 0 0 6px rgba(211, 126, 145, 0.4);
 }
-/* Fix for gradient header clipping on all hero sections */
-.hero-title {
-  padding-top: 0.25rem; /* adds small breathing room */
-  padding-bottom: 0.5rem; /* prevents bottom clipping for descenders (g, p, q, y) */
-  line-height: 1.3; /* allows space for descenders */
-  overflow: visible; /* ensures descenders aren't clipped */
+/* ----------------------------- */
+/* Marketing Typography Override  */
+/* ----------------------------- */
+.marketing-page,
+.marketing-page * {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* ----------------------------- */
-/* Simple Glass Button            */
+/* Marketing Buttons              */
 /* ----------------------------- */
-.glass-button {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
+.btn-marketing-primary {
+  @apply bg-[#e8e8e8] text-[#0a0a0a] px-8 py-3 rounded-lg font-medium transition-all duration-200;
 }
-.glass-button:hover {
-  background: rgba(236, 72, 153, 0.25); /* stronger magenta tint on hover */
-  border-color: rgba(236, 72, 153, 0.5);
-  box-shadow:
-    0 0 18px rgba(236, 72, 153, 0.35),
-    0 0 26px rgba(37, 99, 235, 0.25);
+.btn-marketing-primary:hover {
+  @apply bg-white;
+}
+.btn-marketing-secondary {
+  @apply bg-transparent text-[#e8e8e8] px-8 py-3 rounded-lg font-medium border border-white/20 transition-all duration-200;
+}
+.btn-marketing-secondary:hover {
+  @apply border-white/40 bg-white/[0.05];
 }
 
 /* ----------------------------- */
@@ -455,6 +1053,290 @@ body:has(.marketing-page) .global-footer {
   scrollbar-width: none; /* Firefox */
 }
 
+/* Dashboard content area - smooth scrolling for app-like feel */
+.dashboard-page main {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* ─── Module-specific scrollbar accents ─── */
+/* All use 6px pill-style thumbs; sidebar = solid color, page = 30% opacity */
+
+/* Checkly */
+.checkly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.5);
+  border-radius: 9999px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.7);
+}
+.checkly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent;
+}
+
+.checkly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.2);
+  border-radius: 9999px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.4);
+}
+.checkly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.2) transparent;
+}
+
+/* Stockly */
+.stockly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.5);
+  border-radius: 9999px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.7);
+}
+.stockly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent;
+}
+
+.stockly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.2);
+  border-radius: 9999px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.4);
+}
+.stockly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.2) transparent;
+}
+
+/* Teamly */
+.teamly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-teamly) / 0.5);
+  border-radius: 9999px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-teamly) / 0.7);
+}
+.teamly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-teamly) / 0.5) transparent;
+}
+
+.teamly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-teamly) / 0.2);
+  border-radius: 9999px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-teamly) / 0.4);
+}
+.teamly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-teamly) / 0.2) transparent;
+}
+
+/* Assetly */
+.assetly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-assetly) / 0.5);
+  border-radius: 9999px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-assetly) / 0.7);
+}
+.assetly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-assetly) / 0.5) transparent;
+}
+
+.assetly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-assetly) / 0.2);
+  border-radius: 9999px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-assetly) / 0.4);
+}
+.assetly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-assetly) / 0.2) transparent;
+}
+
+/* Planly */
+.planly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-planly) / 0.5);
+  border-radius: 9999px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-planly) / 0.7);
+}
+.planly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-planly) / 0.5) transparent;
+}
+
+.planly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-planly) / 0.2);
+  border-radius: 9999px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-planly) / 0.4);
+}
+.planly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-planly) / 0.2) transparent;
+}
+
+/* Forecastly */
+.forecastly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.5);
+  border-radius: 9999px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.7);
+}
+.forecastly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent;
+}
+
+.forecastly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.2);
+  border-radius: 9999px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.4);
+}
+.forecastly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.2) transparent;
+}
+
+/* AI Assistant - uses checkly module colour */
+.assistant-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assistant-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.5);
+  border-radius: 9999px;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.7);
+}
+.assistant-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent;
+}
+
+/* Global search modal - uses forecastly module colour */
+.search-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.search-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.search-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.5);
+  border-radius: 9999px;
+}
+.search-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.7);
+}
+.search-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent;
+}
+
+/* Default dashboard scrollbar (for non-module pages) */
+.dashboard-page main::-webkit-scrollbar {
+  width: 6px;
+}
+.dashboard-page main::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dashboard-page main::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.2);
+  border-radius: 9999px;
+}
+.dashboard-page main::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.4);
+}
+
 /* ----------------------------- */
 /* Polishing: Fade-in + Blink     */
 /* ----------------------------- */
@@ -477,11 +1359,11 @@ body:has(.marketing-page) .global-footer {
   0%,
   100% {
     opacity: 1;
-    box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+    box-shadow: 0 0 0 rgba(211, 126, 145, 0);
   }
   50% {
     opacity: 0.6;
-    box-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
+    box-shadow: 0 0 8px rgba(211, 126, 145, 0.6);
   }
 }
 
@@ -489,22 +1371,22 @@ body:has(.marketing-page) .global-footer {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background-color: #ec4899; /* pink */
+  background-color: #d37e91;
   animation: blinkPulse 1.2s ease-in-out infinite;
 }
 
 .textarea-hover-glow:hover {
-  box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+  box-shadow: 0 0 14px rgba(211, 126, 145, 0.35);
 }
 
 /* Optional: pulsing glow for active icons */
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 12px rgba(236, 72, 153, 0.35);
+    box-shadow: 0 0 12px rgba(211, 126, 145, 0.35);
   }
   50% {
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.55);
+    box-shadow: 0 0 20px rgba(211, 126, 145, 0.55);
   }
 }
 
@@ -512,9 +1394,9 @@ body:has(.marketing-page) .global-footer {
   animation: pulse-glow 2s infinite ease-in-out;
 }
 
-/* Optional global magenta glow for primary buttons */
+/* Optional global brand glow for primary buttons */
 .btn-glow-magenta:hover {
-  box-shadow: 0 0 12px rgba(236, 72, 153, 0.35);
+  box-shadow: 0 0 12px rgba(211, 126, 145, 0.35);
 }
 
 /* ----------------------------- */
@@ -544,12 +1426,12 @@ body:has(.marketing-page) .global-footer {
 
 .glow-invalid {
   box-shadow:
-    inset 0 0 0 1px rgba(236, 72, 153, 0.6),
-    0 0 12px rgba(236, 72, 153, 0.45);
+    inset 0 0 0 1px rgba(211, 126, 145, 0.6),
+    0 0 12px rgba(211, 126, 145, 0.45);
 }
 
 .outline-magenta {
-  outline: 2px solid rgba(236, 72, 153, 0.7);
+  outline: 2px solid rgba(211, 126, 145, 0.7);
   outline-offset: 0;
 }
 
@@ -576,7 +1458,7 @@ input[type="number"] {
 /* SOP Block base styling */
 .sop-block {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 0, 150, 0.3);
+  border: 1px solid rgba(211, 126, 145, 0.3);
   border-radius: 1rem;
   margin-top: 1rem;
   padding: 1rem;
@@ -641,4 +1523,84 @@ input[type="number"] {
 
 .animate-slideInRight {
   animation: slideInRight 0.3s ease-out;
+}
+
+/* ----------------------------- */
+/* Dashboard Drag-and-Drop        */
+/* ----------------------------- */
+.widget-dragging {
+  z-index: 50;
+}
+
+.drag-active * {
+  user-select: none;
+}
+
+/* ----------------------------- */
+/* Planly Print Styles           */
+/* ----------------------------- */
+
+@media print {
+  /* Hide non-print elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print\:block {
+    display: block !important;
+  }
+
+  /* Reset page margins — component-level styles override size/orientation */
+  @page {
+    margin: 0;
+  }
+
+  /* Ensure tables don't break across pages */
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Section breaks */
+  .print-section {
+    page-break-after: auto;
+  }
+
+  /* Compact spacing for print */
+  .print-compact {
+    padding: 0.25rem !important;
+    margin: 0.25rem !important;
+  }
+
+  /* Delivery notes - 4 per A4 page */
+  .delivery-note-print {
+    width: 50%;
+    height: 50%;
+    float: left;
+    box-sizing: border-box;
+    padding: 0.5cm;
+    border: 1px solid #000;
+  }
+
+  /* Production worksheet print */
+  .production-worksheet-print {
+    page-break-after: always;
+  }
+}
+
+/* ─── IP Protection: Disable Text Selection ─── */
+/* Active when body has .no-select-app (production only) */
+body.no-select-app {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Re-enable selection for interactive elements */
+body.no-select-app input,
+body.no-select-app textarea,
+body.no-select-app [contenteditable="true"],
+body.no-select-app select,
+body.no-select-app code,
+body.no-select-app pre {
+  -webkit-user-select: text;
+  user-select: text;
 }

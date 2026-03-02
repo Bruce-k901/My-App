@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -94,32 +94,32 @@ export default function ColdBeveragesSOPTemplatePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading libraries...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-theme-tertiary">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
-      <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-6 border border-blue-500/30">
+      <div className="bg-gradient-to-r from-checkly-dark/20 to-checkly-dark/10 dark:from-checkly/20 dark:to-checkly/10 rounded-2xl p-6 border border-checkly-dark/30 dark:border-checkly/30">
         <h1 className="text-2xl font-semibold mb-2">Cold Beverages SOP Template</h1>
-        <p className="text-neutral-300 text-sm">Manage cold beverage preparation procedures</p>
+        <p className="text-theme-tertiary text-sm">Manage cold beverage preparation procedures</p>
       </div>
 
       {/* SOP Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">SOP Details</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -128,49 +128,49 @@ export default function ColdBeveragesSOPTemplatePage() {
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Beverage Name *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Beverage Name *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Iced Coffee"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Estimated Time</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Estimated Time</label>
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 3 minutes"
             />
           </div>
@@ -182,7 +182,7 @@ export default function ColdBeveragesSOPTemplatePage() {
         <button
           onClick={() => showToast({ title: 'Coming soon', description: 'Save functionality will be implemented soon', type: 'info' })}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(211, 126, 145,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save SOP'}

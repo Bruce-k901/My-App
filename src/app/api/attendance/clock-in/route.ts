@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * POST /api/attendance/clock-in
@@ -67,30 +68,84 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use admin client for time_entries operations — the time_entries RLS
+    // INSERT/SELECT policies only check auth_user_id = auth.uid(), which fails
+    // for profiles where id = auth.uid() but auth_user_id is NULL.
+    // staff_attendance RLS uses user_company_id() which handles both patterns.
+    const admin = getSupabaseAdmin();
+
     // Check if user already has an active shift
+    const clockInTime = new Date().toISOString();
     const { data: activeShift } = await supabase
       .from('staff_attendance')
-      .select('id')
-      .eq('user_id', profile.id)
+      .select('id, clock_in_time')
+      .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .maybeSingle();
 
     if (activeShift) {
-      return NextResponse.json(
-        { error: 'You already have an active shift. Please clock out first.' },
-        { status: 400 }
-      );
-    }
+      console.error('[Clock-in] Blocked by active shift:', {
+        authUserId: user.id,
+        profileId: profile.id,
+        profileIdMatchesAuth: profile.id === user.id,
+        activeShiftId: activeShift.id,
+        activeShiftClockIn: activeShift.clock_in_time,
+      });
 
-    // Create new attendance record
+      // Check if there's a corresponding active time_entries record
+      const { data: activeEntry } = await admin
+        .from('time_entries')
+        .select('id')
+        .eq('profile_id', profile.id)
+        .eq('status', 'active')
+        .is('clock_out', null)
+        .maybeSingle();
+
+      // Auto-close stale shifts (open for 16+ hours) so staff aren't stuck
+      const shiftAge = Date.now() - new Date(activeShift.clock_in_time).getTime();
+      const sixteenHours = 16 * 60 * 60 * 1000;
+
+      if (shiftAge > sixteenHours || !activeEntry) {
+        // Orphaned or stale shift — auto-close it so the user can clock in
+        const closeReason = !activeEntry
+          ? 'Auto-closed: orphaned shift (no matching active time_entry)'
+          : 'Auto-closed: stale shift on new clock-in';
+
+        await supabase
+          .from('staff_attendance')
+          .update({
+            clock_out_time: clockInTime,
+            shift_status: 'off_shift',
+            shift_notes: closeReason,
+          })
+          .eq('id', activeShift.id);
+
+        // Also close any matching time_entries
+        await admin
+          .from('time_entries')
+          .update({
+            clock_out: clockInTime,
+            status: 'completed',
+            notes: closeReason,
+          })
+          .eq('profile_id', profile.id)
+          .eq('status', 'active')
+          .is('clock_out', null);
+      } else {
+        return NextResponse.json(
+          { error: 'You already have an active shift. Please clock out first.' },
+          { status: 400 }
+        );
+      }
+    }
     const { data: attendance, error: insertError } = await supabase
       .from('staff_attendance')
       .insert({
-        user_id: profile.id,
+        profile_id: profile.id,
         company_id: profile.company_id,
         site_id: siteId,
-        clock_in_time: new Date().toISOString(),
+        clock_in_time: clockInTime,
         shift_status: 'on_shift',
       })
       .select()
@@ -102,6 +157,36 @@ export async function POST(request: NextRequest) {
         { error: insertError.message || 'Failed to clock in' },
         { status: 500 }
       );
+    }
+
+    // Close any orphaned active time_entries before inserting a new one
+    // (prevents unique constraint violation on idx_one_active_entry)
+    await admin
+      .from('time_entries')
+      .update({
+        clock_out: clockInTime,
+        status: 'completed',
+        notes: 'Auto-closed: orphaned active entry on new clock-in',
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    // Create a time_entries record so TimeClock UI stays in sync
+    const { error: timeEntryError } = await admin
+      .from('time_entries')
+      .insert({
+        profile_id: profile.id,
+        company_id: profile.company_id,
+        site_id: siteId,
+        clock_in: clockInTime,
+        status: 'active',
+        entry_type: 'shift',
+      });
+
+    if (timeEntryError) {
+      // Log but don't fail the clock-in — staff_attendance is the primary record
+      console.error('Error creating time_entries record (non-fatal):', timeEntryError);
     }
 
     return NextResponse.json({

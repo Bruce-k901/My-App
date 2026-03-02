@@ -9,11 +9,12 @@ import * as pushNotifications from '@/lib/notifications/pushNotifications'
  * Should be included in the root layout
  */
 export function NotificationInitializer() {
-  const { user } = useAppContext()
+  const { user, session } = useAppContext()
   const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    if (!user || initialized) return
+    // Only initialize if we have both user and session (fully authenticated)
+    if (!user || !session || initialized) return
 
     const initializeNotifications = async () => {
       try {
@@ -47,21 +48,39 @@ export function NotificationInitializer() {
             if (registered) {
               console.log('Push notifications registered successfully')
             }
-          } catch (error) {
-            console.error('Error registering service worker:', error)
+          } catch (error: any) {
+            // Suppress expected errors (service worker registration failures are non-fatal)
+            const isSuppressedError = 
+              error?.message?.includes('already registered') ||
+              error?.message?.includes('not supported');
+            
+            if (!isSuppressedError) {
+              const errorMessage = error?.message || error?.toString() || 'Unknown error'
+              console.debug('Error registering service worker:', errorMessage)
+            }
           }
         }
 
         setInitialized(true)
-      } catch (error) {
-        console.error('Error initializing notifications:', error)
+      } catch (error: any) {
+        // Suppress expected errors (push subscription failures are non-fatal)
+        const isSuppressedError = 
+          error?.code === '23503' || // Foreign key violation
+          error?.message?.includes('foreign key') ||
+          error?.message?.includes('profiles') ||
+          error?.message?.includes('Key is not present');
+        
+        if (!isSuppressedError) {
+          const errorMessage = error?.message || error?.toString() || 'Unknown error'
+          console.debug('Error initializing notifications:', errorMessage)
+        }
       }
     }
 
     // Small delay to ensure app is fully loaded
     const timer = setTimeout(initializeNotifications, 2000)
     return () => clearTimeout(timer)
-  }, [user, initialized])
+  }, [user, session, initialized])
 
   return null // This component doesn't render anything
 }

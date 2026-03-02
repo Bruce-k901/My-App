@@ -41,6 +41,8 @@ export type TaskTemplate = {
   contractor_type: string | null
   is_active: boolean
   is_template_library: boolean
+  notification_config: NotificationConfig | null
+  use_custom_fields: boolean
   created_at: string
   updated_at: string
 }
@@ -120,6 +122,10 @@ export type TemplateField = {
   options: Record<string, any> | null
   field_order: number
   help_text: string | null
+  unit: string | null
+  default_value: string | null
+  parent_field_id: string | null
+  section_label: string | null
   created_at: string
 }
 
@@ -206,7 +212,9 @@ export enum FieldType {
   PASS_FAIL = 'pass_fail',
   SIGNATURE = 'signature',
   DATE = 'date',
-  TIME = 'time'
+  TIME = 'time',
+  YES_NO = 'yes_no',
+  TEMPERATURE = 'temperature'
 }
 
 export enum ContractorType {
@@ -240,6 +248,25 @@ export enum ContractorCalloutStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled'
+}
+
+// ============= NOTIFICATION CONFIG =============
+
+/** Recipient for template notification emails */
+export interface NotificationRecipient {
+  type: 'user' | 'external'
+  user_id?: string   // Present when type === 'user'
+  email?: string     // Present when type === 'external'
+  name?: string      // Display name (for external recipients, or cached user name)
+}
+
+/** Notification configuration stored on task_templates.notification_config */
+export interface NotificationConfig {
+  enabled: boolean
+  trigger: 'on_completion'  // Extensible later: 'on_breach' | 'on_overdue'
+  subject: string           // Template string with placeholders
+  message: string           // Template string with placeholders
+  recipients: NotificationRecipient[]
 }
 
 // ============= CUSTOM INTERFACES =============

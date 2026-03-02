@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Database,
   TrendingUp,
-} from "lucide-react";
+} from '@/components/ui/icons';
 import Link from "next/link";
 import { Button } from "@/components/ui";
 import GlassCard from "@/components/ui/GlassCard";
@@ -22,11 +22,11 @@ export default function MultiSiteDashboardPage() {
       <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
-            <h1 className="pt-1 pb-1 leading-tight text-5xl md:text-6xl font-bold bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(236,72,153,0.4)]">
+            <h1 className="pt-1 pb-1 leading-tight text-5xl md:text-6xl font-bold bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(211, 126, 145,0.4)]">
               Everything your kitchen, store, and head office need in one place
             </h1>
           </div>
-          <p className="text-slate-300 max-w-2xl mx-auto leading-relaxed text-base">
+          <p className="text-theme-secondary max-w-2xl mx-auto leading-relaxed text-base">
             Real-time logs, automated alerts, and ready-to-show reports. Less firefighting, more running your business..
           </p>
         </div>
@@ -35,7 +35,7 @@ export default function MultiSiteDashboardPage() {
       {/* PAIRED PITFALLS + FEATURES */}
       <section className="bg-[#0b0d13] py-10 border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-semibold mb-8 text-white text-center">
+          <h2 className="text-2xl font-semibold mb-8 text-theme-primary text-center">
             What it fixes — and how Checkly helps
           </h2>
           <div className="space-y-6">
@@ -118,9 +118,9 @@ export default function MultiSiteDashboardPage() {
                 <GlassCard className="text-left max-w-none">
                   <div className="flex items-center space-x-2 mb-2">
                     <pitfall.icon className="w-5 h-5 text-magenta-400" />
-                    <p className="text-base font-semibold text-white">{pitfall.title}</p>
+                    <p className="text-base font-semibold text-theme-primary">{pitfall.title}</p>
                   </div>
-                  <p className="text-slate-400 text-sm leading-relaxed">{pitfall.text}</p>
+                  <p className="text-theme-tertiary text-sm leading-relaxed">{pitfall.text}</p>
                 </GlassCard>
 
                 {/* Feature (right) */}
@@ -129,7 +129,7 @@ export default function MultiSiteDashboardPage() {
                     <feature.icon className="w-5 h-5 text-magenta-400" />
                     <p className="text-base font-semibold text-magenta-400">{feature.title}</p>
                   </div>
-                  <p className="text-slate-400 text-sm leading-relaxed">{feature.text}</p>
+                  <p className="text-theme-tertiary text-sm leading-relaxed">{feature.text}</p>
                 </GlassCard>
               </div>
             ))}
@@ -137,7 +137,7 @@ export default function MultiSiteDashboardPage() {
 
           {/* CTA */}
           <div className="text-center mt-10">
-            <h3 className="text-xl font-semibold mb-4 text-white">
+            <h3 className="text-xl font-semibold mb-4 text-theme-primary">
               Run every site like your best site.
             </h3>
             <Link href="/signup">

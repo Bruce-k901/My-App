@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 250">
+  <g transform="translate(40,50)">
+    <rect x="0" y="10" width="24" height="110" rx="12" fill="#1B2624"/>
+    <rect x="34" y="30" width="24" height="90" rx="12" fill="#8B2E3E"/>
+    <rect x="68" y="15" width="24" height="105" rx="12" fill="#D9868C"/>
+    <rect x="102" y="25" width="24" height="95" rx="12" fill="#5D8AA8"/>
+    <rect x="136" y="10" width="24" height="110" rx="12" fill="#87B0D6"/>
+    <rect x="170" y="20" width="24" height="100" rx="12" fill="#9AC297"/>
+  </g>
+  <text x="240" y="155" font-family="Helvetica Neue,Helvetica,Arial,sans-serif" font-size="95" font-weight="500" fill="#F3E7D9">assetly</text>
+</svg>

@@ -1,68 +1,110 @@
 /**
- * Date utility functions for asset management
+ * Format message timestamp for display
+ * Shows relative time for recent messages, absolute date for older ones
  */
-
-/**
- * Add months to a date
- */
-export function addMonths(date: Date, months: number): Date {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
-
-/**
- * Calculate asset age from purchase date
- */
-export function calculateAssetAge(purchaseDate?: string | null): string {
-  if (!purchaseDate) return "Unknown";
-  
-  const purchase = new Date(purchaseDate);
+export function formatMessageTime(timestamp: string | Date): string {
+  const date = new Date(timestamp);
   const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  // Just now - under 1 minute
+  if (diffMins < 1) return 'Just now';
   
-  let years = now.getFullYear() - purchase.getFullYear();
-  let months = now.getMonth() - purchase.getMonth();
+  // Minutes ago
+  if (diffMins < 60) return `${diffMins}m ago`;
   
-  // Adjust for negative months
-  if (months < 0) {
-    years--;
-    months += 12;
+  // Hours ago - under 24 hours
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  // Days ago - under 7 days
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  // Show actual date for older messages
+  if (diffDays < 365) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
   
-  // Handle edge case where the day hasn't occurred yet this month
-  if (now.getDate() < purchase.getDate()) {
-    months--;
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-  }
-  
-  return `${years}y ${months}m`;
+  // Show year for very old messages
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /**
- * Calculate next service date based on purchase date and services per year
+ * Format conversation timestamp for list view
+ * Shows relative time for recent, date for older
+ */
+export function formatConversationTime(timestamp: string | Date | null | undefined): string {
+  if (!timestamp) return '';
+  
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  // Just now - under 1 minute
+  if (diffMins < 1) return 'Just now';
+  
+  // Minutes ago
+  if (diffMins < 60) return `${diffMins}m ago`;
+  
+  // Hours ago - under 24 hours
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  // Days ago - under 7 days
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  // Show actual date for older conversations
+  if (diffDays < 365) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  
+  // Show year for very old conversations
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+/**
+ * Calculate asset age from install date
+ * Returns formatted string like "2 years 3 months" or "6 months" or "45 days"
+ */
+export function calculateAssetAge(installDate: string | null | undefined): string {
+  if (!installDate) return 'Unknown';
+  
+  const install = new Date(installDate);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - install.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  
+  if (years > 0 && months > 0) {
+    return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+  } else if (years > 0) {
+    return `${years} year${years > 1 ? 's' : ''}`;
+  } else if (months > 0) {
+    return `${months} month${months > 1 ? 's' : ''}`;
+  } else {
+    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  }
+}
+
+/**
+ * Calculate next service date from last service date and frequency
+ * Returns formatted date string or null if calculation not possible
  */
 export function calculateNextServiceDate(
-  purchaseDate?: string | null,
-  addToPpm?: boolean | null,
-  servicesPerYear?: number | null
-): Date | null {
-  if (!addToPpm || !servicesPerYear || servicesPerYear <= 0 || !purchaseDate) {
-    return null;
-  }
+  lastServiceDate: string | null | undefined,
+  frequencyMonths: number | null | undefined
+): string | null {
+  if (!lastServiceDate || !frequencyMonths) return null;
   
-  const monthsBetweenServices = 12 / servicesPerYear;
-  const purchase = new Date(purchaseDate);
-  const now = new Date();
+  const lastDate = new Date(lastServiceDate);
+  const nextDate = new Date(lastDate);
+  nextDate.setMonth(nextDate.getMonth() + frequencyMonths);
   
-  let nextService = addMonths(purchase, monthsBetweenServices);
-  
-  // If the asset was purchased years ago, calculate forward until the next service is in the future
-  while (nextService <= now) {
-    nextService = addMonths(nextService, monthsBetweenServices);
-  }
-  
-  return nextService;
+  return nextDate.toISOString().split('T')[0];
 }

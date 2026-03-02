@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
-import { Plus, X, CheckCircle, Circle } from "lucide-react"
+import { Plus, X, CheckCircle, Circle } from '@/components/ui/icons'
 
 interface ChecklistItem {
   text: string;
@@ -50,7 +50,7 @@ export default function PostFinishChecklistComponent({ node, updateAttributes, s
   return (
     <NodeViewWrapper className="relative my-4 p-4 rounded-2xl border border-magenta-500/30 bg-white/5 backdrop-blur-md shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -62,7 +62,7 @@ export default function PostFinishChecklistComponent({ node, updateAttributes, s
         </div>
         <button
           onClick={addItem}
-          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add Item</span>
@@ -79,7 +79,7 @@ export default function PostFinishChecklistComponent({ node, updateAttributes, s
 
       <div className="space-y-2">
         {items.length === 0 && (
-          <div className="text-center text-gray-500 italic py-4">
+          <div className="text-center text-theme-tertiary italic py-4">
             No post-finish checks added yet.
           </div>
         )}
@@ -110,7 +110,7 @@ export default function PostFinishChecklistComponent({ node, updateAttributes, s
               value={item.text}
               onChange={(e) => updateItem(index, "text", e.target.value)}
               className={`flex-1 bg-transparent border-none outline-none text-sm ${
-                item.completed ? 'text-gray-400 opacity-60' : 'text-white'
+                item.completed ? 'text-theme-tertiary opacity-60' : 'text-theme-primary'
               }`}
               placeholder="Enter verification item..."
             />

@@ -1,57 +1,176 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import NewMainSidebar from "@/components/layouts/NewMainSidebar";
-import DashboardHeader from "@/components/layouts/DashboardHeader";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { MobileNavProvider, BottomTabBar, MoreSheet } from "@/components/mobile";
+import { ChecklySidebar } from "@/components/checkly/sidebar-nav";
+import { StocklySidebar } from "@/components/stockly/sidebar-nav";
+import { TeamlySidebar } from "@/components/teamly/sidebar-nav";
+import { PlanlySidebar } from "@/components/planly/sidebar-nav";
+import { AssetlySidebar } from "@/components/assetly/sidebar-nav";
+import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
+import { SearchModal } from "@/components/search";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSidebarMode } from "@/hooks/useSidebarMode";
 import { useAppContext } from "@/context/AppContext";
-import type { AppRole } from "@/lib/accessControl";
+import { useKeyboardScrollFix } from "@/hooks/useKeyboardScrollFix";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { role: actualRole, loading } = useAppContext();
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const isDevMode = false;
+function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAppContext();
+  const router = useRouter();
+  const [paddingClass, setPaddingClass] = useState('px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16');
+  const [showAIWidget, setShowAIWidget] = useState(true);
+  const pathname = usePathname();
+  const { isMobile } = useIsMobile();
+  const { width: sidebarWidth } = useSidebarMode();
+  useKeyboardScrollFix();
+
+  // Redirect to login if session expired
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [loading, user, router]);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    // Only compute pathname-dependent values on client after mount
+    const isMessagingPage = pathname?.includes('/messaging');
+    const isTeamlyPage = pathname?.includes('/people') || pathname?.startsWith('/dashboard/courses');
+    const isStocklyPage = pathname?.includes('/stockly');
+    const isChecklyPage = pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists') || pathname?.includes('/incidents') || pathname?.includes('/sops') || pathname?.includes('/risk-assessments') || pathname?.includes('/logs') || pathname?.includes('/equipment') || pathname?.includes('/pest-control') || pathname?.includes('/settings');
+    const isPlanlyPage = pathname?.includes('/planly');
+    const isAssetlyPage = pathname?.includes('/assets') || pathname?.includes('/ppm');
 
-  // CRITICAL FIX: Always render the EXACT same structure on server and client
-  // Never conditionally render different top-level structures
-  // The structure below is ALWAYS rendered, regardless of loading state
-  // This ensures server HTML matches client HTML exactly during hydration
-  
-  return (
-    <div 
-      className="dashboard-page flex min-h-screen bg-[#0B0D13] text-white"
-      suppressHydrationWarning
-    >
-      <NewMainSidebar 
-        isMobileOpen={isMobileSidebarOpen}
-        onMobileClose={() => setIsMobileSidebarOpen(false)}
-      />
-      <div className="flex-1 lg:ml-20 flex flex-col min-h-screen">
-        {/* Sticky Header - iOS Safari compatible */}
-        <div className="sticky top-0 z-50 bg-[#0B0D13] ios-sticky-header">
-          <DashboardHeader onMobileMenuClick={() => setIsMobileSidebarOpen(true)} />
+    setPaddingClass(
+      (isTeamlyPage || isStocklyPage || isChecklyPage || isPlanlyPage || isAssetlyPage)
+        ? 'px-1 py-4 sm:px-2 sm:py-6 md:px-3 md:pb-6 lg:px-3'
+        : 'px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16'
+    );
+    setShowAIWidget(!isMessagingPage);
+  }, [pathname]);
+
+  // Show loading skeleton while checking auth — prevents hydration mismatch
+  // by keeping a consistent DOM element in the {children} slot of the root layout
+  if (loading || !user) {
+    return (
+      <MobileNavProvider>
+        <div className="min-h-screen bg-[rgb(var(--module-bg-tint))] text-theme-primary flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-2 border-teamly border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-theme-tertiary">Loading...</p>
+          </div>
         </div>
-        {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-6 lg:px-16 relative">
-          {/* Always render children - never conditionally render different structures */}
-          {children}
-          {/* Loading overlay only appears after client-side mount (isMounted=true) */}
-          {/* This prevents hydration mismatch because isMounted is false during SSR */}
-          {/* Use suppressHydrationWarning since this content intentionally differs between SSR and client */}
-          {isMounted && loading && (
-            <div 
-              className="absolute inset-0 flex items-center justify-center bg-[#0B0D13]/80 z-50"
-              suppressHydrationWarning
-            >
-              <div className="text-white">Loading dashboard...</div>
-            </div>
+      </MobileNavProvider>
+    );
+  }
+
+  // Determine which module sidebar to show
+  const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs') || pathname?.startsWith('/dashboard/equipment') || pathname?.startsWith('/dashboard/pest-control') || pathname?.startsWith('/dashboard/settings');
+  const isStockly = pathname?.startsWith('/dashboard/stockly') || pathname?.startsWith('/dashboard/reports/stockly');
+  const isTeamly = pathname?.startsWith('/dashboard/people') || pathname?.startsWith('/dashboard/courses');
+  const isPlanly = pathname?.startsWith('/dashboard/planly');
+  const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
+  const showModuleSidebar = isCheckly || isStockly || isTeamly || isPlanly || isAssetly;
+  const moduleClass = isCheckly ? 'module-checkly' :
+                      isStockly ? 'module-stockly' :
+                      isTeamly  ? 'module-teamly'  :
+                      isPlanly  ? 'module-planly'  :
+                      isAssetly ? 'module-assetly' : '';
+
+  // ============================================
+  // MOBILE LAYOUT - No desktop header/sidebar
+  // ============================================
+  if (isMobile) {
+    return (
+      <MobileNavProvider>
+        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary w-full max-w-[100vw] overflow-x-hidden`}>
+          {/* Fixed backdrop behind status bar - prevents content showing through when scrolling */}
+          <div
+            className="fixed top-0 left-0 right-0 z-[45] bg-[rgb(var(--module-bg-tint))]"
+            style={{ height: 'env(safe-area-inset-top, 0px)' }}
+          />
+          {/* No desktop header on mobile - pages handle their own headers */}
+          <main className="w-full min-w-0 overflow-x-hidden">
+            {children}
+          </main>
+
+          {/* Portal target for fixed overlays that need to escape <main>'s stacking context.
+              Overlays rendered inside <main> via createPortal(jsx, getOverlayRoot())
+              will appear here — outside main but inside .dashboard-page (preserving CSS vars). */}
+          <div id="overlay-root" />
+
+          {/* Mobile Navigation */}
+          <BottomTabBar />
+          <MoreSheet />
+          <SearchModal />
+        </div>
+      </MobileNavProvider>
+    );
+  }
+
+  // ============================================
+  // DESKTOP LAYOUT - Full header, sidebars
+  // ============================================
+  return (
+    <MobileNavProvider>
+      <div className={`min-h-screen ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary`}>
+        {/* Header - Fixed at top (includes ModuleBar) */}
+        <Header />
+
+        <div className="flex">
+          {/* Module-specific Sidebars - Only show when inside a module */}
+          {showModuleSidebar && (
+            <>
+              {isCheckly && (
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
+                  <ChecklySidebar />
+                </div>
+              )}
+              {isStockly && (
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
+                  <StocklySidebar />
+                </div>
+              )}
+              {isTeamly && (
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
+                  <TeamlySidebar />
+                </div>
+              )}
+              {isPlanly && (
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
+                  <PlanlySidebar />
+                </div>
+              )}
+              {isAssetly && (
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
+                  <AssetlySidebar />
+                </div>
+              )}
+            </>
           )}
-        </main>
+
+          {/* Main Content */}
+          <main
+            className="flex-1 mt-[112px] bg-transparent transition-[margin,width,max-width] duration-200 module-page-scrollbar"
+            style={showModuleSidebar ? {
+              marginLeft: sidebarWidth,
+              width: `calc(100vw - ${sidebarWidth})`,
+              maxWidth: `calc(100vw - ${sidebarWidth})`,
+            } : {}}
+          >
+            <div className={`${paddingClass}`} style={{ paddingBottom: '80px' }}>
+              {children}
+            </div>
+          </main>
+        </div>
+
+        {/* Hide global AI widget on messaging page */}
+        {showAIWidget && <AIAssistantWidget />}
+        <SearchModal />
       </div>
-    </div>
+    </MobileNavProvider>
   );
 }
+
+export default DashboardLayout;

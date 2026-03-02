@@ -1,0 +1,14 @@
+{
+  "id": "uk-l2-food-safety-v3",
+  "title": "Food Safety Level 2 (UK)",
+  "description": "Self-study, mobile-friendly flow with interactive content, module quizzes, and a 30-question final assessment aligned to UK hygiene law.",
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction",
+      "description": "Introduction to Food Safety.",
+      "lessons": []
+    }
+  ]
+}

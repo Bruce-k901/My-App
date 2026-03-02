@@ -1,4 +1,71 @@
 {
+  "functions": {
+    "src/app/api/planly/production-plan/pdf/route.ts": {
+      "memory": 1536,
+      "maxDuration": 30
+    },
+    "src/app/api/planly/delivery-notes/pdf/route.ts": {
+      "memory": 1536,
+      "maxDuration": 30
+    },
+    "src/app/api/certificates/[recordId]/route.ts": {
+      "memory": 1024,
+      "maxDuration": 15
+    },
+    "src/app/api/cron/daily-digest/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/cron/generate-tasks/route.ts": {
+      "maxDuration": 120
+    },
+    "src/app/api/cron/square-sync/route.ts": {
+      "maxDuration": 120
+    },
+    "src/app/api/webhooks/square/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/cron/shift-pulse-weekly/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/health-check",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/health-check-reminders",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/generate-tasks",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/batch-expiry-alerts",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/cron/supplier-review-reminders",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/cron/salsa-compliance-check",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/daily-digest",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/square-sync",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/shift-pulse-weekly",
+      "schedule": "0 7 * * 1"
+    }
+  ],
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
@@ -7,9 +74,66 @@
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/manifest.json/route"
     }
   ],
   "headers": [
+    {
+      "source": "/_next/static/css/(.*\\.css)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/chunks/(.*\\.js)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.css)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.js)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
@@ -18,12 +142,33 @@
           "value": "DENY"
         },
         {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        },
+        {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
         {
-          "key": "Referrer-Policy",
-          "value": "origin-when-cross-origin"
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'none'"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=()"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.html|/|/dashboard|/dashboard/.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }

@@ -84,10 +84,10 @@ export default function SiteDetailPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold">Site Details</h1>
-          <Link href="/dashboard/sites" className="px-3 py-1.5 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] text-sm">Back to Sites</Link>
+          <Link href="/dashboard/sites" className="px-3 py-1.5 rounded bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] text-sm">Back to Sites</Link>
         </div>
 
-        {loading && <div className="text-slate-400">Loading site…</div>}
+        {loading && <div className="text-theme-tertiary">Loading site…</div>}
         {error && (
           <div className="mb-4 rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
             <p className="text-sm text-red-400">{error}</p>
@@ -97,8 +97,8 @@ export default function SiteDetailPage() {
         {site && (
           <div className="rounded-xl border border-white/[0.1] bg-white/[0.04] p-4">
             <div className="mb-4">
-              <div className="text-white font-semibold text-lg">{site.name || site.site_name || "Untitled site"}</div>
-              <div className="text-slate-400 text-sm">{site.address_line1 || site.address || "No address"}</div>
+              <div className="text-theme-primary font-semibold text-lg">{site.name || site.site_name || "Untitled site"}</div>
+              <div className="text-theme-tertiary text-sm">{site.address_line1 || site.address || "No address"}</div>
             </div>
 
             {/* Simple details list */}
@@ -107,14 +107,14 @@ export default function SiteDetailPage() {
                 .filter((k) => !["id", "company_id", "created_at"].includes(k))
                 .map((key) => (
                   <div key={key} className="p-2 rounded bg-white/[0.06] border border-white/[0.1]">
-                    <div className="text-xs text-slate-400 mb-1">{key.replace(/_/g, " ")}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">{key.replace(/_/g, " ")}</div>
                     <div className="text-sm text-white/90">{String(site[key] ?? "")}</div>
                   </div>
                 ))}
             </div>
 
             <div className="flex justify-end gap-2 mt-4">
-              <button onClick={() => setFormOpen(true)} className="px-4 py-2 rounded-md bg-pink-500/20 border border-pink-500/40 text-pink-300 hover:bg-pink-500/30">Edit</button>
+              <button onClick={() => setFormOpen(true)} className="px-4 py-2 rounded-md bg-module-fg/[0.25] border border-module-fg/[0.40] text-module-fg hover:bg-module-fg/[0.35]">Edit</button>
               <button onClick={handleDelete} className="px-4 py-2 rounded-md bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500/30">Delete</button>
             </div>
           </div>

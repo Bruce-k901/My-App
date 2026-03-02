@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, Download, Upload, X, Loader2, Moon, Clock, Lock, Shield, DollarSign } from 'lucide-react';
+import { Plus, Trash2, Save, Download, Upload, X, Loader2, Moon, Clock, Lock, Shield, DollarSign } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import BackButton from '@/components/ui/BackButton';
 import { useRouter } from 'next/navigation';
 import { createInitialStateWithIds } from '@/lib/utils/idGenerator';
+import TimePicker from '@/components/ui/TimePicker';
 
 export default function ClosingProcedureTemplatePage() {
   const { profile, companyId } = useAppContext();
@@ -102,17 +103,23 @@ export default function ClosingProcedureTemplatePage() {
     try {
       setLoading(true);
       
-      const [equipmentResult, chemicalsResult, sitesResult] = await Promise.all([
+      const [equipmentResult, assetsResult, chemicalsResult, sitesResult] = await Promise.all([
         supabase.from('equipment_library').select('id, equipment_name, category').eq('company_id', companyId).order('equipment_name'),
+        supabase.from('assets').select('id, name, category').eq('company_id', companyId).eq('archived', false).order('name'),
         supabase.from('chemicals_library').select('id, product_name').eq('company_id', companyId).order('product_name'),
         supabase.from('sites').select('id, name').eq('company_id', companyId).order('name')
       ]);
-      
+
       if (equipmentResult.error) throw equipmentResult.error;
       if (chemicalsResult.error) throw chemicalsResult.error;
       if (sitesResult.error) throw sitesResult.error;
-      
-      setEquipmentLibrary(equipmentResult.data || []);
+
+      // Merge equipment library and assets into unified list
+      const mergedEquipment = [
+        ...(equipmentResult.data || []),
+        ...(assetsResult.data || []).map(a => ({ id: a.id, equipment_name: a.name, category: a.category, _source: 'assets' }))
+      ];
+      setEquipmentLibrary(mergedEquipment);
       setChemicalsLibrary(chemicalsResult.data || []);
       setSites(sitesResult.data || []);
     } catch (error) {
@@ -153,7 +160,7 @@ export default function ClosingProcedureTemplatePage() {
         setNextDayPrep([{ id: Date.now(), prep_item: "", location: "", completed: false, notes: "" }]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
 
   // Set default author
@@ -358,37 +365,37 @@ export default function ClosingProcedureTemplatePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading libraries...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-theme-tertiary">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
-      <div className="bg-gradient-to-r from-purple-600/20 to-indigo-600/20 rounded-2xl p-6 border border-purple-500/30">
+      <div className="bg-gradient-to-r from-checkly-dark/20 to-checkly-dark/10 dark:from-checkly/20 dark:to-checkly/10 rounded-2xl p-6 border border-checkly-dark/30 dark:border-checkly/30">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-2 h-8 bg-purple-500 rounded-full"></div>
+          <div className="w-2 h-8 bg-checkly-dark dark:bg-checkly rounded-full"></div>
           <div>
-            <h1 className="text-lg font-semibold text-white">Closing Procedures Template</h1>
-            <p className="text-sm text-neutral-400">Manage daily closing checklists and procedures</p>
+            <h1 className="text-lg font-semibold text-theme-primary">Closing Procedures Template</h1>
+            <p className="text-sm text-theme-tertiary">Manage daily closing checklists and procedures</p>
           </div>
         </div>
       </div>
 
       {/* SOP Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-purple-400 mb-4">Procedure Details</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">Procedure Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -397,49 +404,49 @@ export default function ClosingProcedureTemplatePage() {
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Procedure Name *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Procedure Name *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Daily Closing Checklist"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Site/Location</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Site/Location</label>
             <select
               value={siteLocation}
               onChange={(e) => setSiteLocation(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="">Select site...</option>
               {sites.map(site => (
@@ -451,15 +458,15 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Time-Based Checklist */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly flex items-center gap-2">
             <Clock size={20} />
             Time-Based Checklist
           </h2>
           <button
             onClick={addTimeSlot}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Time Slot
@@ -468,13 +475,12 @@ export default function ClosingProcedureTemplatePage() {
 
         <div className="space-y-4">
           {timeSlots.map((slot, index) => (
-            <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
+            <div key={slot.id} className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="time"
+                <TimePicker
                   value={slot.time}
-                  onChange={(e) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: e.target.value } : ts))}
-                  className="bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                  onChange={(value) => setTimeSlots(timeSlots.map(ts => ts.id === slot.id ? { ...ts, time: value } : ts))}
+                  className=""
                 />
                 <button
                   onClick={() => removeTimeSlot(slot.id)}
@@ -491,14 +497,14 @@ export default function ClosingProcedureTemplatePage() {
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => updateTask(slot.id, task.id, 'completed', e.target.checked)}
-                      className="rounded border-neutral-600"
+                      className="rounded border-theme"
                     />
                     <input
                       type="text"
                       value={task.task}
                       onChange={(e) => updateTask(slot.id, task.id, 'task', e.target.value)}
                       placeholder="Enter task..."
-                      className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                      className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                     />
                     {slot.tasks.length > 1 && (
                       <button
@@ -512,7 +518,7 @@ export default function ClosingProcedureTemplatePage() {
                 ))}
                 <button
                   onClick={() => addTaskToSlot(slot.id)}
-                  className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-300"
+                  className="flex items-center gap-1 text-xs text-theme-tertiary hover:text-theme-tertiary"
                 >
                   <Plus size={12} />
                   Add Task
@@ -524,15 +530,15 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Equipment Shutdown Sequence */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly flex items-center gap-2">
             <Lock size={20} />
             Equipment Shutdown Sequence
           </h2>
           <button
             onClick={addEquipmentShutdown}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Equipment
@@ -543,11 +549,11 @@ export default function ClosingProcedureTemplatePage() {
           {equipmentShutdown.map((eq, index) => (
             <div key={eq.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Equipment</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Equipment</label>}
                 <select
                   value={eq.equipment_id}
                   onChange={(e) => updateEquipmentShutdown(eq.id, 'equipment_id', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="">Select equipment...</option>
                   {equipmentLibrary.map(equip => (
@@ -556,11 +562,11 @@ export default function ClosingProcedureTemplatePage() {
                 </select>
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Status</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Status</label>}
                 <select
                   value={eq.shutdown_status}
                   onChange={(e) => updateEquipmentShutdown(eq.id, 'shutdown_status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="">Status...</option>
                   <option value="Shut Down">Shut Down</option>
@@ -569,11 +575,11 @@ export default function ClosingProcedureTemplatePage() {
                 </select>
               </div>
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={eq.notes}
                   onChange={(e) => updateEquipmentShutdown(eq.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Optional notes..."
                 />
               </div>
@@ -591,12 +597,12 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Cleaning Checklist by Area */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400">Cleaning Checklist by Area</h2>
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Cleaning Checklist by Area</h2>
           <button
             onClick={addCleaningArea}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Area
@@ -605,14 +611,14 @@ export default function ClosingProcedureTemplatePage() {
 
         <div className="space-y-4">
           {cleaningAreas.map((area, index) => (
-            <div key={area.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
+            <div key={area.id} className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3 mb-3">
                 <input
                   type="text"
                   value={area.area}
                   onChange={(e) => updateCleaningArea(area.id, 'area', e.target.value)}
                   placeholder="Area name..."
-                  className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                  className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                 />
                 <button
                   onClick={() => removeCleaningArea(area.id)}
@@ -629,19 +635,19 @@ export default function ClosingProcedureTemplatePage() {
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => updateCleaningTask(area.id, task.id, 'completed', e.target.checked)}
-                      className="rounded border-neutral-600"
+                      className="rounded border-theme"
                     />
                     <input
                       type="text"
                       value={task.task}
                       onChange={(e) => updateCleaningTask(area.id, task.id, 'task', e.target.value)}
                       placeholder="Cleaning task..."
-                      className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                      className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                     />
                     <select
                       value={task.chemical_id}
                       onChange={(e) => updateCleaningTask(area.id, task.id, 'chemical_id', e.target.value)}
-                      className="w-48 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-white text-sm"
+                      className="w-48 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                     >
                       <option value="">Select chemical...</option>
                       {chemicalsLibrary.map(chem => (
@@ -660,7 +666,7 @@ export default function ClosingProcedureTemplatePage() {
                 ))}
                 <button
                   onClick={() => addCleaningTask(area.id)}
-                  className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-300"
+                  className="flex items-center gap-1 text-xs text-theme-tertiary hover:text-theme-tertiary"
                 >
                   <Plus size={12} />
                   Add Task
@@ -672,15 +678,15 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Security Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly flex items-center gap-2">
             <Shield size={20} />
             Security Checks
           </h2>
           <button
             onClick={addSecurityCheck}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Check
@@ -691,20 +697,20 @@ export default function ClosingProcedureTemplatePage() {
           {securityChecks.map((check, index) => (
             <div key={check.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Check Item</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Check Item</label>}
                 <input
                   value={check.check_item}
                   onChange={(e) => updateSecurityCheck(check.id, 'check_item', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., All doors locked"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Status</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Status</label>}
                 <select
                   value={check.status}
                   onChange={(e) => updateSecurityCheck(check.id, 'status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Complete">Complete</option>
@@ -712,19 +718,19 @@ export default function ClosingProcedureTemplatePage() {
                 </select>
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Verified By</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Verified By</label>}
                 <input
                   value={check.verified_by}
                   onChange={(e) => updateSecurityCheck(check.id, 'verified_by', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={check.notes}
                   onChange={(e) => updateSecurityCheck(check.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -741,12 +747,12 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Stock & Waste */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400">Stock & Waste</h2>
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Stock & Waste</h2>
           <button
             onClick={addStockWaste}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -757,20 +763,20 @@ export default function ClosingProcedureTemplatePage() {
           {stockWaste.map((item, index) => (
             <div key={item.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Item</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Item</label>}
                 <input
                   value={item.item}
                   onChange={(e) => updateStockWaste(item.id, 'item', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Item name"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Action</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Action</label>}
                 <select
                   value={item.action}
                   onChange={(e) => updateStockWaste(item.id, 'action', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="Store">Store</option>
                   <option value="Dispose">Dispose</option>
@@ -778,20 +784,20 @@ export default function ClosingProcedureTemplatePage() {
                 </select>
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Quantity</label>}
                 <input
                   value={item.quantity}
                   onChange={(e) => updateStockWaste(item.id, 'quantity', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Qty"
                 />
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={item.notes}
                   onChange={(e) => updateStockWaste(item.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -808,46 +814,46 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Cash Handling */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-purple-400 flex items-center gap-2 mb-4">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly flex items-center gap-2 mb-4">
           <DollarSign size={20} />
           Cash Handling
         </h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Total Cash (£)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Total Cash (£)</label>
             <input
               value={cashHandling.total_cash}
               onChange={(e) => setCashHandling({ ...cashHandling, total_cash: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="0.00"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Petty Cash (£)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Petty Cash (£)</label>
             <input
               value={cashHandling.petty_cash}
               onChange={(e) => setCashHandling({ ...cashHandling, petty_cash: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="0.00"
             />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Reconciled By</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reconciled By</label>
             <input
               value={cashHandling.reconciled_by}
               onChange={(e) => setCashHandling({ ...cashHandling, reconciled_by: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Name"
             />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Discrepancies</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Discrepancies</label>
             <input
               value={cashHandling.discrepancies}
               onChange={(e) => setCashHandling({ ...cashHandling, discrepancies: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Any discrepancies..."
             />
           </div>
@@ -856,16 +862,16 @@ export default function ClosingProcedureTemplatePage() {
               type="checkbox"
               checked={cashHandling.safe_secured}
               onChange={(e) => setCashHandling({ ...cashHandling, safe_secured: e.target.checked })}
-              className="rounded border-neutral-600"
+              className="rounded border-theme"
             />
-            <span className="text-sm text-neutral-300">Safe secured and locked</span>
+            <span className="text-sm text-theme-tertiary">Safe secured and locked</span>
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Notes</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Notes</label>
             <textarea
               value={cashHandling.notes}
               onChange={(e) => setCashHandling({ ...cashHandling, notes: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               rows={3}
               placeholder="Additional notes..."
             />
@@ -874,12 +880,12 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Next Day Prep */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-purple-400">Next Day Prep</h2>
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Next Day Prep</h2>
           <button
             onClick={addNextDayPrep}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -893,28 +899,28 @@ export default function ClosingProcedureTemplatePage() {
                 type="checkbox"
                 checked={item.completed}
                 onChange={(e) => updateNextDayPrep(item.id, 'completed', e.target.checked)}
-                className="rounded border-neutral-600"
+                className="rounded border-theme"
               />
               <input
                 type="text"
                 value={item.prep_item}
                 onChange={(e) => updateNextDayPrep(item.id, 'prep_item', e.target.value)}
                 placeholder="Prep item..."
-                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <input
                 type="text"
                 value={item.location}
                 onChange={(e) => updateNextDayPrep(item.id, 'location', e.target.value)}
                 placeholder="Location..."
-                className="w-48 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="w-48 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <input
                 type="text"
                 value={item.notes}
                 onChange={(e) => updateNextDayPrep(item.id, 'notes', e.target.value)}
                 placeholder="Notes..."
-                className="w-48 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="w-48 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <button
                 onClick={() => removeNextDayPrep(item.id)}
@@ -928,26 +934,26 @@ export default function ClosingProcedureTemplatePage() {
       </section>
 
       {/* Final Walkthrough & Sign-Off */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-purple-400 mb-4">Final Walkthrough & Sign-Off</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">Final Walkthrough & Sign-Off</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Walkthrough By</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Walkthrough By</label>
             <input
               value={finalWalkthrough.walkthrough_by}
               onChange={(e) => setFinalWalkthrough({ ...finalWalkthrough, walkthrough_by: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Name"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Walkthrough Date</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Walkthrough Date</label>
             <input
               type="date"
               value={finalWalkthrough.walkthrough_date}
               onChange={(e) => setFinalWalkthrough({ ...finalWalkthrough, walkthrough_date: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
           <div className="col-span-2 flex items-center gap-2">
@@ -955,25 +961,25 @@ export default function ClosingProcedureTemplatePage() {
               type="checkbox"
               checked={finalWalkthrough.all_complete}
               onChange={(e) => setFinalWalkthrough({ ...finalWalkthrough, all_complete: e.target.checked })}
-              className="rounded border-neutral-600"
+              className="rounded border-theme"
             />
-            <span className="text-sm text-neutral-300">All closing tasks completed</span>
+            <span className="text-sm text-theme-tertiary">All closing tasks completed</span>
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Manager Signature</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Manager Signature</label>
             <input
               value={finalWalkthrough.manager_signature}
               onChange={(e) => setFinalWalkthrough({ ...finalWalkthrough, manager_signature: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Manager name"
             />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Notes</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Notes</label>
             <textarea
               value={finalWalkthrough.notes}
               onChange={(e) => setFinalWalkthrough({ ...finalWalkthrough, notes: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               rows={3}
               placeholder="Additional notes..."
             />
@@ -986,7 +992,7 @@ export default function ClosingProcedureTemplatePage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(211, 126, 145,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save Procedure'}

@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
-import { Check, X, AlertTriangle, Clock, Thermometer, GripVertical } from "lucide-react"
+import { Check, X, AlertTriangle, Clock, Thermometer, GripVertical } from '@/components/ui/icons'
 
 interface ProcessStep {
   order: number;
@@ -79,7 +79,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
   return (
     <NodeViewWrapper className="relative my-4 p-4 rounded-2xl border border-magenta-500/30 bg-white/5 backdrop-blur-md shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -91,7 +91,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
         </div>
         <button
           onClick={addStep}
-          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add Step</span>
@@ -100,7 +100,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
 
       <div className="space-y-2">
         {steps.length === 0 && (
-          <div className="text-center text-gray-500 italic py-4">
+          <div className="text-center text-theme-tertiary italic py-4">
             No process steps added yet.
           </div>
         )}
@@ -120,7 +120,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
                 <button
                   onClick={() => moveStepUp(index)}
                   disabled={index === 0}
-                  className="text-gray-400 hover:text-magenta-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="text-theme-tertiary hover:text-magenta-400 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↑
                 </button>
@@ -130,12 +130,12 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
                 <button
                   onClick={() => moveStepDown(index)}
                   disabled={index === steps.length - 1}
-                  className="text-gray-400 hover:text-magenta-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="text-theme-tertiary hover:text-magenta-400 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↓
                 </button>
               </div>
-              <GripVertical size={16} className="text-gray-500 cursor-grab" />
+              <GripVertical size={16} className="text-theme-tertiary cursor-grab" />
             </div>
 
             {/* Main Content */}
@@ -144,7 +144,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
               <textarea
                 value={step.description}
                 onChange={(e) => updateStep(index, "description", e.target.value)}
-                className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none resize-none"
+                className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none resize-none"
                 placeholder="Step description..."
                 rows={2}
               />
@@ -153,22 +153,22 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
               <div className="flex items-center gap-3">
                 {/* Time Input */}
                 <div className="flex items-center gap-1">
-                  <Clock size={14} className="text-gray-400" />
+                  <Clock size={14} className="text-theme-tertiary" />
                   <input
                     value={step.time}
                     onChange={(e) => updateStep(index, "time", e.target.value)}
-                    className="w-16 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-16 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     placeholder="2m"
                   />
                 </div>
 
                 {/* Temperature Input */}
                 <div className="flex items-center gap-1">
-                  <Thermometer size={14} className="text-gray-400" />
+                  <Thermometer size={14} className="text-theme-tertiary" />
                   <input
                     value={step.temp}
                     onChange={(e) => updateStep(index, "temp", e.target.value)}
-                    className="w-16 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-16 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     placeholder="45°C"
                   />
                 </div>
@@ -179,7 +179,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
                   className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-all ${
                     step.isCritical
                       ? 'bg-red-500/20 border border-red-400/40 text-red-400'
-                      : 'bg-gray-700/50 border border-gray-600 text-gray-400 hover:bg-gray-600/50'
+                      : 'bg-gray-700/50 border border-gray-600 text-theme-tertiary hover:bg-gray-600/50'
                   }`}
                   title={step.isCritical ? "Critical step" : "Mark as critical"}
                 >
@@ -191,7 +191,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
                 <select
                   value={step.toolColour}
                   onChange={(e) => updateStep(index, "toolColour", e.target.value)}
-                  className="bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                  className="bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                 >
                   <option value="">Tool Colour</option>
                   <option value="Red – Raw Meat">Red – Raw Meat</option>
@@ -207,7 +207,7 @@ export default function ProcessStepsComponent({ node, updateAttributes, selected
               <input
                 value={step.verification}
                 onChange={(e) => updateStep(index, "verification", e.target.value)}
-                className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                 placeholder="Verification note (e.g., 'Check smoothness and temperature not exceeding 50°C')"
               />
             </div>

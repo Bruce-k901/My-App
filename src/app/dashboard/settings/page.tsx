@@ -5,8 +5,14 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon } from 'lucide-react';
+import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Loader2, Send, CheckCircle, Plug, MessageCircle } from '@/components/ui/icons';
 import SiteSelector from '@/components/ui/SiteSelector';
+import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
+import { AppearanceTab } from '@/components/settings/AppearanceTab';
+import { WorkflowTab } from '@/components/settings/WorkflowTab';
+
+import { IntegrationsTab } from '@/components/settings/IntegrationsTab';
+import { WhatsAppSettingsTab } from '@/components/settings/WhatsAppSettingsTab';
 
 type ProfileSettings = {
   user_id: string;
@@ -19,7 +25,7 @@ type ProfileSettings = {
   sound_vibration: boolean;
 };
 
-type Tab = 'profile' | 'notifications' | 'company';
+type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'integrations' | 'whatsapp' | 'company';
 
 export default function SettingsPage() {
   const { profile, companyId, siteId, company, role, userId } = useAppContext();
@@ -54,6 +60,14 @@ export default function SettingsPage() {
   
   // Company settings
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Email connection test
+  const [emailConfig, setEmailConfig] = useState<{
+    configured: boolean;
+    details?: { resendFrom?: string };
+  } | null>(null);
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [lastTestSent, setLastTestSent] = useState<number | null>(null);
 
   const defaults = useMemo<ProfileSettings | null>(() => {
     if (!userId || !companyId) return null;
@@ -91,16 +105,55 @@ export default function SettingsPage() {
         return;
       }
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("profile_settings")
           .select("*")
-          .eq("user_id", userId)
+          .eq("profile_id", userId)
           .limit(1);
+        
+        if (error) {
+          // Extract meaningful error information
+          const errorKeys = error && typeof error === 'object' ? Object.keys(error) : [];
+          const errorInfo = {
+            message: error.message || 'Unknown error',
+            code: error.code || 'NO_CODE',
+            details: error.details || null,
+            hint: error.hint || null,
+            // Check if error object has any properties
+            hasProperties: errorKeys.length > 0,
+            keys: errorKeys,
+            // Stringified version for debugging
+            stringified: JSON.stringify(error),
+            // Raw error for inspection
+            raw: error
+          };
+          
+          // Log error information for debugging
+          // Empty error objects ({}) typically indicate:
+          // - Table doesn't exist (PGRST116)
+          // - RLS policy violation (406)
+          // - Network/connection issue
+          if (errorInfo.hasProperties || errorInfo.message !== 'Unknown error') {
+            console.error('Error loading settings:', errorInfo);
+          } else {
+            // Empty error object - likely table doesn't exist or RLS issue
+            console.warn('Settings query returned empty error object. This may indicate the profile_settings table does not exist or RLS is blocking access. Using defaults.');
+          }
+          // Always use defaults when there's an error - this is safe
+        }
+        
         const row = data?.[0] as ProfileSettings | undefined;
         setSettings(row ?? defaults);
         setLogoUrl(company?.logo_url ?? null);
       } catch (e) {
-        console.error('Error loading settings:', e);
+        // Handle caught errors with better information extraction
+        const errorInfo = e instanceof Error 
+          ? { message: e.message, stack: e.stack, name: e.name }
+          : { error: e, type: typeof e, stringified: JSON.stringify(e) };
+        console.error('Error loading settings:', errorInfo);
+        // Use defaults on error
+        setSettings(defaults);
+        setLogoUrl(company?.logo_url ?? null);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -109,6 +162,51 @@ export default function SettingsPage() {
       mounted = false;
     };
   }, [userId, companyId, defaults, company]);
+
+  // Check email configuration on mount
+  useEffect(() => {
+    fetch('/api/test-email-config')
+      .then((r) => r.json())
+      .then(setEmailConfig)
+      .catch(() => setEmailConfig({ configured: false }));
+  }, []);
+
+  const canSendTest = !lastTestSent || Date.now() - lastTestSent > 60000;
+
+  // Re-enable button after cooldown
+  useEffect(() => {
+    if (!lastTestSent) return;
+    const remaining = 60000 - (Date.now() - lastTestSent);
+    if (remaining <= 0) return;
+    const timer = setTimeout(() => setLastTestSent(null), remaining);
+    return () => clearTimeout(timer);
+  }, [lastTestSent]);
+
+  const handleSendTestEmail = async () => {
+    if (!profileForm.email) {
+      toast.error('No email address found on your profile');
+      return;
+    }
+    setIsSendingTest(true);
+    try {
+      const res = await fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: profileForm.email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Test email sent! Check your inbox.');
+        setLastTestSent(Date.now());
+      } else {
+        toast.error(data.error || 'Failed to send test email');
+      }
+    } catch {
+      toast.error('Network error sending test email');
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
 
   const updateSettings = (key: keyof ProfileSettings, value: boolean | string | null) => {
     setSettings((s) => (s ? { ...s, [key]: value } as ProfileSettings : s));
@@ -184,12 +282,33 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       const payload = { ...settings } as any;
-      const { error } = await supabase.from("profile_settings").upsert(payload, { onConflict: "user_id" });
-      if (error) throw error;
+      const { error } = await supabase.from("profile_settings").upsert(payload, { onConflict: "profile_id" });
+      if (error) {
+        throw error;
+      }
       toast.success('Notification settings saved');
     } catch (error: any) {
       console.error('Error saving notifications:', error);
-      toast.error(`Failed to save settings: ${error.message}`);
+      
+      // Handle empty error objects or errors without messages
+      let errorMessage = 'Failed to save settings';
+      if (error) {
+        if (error.message) {
+          errorMessage = `Failed to save settings: ${error.message}`;
+        } else if (error.code) {
+          errorMessage = `Failed to save settings (${error.code})`;
+        } else if (typeof error === 'string') {
+          errorMessage = `Failed to save settings: ${error}`;
+        } else {
+          // Try to extract any useful information from the error
+          const errorStr = JSON.stringify(error);
+          if (errorStr && errorStr !== '{}') {
+            errorMessage = `Failed to save settings: ${errorStr}`;
+          }
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -227,7 +346,7 @@ export default function SettingsPage() {
     return (
       <div className="p-8">
         <div className="text-center py-12">
-          <p className="text-white/60">Loading settings...</p>
+          <p className="text-theme-secondary">Loading settings...</p>
         </div>
       </div>
     );
@@ -235,7 +354,11 @@ export default function SettingsPage() {
 
   const tabs = [
     { id: 'profile' as Tab, label: 'Profile', icon: User },
+    { id: 'appearance' as Tab, label: 'Appearance', icon: Palette },
     { id: 'notifications' as Tab, label: 'Notifications', icon: Bell },
+    { id: 'workflow' as Tab, label: 'Workflow', icon: Workflow },
+    { id: 'integrations' as Tab, label: 'Integrations', icon: Plug },
+    { id: 'whatsapp' as Tab, label: 'WhatsApp', icon: MessageCircle },
     ...(role === 'Admin' ? [{ id: 'company' as Tab, label: 'Company', icon: Building2 }] : []),
   ];
 
@@ -243,12 +366,12 @@ export default function SettingsPage() {
     <div className="p-6 md:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-        <p className="text-white/60">Manage your account, notifications, and preferences</p>
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">Settings</h1>
+        <p className="text-theme-secondary">Manage your account, notifications, and preferences</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/[0.1] mb-6 overflow-x-auto">
+      <div className="flex gap-2 border-b border-theme mb-6 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -259,8 +382,8 @@ export default function SettingsPage() {
               className={`
                 px-4 py-3 flex items-center gap-2 text-sm font-medium transition-colors border-b-2
                 ${isActive
-                  ? "border-pink-500 text-pink-400"
-                  : "border-transparent text-white/60 hover:text-white/80"
+                  ? "border-module-fg text-module-fg"
+                  : "border-transparent text-theme-secondary hover:text-theme-secondary"
                 }
               `}
             >
@@ -275,62 +398,62 @@ export default function SettingsPage() {
       {activeTab === 'profile' && (
         <div className="space-y-6">
           {/* Profile Information */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <User className="w-5 h-5 text-pink-400" />
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Profile Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
                   value={profileForm.full_name}
                   onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-theme-button border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500"
                   placeholder="Enter your full name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   value={profileForm.email}
                   disabled
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] text-white/60 cursor-not-allowed"
+                  className="w-full px-4 py-2 rounded-lg bg-white/[0.03] border border-gray-200 dark:border-white/[0.05] text-theme-secondary cursor-not-allowed"
                 />
-                <p className="text-xs text-white/40 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-theme-tertiary mt-1">Email cannot be changed</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   value={profileForm.phone_number}
                   onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-theme-button border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500"
                   placeholder="+44 123 456 7890"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Position Title
                 </label>
                 <input
                   type="text"
                   value={profileForm.position_title}
                   onChange={(e) => setProfileForm({ ...profileForm, position_title: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-theme-button border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500"
                   placeholder="e.g., Manager, Chef, Staff"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Home Site
                 </label>
                 <SiteSelector
@@ -355,14 +478,14 @@ export default function SettingsPage() {
           </div>
 
           {/* Change Password */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-pink-400" />
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Change Password
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   New Password
                 </label>
                 <div className="relative">
@@ -370,20 +493,20 @@ export default function SettingsPage() {
                     type={showPasswords.new ? "text" : "password"}
                     value={passwordForm.newPassword}
                     onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                    className="w-full px-4 py-2 pr-10 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="w-full px-4 py-2 pr-10 rounded-lg bg-theme-button border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500"
                     placeholder="Enter new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-theme-secondary"
                   >
                     {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Confirm New Password
                 </label>
                 <div className="relative">
@@ -391,19 +514,19 @@ export default function SettingsPage() {
                     type={showPasswords.confirm ? "text" : "password"}
                     value={passwordForm.confirmPassword}
                     onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-2 pr-10 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="w-full px-4 py-2 pr-10 rounded-lg bg-theme-button border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500"
                     placeholder="Confirm new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-theme-secondary"
                   >
                     {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-theme-tertiary">
                 Password must be at least 6 characters long
               </p>
             </div>
@@ -422,19 +545,101 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Appearance Tab */}
+      {activeTab === 'appearance' && <AppearanceTab />}
+
       {/* Notifications Tab */}
       {activeTab === 'notifications' && settings && (
         <div className="space-y-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Bell className="w-5 h-5 text-pink-400" />
+          {/* Email Connection Card */}
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              Email Connection
+            </h2>
+
+            <div className="space-y-4">
+              {/* Status Badge */}
+              <div className="flex items-center gap-3">
+                {emailConfig === null ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Checking...
+                  </span>
+                ) : emailConfig.configured ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    <CheckCircle className="w-3.5 h-3.5" /> Connected
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                    Not Configured
+                  </span>
+                )}
+              </div>
+
+              {/* Config Details */}
+              {emailConfig?.configured && emailConfig.details?.resendFrom && (
+                <div className="text-sm text-theme-secondary space-y-1 p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
+                  <p><span className="text-theme-tertiary">Sender:</span> {emailConfig.details.resendFrom}</p>
+                  <p><span className="text-theme-tertiary">Domain:</span> {emailConfig.details.resendFrom.split('@')[1]}</p>
+                </div>
+              )}
+
+              {/* Not configured message */}
+              {emailConfig && !emailConfig.configured && (
+                <p className="text-sm text-amber-600 dark:text-amber-400">
+                  Configure Resend API key in environment variables to enable email delivery.
+                </p>
+              )}
+
+              {/* Send Test Email */}
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleSendTestEmail}
+                  disabled={!emailConfig?.configured || isSendingTest || !canSendTest}
+                  variant="outline"
+                >
+                  {isSendingTest ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Test Email
+                    </>
+                  )}
+                </Button>
+                {lastTestSent && !canSendTest && (
+                  <p className="text-xs text-theme-tertiary">Please wait 60 seconds before sending another test</p>
+                )}
+              </div>
+
+              {/* Email Preview */}
+              <details className="mt-2">
+                <summary className="text-sm text-theme-tertiary cursor-pointer hover:text-theme-secondary transition-colors">
+                  Preview email content
+                </summary>
+                <div className="mt-2 p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] text-sm text-theme-secondary space-y-1">
+                  <p><span className="text-theme-tertiary">From:</span> Opsly &lt;noreply@opslytech.com&gt;</p>
+                  <p><span className="text-theme-tertiary">To:</span> {profileForm.email || 'your email'}</p>
+                  <p><span className="text-theme-tertiary">Subject:</span> Opsly Test Email</p>
+                  <p className="pt-2 text-theme-tertiary">Confirms your email system is configured correctly and lists the types of emails the platform can send (digests, notifications, recruitment, invitations).</p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Notification Preferences
             </h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                 <div className="flex-1">
-                  <p className="font-medium text-white">Receive Daily Email Digest</p>
-                  <p className="text-sm text-white/60 mt-1">Sends a daily summary to your email</p>
+                  <p className="font-medium text-theme-primary">Receive Daily Email Digest</p>
+                  <p className="text-sm text-theme-secondary mt-1">Sends a daily summary to your email</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -443,16 +648,16 @@ export default function SettingsPage() {
                     onChange={(e) => updateSettings("receive_email_digests", e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                  <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
                 </label>
               </div>
 
               {settings.receive_email_digests && (
                 <>
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                     <div className="flex-1">
-                      <p className="font-medium text-white">Include Incident Counts</p>
-                      <p className="text-sm text-white/60 mt-1">Show open incidents in digest</p>
+                      <p className="font-medium text-theme-primary">Include Incident Counts</p>
+                      <p className="text-sm text-theme-secondary mt-1">Show open incidents in digest</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -461,14 +666,14 @@ export default function SettingsPage() {
                         onChange={(e) => updateSettings("include_incidents", e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                      <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                     <div className="flex-1">
-                      <p className="font-medium text-white">Include Task Summary</p>
-                      <p className="text-sm text-white/60 mt-1">Show incomplete tasks for today</p>
+                      <p className="font-medium text-theme-primary">Include Task Summary</p>
+                      <p className="text-sm text-theme-secondary mt-1">Show incomplete tasks for today</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -477,14 +682,14 @@ export default function SettingsPage() {
                         onChange={(e) => updateSettings("include_tasks", e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                      <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
                     <div className="flex-1">
-                      <p className="font-medium text-white">Temperature Warnings</p>
-                      <p className="text-sm text-white/60 mt-1">Include failed temperature logs in digest</p>
+                      <p className="font-medium text-theme-primary">Temperature Warnings</p>
+                      <p className="text-sm text-theme-secondary mt-1">Include failed temperature logs in digest</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -493,27 +698,14 @@ export default function SettingsPage() {
                         onChange={(e) => updateSettings("notify_temperature_warnings", e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                      <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
                     </label>
                   </div>
                 </>
               )}
 
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                <div className="flex-1">
-                  <p className="font-medium text-white">Sound / Vibration on New Alerts</p>
-                  <p className="text-sm text-white/60 mt-1">Play a sound and vibrate (mobile) when a new notification arrives</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={settings.sound_vibration}
-                    onChange={(e) => updateSettings("sound_vibration", e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
-                </label>
-              </div>
+              {/* In-App Alert Settings - Uses the AlertSettingsCard component */}
+              <AlertSettingsCard />
             </div>
             <div className="mt-6">
               <Button
@@ -530,17 +722,26 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Workflow Tab */}
+      {activeTab === 'workflow' && <WorkflowTab />}
+
+      {/* Integrations Tab */}
+      {activeTab === 'integrations' && <IntegrationsTab />}
+
+      {/* WhatsApp Tab */}
+      {activeTab === 'whatsapp' && <WhatsAppSettingsTab />}
+
       {/* Company Tab (Admin only) */}
       {activeTab === 'company' && role === 'Admin' && (
         <div className="space-y-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-pink-400" />
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Company Branding
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Company Logo
                 </label>
                 <div className="flex items-center gap-4">
@@ -548,10 +749,10 @@ export default function SettingsPage() {
                     <img
                       src={logoUrl}
                       alt="Company logo"
-                      className="h-16 w-auto object-contain border border-white/[0.1] rounded-lg p-2 bg-white/[0.02]"
+                      className="h-16 w-auto object-contain border border-theme rounded-lg p-2 bg-gray-50 dark:bg-white/[0.02]"
                     />
                   ) : (
-                    <div className="h-16 w-32 border border-white/[0.1] rounded-lg p-2 bg-white/[0.02] flex items-center justify-center">
+                    <div className="h-16 w-32 border border-theme rounded-lg p-2 bg-gray-50 dark:bg-white/[0.02] flex items-center justify-center">
                       <ImageIcon className="w-8 h-8 text-white/20" />
                     </div>
                   )}
@@ -577,23 +778,23 @@ export default function SettingsPage() {
                     </Button>
                   </label>
                 </div>
-                <p className="text-xs text-white/50 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   Recommended size: 320×80px (PNG or SVG). Logo will appear in headers and emails.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-pink-400" />
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Billing & Plans
             </h2>
             <div className="text-center py-8">
-              <p className="text-white/60 mb-4">
+              <p className="text-theme-secondary mb-4">
                 Billing management will be available soon.
               </p>
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-theme-tertiary">
                 Contact support for billing inquiries or plan changes.
               </p>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
-import { ArrowLeft, Search, Filter, RotateCcw } from "lucide-react";
+import { ArrowLeft, Search, Filter, RotateCcw } from '@/components/ui/icons';
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
@@ -194,26 +194,24 @@ export default function ArchivedAssetsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg">Loading archived assets...</div>
-          </div>
+      <div className="w-full">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-theme-primary">Loading archived assets...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="w-full">
+      <div className="w-full px-4 py-8">
         {/* Header with Controls */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold text-white">Assets</h1>
+            <h1 className="text-3xl font-bold text-theme-primary">Assets</h1>
             <Link
               href="/dashboard/assets"
-              className="inline-flex items-center px-4 py-2 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] text-sm font-medium"
+              className="inline-flex items-center px-4 py-2 rounded-lg border border-module-fg text-module-fg bg-transparent hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out text-sm font-medium"
             >
               Active Assets
             </Link>
@@ -221,16 +219,16 @@ export default function ArchivedAssetsPage() {
           <div className="flex items-center space-x-3">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary h-5 w-5" />
               <input
                 type="text"
                 placeholder="Search archived assets..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64 pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 focus:border-pink-500/40"
+                className="w-64 pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500"
               />
             </div>
-            <div className="text-gray-400 text-sm flex items-center">
+            <div className="text-theme-tertiary text-sm flex items-center">
               {filteredAssets.length} archived asset{filteredAssets.length !== 1 ? 's' : ''}
             </div>
           </div>
@@ -239,10 +237,10 @@ export default function ArchivedAssetsPage() {
         {/* Assets List */}
         {filteredAssets.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-2">
+            <div className="text-theme-tertiary text-lg mb-2">
               {searchTerm ? "No archived assets match your search" : "No archived assets found"}
             </div>
-            <p className="text-gray-500">
+            <p className="text-theme-tertiary">
               {searchTerm ? "Try adjusting your search terms" : "Assets that are archived will appear here"}
             </p>
           </div>
@@ -251,76 +249,76 @@ export default function ArchivedAssetsPage() {
             {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
-                className="rounded-xl border border-gray-700 bg-gray-900 px-6 py-4 shadow-sm"
+                className="rounded-xl border border-theme bg-white dark:bg-gray-900 px-6 py-4 shadow-sm dark:shadow-none"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="text-white font-semibold text-lg">
+                    <div className="text-theme-primary font-semibold text-lg">
                       {asset.name || "(unnamed asset)"}
                     </div>
-                    <div className="mt-1 text-sm text-gray-300">
+                    <div className="mt-1 text-sm text-theme-secondary">
                       <div className="flex flex-wrap gap-3">
-                        <span className="text-gray-300">
-                          Model: <span className="text-white">{asset.model || "—"}</span>
+                        <span className="text-theme-secondary">
+                          Model: <span className="text-theme-primary">{asset.model || "—"}</span>
                         </span>
-                        <span className="text-gray-300">
-                          Serial: <span className="text-white">{asset.serial_number || "—"}</span>
+                        <span className="text-theme-secondary">
+                          Serial: <span className="text-theme-primary">{asset.serial_number || "—"}</span>
                         </span>
-                        <span className="text-gray-300">
-                          Category: <span className="text-white capitalize">{asset.category || "—"}</span>
+                        <span className="text-theme-secondary">
+                          Category: <span className="text-theme-primary capitalize">{asset.category || "—"}</span>
                         </span>
-                        <span className="text-gray-300">
-                          Archived: <span className="text-white">{formatDate(asset.archived_at)}</span>
+                        <span className="text-theme-secondary">
+                          Archived: <span className="text-theme-primary">{formatDate(asset.archived_at)}</span>
                         </span>
                       </div>
                     </div>
-                    
+
                     {asset.archived_reason && (
                       <div className="mt-2 text-sm">
-                        <span className="text-gray-400">Reason: </span>
-                        <span className="text-orange-400">{asset.archived_reason}</span>
+                        <span className="text-theme-tertiary">Reason: </span>
+                        <span className="text-orange-600 dark:text-orange-400">{asset.archived_reason}</span>
                       </div>
                     )}
 
-                    <div className="mt-3 pt-3 border-t border-gray-700">
+                    <div className="mt-3 pt-3 border-t border-theme">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div className="space-y-1">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Install Date:</span>
-                            <span className="text-white">{formatDate(asset.install_date)}</span>
+                            <span className="text-theme-tertiary">Install Date:</span>
+                            <span className="text-theme-primary">{formatDate(asset.install_date)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Warranty End:</span>
-                            <span className="text-white">{formatDate(asset.warranty_end)}</span>
+                            <span className="text-theme-tertiary">Warranty End:</span>
+                            <span className="text-theme-primary">{formatDate(asset.warranty_end)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Next Service:</span>
-                            <span className="text-white">{formatDate(asset.next_service)}</span>
+                            <span className="text-theme-tertiary">Next Service:</span>
+                            <span className="text-theme-primary">{formatDate(asset.next_service)}</span>
                           </div>
                         </div>
                         <div className="space-y-1">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Status:</span>
-                            <span className="text-white">{asset.status || "—"}</span>
+                            <span className="text-theme-tertiary">Status:</span>
+                            <span className="text-theme-primary">{asset.status || "—"}</span>
                           </div>
                           {asset.notes && (
                              <div className="flex justify-between">
-                               <span className="text-gray-400">Notes:</span>
-                               <span className="text-white">{asset.notes}</span>
+                               <span className="text-theme-tertiary">Notes:</span>
+                               <span className="text-theme-primary">{asset.notes}</span>
                              </div>
                            )}
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Unarchive Button */}
                   <div className="flex items-center">
                     <button
                       onClick={() => handleUnarchive(asset)}
-                      className="p-2 bg-transparent hover:bg-neutral-800/40 border-none 
-                                 text-green-400 hover:text-green-300 
-                                 hover:shadow-[0_0_6px_#00ff99] transition flex items-center"
+                      className="p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-neutral-800/40 border-none
+                                 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300
+                                 transition flex items-center"
                       title="Restore to Active Assets"
                     >
                       <RotateCcw size={18} />
@@ -335,18 +333,18 @@ export default function ArchivedAssetsPage() {
 
       {/* Unarchive Confirmation Modal */}
       <Dialog open={unarchiveConfirmOpen} onOpenChange={setUnarchiveConfirmOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white dark:bg-[#171b2d] border border-theme">
           <DialogHeader>
-            <DialogTitle>Restore Asset?</DialogTitle>
+            <DialogTitle className="text-theme-primary">Restore Asset?</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-neutral-300">
+            <p className="text-gray-600 dark:text-neutral-300">
               This asset and its full history will be moved back to the Active Assets list. Continue?
             </p>
             {assetToUnarchive && (
-              <div className="mt-3 p-3 bg-neutral-800 rounded-lg">
-                <p className="text-sm text-neutral-400">Asset: {assetToUnarchive.name}</p>
-                <p className="text-sm text-neutral-400">Archived: {formatDate(assetToUnarchive.archived_at)}</p>
+              <div className="mt-3 p-3 bg-theme-muted rounded-lg">
+ <p className="text-sm text-gray-500 dark:text-theme-tertiary">Asset: {assetToUnarchive.name}</p>
+ <p className="text-sm text-gray-500 dark:text-theme-tertiary">Archived: {formatDate(assetToUnarchive.archived_at)}</p>
               </div>
             )}
           </div>
@@ -354,13 +352,13 @@ export default function ArchivedAssetsPage() {
             <Button
               variant="outline"
               onClick={() => setUnarchiveConfirmOpen(false)}
-              className="text-neutral-400"
+ className="text-gray-600 dark:text-theme-tertiary border-theme"
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmUnarchive}
-              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+              className="bg-module-fg hover:bg-module-fg/90 text-white transition-all duration-200"
             >
               Restore
             </Button>

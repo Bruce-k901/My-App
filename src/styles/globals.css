@@ -2,22 +2,246 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar styles */
+/* ============================================
+   MOBILE DESIGN SYSTEM - CSS Variables
+   ============================================ */
+
+:root {
+  /* Primary brand gradient */
+  --mobile-primary: #D37E91;
+  --mobile-primary-end: #ACC8A2;
+
+  /* Module accent colors (aligned with --module-* in app/globals.css) */
+  --mobile-checkly: rgb(var(--module-checkly, 241 225 148));
+  --mobile-stockly: rgb(var(--module-stockly, 120 154 153));
+  --mobile-teamly: rgb(var(--module-teamly, 211 126 145));
+  --mobile-planly: rgb(var(--module-planly, 172 200 162));
+  --mobile-assetly: rgb(var(--module-assetly, 243 231 217));
+  --mobile-msgly: rgb(var(--module-msgly, 203 221 233));
+
+  /* Dark theme base */
+  --mobile-bg-primary: #0d0d0f;
+  --mobile-bg-secondary: #1a1a1f;
+  --mobile-bg-elevated: #252530;
+  --mobile-bg-card: rgba(255, 255, 255, 0.05);
+  --mobile-bg-card-hover: rgba(255, 255, 255, 0.08);
+
+  /* Text colors */
+  --mobile-text-primary: #ffffff;
+  --mobile-text-secondary: #9ca3af;
+  --mobile-text-muted: #6b7280;
+
+  /* Border colors */
+  --mobile-border: rgba(255, 255, 255, 0.1);
+  --mobile-border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Status colors */
+  --mobile-success: #22c55e;
+  --mobile-warning: #f59e0b;
+  --mobile-error: #ef4444;
+  --mobile-info: #3b82f6;
+
+  /* Animation timings */
+  --mobile-duration-instant: 100ms;
+  --mobile-duration-fast: 200ms;
+  --mobile-duration-normal: 300ms;
+  --mobile-duration-slow: 500ms;
+
+  /* Easing curves */
+  --mobile-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --mobile-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --mobile-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Spacing for mobile */
+  --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mobile-safe-top: env(safe-area-inset-top, 0px);
+  --mobile-nav-height: 80px;
+  --mobile-header-height: 56px;
+}
+
+/* Mobile-specific utilities */
+@layer utilities {
+  .mobile-safe-bottom {
+    padding-bottom: calc(var(--mobile-safe-bottom) + 16px);
+  }
+
+  .mobile-safe-top {
+    padding-top: var(--mobile-safe-top);
+  }
+
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mobile-no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  .mobile-overscroll-contain {
+    overscroll-behavior-y: contain;
+  }
+
+  .mobile-gradient-border {
+    background:
+      linear-gradient(var(--mobile-bg-secondary), var(--mobile-bg-secondary)) padding-box,
+      linear-gradient(135deg, var(--mobile-primary), var(--mobile-primary-end)) border-box;
+    border: 1px solid transparent;
+  }
+}
+
+/* Mobile card styles */
+.mobile-card {
+  background: var(--mobile-bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--mobile-border-subtle);
+  transition: background-color var(--mobile-duration-fast) var(--mobile-ease-out);
+}
+
+.mobile-card:hover {
+  background: var(--mobile-bg-card-hover);
+}
+
+.mobile-card:active {
+  transform: scale(0.98);
+}
+
+/* Mobile action button */
+.mobile-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--mobile-bg-card);
+  transition: all var(--mobile-duration-fast) var(--mobile-ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mobile bottom nav styles */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(26, 26, 31, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--mobile-border);
+  padding-bottom: var(--mobile-safe-bottom);
+  z-index: 50;
+}
+
+/* ============================================
+   MOBILE DARK MODE OVERRIDES
+   Force dark theme on mobile devices
+   ============================================ */
+@media (max-width: 1023px) {
+  /* Force dark backgrounds on common container elements */
+  .dark .bg-white,
+  .dark .bg-gray-50,
+  .dark .bg-gray-100 {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+  }
+
+  /* Force dark text colors */
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700 {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .dark .text-gray-600,
+  .dark .text-gray-500 {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Force dark borders */
+  .dark .border-gray-200,
+  .dark .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Force dark input/select backgrounds */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Force dark mode on cards and panels */
+  .dark [class*="rounded-lg"],
+  .dark [class*="rounded-xl"] {
+    --tw-bg-opacity: 1;
+  }
+
+  /* Ensure modals and sheets are dark */
+  .dark [role="dialog"],
+  .dark [data-radix-popper-content-wrapper] {
+    background-color: #1a1a1f !important;
+    color: white !important;
+  }
+}
+
+/* Gradient accent bar */
+.mobile-gradient-accent {
+  background: linear-gradient(90deg, #D37E91, #544349, #ACC8A2);
+}
+
+/* ─── App scrollbar ─── */
+/* Thin, rounded, semi-transparent — visible on scroll/hover */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Hide scrollbar utility */
@@ -46,7 +270,7 @@
 .react-datepicker__input-container input:focus {
   outline: none;
   ring: 2px;
-  ring-color: #ec4899;
+  ring-color: #D37E91;
 }
 
 .react-datepicker {
@@ -73,15 +297,15 @@
 }
 
 .react-datepicker__day:hover {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 .react-datepicker__day--selected {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 /* GM Info Container Styles */
@@ -110,8 +334,8 @@
 
 .gm-email:hover,
 .gm-phone:hover {
-  color: #ec4899;
-  text-shadow: 0 0 6px #ec4899;
+  color: #D37E91;
+  text-shadow: 0 0 6px #D37E91;
 }
 
 .gm-name {

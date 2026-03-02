@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu } from 'lucide-react'
+import { Menu } from '@/components/ui/icons'
 import Link from 'next/link'
 
 interface AppHeaderProps {
@@ -23,8 +23,8 @@ export function AppHeader({
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="/assets/logo.svg"
-          alt="Checkly"
+          src="/new_logos_opsly/opsly-mark.svg"
+          alt="Opsly"
           className="h-11 w-auto"
         />
       </Link>
@@ -32,7 +32,7 @@ export function AppHeader({
       {/* Burger Menu Button */}
       <button
         onClick={onBurgerClick}
-        className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+        className="p-2 text-theme-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6" />

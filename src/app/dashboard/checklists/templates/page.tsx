@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from 'lucide-react'
+import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
+import { useAppContext } from '@/context/AppContext'
 import { TaskTemplate, TaskCategory, LABELS } from '@/types/checklist-types'
 import { toast } from 'sonner'
 
@@ -12,7 +13,7 @@ const CATEGORY_COLORS = {
   health_and_safety: 'border-blue-500', 
   fire: 'border-amber-500',
   cleaning: 'border-purple-500',
-  compliance: 'border-pink-500'
+  compliance: 'border-module-fg'
 }
 
 // Frequency labels
@@ -27,12 +28,22 @@ const FREQUENCY_LABELS = {
 }
 
 // Category labels
-const CATEGORY_LABELS = {
+const CATEGORY_LABELS: Record<string, string> = {
   food_safety: 'Food Safety',
   health_and_safety: 'Health & Safety',
-  fire: 'Fire & Security', 
+  health_safety: 'Health & Safety',
+  h_and_s: 'Health & Safety',
+  fire: 'Fire & Security',
+  fire_safety: 'Fire Safety',
   cleaning: 'Cleaning & Maintenance',
-  compliance: 'Compliance & Audit'
+  cleaning_premises: 'Cleaning & Premises',
+  handling_storage: 'Handling & Storage',
+  welfare_first_aid: 'Welfare & First Aid',
+  personal_hygiene: 'Personal Hygiene',
+  policy_organisation: 'Policy & Organisation',
+  risk_assessment: 'Risk Assessment',
+  compliance: 'Compliance & Audit',
+  salsa: 'SALSA',
 }
 
 type TemplateWithUsage = TaskTemplate & {
@@ -40,6 +51,7 @@ type TemplateWithUsage = TaskTemplate & {
 }
 
 export default function TemplatesPage() {
+  const { companyId } = useAppContext()
   const [templates, setTemplates] = useState<TemplateWithUsage[]>([])
   const [filteredTemplates, setFilteredTemplates] = useState<TemplateWithUsage[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,10 +62,10 @@ export default function TemplatesPage() {
   const [showClone, setShowClone] = useState(false)
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
 
-  // Fetch templates on mount
+  // Fetch templates when companyId is available
   useEffect(() => {
-    fetchTemplates()
-  }, [])
+    if (companyId) fetchTemplates()
+  }, [companyId])
 
   // Filter templates when search or category changes
   useEffect(() => {
@@ -74,34 +86,18 @@ export default function TemplatesPage() {
   }, [templates, searchTerm, selectedCategory])
 
   async function fetchTemplates() {
+    if (!companyId) {
+      setTemplates([]);
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Get current user's profile to get company_id
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('No user logged in');
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile?.company_id) {
-        console.error('Error fetching profile or no company_id:', profileError);
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
       // Fetch user-created templates (not library templates) for this company
       const { data: templatesData, error: templatesError } = await supabase
         .from('task_templates')
         .select('*')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('is_template_library', false) // User-created templates, not library templates
         .eq('is_active', true)
         .order('name')
@@ -185,16 +181,16 @@ export default function TemplatesPage() {
           <h1 className="text-2xl font-semibold mb-2">
             Task Templates
           </h1>
-          <p className="text-neutral-400 mt-1">Pre-built compliance templates ready to deploy</p>
+          <p className="text-theme-tertiary mt-1">Pre-built compliance templates ready to deploy</p>
         </div>
         <div className="flex gap-2">
           <a
             href="/dashboard/checklists/templates/card1"
-            className="px-4 py-2 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all text-sm"
+            className="px-4 py-2 bg-gradient-to-r from-module-fg/[0.70] to-assetly-dark/70 text-white rounded-lg hover:shadow-lg hover:shadow-module-fg/[0.30] transition-all text-sm"
           >
             Card 1 Config
           </a>
-          <button className="px-4 py-2 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all">
+          <button className="px-4 py-2 bg-gradient-to-r from-module-fg/[0.70] to-assetly-dark/70 text-white rounded-lg hover:shadow-lg hover:shadow-module-fg/[0.30] transition-all">
             <Plus className="inline mr-2 h-4 w-4" />
             Create Template
           </button>
@@ -204,19 +200,19 @@ export default function TemplatesPage() {
       {/* Search & Filter - Horizontal Layout */}
       <div className="flex gap-4 items-center">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-400"
+            className="w-full pl-10 pr-4 py-2 bg-neutral-800/50 border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-module-fg"
           />
         </div>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-pink-400"
+          className="pl-4 pr-10 py-2 bg-neutral-800/50 border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
         >
           <option value="all">All Categories</option>
           {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -225,7 +221,7 @@ export default function TemplatesPage() {
             </option>
           ))}
         </select>
-        <select className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-pink-400">
+        <select className="pl-4 pr-10 py-2 bg-neutral-800/50 border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg">
           <option>A-Z</option>
           <option>Most Used</option>
           <option>Most Critical</option>
@@ -234,7 +230,7 @@ export default function TemplatesPage() {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-12 text-neutral-400">
+        <div className="text-center py-12 text-theme-tertiary">
           Loading templates...
         </div>
       )}
@@ -249,24 +245,24 @@ export default function TemplatesPage() {
                 setSelectedTemplate(template)
                 setShowDetail(true)
               }}
-              className="group bg-neutral-800/50 backdrop-blur-sm border border-neutral-700 rounded-lg p-4 hover:border-neutral-600 transition-all cursor-pointer min-h-[90px] flex flex-col justify-between"
+              className="group bg-neutral-800/50 backdrop-blur-sm border border-theme rounded-lg p-4 hover:border-neutral-600 transition-all cursor-pointer min-h-[90px] flex flex-col justify-between"
             >
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-white text-sm truncate">
+                  <h3 className="font-semibold text-theme-primary text-sm truncate">
                     {template.name}
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-1 truncate">
+                  <p className="text-xs text-theme-tertiary mt-1 truncate">
                     {template.description}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                  <span className="text-xs text-neutral-500 uppercase font-medium">
+                  <span className="text-xs text-theme-tertiary uppercase font-medium">
                     {FREQUENCY_LABELS[template.frequency as keyof typeof FREQUENCY_LABELS] || template.frequency}
                   </span>
                   {template.is_critical && (
-                    <span className="text-xs text-pink-500 font-medium ml-1">
+                    <span className="text-xs text-module-fg font-medium ml-1">
                       ⚠️ CRIT
                     </span>
                   )}
@@ -288,7 +284,7 @@ export default function TemplatesPage() {
                       e.stopPropagation()
                       // TODO: Open settings
                     }}
-                    className="p-1 text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 text-theme-tertiary hover:text-white transition-colors"
                     title="Settings"
                   >
                     <Settings className="h-3 w-3" />
@@ -298,7 +294,7 @@ export default function TemplatesPage() {
                       e.stopPropagation()
                       // TODO: Open info
                     }}
-                    className="p-1 text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 text-theme-tertiary hover:text-white transition-colors"
                     title="Info"
                   >
                     <Info className="h-3 w-3" />
@@ -306,13 +302,13 @@ export default function TemplatesPage() {
                   <button
                     onClick={(e) => handleDeleteTemplate(template.id, e)}
                     disabled={deletingTemplateId === template.id}
-                    className="p-1 text-neutral-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                    className="p-1 text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                     title="Delete template"
                   >
                     <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
-                <div className="flex items-center text-xs text-neutral-400 group-hover:text-pink-400 transition-colors">
+                <div className="flex items-center text-xs text-theme-tertiary group-hover:text-module-fg transition-colors">
                   Use Template
                   <ArrowRight className="h-3 w-3 ml-1" />
                 </div>

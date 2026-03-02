@@ -11,8 +11,10 @@ async function loadModulePages(moduleId: string) {
   return safeParseOrThrow(pagesSchema, JSON.parse(raw) as Page[], `${moduleId} pages`);
 }
 
-export default async function CoursePreviewPage({ searchParams }: { searchParams: { module?: string } }) {
-  const moduleId = searchParams.module ?? 'm1';
+// Next.js 15: searchParams is now a Promise
+export default async function CoursePreviewPage({ searchParams }: { searchParams: Promise<{ module?: string }> }) {
+  const resolvedSearchParams = await searchParams;
+  const moduleId = resolvedSearchParams.module ?? 'm1';
   try {
     const pages = await loadModulePages(moduleId);
     return <PreviewClient moduleId={moduleId} pages={pages} />;

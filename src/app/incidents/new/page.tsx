@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/image-compression";
 import { useAppContext, AppProvider } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 
@@ -29,11 +30,12 @@ function NewIncidentForm() {
       const incidentId = crypto.randomUUID();
       let photoPath: string | null = null;
       if (photoFile) {
-        const filename = photoFile.name;
+        const compressed = await compressImage(photoFile).catch(() => photoFile);
+        const filename = compressed.name;
         photoPath = `${companyId}/${siteId}/${incidentId}/${filename}`;
         const { error: uploadErr } = await supabase.storage
           .from("incident_photos")
-          .upload(photoPath, photoFile, { upsert: true });
+          .upload(photoPath, compressed, { upsert: true });
         if (uploadErr) throw new Error(uploadErr.message);
       }
 
@@ -119,7 +121,7 @@ function NewIncidentForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] px-4 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:border-white/20 disabled:text-white/40 transition-all duration-200"
+            className="bg-transparent border border-[#D37E91] text-[#D37E91] px-4 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:border-white/20 disabled:text-theme-tertiary transition-all duration-200"
           >
             {submitting ? "Submitting..." : "Submit Report"}
           </button>

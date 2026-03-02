@@ -57,8 +57,20 @@ BEGIN
   END IF;
 END $$;
 
--- Add comment
-COMMENT ON FUNCTION generate_daily_tasks_direct() IS 
-'Automatically generates daily, weekly, and monthly tasks for all active templates and sites. 
-Runs via pg_cron every day at 3:00 AM UTC. Handles multiple dayparts by creating separate task instances.';
+-- Add comment (only if function exists)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public' AND p.proname = 'generate_daily_tasks_direct'
+  ) THEN
+    COMMENT ON FUNCTION generate_daily_tasks_direct() IS 
+    'Automatically generates daily, weekly, and monthly tasks for all active templates and sites. 
+    Runs via pg_cron every day at 3:00 AM UTC. Handles multiple dayparts by creating separate task instances.';
+    RAISE NOTICE 'Added comment to generate_daily_tasks_direct() function';
+  ELSE
+    RAISE NOTICE 'Function generate_daily_tasks_direct() does not exist - skipping comment';
+  END IF;
+END $$;
 

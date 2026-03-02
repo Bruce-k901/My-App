@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from 'lucide-react';
+import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -17,6 +17,85 @@ import {
   AssetSelectionFeature,
   DocumentUploadFeature
 } from './features';
+import TimePicker from '@/components/ui/TimePicker';
+
+/**
+ * Upsert equipment positions when saving checklist
+ * Updates nicknames if they change, creates new positions if needed
+ */
+async function upsertEquipmentPositions(
+  siteId: string,
+  companyId: string,
+  equipmentConfig: Array<{
+    assetId: string;
+    nickname?: string | null;
+    equipment?: string;
+    asset_name?: string;
+  }>
+) {
+  if (!equipmentConfig || equipmentConfig.length === 0) {
+    console.log('⏭️ [POSITIONS] No equipment to upsert');
+    return;
+  }
+
+  console.log('🔧 [POSITIONS] Upserting equipment positions:', equipmentConfig);
+
+  for (const equipment of equipmentConfig) {
+    const assetId = equipment.assetId;
+    const nickname = equipment.nickname || equipment.equipment || equipment.asset_name || null;
+
+    if (!assetId) {
+      console.warn('⚠️ [POSITIONS] Skipping equipment without assetId:', equipment);
+      continue;
+    }
+
+    try {
+      // Check if position exists for this asset at this site
+      const { data: existingPosition } = await supabase
+        .from('site_equipment_positions')
+        .select('id, nickname')
+        .eq('site_id', siteId)
+        .eq('current_asset_id', assetId)
+        .maybeSingle();
+
+      if (existingPosition) {
+        // UPDATE: Asset exists at this site, update nickname if changed
+        if (existingPosition.nickname !== nickname) {
+          await supabase
+            .from('site_equipment_positions')
+            .update({
+              nickname: nickname,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingPosition.id);
+
+          console.log(`✅ [POSITIONS] Updated nickname: ${existingPosition.nickname} → ${nickname}`);
+        } else {
+          console.log(`⏭️ [POSITIONS] Nickname unchanged for ${nickname}`);
+        }
+      } else {
+        // INSERT: New position for this asset at this site
+        const { error: insertError } = await supabase
+          .from('site_equipment_positions')
+          .insert({
+            site_id: siteId,
+            company_id: companyId,
+            current_asset_id: assetId,
+            nickname: nickname,
+            position_type: 'other'
+          });
+
+        if (insertError) {
+          console.error('❌ [POSITIONS] Insert error:', insertError.message, insertError.code, insertError);
+        } else {
+          console.log(`✅ [POSITIONS] Created position ${nickname} (${assetId})`);
+        }
+      }
+    } catch (err) {
+      console.error('❌ [POSITIONS] Error upserting position:', err);
+    }
+  }
+}
 
 interface TaskFromTemplateModalProps {
   isOpen: boolean;
@@ -24,7 +103,9 @@ interface TaskFromTemplateModalProps {
   onSave?: () => void;
   templateId: string;
   template?: any; // Template data if already loaded
-  existingTask?: any; // Existing task data for editing
+  existingTask?: any; // Existing task data for editing (legacy)
+  existingSiteChecklist?: any; // Existing site_checklist configuration for editing
+  sourcePage?: 'compliance' | 'templates'; // Track where the user came from for redirect
 }
 
 export function TaskFromTemplateModal({ 
@@ -33,14 +114,21 @@ export function TaskFromTemplateModal({
   onSave,
   templateId,
   template: providedTemplate,
-  existingTask
+  existingTask,
+  existingSiteChecklist,
+  sourcePage
 }: TaskFromTemplateModalProps) {
   const router = useRouter();
-  const { companyId, siteId, profile } = useAppContext();
+  const { companyId, siteId, selectedSiteId, profile, user, loading: contextLoading } = useAppContext();
   const [template, setTemplate] = useState<any>(providedTemplate || null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [templateFields, setTemplateFields] = useState<any[]>([]);
+  
+  // Site selection state for task creation
+  const [taskSiteId, setTaskSiteId] = useState<string>('');
+  const [availableSites, setAvailableSites] = useState<Array<{id: string, name: string}>>([]);
+  const [loadingSites, setLoadingSites] = useState(false);
 
   // Task form data - only fields for enabled features
   const [formData, setFormData] = useState({
@@ -53,8 +141,8 @@ export function TaskFromTemplateModal({
     priority: 'medium' as 'low' | 'medium' | 'high' | 'critical',
     // Feature-specific data
     checklistItems: [] as string[],
-    yesNoChecklistItems: [] as Array<{ text: string; answer: 'yes' | 'no' | null }>,
-    temperatures: [] as Array<{ assetId?: string; equipment?: string; nickname?: string; temp?: number }>,
+    yesNoChecklistItems: [] as any[],
+    temperatures: [] as Array<{ assetId?: string; equipment?: string; nickname?: string; temp?: number; temp_min?: number; temp_max?: number }>,
     photos: [] as Array<{ url: string; fileName: string }>,
     passFailStatus: '' as '' | 'pass' | 'fail',
     notes: '',
@@ -113,6 +201,9 @@ export function TaskFromTemplateModal({
   
   // Instructions expandable state
   const [instructionsExpanded, setInstructionsExpanded] = useState(false);
+
+  // Frequency override — allows user to change frequency per site_checklist
+  const [frequencyOverride, setFrequencyOverride] = useState<string>('');
   
   // Available dayparts (including additional options)
   const availableDayparts = [
@@ -141,6 +232,14 @@ export function TaskFromTemplateModal({
     if (isOpen && templateId) {
       // Reset form when modal opens
       setSelectedSiteFilter(''); // Reset site filter when modal opens
+      // Reset site selection state when modal opens
+      setTaskSiteId('');
+      setAvailableSites([]);
+      // Keep loadingSites true so UI shows "Loading..." not "No sites" while sites load
+      setLoadingSites(true);
+
+      console.log('🔄 Modal opened, resetting site state. existingTask:', !!existingTask, 'existingSiteChecklist:', !!existingSiteChecklist);
+
       if (existingTask) {
         // For editing, we'll initialize after template loads
         fetchTemplate();
@@ -154,7 +253,101 @@ export function TaskFromTemplateModal({
         loadAssets();
       }
     }
-  }, [isOpen, templateId, companyId, siteId, profile]);
+    // Note: profile is NOT in deps - profile changes should not reset the modal state.
+    // The site-loading useEffect below handles profile dependency separately.
+  }, [isOpen, templateId, companyId, selectedSiteId, siteId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (isOpen && companyId) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
+  
+  // Load sites based on user role for task creation
+  useEffect(() => {
+    const loadSites = async () => {
+      if (!isOpen || !companyId) {
+        console.log('🚫 Site loading skipped:', { isOpen, companyId });
+        setLoadingSites(false);
+        return;
+      }
+      
+      setLoadingSites(true);
+      
+      // Wait for profile to load if not available yet, but retry after a short delay
+      if (!profile) {
+        console.log('⏳ Waiting for profile to load...');
+        // Retry after profile loads
+        const checkProfile = setInterval(() => {
+          if (profile) {
+            clearInterval(checkProfile);
+            loadSites();
+          }
+        }, 100);
+        
+        // Clear interval after 5 seconds to avoid infinite loop
+        setTimeout(() => {
+          clearInterval(checkProfile);
+          setLoadingSites(false);
+        }, 5000);
+        return;
+      }
+      
+      try {
+        // Determine user role
+        const userRole = profile.app_role?.toLowerCase() || 'staff';
+        const isStaff = userRole === 'staff';
+        
+        console.log('🏢 Loading sites for role:', userRole, 'isStaff:', isStaff, 'profile:', profile);
+        
+        if (isStaff) {
+          // Staff: only their home site
+          const homeSiteId = profile.home_site || profile.site_id;
+          if (homeSiteId) {
+            const { data: site, error } = await supabase
+              .from('sites')
+              .select('id, name')
+              .eq('id', homeSiteId)
+              .single();
+            
+            if (site && !error) {
+              console.log('✅ Loaded staff home site:', site);
+              setAvailableSites([site]);
+              setTaskSiteId(site.id);
+            } else {
+              console.error('❌ Error loading staff site:', error);
+            }
+          } else {
+            console.warn('⚠️ Staff member has no home_site assigned');
+          }
+        } else {
+          // Managers, Admins, Owners: all sites in company
+          const { data: sites, error } = await supabase
+            .from('sites')
+            .select('id, name')
+            .eq('company_id', companyId)
+            .order('name');
+          
+          if (sites && !error) {
+            console.log(`✅ Loaded ${sites.length} sites for manager/admin:`, sites.map(s => s.name));
+            setAvailableSites(sites);
+            // Default to home site or first site or selectedSiteId from header
+            const defaultSiteId = profile.home_site || selectedSiteId || sites[0]?.id || '';
+            setTaskSiteId(defaultSiteId);
+          } else {
+            console.error('❌ Error loading sites:', error);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Exception loading sites:', error);
+      } finally {
+        setLoadingSites(false);
+      }
+    };
+    
+    loadSites();
+  }, [isOpen, companyId, profile?.id, profile?.app_role, profile?.home_site, selectedSiteId]);
   
   // Load library data for dropdowns
   async function loadLibraryData() {
@@ -242,14 +435,22 @@ export function TaskFromTemplateModal({
     }
   }
   
-  // Load assets for dropdown - filter by site unless user is admin/owner
+  // Load assets for dropdown - filter by selected site from header unless user is admin/owner
   async function loadAssets() {
-    if (!companyId) return;
+    if (!companyId) {
+      console.log('🚫 Asset loading skipped: no companyId');
+      return;
+    }
+    
+    console.log('📦 Loading assets...', { companyId, selectedSiteId, siteId, profileRole: profile?.app_role });
     
     try {
-      // Check if user is admin or owner - they see all assets
+      // Check if user is admin or owner - they can see all assets or filter by selected site
       const userRole = profile?.app_role?.toLowerCase() || '';
       const isAdminOrOwner = userRole === 'admin' || userRole === 'owner';
+      
+      // Use selectedSiteId from header if available, otherwise fall back to siteId
+      const effectiveSiteId = selectedSiteId || siteId;
       
       let query = supabase
         .from('assets')
@@ -257,41 +458,57 @@ export function TaskFromTemplateModal({
         .eq('company_id', companyId)
         .eq('archived', false);
       
-      // Filter by site_id if user is not admin/owner
-      if (!isAdminOrOwner && siteId) {
-        query = query.eq('site_id', siteId);
+      // Filter by selected site from header (admins/owners can still filter, but see all if no site selected)
+      if (effectiveSiteId && effectiveSiteId !== 'all') {
+        query = query.eq('site_id', effectiveSiteId);
+        console.log('🔍 Filtering assets by site:', effectiveSiteId);
+      } else {
+        console.log('🔍 Loading all assets (no site filter)');
       }
       
       const { data, error } = await query.order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error loading assets with join:', error);
+        throw error;
+      }
+      
+      console.log(`✅ Loaded ${data?.length || 0} assets`);
+      
       // Transform data to include site name
-        const assetsWithSite = (data || []).map((asset: any) => ({
-          ...asset,
-          site_name: asset.sites?.name || 'No site assigned'
-        }));
-        setAllAssets(assetsWithSite);
-        setAssets(assetsWithSite); // Initially show all assets
+      const assetsWithSite = (data || []).map((asset: any) => ({
+        ...asset,
+        site_name: asset.sites?.name || 'No site assigned'
+      }));
+      setAllAssets(assetsWithSite);
+      setAssets(assetsWithSite); // Initially show all assets
+      
+      // Load unique sites from assets for filter dropdown
+      const uniqueSiteIds = [...new Set(assetsWithSite.map((a: any) => a.site_id).filter(Boolean))];
+      if (uniqueSiteIds.length > 0) {
+        const { data: sitesData } = await supabase
+          .from('sites')
+          .select('id, name')
+          .in('id', uniqueSiteIds)
+          .eq('company_id', companyId);
         
-        // Load unique sites from assets for filter dropdown
-        const uniqueSiteIds = [...new Set(assetsWithSite.map((a: any) => a.site_id).filter(Boolean))];
-        if (uniqueSiteIds.length > 0) {
-          const { data: sitesData } = await supabase
-            .from('sites')
-            .select('id, name')
-            .in('id', uniqueSiteIds)
-            .eq('company_id', companyId);
-          
-          if (sitesData) {
-            setSites(sitesData);
-          }
+        if (sitesData) {
+          console.log(`✅ Loaded ${sitesData.length} sites from assets`);
+          setSites(sitesData);
         }
+      } else {
+        console.log('⚠️ No sites found from assets');
+        setSites([]);
+      }
     } catch (error) {
-      console.error('Error loading assets:', error);
+      console.error('❌ Error loading assets:', error);
       // Fallback: try without inner join if sites relationship fails
       try {
         const userRole = profile?.app_role?.toLowerCase() || '';
         const isAdminOrOwner = userRole === 'admin' || userRole === 'owner';
+        
+        // Use selectedSiteId from header if available, otherwise fall back to siteId
+        const effectiveSiteId = selectedSiteId || siteId;
         
         let query = supabase
           .from('assets')
@@ -299,13 +516,20 @@ export function TaskFromTemplateModal({
           .eq('company_id', companyId)
           .eq('archived', false);
         
-        if (!isAdminOrOwner && siteId) {
-          query = query.eq('site_id', siteId);
+        // Filter by site if specified (for all users, not just non-admins)
+        if (effectiveSiteId && effectiveSiteId !== 'all') {
+          query = query.eq('site_id', effectiveSiteId);
         }
         
         const { data, error } = await query.order('name');
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error in fallback asset loading:', error);
+          throw error;
+        }
+        
+        console.log(`✅ Fallback: Loaded ${data?.length || 0} assets`);
+        
         // If we have site_ids, fetch site names separately
         const siteIds = [...new Set((data || []).map((a: any) => a.site_id).filter(Boolean))];
         let sitesMap: Record<string, string> = {};
@@ -343,26 +567,55 @@ export function TaskFromTemplateModal({
           if (sitesData) {
             setSites(sitesData);
           }
+        } else {
+          setSites([]);
         }
       } catch (fallbackError) {
-        console.error('Error in fallback asset loading:', fallbackError);
+        console.error('❌ Error in fallback asset loading:', fallbackError);
         setAssets([]);
+        setAllAssets([]);
+        setSites([]);
       }
     }
   }
 
   async function loadTemplateFields(templateId: string) {
     try {
+      if (!templateId) {
+        setTemplateFields([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('template_fields')
         .select('*')
         .eq('template_id', templateId)
         .order('field_order');
 
-      if (error) throw error;
+      if (error) {
+        // Log the error for debugging (but don't break the component)
+        console.error('Error loading template fields:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          templateId
+        });
+        setTemplateFields([]);
+        return;
+      }
+      
+      // Successfully loaded fields
+      if (data && data.length > 0) {
+        console.log(`✅ Loaded ${data.length} template field(s) for template:`, templateId);
+      }
       setTemplateFields(data || []);
-    } catch (error) {
-      console.error('Error loading template fields:', error);
+    } catch (error: any) {
+      // Gracefully handle any errors - don't break the component
+      console.error('Exception loading template fields:', {
+        message: error?.message,
+        templateId
+      });
       setTemplateFields([]);
     }
   }
@@ -409,6 +662,9 @@ export function TaskFromTemplateModal({
   async function fetchTemplate() {
     console.log('🚀 fetchTemplate called', { hasProvidedTemplate: !!providedTemplate, templateId });
     
+    // UUID regex for checking if template ID is a database UUID or a slug
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    
     if (providedTemplate) {
       // CRITICAL: Ensure recurrence_pattern is a proper object
       let templateData = { ...providedTemplate };
@@ -430,7 +686,21 @@ export function TaskFromTemplateModal({
       });
       
       const enrichedTemplate = enrichTemplateWithDefinition(templateData);
-      await loadTemplateFields(enrichedTemplate.id as string);
+      
+      // For code-defined templates (slug-based IDs), try to load fields from database first
+      // If that fails, the template should still work with evidence_types-based features
+      const isUuid = uuidRegex.test(enrichedTemplate.id as string);
+      
+      if (isUuid) {
+        // Database template - load fields normally
+        await loadTemplateFields(enrichedTemplate.id as string);
+      } else {
+        // Code-defined template - fields might not exist in DB yet
+        // Features will still work based on evidence_types
+        console.log('Code-defined template detected, skipping field load:', enrichedTemplate.slug);
+        setTemplateFields([]);
+      }
+      
       setTemplate(enrichedTemplate as any);
       setLoading(false);
       initializeFormData(enrichedTemplate as any);
@@ -439,12 +709,22 @@ export function TaskFromTemplateModal({
 
     setLoading(true);
     try {
+      // Check if templateId is a valid UUID (database ID) or a slug
+      const isUuid = uuidRegex.test(templateId);
+      
       // Use maybeSingle() to gracefully handle missing templates (returns null instead of error)
-      const { data, error } = await supabase
+      let query = supabase
         .from('task_templates')
-        .select('*, recurrence_pattern') // Explicitly include recurrence_pattern
-        .eq('id', templateId)
-        .maybeSingle(); // Returns null if no rows, doesn't throw error
+        .select('*, recurrence_pattern'); // Explicitly include recurrence_pattern
+      
+      // If it's a UUID, query by id; otherwise query by slug
+      if (isUuid) {
+        query = query.eq('id', templateId);
+      } else {
+        query = query.eq('slug', templateId);
+      }
+      
+      const { data, error } = await query.maybeSingle(); // Returns null if no rows, doesn't throw error
       
       // Handle any errors (including PGRST116 - template not found)
       if (error) {
@@ -503,21 +783,34 @@ export function TaskFromTemplateModal({
       }
       
       const enrichedTemplate = enrichTemplateWithDefinition(templateData);
-      await loadTemplateFields(enrichedTemplate.id as string);
+      
+      // Load template fields - only if template has a valid UUID (exists in database)
+      const isUuidForTemplate = uuidRegex.test(enrichedTemplate.id as string);
+      
+      if (isUuidForTemplate) {
+        await loadTemplateFields(enrichedTemplate.id as string);
+        // Load call points if template has fire_alarm_call_point field
+        await loadCallPoints(templateData.id);
+      } else {
+        // Code-defined template - fields might not exist in DB yet
+        console.log('Code-defined template detected, skipping field load:', enrichedTemplate.slug);
+        setTemplateFields([]);
+      }
+      
       setTemplate(enrichedTemplate as any);
       
       // Debug: Check if recurrence_pattern is loaded
       console.log('📦 Template loaded:', {
         id: templateData.id,
         name: templateData.name,
+        slug: enrichedTemplate.slug,
         has_recurrence_pattern: !!templateData.recurrence_pattern,
         recurrence_pattern: templateData.recurrence_pattern,
         repeatable_field_name: templateData.repeatable_field_name,
+        asset_type: templateData.asset_type,
+        evidence_types: templateData.evidence_types,
         default_checklist_items: templateData.recurrence_pattern?.default_checklist_items
       });
-      
-      // Load call points if template has fire_alarm_call_point field
-      await loadCallPoints(templateData.id);
       
       initializeFormData(enrichedTemplate as any);
     } catch (error: any) {
@@ -540,11 +833,11 @@ export function TaskFromTemplateModal({
 
   // Initialize form with existing task data when editing (even if template not found)
   useEffect(() => {
-    if (existingTask && isOpen && !loading) {
+    if ((existingTask || existingSiteChecklist) && isOpen && !loading) {
       if (template) {
-        // Template found - initialize with both template and task data
+        // Template found - initialize with both template and task/site_checklist data
         initializeFormData(template);
-      } else {
+      } else if (existingTask) {
         // Template not found - initialize with just task data so user can still edit
         setFormData({
           custom_name: existingTask.custom_name || '',
@@ -559,20 +852,157 @@ export function TaskFromTemplateModal({
           passFailStatus: '',
           notes: '',
         });
+      } else if (existingSiteChecklist) {
+        // For site_checklist, we need the template to initialize properly
+        // This case should be rare - template should always be available
+        console.warn('⚠️ Editing site_checklist but template not loaded yet');
       }
     }
-  }, [template, existingTask, isOpen, loading]);
+  }, [template, existingTask, existingSiteChecklist, isOpen, loading]);
 
   function initializeFormData(templateData: any) {
     console.log('🔄 initializeFormData called:', {
       hasExistingTask: !!existingTask,
+      hasExistingSiteChecklist: !!existingSiteChecklist,
       templateId: templateData?.id,
       templateName: templateData?.name,
       hasRecurrencePattern: !!templateData?.recurrence_pattern
     });
     
+    // Initialize form with existing site_checklist data if editing configuration
+    if (existingSiteChecklist) {
+      const dayparts = templateData.dayparts || [];
+      
+      // Build dayparts array from daypart_times
+      let daypartsArray: Array<{ daypart: string; due_time: string }> = [];
+      if (existingSiteChecklist.daypart_times && typeof existingSiteChecklist.daypart_times === 'object') {
+        for (const [daypart, timeValue] of Object.entries(existingSiteChecklist.daypart_times)) {
+          if (Array.isArray(timeValue)) {
+            timeValue.forEach(time => {
+              daypartsArray.push({ daypart, due_time: time });
+            });
+          } else {
+            daypartsArray.push({ daypart, due_time: timeValue as string });
+          }
+        }
+      } else if (dayparts.length > 0) {
+        // Use template dayparts if no daypart_times configured
+        const daypartTimes = templateData.recurrence_pattern?.daypart_times || {};
+        daypartsArray = dayparts.map((dp: string) => ({
+          daypart: dp,
+          due_time: daypartTimes[dp] || ''
+        }));
+      }
+      
+      // Extract equipment/assets from equipment_config
+      // equipment_config is an array of objects: [{assetId, equipment, nickname, temp_min, temp_max}, ...]
+      const equipmentConfig = existingSiteChecklist.equipment_config || [];
+      
+      // Extract asset IDs for selectedAssets (array of strings)
+      const selectedAssets = Array.isArray(equipmentConfig)
+        ? equipmentConfig.map((eq: any) => eq.assetId || eq).filter(Boolean)
+        : [];
+
+      // CRITICAL FIX: Load checklist items from template's recurrence_pattern
+      // Parse recurrence_pattern if it's a string
+      let recurrencePattern = templateData.recurrence_pattern;
+      if (typeof recurrencePattern === 'string') {
+        try {
+          recurrencePattern = JSON.parse(recurrencePattern);
+        } catch (e) {
+          console.error('Failed to parse recurrence_pattern:', e);
+          recurrencePattern = null;
+        }
+      }
+
+      const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
+      const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
+
+      // Convert to yes/no format if yes_no_checklist is enabled (preserve enhanced format)
+      const loadedYesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
+        ? defaultChecklistItems.map((item: any) => {
+            if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+              return { ...item, answer: null }; // Enhanced format — preserve options
+            }
+            return {
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null,
+            };
+          }).filter((item: any) => item.text && item.text.trim().length > 0)
+        : [];
+
+      // Regular checklist items (only if yes_no_checklist is NOT enabled)
+      const loadedChecklistItems = !hasYesNoChecklist && Array.isArray(defaultChecklistItems)
+        ? defaultChecklistItems.map((item: any) =>
+            typeof item === 'string' ? item : (item.text || item.label || '')
+          ).filter((item: string) => item && item.trim().length > 0)
+        : [];
+
+      console.log('📋 Loading checklist items for site_checklist edit:', {
+        templateId: templateData.id,
+        hasRecurrencePattern: !!recurrencePattern,
+        defaultChecklistItemsCount: defaultChecklistItems.length,
+        hasYesNoChecklist,
+        checklistItemsCount: loadedChecklistItems.length,
+        yesNoChecklistItemsCount: loadedYesNoChecklistItems.length
+      });
+
+      // Build temperatures array from equipment_config (includes nicknames and temp ranges)
+      const temperatures = Array.isArray(equipmentConfig)
+        ? equipmentConfig
+            .filter((eq: any) => eq.assetId) // Only include items with assetId
+            .map((eq: any) => ({
+              assetId: eq.assetId,
+              equipment: eq.equipment || '',
+              nickname: eq.nickname || '',
+              temp: undefined,
+              temp_min: eq.temp_min !== undefined && eq.temp_min !== null ? eq.temp_min : undefined,
+              temp_max: eq.temp_max !== undefined && eq.temp_max !== null ? eq.temp_max : undefined
+            }))
+        : [];
+      
+      console.log('📥 Loading existing site_checklist:', {
+        equipmentConfig,
+        selectedAssets,
+        temperatures
+      });
+      
+      setFormData({
+        custom_name: existingSiteChecklist.name || templateData.name || '',
+        custom_instructions: existingSiteChecklist.custom_instructions || templateData.instructions || '',
+        due_date: new Date().toISOString().split('T')[0], // Not used for configurations
+        due_time: '', // Not used for configurations
+        daypart: daypartsArray[0]?.daypart || dayparts[0] || '',
+        dayparts: daypartsArray,
+        priority: 'medium', // Not used for configurations
+        checklistItems: loadedChecklistItems, // Load from template's recurrence_pattern
+        yesNoChecklistItems: loadedYesNoChecklistItems, // Load from template's recurrence_pattern
+        temperatures: temperatures, // Load temperatures with nicknames and temp ranges
+        photos: [],
+        passFailStatus: '',
+        notes: '',
+        sopUploads: [],
+        raUploads: [],
+        documentUploads: [],
+        selectedLibraries: {
+          ppe: [],
+          chemicals: [],
+          equipment: [],
+          ingredients: [],
+          drinks: [],
+          disposables: [],
+        },
+        selectedAssets: selectedAssets, // Array of asset IDs
+        days_of_week: existingSiteChecklist.days_of_week || [],
+        date_of_month: existingSiteChecklist.date_of_month || undefined,
+        anniversary_date: existingSiteChecklist.anniversary_date || undefined,
+      });
+
+      // Set frequency from site_checklist (may differ from template)
+      setFrequencyOverride(existingSiteChecklist.frequency || templateData.frequency || 'daily');
+    }
     // Initialize form with existing task data if editing, otherwise use template defaults
-    if (existingTask) {
+    else if (existingTask) {
       const dayparts = templateData.dayparts || [];
       
       // Load task_data if it exists
@@ -665,10 +1095,15 @@ export function TaskFromTemplateModal({
       // Convert default_checklist_items to yes/no checklist format
       const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
       const yesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
-        ? defaultChecklistItems.map((item: any) => ({
-            text: typeof item === 'string' ? item : (item.text || item.label || ''),
-            answer: null as 'yes' | 'no' | null
-          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0)
+        ? defaultChecklistItems.map((item: any) => {
+            if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+              return { ...item, answer: null }; // Enhanced format — preserve options
+            }
+            return {
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null,
+            };
+          }).filter((item: any) => item.text && item.text.trim().length > 0)
         : [];
       
       // Regular checklist items (only if yes_no_checklist is NOT enabled)
@@ -727,6 +1162,11 @@ export function TaskFromTemplateModal({
           note: 'FormData state may not be immediately available in console'
         });
       }, 100);
+
+      // Set frequency from template for new configurations
+      if (!frequencyOverride) {
+        setFrequencyOverride(templateData.frequency || 'daily');
+      }
     }
   }
 
@@ -769,27 +1209,32 @@ export function TaskFromTemplateModal({
     window.open(url, '_blank', 'noopener,noreferrer');
   }, [matrixHref, matrixUrl]);
 
-  // Debug logging for feature detection
-  if (template) {
-    console.log('🔍 Template feature detection:', {
-      templateName: template.name,
-      templateSlug: template.slug,
-      repeatable_field_name: template.repeatable_field_name,
-      evidence_types: template.evidence_types,
-      triggers_contractor_on_failure: template.triggers_contractor_on_failure,
-      contractor_type: template.contractor_type,
-      enabledFeatures: enabledFeatures,
-      willShowAssetUI: allAssets.length > 0 && enabledFeatures.assetSelection,
-      willShowLibrary: enabledFeatures.libraryDropdown,
-      willShowDocument: enabledFeatures.documentUpload,
-      // Debug: Log template configuration
-      templateRepeatableField: template?.repeatable_field_name,
-      templateRequiresSOP: template?.requires_sop,
-      templateRequiresRA: template?.requires_risk_assessment,
-      willShowChecklist: enabledFeatures.checklist,
-      hasDefaultChecklistItems: !!template.recurrence_pattern?.default_checklist_items
-    });
-  }
+  // Debug logging for feature detection - only log when template changes, not on every render
+  useEffect(() => {
+    if (template && isOpen) {
+      const features = getTemplateFeatures(template);
+      console.log('🔍 Template feature detection:', {
+        templateName: template.name,
+        templateSlug: template.slug,
+        repeatable_field_name: template.repeatable_field_name,
+        evidence_types: template.evidence_types,
+        triggers_contractor_on_failure: template.triggers_contractor_on_failure,
+        contractor_type: template.contractor_type,
+        enabledFeatures: features,
+        willShowAssetUI: allAssets.length > 0 && features.assetSelection,
+        willShowLibrary: features.libraryDropdown,
+        willShowDocument: features.documentUpload,
+        // Debug: Log template configuration
+        templateRepeatableField: template?.repeatable_field_name,
+        templateRequiresSOP: template?.requires_sop,
+        templateRequiresRA: template?.requires_risk_assessment,
+        willShowChecklist: features.checklist,
+        hasDefaultChecklistItems: !!template.recurrence_pattern?.default_checklist_items
+      });
+    }
+    // Only run when template or modal state changes, not on every render
+     
+  }, [template?.id, isOpen, allAssets.length]);
 
   // Debug logging and ensure formData is initialized when template loads
   // IMPORTANT: Only update checklist items, NOT times or dates - user may have already changed those
@@ -999,10 +1444,11 @@ export function TaskFromTemplateModal({
     callout: boolean,
     notes?: string,
     assetId?: string,
-    temp?: number
+    temp?: number,
+    tempRange?: { min?: number; max?: number }
   ) => {
     // Store monitor/callout data - this will be saved in task_data when task is created/updated
-    console.log('Monitor/Callout triggered:', { monitor, callout, notes, assetId, temp });
+    console.log('Monitor/Callout triggered:', { monitor, callout, notes, assetId, temp, tempRange });
     
     // You can extend this to:
     // - Create contractor callout records
@@ -1068,8 +1514,24 @@ export function TaskFromTemplateModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!companyId || !siteId) {
-      toast.error('Missing required information');
+    // Wait for context to finish loading
+    if (contextLoading) {
+      toast.error('Please wait while we load your information...');
+      return;
+    }
+
+    if (!companyId) {
+      toast.error('Company information is missing. Please refresh the page and try again.');
+      console.error('❌ Missing companyId:', { companyId, siteId, profile });
+      return;
+    }
+
+    // siteId is required by the database schema
+    // Use taskSiteId (selected in modal) first, then fall back to context siteId
+    const effectiveSiteIdForValidation = taskSiteId || siteId;
+    if (!effectiveSiteIdForValidation) {
+      toast.error('Please select a site before creating a task.');
+      console.error('❌ Missing siteId:', { companyId, siteId, taskSiteId, profile });
       return;
     }
 
@@ -1174,7 +1636,8 @@ export function TaskFromTemplateModal({
           : formData.due_time || null;
         
         // Ensure dayparts are stored in task_data for daily tasks
-        if (template?.frequency === 'daily' && formData.dayparts && formData.dayparts.length > 0) {
+        const activeFrequency = frequencyOverride || template?.frequency || 'daily';
+        if (activeFrequency === 'daily' && formData.dayparts && formData.dayparts.length > 0) {
           taskData.dayparts = formData.dayparts;
           // Also store daypart_times mapping for reference
           const daypartTimes: Record<string, string> = {};
@@ -1234,79 +1697,356 @@ export function TaskFromTemplateModal({
           }
         }
         
-        // Store dayparts if they exist
+        // Build daypart_times object for site_checklists
+        const daypartTimes: Record<string, string | string[]> = {};
         if (formData.dayparts && formData.dayparts.length > 0) {
-          taskData.dayparts = formData.dayparts;
+          for (const dp of formData.dayparts) {
+            if (dp.daypart && dp.due_time) {
+              if (daypartTimes[dp.daypart]) {
+                // If daypart already exists, convert to array
+                const existing = daypartTimes[dp.daypart];
+                daypartTimes[dp.daypart] = Array.isArray(existing) 
+                  ? [...existing, dp.due_time]
+                  : [existing, dp.due_time];
+              } else {
+                daypartTimes[dp.daypart] = dp.due_time;
+              }
+            }
+          }
         }
         
-        // Store temperature logs if they exist
+        // Build equipment_config from temperatures (preferred) or selectedAssets
+        // Always prioritize temperatures array as it contains full data (nicknames, temp ranges)
+        let equipmentConfig = null;
         if (formData.temperatures && formData.temperatures.length > 0) {
-          taskData.temperatures = formData.temperatures;
+          // Extract equipment from temperature logs, including temp ranges and nicknames
+          equipmentConfig = formData.temperatures
+            .filter((temp: any) => temp.assetId) // Only include items with assetId
+            .map((temp: any) => ({
+              assetId: temp.assetId,
+              equipment: temp.equipment || '', // Asset name
+              nickname: temp.nickname || '', // User-defined nickname
+              temp_min: temp.temp_min !== undefined && temp.temp_min !== null ? temp.temp_min : undefined,
+              temp_max: temp.temp_max !== undefined && temp.temp_max !== null ? temp.temp_max : undefined
+            }));
+        } else if (formData.selectedAssets && formData.selectedAssets.length > 0) {
+          // Fallback: if no temperatures, use selectedAssets and look up asset names
+          equipmentConfig = formData.selectedAssets.map((assetId: string) => {
+            const asset = assets.find(a => a.id === assetId);
+            return {
+              assetId: assetId,
+              equipment: asset?.name || '',
+              nickname: '',
+              temp_min: undefined,
+              temp_max: undefined
+            };
+          });
         }
         
-        // Store pass/fail status if it exists
-        if (formData.passFailStatus) {
-          taskData.passFailStatus = formData.passFailStatus;
+        // Use frequency override (user-editable) or fall back to template
+        const frequency = frequencyOverride || template?.frequency || 'daily';
+        
+        // Build site_checklist configuration
+        // Use taskSiteId for new tasks, or existing site_id for editing
+        const effectiveSiteId = existingSiteChecklist 
+          ? existingSiteChecklist.site_id 
+          : (existingTask 
+            ? existingTask.site_id 
+            : taskSiteId || siteId);
+        
+        const siteChecklistData: any = {
+          template_id: templateId,
+          company_id: companyId,
+          site_id: effectiveSiteId,
+          name: formData.custom_name.trim() || template?.name || 'Task Configuration',
+          frequency: frequency,
+          active: true,
+          custom_instructions: instructions,
+        };
+        
+        // Add daypart_times if we have multiple times
+        if (Object.keys(daypartTimes).length > 0) {
+          siteChecklistData.daypart_times = daypartTimes;
         }
         
-        // Store uploaded files
-        if (formData.sopUploads && formData.sopUploads.length > 0) {
-          taskData.sopUploads = formData.sopUploads;
-        }
-        if (formData.raUploads && formData.raUploads.length > 0) {
-          taskData.raUploads = formData.raUploads;
-        }
-        if (formData.documentUploads && formData.documentUploads.length > 0) {
-          taskData.documentUploads = formData.documentUploads;
-        }
-        if (formData.photos && formData.photos.length > 0) {
-          taskData.photos = formData.photos;
-        }
-        
-        // Store library selections
-        if (formData.selectedLibraries && Object.keys(formData.selectedLibraries).some(key => formData.selectedLibraries[key as keyof typeof formData.selectedLibraries].length > 0)) {
-          taskData.selectedLibraries = formData.selectedLibraries;
-        }
-        
-        // Store asset selections
-        if (formData.selectedAssets && formData.selectedAssets.length > 0) {
-          taskData.selectedAssets = formData.selectedAssets;
-        }
-        
-        // Use first daypart for backward compatibility (single daypart field)
-        const primaryDaypart = formData.dayparts && formData.dayparts.length > 0 
-          ? formData.dayparts[0].daypart 
-          : formData.daypart || null;
-        const primaryDueTime = formData.dayparts && formData.dayparts.length > 0 
-          ? formData.dayparts[0].due_time 
-          : formData.due_time || null;
-        
-        // Create new checklist task
-        const { data, error } = await supabase
-          .from('checklist_tasks')
-          .insert({
-            template_id: templateId,
-            company_id: companyId,
-            site_id: siteId,
-            due_date: formData.due_date,
-            due_time: primaryDueTime,
-            daypart: primaryDaypart,
-            custom_name: formData.custom_name.trim(), // Required for new tasks, validated above
-            custom_instructions: instructions,
-            status: 'pending',
-            priority: formData.priority,
-            // Store task instance data (checklist items, temperatures, etc.)
-            task_data: Object.keys(taskData).length > 0 ? taskData : {},
-          })
-          .select()
-          .single();
+        // Add equipment_config if we have equipment
+        if (equipmentConfig && equipmentConfig.length > 0) {
+          siteChecklistData.equipment_config = equipmentConfig;
+          console.log('💾 Saving equipment_config:', JSON.stringify(equipmentConfig, null, 2));
 
-        if (error) throw error;
+          // Upsert positions before saving checklist
+          await upsertEquipmentPositions(effectiveSiteId, companyId, equipmentConfig);
+        }
 
-        toast.success('Task created successfully!');
+        // Add scheduling for weekly/monthly/quarterly/bi-annually/annual
+        if (frequency === 'weekly' && formData.days_of_week) {
+          siteChecklistData.days_of_week = formData.days_of_week;
+        } else if (frequency === 'monthly' && formData.date_of_month) {
+          siteChecklistData.date_of_month = formData.date_of_month;
+        } else if (['quarterly', 'bi-annually', 'annually'].includes(frequency) && formData.anniversary_date) {
+          siteChecklistData.anniversary_date = formData.anniversary_date;
+        }
         
-        // Redirect to Active Tasks page
-        router.push('/dashboard/tasks/active');
+        // Check if editing existing site_checklist (passed as prop)
+        if (existingSiteChecklist) {
+          // Update existing configuration
+          const { error } = await supabase
+            .from('site_checklists')
+            .update(siteChecklistData)
+            .eq('id', existingSiteChecklist.id);
+          
+          if (error) throw error;
+          toast.success('Configuration updated successfully!');
+          
+          // Call onSave callback and close modal (don't redirect when editing)
+          if (onSave) onSave();
+          onClose();
+          return;
+        } else {
+          // Check if a site_checklist already exists for this site_id and template_id combination
+          const { data: existingChecklist, error: checkError } = await supabase
+            .from('site_checklists')
+            .select('id')
+            .eq('site_id', effectiveSiteId)
+            .eq('template_id', templateId)
+            .maybeSingle();
+          
+          if (checkError) {
+            console.error('Error checking for existing site_checklist:', checkError);
+            throw checkError;
+          }
+          
+          // Fetch site name for toast message
+          let siteName = 'the selected site';
+          if (effectiveSiteId) {
+            const { data: siteData } = await supabase
+              .from('sites')
+              .select('name')
+              .eq('id', effectiveSiteId)
+              .single();
+            if (siteData?.name) {
+              siteName = siteData.name;
+            }
+          }
+          
+          let siteChecklistId: string | null = null;
+
+          if (existingChecklist) {
+            // Update existing configuration instead of creating duplicate
+            console.log('🔄 Found existing site_checklist, updating instead of creating:', existingChecklist.id);
+            const { error: updateError } = await supabase
+              .from('site_checklists')
+              .update(siteChecklistData)
+              .eq('id', existingChecklist.id);
+
+            if (updateError) throw updateError;
+            siteChecklistId = existingChecklist.id;
+            toast.success(`Task configuration updated successfully for ${siteName}!`);
+          } else {
+            // Create new configuration
+            const { data, error } = await supabase
+              .from('site_checklists')
+              .insert(siteChecklistData)
+              .select()
+              .single();
+
+            if (error) throw error;
+            siteChecklistId = data?.id || null;
+            toast.success(`Task configuration created successfully for ${siteName}!`);
+          }
+
+          // ====================================================================
+          // CRITICAL: Save checklist items back to template's recurrence_pattern
+          // This ensures the cron function can populate items for future tasks
+          // ====================================================================
+          if (templateId && (formData.checklistItems?.length > 0 || formData.yesNoChecklistItems?.length > 0)) {
+            try {
+              // First, get the current template's recurrence_pattern
+              const { data: currentTemplate, error: fetchError } = await supabase
+                .from('task_templates')
+                .select('recurrence_pattern')
+                .eq('id', templateId)
+                .single();
+
+              if (!fetchError && currentTemplate) {
+                // Parse existing recurrence_pattern or create new one
+                let existingPattern = currentTemplate.recurrence_pattern || {};
+                if (typeof existingPattern === 'string') {
+                  try {
+                    existingPattern = JSON.parse(existingPattern);
+                  } catch (e) {
+                    existingPattern = {};
+                  }
+                }
+
+                // Prepare checklist items to save (preserve enhanced format with options)
+                let defaultChecklistItems: any[] = [];
+
+                if (formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0) {
+                  // For yes/no checklists, save full structure (enhanced or text-only)
+                  defaultChecklistItems = formData.yesNoChecklistItems
+                    .filter((item: any) => item && item.text && item.text.trim().length > 0)
+                    .map((item: any) => {
+                      if (item.options && Array.isArray(item.options)) {
+                        // Enhanced format — save text + options (strip runtime fields)
+                        return { text: item.text.trim(), options: item.options };
+                      }
+                      return item.text.trim();
+                    });
+                } else if (formData.checklistItems && formData.checklistItems.length > 0) {
+                  // For regular checklists, save the items directly
+                  defaultChecklistItems = formData.checklistItems
+                    .filter((item: string) => item && item.trim().length > 0)
+                    .map((item: string) => item.trim());
+                }
+
+                // Update recurrence_pattern with default_checklist_items
+                if (defaultChecklistItems.length > 0) {
+                  const updatedPattern = {
+                    ...existingPattern,
+                    default_checklist_items: defaultChecklistItems
+                  };
+
+                  const { error: updateError } = await supabase
+                    .from('task_templates')
+                    .update({ recurrence_pattern: updatedPattern })
+                    .eq('id', templateId);
+
+                  if (updateError) {
+                    console.error('Error saving checklist items to template:', updateError);
+                    // Don't fail the whole operation - the site_checklist was created
+                  } else {
+                    console.log('✅ Saved default_checklist_items to template:', defaultChecklistItems);
+                  }
+                }
+              }
+            } catch (templateUpdateError) {
+              console.error('Error updating template with checklist items:', templateUpdateError);
+              // Don't fail the whole operation - the site_checklist was created
+            }
+          }
+
+          // ====================================================================
+          // CRITICAL: Activate template so the daily cron picks it up
+          // Templates are created with is_active=false by the builder.
+          // Once a task config (site_checklist) exists, the template should be active.
+          // ====================================================================
+          if (templateId) {
+            try {
+              const { error: activateError } = await supabase
+                .from('task_templates')
+                .update({ is_active: true })
+                .eq('id', templateId);
+
+              if (activateError) {
+                console.error('Error activating template:', activateError);
+              } else {
+                console.log('✅ Template activated (is_active=true) for cron pickup');
+              }
+            } catch (activateErr) {
+              console.error('Error activating template:', activateErr);
+            }
+          }
+
+          // ====================================================================
+          // CRITICAL: Create seed checklist_task(s) for today so the task
+          // appears immediately in Today's Tasks AND so the cron can
+          // pattern-match from this seed to generate future daily tasks.
+          // ====================================================================
+          try {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Build the task_data payload (same structure as existing task updates)
+            const seedTaskData: Record<string, any> = {};
+
+            if (formData.checklistItems && formData.checklistItems.length > 0) {
+              const validItems = formData.checklistItems.filter((item: string) => item && item.trim().length > 0);
+              if (validItems.length > 0) {
+                seedTaskData.checklistItems = validItems.map((item: string) => ({
+                  text: item.trim(),
+                  completed: false
+                }));
+              }
+            }
+
+            if (formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0) {
+              const validItems = formData.yesNoChecklistItems.filter((item: any) => item && item.text && item.text.trim().length > 0);
+              if (validItems.length > 0) {
+                seedTaskData.yesNoChecklistItems = validItems;
+              }
+            }
+
+            if (formData.temperatures && formData.temperatures.length > 0) {
+              seedTaskData.temperatures = formData.temperatures;
+            }
+
+            if (formData.selectedAssets && formData.selectedAssets.length > 0) {
+              seedTaskData.selectedAssets = formData.selectedAssets;
+            }
+
+            // Carry reference documents from template
+            const templateDocs = template?.recurrence_pattern?.template_documents;
+            if (Array.isArray(templateDocs) && templateDocs.length > 0) {
+              seedTaskData.referenceDocuments = templateDocs;
+            }
+
+            // Mark custom fields flag so completion modal knows to load template_fields
+            if (template?.use_custom_fields) {
+              seedTaskData.use_custom_fields = true;
+            }
+
+            // Determine daypart/time pairs to create tasks for
+            const daypartPairs = formData.dayparts && formData.dayparts.length > 0
+              ? formData.dayparts.filter((dp: { daypart: string; due_time: string }) => dp.daypart)
+              : [{ daypart: formData.daypart || 'anytime', due_time: formData.due_time || '09:00' }];
+
+            for (const dp of daypartPairs) {
+              // Check if a seed task already exists for today (avoid duplicates)
+              const { data: existingSeed } = await supabase
+                .from('checklist_tasks')
+                .select('id')
+                .eq('template_id', templateId)
+                .eq('site_id', effectiveSiteId)
+                .eq('due_date', today)
+                .eq('daypart', dp.daypart)
+                .maybeSingle();
+
+              if (!existingSeed) {
+                const { error: seedError } = await supabase
+                  .from('checklist_tasks')
+                  .insert({
+                    template_id: templateId,
+                    site_checklist_id: siteChecklistId,
+                    company_id: companyId,
+                    site_id: effectiveSiteId,
+                    custom_name: formData.custom_name.trim() || template?.name || null,
+                    custom_instructions: instructions,
+                    due_date: today,
+                    due_time: dp.due_time || '09:00',
+                    daypart: dp.daypart,
+                    priority: formData.priority || 'medium',
+                    status: 'pending',
+                    task_data: Object.keys(seedTaskData).length > 0 ? seedTaskData : {},
+                  });
+
+                if (seedError) {
+                  console.error('Error creating seed checklist_task:', seedError);
+                } else {
+                  console.log(`✅ Seed checklist_task created for daypart: ${dp.daypart}`);
+                }
+              } else {
+                console.log(`⏭️ Seed task already exists for daypart: ${dp.daypart}`);
+              }
+            }
+          } catch (seedErr) {
+            console.error('Error creating seed tasks:', seedErr);
+            // Don't fail the whole operation - the site_checklist was created
+          }
+
+          // Close the modal and notify parent
+          if (onSave) onSave();
+          onClose();
+        }
       }
     } catch (error: any) {
       console.error('Error creating checklist:', error);
@@ -1321,8 +2061,8 @@ export function TaskFromTemplateModal({
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-[#0f1220] rounded-xl p-8 border border-pink-500/20">
-          <p className="text-white">Loading template...</p>
+        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-theme shadow-2xl">
+          <p className="text-theme-primary">Loading template...</p>
         </div>
       </div>
     );
@@ -1332,11 +2072,11 @@ export function TaskFromTemplateModal({
     // Can't create without template
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-[#0f1220] rounded-xl p-8 border border-pink-500/20">
-          <p className="text-white mb-4">Template not found</p>
+        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-theme shadow-2xl">
+          <p className="text-theme-primary mb-4">Template not found</p>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200"
           >
             Close
           </button>
@@ -1363,41 +2103,41 @@ export function TaskFromTemplateModal({
   const dayparts = [...new Set([...templateDayparts, ...userAddedDayparts])]; // Combine and deduplicate
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#0f1220] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-pink-500/20">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-theme shadow-2xl">
         {/* Header */}
-        <div className="p-6 border-b border-white/10">
+        <div className="p-6 border-b border-theme">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-pink-500 mb-2">
-                {existingTask ? 'Edit Task' : 'Create Task'}: {template?.name || existingTask?.custom_name || 'Task'}
+              <h1 className="text-2xl font-bold text-theme-primary mb-2">
+                {existingTask || existingSiteChecklist ? (existingSiteChecklist ? 'Edit Configuration' : 'Edit Task') : 'Create Task'}: {template?.name || existingTask?.custom_name || existingSiteChecklist?.name || 'Task'}
               </h1>
-              <p className="text-gray-400">
-                {existingTask 
-                  ? (template ? 'Update the task details' : 'Template not found. You can still edit the task details.')
+              <p className="text-theme-secondary">
+                {existingTask || existingSiteChecklist
+                  ? (existingSiteChecklist ? 'Update the task configuration' : (template ? 'Update the task details' : 'Template not found. You can still edit the task details.'))
                   : 'Fill in the details for this task instance'}
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-gray-400"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
           </div>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-[#141823]">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-white dark:bg-[#14161c]">
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-white">Task Details</h2>
+              <h2 className="text-lg font-semibold text-theme-primary">Task Details</h2>
               
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Task Name {!existingTask && <span className="text-red-400">*</span>}
-                  {existingTask && <span className="text-gray-400">(optional)</span>}
+                <label className="block text-sm font-medium text-theme-primary mb-2">
+                  Task Name {!existingTask && <span className="text-red-500">*</span>}
+                  {existingTask && <span className="text-theme-tertiary">(optional)</span>}
                 </label>
                 <input
                   type="text"
@@ -1405,68 +2145,121 @@ export function TaskFromTemplateModal({
                   onChange={(e) => setFormData({ ...formData, custom_name: e.target.value })}
                   placeholder={existingTask ? (existingTask.custom_name || template?.name || 'Task name') : 'Enter a unique name for this task (e.g., "Front counter setup checklist")'}
                   required={!existingTask}
-                  className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
                 {!existingTask && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     This name will identify this task in your Active Tasks list. Make it specific and unique.
                   </p>
                 )}
                 {existingTask && existingTask.custom_name && (
-                  <p className="text-xs text-gray-400 mt-1">Current: {existingTask.custom_name}</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Current: {existingTask.custom_name}</p>
                 )}
               </div>
 
+              {/* Site Selector - Only show when creating new task (not editing) */}
+              {(() => {
+                const shouldShow = !existingTask && !existingSiteChecklist;
+                console.log('🔍 Site selector render check:', { 
+                  shouldShow, 
+                  existingTask: !!existingTask, 
+                  existingSiteChecklist: !!existingSiteChecklist,
+                  availableSitesCount: availableSites.length,
+                  loadingSites,
+                  taskSiteId
+                });
+                
+                if (!shouldShow) return null;
+                
+                return (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-theme-primary mb-2">
+                      Site <span className="text-red-500">*</span>
+                    </label>
+                    {loadingSites ? (
+ <div className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-tertiary">
+                        Loading sites...
+                      </div>
+                    ) : availableSites.length === 0 ? (
+                      <div className="w-full px-4 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-300 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-sm">
+                        No sites available. Please ensure you have sites configured for your company.
+                      </div>
+                    ) : (
+                      <>
+                        <select
+                          value={taskSiteId}
+                          onChange={(e) => setTaskSiteId(e.target.value)}
+                          required
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                        >
+                          <option value="">Select a site</option>
+                          {availableSites.map(site => (
+                            <option key={site.id} value={site.id}>
+                              {site.name}
+                            </option>
+                          ))}
+                        </select>
+                        {taskSiteId && (
+                          <p className="text-xs text-theme-tertiary mt-1">
+                            This task will be visible to all {availableSites.find(s => s.id === taskSiteId)?.name || ''} staff in My Tasks
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* Instructions - Expandable Section */}
-              <div className="border border-white/10 rounded-lg overflow-hidden">
+              <div className="border border-theme rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setInstructionsExpanded(!instructionsExpanded)}
-                  className="w-full flex items-center justify-between p-4 bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white">Instructions</span>
-                    <span className="text-xs text-gray-400">(optional - defaults to template instructions)</span>
+                    <span className="text-sm font-medium text-theme-primary">Instructions</span>
+                    <span className="text-xs text-theme-tertiary">(optional - defaults to template instructions)</span>
                   </div>
                   {instructionsExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-white/60" />
+                    <ChevronUp className="w-4 h-4 text-theme-secondary" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-white/60" />
+                    <ChevronDown className="w-4 h-4 text-theme-secondary" />
                   )}
                 </button>
                 {instructionsExpanded && (
-                  <div className="p-4 border-t border-white/10">
+                  <div className="p-4 border-t border-theme">
                     <textarea
                       value={formData.custom_instructions}
                       onChange={(e) => setFormData({ ...formData, custom_instructions: e.target.value })}
                       placeholder={template?.instructions || 'Instructions will come from template...'}
                       rows={8}
-                      className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 resize-y"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-y"
                     />
                   </div>
                 )}
               </div>
 
               {template?.slug === 'training_compliance_management' && (
-                <div className="border border-pink-500/30 bg-pink-500/5 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(236,72,153,0.15)]">
+                <div className="border border-[#D37E91]/30 bg-[#D37E91]/10 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(211,126,145,0.15)]">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-sm text-pink-50/90">
-                      <p className="font-semibold text-white">Training Matrix Shortcut</p>
-                      <p className="text-xs text-pink-100/80 mt-1">
+                    <div className="text-sm text-white/90">
+                      <p className="font-semibold text-theme-primary">Training Matrix Shortcut</p>
+                      <p className="text-xs text-theme-secondary mt-1">
                         {matrixField?.help_text || 'Open the live Training Matrix in a new tab, review compliance status, then return to complete this task.'}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleOpenMatrix}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-pink-500 text-pink-300 font-medium rounded-lg transition-all duration-150 hover:bg-pink-500/15 hover:text-white shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-[#D37E91] text-[#D37E91] font-medium rounded-lg transition-all duration-150 hover:bg-[#D37E91]/20 hover:text-white shadow-[0_0_12px_rgba(211,126,145,0.35)]"
                     >
                       <span>Open Matrix</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </button>
                   </div>
                   {matrixDisplayUrl && (
-                    <p className="text-[10px] text-pink-100/60 break-all">
+                    <p className="text-[10px] text-theme-tertiary break-all">
                       {matrixDisplayUrl}
                     </p>
                   )}
@@ -1475,23 +2268,61 @@ export function TaskFromTemplateModal({
 
               {/* Scheduling Section */}
               <div className="space-y-4">
+                {/* Frequency selector */}
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Due Date *</label>
+                  <label className="block text-sm font-medium text-theme-primary mb-2">Frequency</label>
+                  <select
+                    value={frequencyOverride || template?.frequency || 'daily'}
+                    onChange={(e) => setFrequencyOverride(e.target.value)}
+                    className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="bi-annually">Bi-Annually (Every 6 months)</option>
+                    <option value="annually">Annually</option>
+                    <option value="triggered">On Demand / Ad-hoc</option>
+                  </select>
+                </div>
+
+                {frequencyOverride !== 'triggered' && (
+                <div>
+                  <label className="block text-sm font-medium text-theme-primary mb-2">Due Date *</label>
                   <input
                     type="date"
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                   />
                 </div>
+                )}
+
+                {/* Anniversary date for quarterly/bi-annually */}
+                {(['quarterly', 'bi-annually'].includes(frequencyOverride || template?.frequency || '')) && (
+                  <div>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">
+                      {frequencyOverride === 'quarterly' ? 'Quarterly' : 'Bi-Annual'} Anchor Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.anniversary_date || ''}
+                      onChange={(e) => setFormData({ ...formData, anniversary_date: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                    />
+                    <p className="text-xs text-theme-tertiary mt-1">
+                      Tasks will be scheduled {frequencyOverride === 'quarterly' ? 'every 3 months' : 'every 6 months'} from this date
+                    </p>
+                  </div>
+                )}
 
                 {/* Dayparts & Times for Daily Tasks - More Intuitive Layout */}
-                {template?.frequency === 'daily' ? (
+                {(frequencyOverride || template?.frequency) === 'daily' ? (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <label className="block text-sm font-medium text-white">
-                        Schedule Times <span className="text-gray-400 text-xs font-normal">(select dayparts and set times)</span>
+                      <label className="block text-sm font-medium text-theme-primary">
+                        Schedule Times <span className="text-theme-tertiary text-xs font-normal">(select dayparts and set times)</span>
                       </label>
                       <select
                         value=""
@@ -1505,7 +2336,7 @@ export function TaskFromTemplateModal({
                             e.target.value = ''; // Reset dropdown
                           }
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#0f1220] border border-neutral-800 text-white text-xs focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="px-3 py-1.5 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-xs focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                       >
                         <option value="">+ Add Daypart</option>
                         {availableDayparts
@@ -1532,7 +2363,7 @@ export function TaskFromTemplateModal({
                               key={daypart}
                               className={`border rounded-lg p-3 transition-all ${
                                 isSelected
-                                  ? 'border-pink-500/50 bg-pink-500/5'
+                                  ? 'border-[#D37E91]/50 bg-[#D37E91]/10'
                                   : 'border-white/10 bg-white/[0.02] hover:border-white/20'
                               }`}
                             >
@@ -1558,9 +2389,9 @@ export function TaskFromTemplateModal({
                                       });
                                     }
                                   }}
-                                  className="w-5 h-5 accent-pink-500 cursor-pointer"
+                                  className="w-5 h-5 accent-[#D37E91] cursor-pointer"
                                 />
-                                <label className="text-sm font-medium text-white capitalize flex-1 cursor-pointer" onClick={() => {
+                                <label className="text-sm font-medium text-theme-primary capitalize flex-1 cursor-pointer" onClick={() => {
                                   if (!isSelected) {
                                     setFormData({
                                       ...formData,
@@ -1572,21 +2403,19 @@ export function TaskFromTemplateModal({
                                 </label>
                                 {isSelected && (
                                   <div className="flex items-center gap-2">
-                                    <label className="text-xs text-white/60">Time:</label>
-                                    <input
-                                      type="time"
+                                    <label className="text-xs text-theme-secondary">Time:</label>
+                                    <TimePicker
                                       value={daypartEntry?.due_time || ''}
-                                      onChange={(e) => {
+                                      onChange={(value) => {
                                         // Find and update the correct daypart entry
                                         const newDayparts = formData.dayparts.map((dp) => 
                                           dp.daypart === daypart 
-                                            ? { ...dp, due_time: e.target.value }
+                                            ? { ...dp, due_time: value }
                                             : dp
                                         );
                                         setFormData({ ...formData, dayparts: newDayparts });
                                       }}
-                                      className="px-3 py-1.5 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark] text-sm"
-                                      placeholder="HH:MM"
+                                      className=""
                                     />
                                   </div>
                                 )}
@@ -1595,13 +2424,13 @@ export function TaskFromTemplateModal({
                           );
                         })
                       ) : (
-                        <p className="text-sm text-white/60 text-center py-4">
+                        <p className="text-sm text-theme-secondary text-center py-4">
                           No dayparts added yet. Use the dropdown above to add dayparts.
                         </p>
                       )}
                     </div>
                     {formData.dayparts.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-2">
+                      <p className="text-xs text-theme-tertiary mt-2">
                         ✓ {formData.dayparts.length} daypart{formData.dayparts.length !== 1 ? 's' : ''} scheduled
                       </p>
                     )}
@@ -1609,23 +2438,22 @@ export function TaskFromTemplateModal({
                 ) : (
                   /* Single Due Time for non-daily tasks */
                   <div>
-                    <label className="block text-sm font-medium text-white mb-2">Due Time</label>
-                    <input
-                      type="time"
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Due Time</label>
+                    <TimePicker
                       value={formData.due_time}
-                      onChange={(e) => setFormData({ ...formData, due_time: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 [color-scheme:dark]"
+                      onChange={(value) => setFormData({ ...formData, due_time: value })}
+                      className="w-full"
                     />
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Priority</label>
+                <label className="block text-sm font-medium text-theme-primary mb-2">Priority</label>
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -1635,43 +2463,56 @@ export function TaskFromTemplateModal({
               </div>
             </div>
 
-            {/* Asset Selection - Only show if template has repeatable_field_name (asset/equipment fields) */}
-            {allAssets.length > 0 && enabledFeatures.assetSelection && (
-              <AssetSelectionFeature
-                selectedAssets={formData.selectedAssets}
-                assets={assets}
-                sites={sites}
-                onChange={(selected) => {
-                  setFormData({ ...formData, selectedAssets: selected });
-                  // Also update tempAssetSelection to match
-                  setTempAssetSelection(selected);
-                }}
-                isExpanded={isAssetSelectionExpanded}
-                onExpandedChange={setIsAssetSelectionExpanded}
-              />
+            {/* Asset Selection - Only show if template has asset selection feature enabled */}
+            {enabledFeatures.assetSelection && (
+              <>
+                {allAssets.length > 0 ? (
+                  <AssetSelectionFeature
+                    selectedAssets={formData.selectedAssets}
+                    assets={assets}
+                    sites={sites}
+                    onChange={(selected) => {
+                      setFormData({ ...formData, selectedAssets: selected });
+                      // Also update tempAssetSelection to match
+                      setTempAssetSelection(selected);
+                    }}
+                    isExpanded={isAssetSelectionExpanded}
+                    onExpandedChange={setIsAssetSelectionExpanded}
+                  />
+                ) : (
+                  <div className="border-t border-theme pt-6">
+                    <h2 className="text-lg font-semibold text-theme-primary mb-4">Asset Selection</h2>
+                    <div className="p-4 rounded-lg border border-theme bg-gray-50 dark:bg-white/[0.03]">
+                      <p className="text-sm text-theme-secondary">
+                        {loading ? 'Loading assets...' : 'No assets found. Please ensure assets are configured for your company.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Call Point Management - Only show if template has fire_alarm_call_point field */}
             {hasCallPointField && (
-              <div className="border-t border-white/10 pt-6">
+              <div className="border-t border-theme pt-6">
                 {/* Collapsible Header */}
                 <button
                   type="button"
                   onClick={() => setIsCallPointManagementExpanded(!isCallPointManagementExpanded)}
                   className="w-full flex items-center justify-between mb-4 text-left hover:opacity-80 transition-opacity"
                 >
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-theme-primary">
                     Fire Alarm Call Points
                     {callPoints.length > 0 && (
-                      <span className="ml-2 text-sm font-normal text-pink-400">
+                      <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
                         ({callPoints.length} configured)
                       </span>
                     )}
                   </h2>
                   {isCallPointManagementExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-white/60" />
+                    <ChevronUp className="w-5 h-5 text-theme-secondary" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-white/60" />
+                    <ChevronDown className="w-5 h-5 text-theme-secondary" />
                   )}
                 </button>
                 
@@ -1680,15 +2521,15 @@ export function TaskFromTemplateModal({
                   <div className="space-y-4">
                     {/* Existing Call Points */}
                     {callPoints.length > 0 && (
-                      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                        <h3 className="text-md font-semibold text-white mb-3">Existing Call Points</h3>
+                      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-4">
+                        <h3 className="text-md font-semibold text-theme-primary mb-3">Existing Call Points</h3>
                         <div className="space-y-2">
                           {callPoints.map((cp) => (
-                            <div key={cp.id} className="flex items-center justify-between bg-[#0f1220] border border-neutral-800 rounded-lg p-3">
+ <div key={cp.id} className="flex items-center justify-between bg-theme-surface ] border border-theme rounded-lg p-3">
                               <div>
-                                <span className="text-white text-sm font-medium">{cp.label}</span>
+                                <span className="text-theme-primary text-sm font-medium">{cp.label}</span>
                                 {cp.location && cp.location !== cp.label && (
-                                  <span className="text-gray-400 text-xs ml-2">({cp.location})</span>
+                                  <span className="text-theme-tertiary text-xs ml-2">({cp.location})</span>
                                 )}
                               </div>
                               <button
@@ -1722,10 +2563,10 @@ export function TaskFromTemplateModal({
                     
                     {/* Add New Call Point */}
                     <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                      <h3 className="text-md font-semibold text-white mb-3">Add New Call Point</h3>
+                      <h3 className="text-md font-semibold text-theme-primary mb-3">Add New Call Point</h3>
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-sm font-medium text-white mb-2">
+                          <label className="block text-sm font-medium text-theme-primary mb-2">
                             Call Point Name <span className="text-red-400">*</span>
                           </label>
                           <input
@@ -1733,11 +2574,11 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.name}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, name: e.target.value })}
                             placeholder="e.g., Call Point 1 - Front Entrance"
-                            className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-white mb-2">
+                          <label className="block text-sm font-medium text-theme-primary mb-2">
                             Location (Optional)
                           </label>
                           <input
@@ -1745,7 +2586,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.location}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, location: e.target.value })}
                             placeholder="e.g., Front Entrance, Kitchen, Bar Area"
-                            className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <button
@@ -1789,11 +2630,11 @@ export function TaskFromTemplateModal({
                             }
                           }}
                           disabled={!newCallPoint.name.trim()}
-                          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                         >
                           Add Call Point
                         </button>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-theme-tertiary">
                           Add all fire alarm call points for this venue. These will appear in the dropdown when creating tasks from this template.
                         </p>
                       </div>
@@ -1833,6 +2674,7 @@ export function TaskFromTemplateModal({
                   contractorType={template?.contractor_type}
                   warnThreshold={thresholds.warnThreshold}
                   failThreshold={thresholds.failThreshold}
+                  isTemplateMode={true}
                 />
               );
             })()}
@@ -1858,8 +2700,8 @@ export function TaskFromTemplateModal({
             )}
 
             {enabledFeatures.requiresSOP && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">SOP Upload</h2>
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-4">SOP Upload</h2>
                 <div className="space-y-3">
                   <label className="block">
                     <input
@@ -1869,20 +2711,20 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="sop-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer">
+                    <span className="inline-block px-4 py-2 bg-[#D37E91]/10 dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded-lg transition-all duration-200 cursor-pointer font-medium">
                       Upload SOP Document
                     </span>
                   </label>
                   {formData.sopUploads.length > 0 && (
                     <div className="space-y-2">
                       {formData.sopUploads.map((sop, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-3">
                           <div className="flex items-center gap-3">
-                            <span className="text-white text-sm">{sop.fileName}</span>
-                            <span className="text-gray-400 text-xs">({formatFileSize(sop.fileSize)})</span>
+                            <span className="text-theme-primary text-sm">{sop.fileName}</span>
+                            <span className="text-theme-tertiary text-xs">({formatFileSize(sop.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 text-sm">
+                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
                               View
                             </a>
                             <button
@@ -1902,8 +2744,8 @@ export function TaskFromTemplateModal({
             )}
 
             {enabledFeatures.requiresRiskAssessment && (
-              <div className="border-t border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Risk Assessment Upload</h2>
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-4">Risk Assessment Upload</h2>
                 <div className="space-y-3">
                   <label className="block">
                     <input
@@ -1913,26 +2755,26 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer">
+                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded transition-all duration-200 cursor-pointer font-medium">
                       Upload Risk Assessment
                     </span>
                   </label>
                   {formData.raUploads.length > 0 && (
                     <div className="space-y-2">
                       {formData.raUploads.map((ra, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-3">
                           <div className="flex items-center gap-3">
-                            <span className="text-white text-sm">{ra.fileName}</span>
-                            <span className="text-gray-400 text-xs">({formatFileSize(ra.fileSize)})</span>
+                            <span className="text-theme-primary text-sm">{ra.fileName}</span>
+                            <span className="text-theme-tertiary text-xs">({formatFileSize(ra.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 text-sm">
+                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
                               View
                             </a>
                             <button
                               type="button"
                               onClick={() => removeUpload('ra', index)}
-                              className="px-3 py-1 text-red-400 hover:bg-red-500/10 rounded"
+                              className="px-3 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
                             >
                               Remove
                             </button>
@@ -1947,7 +2789,7 @@ export function TaskFromTemplateModal({
 
             {/* Document Upload Feature - Only show if enabled in template features */}
             {enabledFeatures.documentUpload && (
-              <div className="border-t border-white/10 pt-6">
+              <div className="border-t border-theme pt-6">
                 <DocumentUploadFeature
                   uploads={formData.documentUploads}
                   onUpload={(uploads) => setFormData({ ...formData, documentUploads: uploads })}
@@ -1966,15 +2808,45 @@ export function TaskFromTemplateModal({
               </div>
             )}
 
+            {/* Custom Fields Preview - Show for custom fields templates */}
+            {template?.use_custom_fields && templateFields.length > 0 && (
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-3">
+                  Custom Form Fields
+                  <span className="ml-2 text-sm font-normal text-theme-tertiary">
+                    ({templateFields.filter((f: any) => !f.parent_field_id).length} fields)
+                  </span>
+                </h2>
+                <p className="text-xs text-theme-secondary mb-3">
+                  These fields will be available when completing the task:
+                </p>
+                <div className="space-y-1.5">
+                  {templateFields
+                    .filter((f: any) => !f.parent_field_id)
+                    .sort((a: any, b: any) => a.field_order - b.field_order)
+                    .map((field: any) => (
+                      <div key={field.id} className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg">
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-theme-muted text-theme-secondary uppercase tracking-wide">
+                          {(field.field_type || 'text').replace(/_/g, ' ')}
+                        </span>
+                        <span className="text-sm text-theme-primary">{field.label}</span>
+                        {field.required && <span className="text-red-500 text-xs">*</span>}
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            )}
+
             {/* Library Selections - Only show if enabled in template features */}
             {enabledFeatures.libraryDropdown && (
             <div className="border-t border-white/10 pt-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Library Selections</h2>
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Library Selections</h2>
               
               {/* Step 1: Select a library type */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-2">
-                  <label className="block text-sm font-medium text-white">Select a Library</label>
+                  <label className="block text-sm font-medium text-theme-primary">Select a Library</label>
                   <button
                     type="button"
                     onClick={async () => {
@@ -1993,7 +2865,7 @@ export function TaskFromTemplateModal({
                         toast.error('Company ID not available');
                       }
                     }}
-                    className="px-3 py-1 text-xs text-pink-400 hover:text-pink-300 border border-pink-500/30 rounded hover:bg-pink-500/10 transition-colors"
+                    className="px-3 py-1 text-xs text-[#D37E91] hover:text-[#D37E91] border border-[#D37E91]/30 rounded hover:bg-[#D37E91]/15 transition-colors"
                     title="Refresh library data from database"
                   >
                     Refresh
@@ -2005,7 +2877,7 @@ export function TaskFromTemplateModal({
                     setSelectedLibraryType(e.target.value);
                     setTempLibrarySelection([]); // Reset temp selection when changing library
                   }}
-                  className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="">-- Select a library --</option>
                   {libraryData.ppe.length > 0 && <option value="ppe">PPE Library</option>}
@@ -2019,7 +2891,7 @@ export function TaskFromTemplateModal({
               {/* Step 2: Select items from the chosen library */}
               {selectedLibraryType && (
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                  <h3 className="text-md font-semibold text-white mb-3 capitalize">
+                  <h3 className="text-md font-semibold text-theme-primary mb-3 capitalize">
                     Select Items from {selectedLibraryType.replace('_', ' ')} Library
                   </h3>
                   
@@ -2044,7 +2916,7 @@ export function TaskFromTemplateModal({
 
                     return (
                       <>
-                        <div className="max-h-[300px] overflow-y-auto border border-neutral-800 rounded-lg bg-[#0f1220] p-3">
+                        <div className="max-h-[300px] overflow-y-auto border border-theme rounded-lg bg-theme-button p-3">
                           <div className="space-y-2">
                             {libraryItems.map((item) => {
                               const itemId = item.id;
@@ -2064,19 +2936,19 @@ export function TaskFromTemplateModal({
                                         setTempLibrarySelection(tempLibrarySelection.filter(id => id !== itemId));
                                       }
                                     }}
-                                    className="w-4 h-4 accent-pink-500 cursor-pointer"
+                                    className="w-4 h-4 accent-[#D37E91] cursor-pointer"
                                   />
-                                  <span className="text-white text-sm flex-1">{getItemName(item)}</span>
+                                  <span className="text-theme-primary text-sm flex-1">{getItemName(item)}</span>
                                 </label>
                               );
                             })}
                           </div>
                         </div>
                         {libraryItems.length === 0 && (
-                          <p className="text-xs text-gray-400 mt-1 mb-3">No items available in this library</p>
+                          <p className="text-xs text-theme-tertiary mt-1 mb-3">No items available in this library</p>
                         )}
                         {libraryItems.length > 0 && (
-                          <p className="text-xs text-gray-400 mt-1 mb-3">
+                          <p className="text-xs text-theme-tertiary mt-1 mb-3">
                             {tempLibrarySelection.length} item(s) selected
                           </p>
                         )}
@@ -2099,7 +2971,7 @@ export function TaskFromTemplateModal({
                               toast.success(`Added ${tempLibrarySelection.length} item(s) from ${selectedLibraryType.replace('_', ' ')} library`);
                             }}
                             disabled={tempLibrarySelection.length === 0}
-                            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                           >
                             Add to Task
                           </button>
@@ -2109,7 +2981,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('');
                               setTempLibrarySelection([]);
                             }}
-                            className="px-4 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors"
+                            className="px-4 py-2 border border-white/10 rounded text-theme-tertiary hover:bg-white/10 transition-colors"
                           >
                             Cancel
                           </button>
@@ -2128,19 +3000,19 @@ export function TaskFromTemplateModal({
                   formData.selectedLibraries.drinks.length > 0 ||
                   formData.selectedLibraries.disposables.length > 0) && (
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                  <h3 className="text-md font-semibold text-white mb-3">Selected Library Items</h3>
+                  <h3 className="text-md font-semibold text-theme-primary mb-3">Selected Library Items</h3>
                   <div className="space-y-3">
                     {formData.selectedLibraries.ppe.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">PPE Library ({formData.selectedLibraries.ppe.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">PPE Library ({formData.selectedLibraries.ppe.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('ppe');
                               setTempLibrarySelection(formData.selectedLibraries.ppe); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit PPE Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2152,7 +3024,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2179,14 +3051,14 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.chemicals.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Chemicals Library ({formData.selectedLibraries.chemicals.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Chemicals Library ({formData.selectedLibraries.chemicals.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('chemicals');
                               setTempLibrarySelection(formData.selectedLibraries.chemicals); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Chemicals Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2198,7 +3070,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.product_name}</span>
+                                <span className="text-theme-primary text-sm">{item.product_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2225,14 +3097,14 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.equipment.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Equipment Library ({formData.selectedLibraries.equipment.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Equipment Library ({formData.selectedLibraries.equipment.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('equipment');
                               setTempLibrarySelection(formData.selectedLibraries.equipment); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Equipment Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2244,7 +3116,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.equipment_name}</span>
+                                <span className="text-theme-primary text-sm">{item.equipment_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2270,14 +3142,14 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.ingredients.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Ingredients Library ({formData.selectedLibraries.ingredients.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Ingredients Library ({formData.selectedLibraries.ingredients.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('ingredients');
                               setTempLibrarySelection(formData.selectedLibraries.ingredients); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Ingredients Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2289,7 +3161,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.ingredient_name}</span>
+                                <span className="text-theme-primary text-sm">{item.ingredient_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2315,14 +3187,14 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.drinks.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Drinks Library ({formData.selectedLibraries.drinks.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Drinks Library ({formData.selectedLibraries.drinks.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('drinks');
                               setTempLibrarySelection(formData.selectedLibraries.drinks); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Drinks Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2334,7 +3206,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2360,14 +3232,14 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.disposables.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Disposables Library ({formData.selectedLibraries.disposables.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Disposables Library ({formData.selectedLibraries.disposables.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedLibraryType('disposables');
                               setTempLibrarySelection(formData.selectedLibraries.disposables); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Disposables Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2379,7 +3251,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2410,13 +3282,13 @@ export function TaskFromTemplateModal({
 
             {/* General Notes */}
             <div className="border-t border-white/10 pt-6">
-              <label className="block text-sm font-medium text-white mb-2">Additional Notes</label>
+              <label className="block text-sm font-medium text-theme-primary mb-2">Additional Notes</label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Add any additional notes for this task..."
                 rows={3}
-                className="w-full px-4 py-2 rounded-lg bg-[#0f1220] border border-neutral-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               />
             </div>
           </div>
@@ -2426,16 +3298,18 @@ export function TaskFromTemplateModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors font-medium"
+              className="px-5 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-muted transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+              className="px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
-              {saving ? (existingTask ? 'Updating...' : 'Creating...') : (existingTask ? 'Update Task' : 'Create Task')}
+              {saving 
+                ? (existingTask || existingSiteChecklist ? 'Saving...' : 'Creating...') 
+                : (existingTask || existingSiteChecklist ? (existingSiteChecklist ? 'Save Configuration' : 'Update Task') : 'Create Task')}
             </button>
           </div>
         </form>

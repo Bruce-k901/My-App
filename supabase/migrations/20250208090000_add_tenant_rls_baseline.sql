@@ -42,35 +42,44 @@ $$;
 
 -- ----------------------------------------------------------------------------
 -- Tenant-Scoped Table Policies
+-- Note: Each section will be skipped if the table doesn't exist yet
 -- ----------------------------------------------------------------------------
 
 -- Companies -----------------------------------------------------------------
-alter table public.companies enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+    alter table public.companies enable row level security;
 
-drop policy if exists tenant_select_companies on public.companies;
-create policy tenant_select_companies
-  on public.companies
-  for select
-  using (
-    public.is_service_role()
-    or matches_current_tenant(id)
-  );
+    drop policy if exists tenant_select_companies on public.companies;
+    create policy tenant_select_companies
+      on public.companies
+      for select
+      using (
+        public.is_service_role()
+        or matches_current_tenant(id)
+      );
 
-drop policy if exists tenant_modify_companies on public.companies;
-create policy tenant_modify_companies
-  on public.companies
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(id)
-  );
+    drop policy if exists tenant_modify_companies on public.companies;
+    create policy tenant_modify_companies
+      on public.companies
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(id)
+      );
+  END IF;
+END $$;
 
 -- Profiles ------------------------------------------------------------------
-alter table public.profiles enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+    alter table public.profiles enable row level security;
 
 drop policy if exists tenant_select_profiles on public.profiles;
 create policy tenant_select_profiles
@@ -82,23 +91,28 @@ create policy tenant_select_profiles
     or id = auth.uid()
   );
 
-drop policy if exists tenant_modify_profiles on public.profiles;
-create policy tenant_modify_profiles
-  on public.profiles
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-    or id = auth.uid()
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-    or id = auth.uid()
-  );
+    drop policy if exists tenant_modify_profiles on public.profiles;
+    create policy tenant_modify_profiles
+      on public.profiles
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+        or id = auth.uid()
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+        or id = auth.uid()
+      );
+  END IF;
+END $$;
 
 -- Sites ---------------------------------------------------------------------
-alter table public.sites enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+    alter table public.sites enable row level security;
 
 drop policy if exists tenant_select_sites on public.sites;
 create policy tenant_select_sites
@@ -109,21 +123,26 @@ create policy tenant_select_sites
     or matches_current_tenant(company_id)
   );
 
-drop policy if exists tenant_modify_sites on public.sites;
-create policy tenant_modify_sites
-  on public.sites
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_sites on public.sites;
+    create policy tenant_modify_sites
+      on public.sites
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Site Memberships ----------------------------------------------------------
-alter table public.site_memberships enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_memberships') THEN
+    alter table public.site_memberships enable row level security;
 
 drop policy if exists tenant_select_site_memberships on public.site_memberships;
 create policy tenant_select_site_memberships
@@ -139,31 +158,36 @@ create policy tenant_select_site_memberships
     )
   );
 
-drop policy if exists tenant_modify_site_memberships on public.site_memberships;
-create policy tenant_modify_site_memberships
-  on public.site_memberships
-  for all
-  using (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = site_memberships.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = site_memberships.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  );
+    drop policy if exists tenant_modify_site_memberships on public.site_memberships;
+    create policy tenant_modify_site_memberships
+      on public.site_memberships
+      for all
+      using (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = site_memberships.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      )
+      with check (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = site_memberships.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Site Members --------------------------------------------------------------
-alter table public.site_members enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_members') THEN
+    alter table public.site_members enable row level security;
 
 drop policy if exists tenant_select_site_members on public.site_members;
 create policy tenant_select_site_members
@@ -179,31 +203,36 @@ create policy tenant_select_site_members
     )
   );
 
-drop policy if exists tenant_modify_site_members on public.site_members;
-create policy tenant_modify_site_members
-  on public.site_members
-  for all
-  using (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = site_members.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = site_members.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  );
+    drop policy if exists tenant_modify_site_members on public.site_members;
+    create policy tenant_modify_site_members
+      on public.site_members
+      for all
+      using (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = site_members.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      )
+      with check (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = site_members.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Site Profiles -------------------------------------------------------------
-alter table public.site_profiles enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_profiles') THEN
+    alter table public.site_profiles enable row level security;
 
 drop policy if exists tenant_select_site_profiles on public.site_profiles;
 create policy tenant_select_site_profiles
@@ -214,21 +243,26 @@ create policy tenant_select_site_profiles
     or matches_current_tenant(company_id)
   );
 
-drop policy if exists tenant_modify_site_profiles on public.site_profiles;
-create policy tenant_modify_site_profiles
-  on public.site_profiles
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_site_profiles on public.site_profiles;
+    create policy tenant_modify_site_profiles
+      on public.site_profiles
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Task Templates ------------------------------------------------------------
-alter table public.task_templates enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    alter table public.task_templates enable row level security;
 
 drop policy if exists tenant_select_task_templates on public.task_templates;
 create policy tenant_select_task_templates
@@ -240,21 +274,26 @@ create policy tenant_select_task_templates
     or company_id is null
   );
 
-drop policy if exists tenant_modify_task_templates on public.task_templates;
-create policy tenant_modify_task_templates
-  on public.task_templates
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_task_templates on public.task_templates;
+    create policy tenant_modify_task_templates
+      on public.task_templates
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Tasks ---------------------------------------------------------------------
-alter table public.tasks enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'tasks') THEN
+    alter table public.tasks enable row level security;
 
 drop policy if exists tenant_select_tasks on public.tasks;
 create policy tenant_select_tasks
@@ -265,21 +304,26 @@ create policy tenant_select_tasks
     or matches_current_tenant(company_id)
   );
 
-drop policy if exists tenant_modify_tasks on public.tasks;
-create policy tenant_modify_tasks
-  on public.tasks
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_tasks on public.tasks;
+    create policy tenant_modify_tasks
+      on public.tasks
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Temperature Logs ----------------------------------------------------------
-alter table public.temperature_logs enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'temperature_logs') THEN
+    alter table public.temperature_logs enable row level security;
 
 drop policy if exists tenant_select_temperature_logs on public.temperature_logs;
 create policy tenant_select_temperature_logs
@@ -290,21 +334,26 @@ create policy tenant_select_temperature_logs
     or matches_current_tenant(company_id)
   );
 
-drop policy if exists tenant_modify_temperature_logs on public.temperature_logs;
-create policy tenant_modify_temperature_logs
-  on public.temperature_logs
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_temperature_logs on public.temperature_logs;
+    create policy tenant_modify_temperature_logs
+      on public.temperature_logs
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Incidents -----------------------------------------------------------------
-alter table public.incidents enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'incidents') THEN
+    alter table public.incidents enable row level security;
 
 drop policy if exists tenant_select_incidents on public.incidents;
 create policy tenant_select_incidents
@@ -320,31 +369,36 @@ create policy tenant_select_incidents
     )
   );
 
-drop policy if exists tenant_modify_incidents on public.incidents;
-create policy tenant_modify_incidents
-  on public.incidents
-  for all
-  using (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = incidents.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = incidents.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  );
+    drop policy if exists tenant_modify_incidents on public.incidents;
+    create policy tenant_modify_incidents
+      on public.incidents
+      for all
+      using (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = incidents.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      )
+      with check (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = incidents.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Global Documents ----------------------------------------------------------
-alter table public.global_documents enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'global_documents') THEN
+    alter table public.global_documents enable row level security;
 
 drop policy if exists tenant_select_global_documents on public.global_documents;
 create policy tenant_select_global_documents
@@ -356,21 +410,26 @@ create policy tenant_select_global_documents
     or company_id is null
   );
 
-drop policy if exists tenant_modify_global_documents on public.global_documents;
-create policy tenant_modify_global_documents
-  on public.global_documents
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_global_documents on public.global_documents;
+    create policy tenant_modify_global_documents
+      on public.global_documents
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- Training Records ----------------------------------------------------------
-alter table public.training_records enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'training_records') THEN
+    alter table public.training_records enable row level security;
 
 drop policy if exists tenant_select_training_records on public.training_records;
 create policy tenant_select_training_records
@@ -389,31 +448,36 @@ create policy tenant_select_training_records
     )
   );
 
-drop policy if exists tenant_modify_training_records on public.training_records;
-create policy tenant_modify_training_records
-  on public.training_records
-  for all
-  using (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.profiles p
-      where p.id = training_records.user_id
-        and matches_current_tenant(p.company_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.profiles p
-      where p.id = training_records.user_id
-        and matches_current_tenant(p.company_id)
-    )
-  );
+    drop policy if exists tenant_modify_training_records on public.training_records;
+    create policy tenant_modify_training_records
+      on public.training_records
+      for all
+      using (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.profiles p
+          where p.id = training_records.user_id
+            and matches_current_tenant(p.company_id)
+        )
+      )
+      with check (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.profiles p
+          where p.id = training_records.user_id
+            and matches_current_tenant(p.company_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Licences ------------------------------------------------------------------
-alter table public.licences enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'licences') THEN
+    alter table public.licences enable row level security;
 
 drop policy if exists tenant_select_licences on public.licences;
 create policy tenant_select_licences
@@ -429,31 +493,36 @@ create policy tenant_select_licences
     )
   );
 
-drop policy if exists tenant_modify_licences on public.licences;
-create policy tenant_modify_licences
-  on public.licences
-  for all
-  using (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = licences.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or exists (
-      select 1
-      from public.sites s
-      where s.id = licences.site_id
-        and matches_current_tenant(s.company_id)
-    )
-  );
+    drop policy if exists tenant_modify_licences on public.licences;
+    create policy tenant_modify_licences
+      on public.licences
+      for all
+      using (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = licences.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      )
+      with check (
+        public.is_service_role()
+        or exists (
+          select 1
+          from public.sites s
+          where s.id = licences.site_id
+            and matches_current_tenant(s.company_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Temperature Breach Actions (if present) -----------------------------------
-alter table if exists public.temperature_breach_actions enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'temperature_breach_actions') THEN
+    alter table public.temperature_breach_actions enable row level security;
 
 drop policy if exists tenant_select_temperature_breach_actions on public.temperature_breach_actions;
 create policy tenant_select_temperature_breach_actions
@@ -464,18 +533,20 @@ create policy tenant_select_temperature_breach_actions
     or matches_current_tenant(company_id)
   );
 
-drop policy if exists tenant_modify_temperature_breach_actions on public.temperature_breach_actions;
-create policy tenant_modify_temperature_breach_actions
-  on public.temperature_breach_actions
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  )
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-  );
+    drop policy if exists tenant_modify_temperature_breach_actions on public.temperature_breach_actions;
+    create policy tenant_modify_temperature_breach_actions
+      on public.temperature_breach_actions
+      for all
+      using (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      )
+      with check (
+        public.is_service_role()
+        or matches_current_tenant(company_id)
+      );
+  END IF;
+END $$;
 
 -- ----------------------------------------------------------------------------
 -- End of migration

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, Save, Calendar, Clock, Thermometer, Camera } from 'lucide-react'
+import { ChevronLeft, Save, Calendar, Clock, Thermometer, Camera } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
 
 const DAYPARTS = [
@@ -103,22 +103,22 @@ export default function Card1ConfigPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="text-neutral-400 hover:text-white transition-all"
+          className="text-theme-tertiary hover:text-white transition-all"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600/20 to-blue-600/20 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-module-fg/[0.25] to-blue-600/20 bg-clip-text text-transparent">
             Configure: Fridge & Freezer Temperature Check
           </h1>
-          <p className="text-neutral-400 mt-1">Card 1 - Cold Hold Compliance</p>
+          <p className="text-theme-tertiary mt-1">Card 1 - Cold Hold Compliance</p>
         </div>
       </div>
 
       {/* Frequency Selection */}
-      <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-neutral-400" />
+      <div className="bg-neutral-800/50 border border-theme rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-theme-tertiary" />
           Frequency
         </h2>
         <div className="flex gap-2">
@@ -128,8 +128,8 @@ export default function Card1ConfigPage() {
               onClick={() => setFrequency(freq)}
               className={`px-4 py-2 rounded-lg transition-all ${
                 frequency === freq
-                  ? 'bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white'
-                  : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                  ? 'bg-gradient-to-r from-module-fg/[0.70] to-assetly-dark/70 text-white'
+                  : 'bg-neutral-700 text-theme-tertiary hover:bg-neutral-600'
               }`}
             >
               {freq.charAt(0).toUpperCase() + freq.slice(1)}
@@ -139,9 +139,9 @@ export default function Card1ConfigPage() {
       </div>
 
       {/* Days of Week Selection */}
-      <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-neutral-400" />
+      <div className="bg-neutral-800/50 border border-theme rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-theme-tertiary" />
           Days of Week
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -151,8 +151,8 @@ export default function Card1ConfigPage() {
               onClick={() => toggleDay(day.value)}
               className={`px-3 py-2 rounded-lg transition-all ${
                 selectedDays.includes(day.value)
-                  ? 'bg-pink-600/70 text-white'
-                  : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                  ? 'bg-module-fg/[0.70] text-white'
+                  : 'bg-neutral-700 text-theme-tertiary hover:bg-neutral-600'
               }`}
             >
               {day.label}
@@ -162,19 +162,19 @@ export default function Card1ConfigPage() {
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => setSelectedDays(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             Weekdays
           </button>
           <button
             onClick={() => setSelectedDays(['saturday', 'sunday'])}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             Weekends
           </button>
           <button
             onClick={() => setSelectedDays(DAYS_OF_WEEK.map(d => d.value))}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             All Days
           </button>
@@ -182,14 +182,14 @@ export default function Card1ConfigPage() {
       </div>
 
       {/* Dayparts & Times */}
-      <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Clock className="h-5 w-5 text-neutral-400" />
+      <div className="bg-neutral-800/50 border border-theme rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Clock className="h-5 w-5 text-theme-tertiary" />
           Dayparts & Times
         </h2>
         <div className="space-y-4">
           {DAYPARTS.map(daypart => (
-            <div key={daypart.value} className="border border-neutral-700 rounded-lg p-4">
+            <div key={daypart.value} className="border border-theme rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -198,13 +198,13 @@ export default function Card1ConfigPage() {
                     onChange={() => toggleDaypart(daypart.value)}
                     className="rounded border-neutral-600"
                   />
-                  <span className="text-white font-medium">{daypart.label}</span>
+                  <span className="text-theme-primary font-medium">{daypart.label}</span>
                 </label>
                 {selectedDayparts.includes(daypart.value) && (
                   <select
                     value={daypartTimes[daypart.value] || daypart.times[0]}
                     onChange={(e) => setDaypartTime(daypart.value, e.target.value)}
-                    className="px-3 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:border-pink-400"
+                    className="px-3 py-1 bg-neutral-700 border border-neutral-600 rounded text-theme-primary text-sm focus:outline-none focus:border-module-fg"
                   >
                     {daypart.times.map(time => (
                       <option key={time} value={time}>{time}</option>
@@ -218,8 +218,8 @@ export default function Card1ConfigPage() {
       </div>
 
       {/* Month/Year Selection */}
-      <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Month/Year</h2>
+      <div className="bg-neutral-800/50 border border-theme rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">Month/Year</h2>
         <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
           {MONTHS.map(month => (
             <button
@@ -227,8 +227,8 @@ export default function Card1ConfigPage() {
               onClick={() => toggleMonth(month.value)}
               className={`px-3 py-2 rounded-lg transition-all text-sm ${
                 selectedMonths.includes(month.value)
-                  ? 'bg-pink-600/70 text-white'
-                  : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                  ? 'bg-module-fg/[0.70] text-white'
+                  : 'bg-neutral-700 text-theme-tertiary hover:bg-neutral-600'
               }`}
             >
               {month.label}
@@ -238,19 +238,19 @@ export default function Card1ConfigPage() {
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => setSelectedMonths(MONTHS.map(m => m.value))}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             Year-round
           </button>
           <button
             onClick={() => setSelectedMonths(['may', 'jun', 'jul', 'aug', 'sep'])}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             Summer (May-Sept)
           </button>
           <button
             onClick={() => setSelectedMonths(['oct', 'nov', 'dec', 'jan', 'feb', 'mar', 'apr'])}
-            className="text-sm text-neutral-400 hover:text-neutral-300"
+            className="text-sm text-theme-tertiary hover:text-theme-tertiary"
           >
             Winter (Oct-Apr)
           </button>
@@ -258,9 +258,9 @@ export default function Card1ConfigPage() {
       </div>
 
       {/* Repeatable Items */}
-      <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Thermometer className="h-5 w-5 text-neutral-400" />
+      <div className="bg-neutral-800/50 border border-theme rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Thermometer className="h-5 w-5 text-theme-tertiary" />
           Fridge Names (Repeatable)
         </h2>
         <div className="space-y-2">
@@ -270,7 +270,7 @@ export default function Card1ConfigPage() {
                 type="text"
                 value={item}
                 onChange={(e) => updateRepeatableItem(index, e.target.value)}
-                className="flex-1 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-white placeholder-neutral-500 focus:outline-none focus:border-pink-400"
+                className="flex-1 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-module-fg"
                 placeholder="Fridge name"
               />
               <button
@@ -284,7 +284,7 @@ export default function Card1ConfigPage() {
         </div>
         <button
           onClick={addRepeatableItem}
-          className="mt-4 px-4 py-2 bg-neutral-700 text-neutral-300 rounded-lg hover:bg-neutral-600 transition-all"
+          className="mt-4 px-4 py-2 bg-neutral-700 text-theme-tertiary rounded-lg hover:bg-neutral-600 transition-all"
         >
           + Add Fridge
         </button>
@@ -294,7 +294,7 @@ export default function Card1ConfigPage() {
       <div className="flex justify-end gap-3">
         <button
           onClick={() => router.back()}
-          className="px-6 py-3 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600 transition-all"
+          className="px-6 py-3 bg-neutral-700 text-theme-primary rounded-lg hover:bg-neutral-600 transition-all"
         >
           Cancel
         </button>
@@ -310,7 +310,7 @@ export default function Card1ConfigPage() {
             })
             // TODO: Save to database
           }}
-          className="px-6 py-3 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-module-fg/[0.70] to-assetly-dark/70 text-white rounded-lg hover:shadow-lg hover:shadow-module-fg/[0.30] transition-all font-medium flex items-center gap-2"
         >
           <Save className="h-5 w-5" />
           Save Configuration

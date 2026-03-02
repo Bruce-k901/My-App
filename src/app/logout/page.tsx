@@ -13,7 +13,7 @@ export default function LogoutPage() {
           You’ve been logged out
         </h1>
 
-        <p className="text-center text-gray-400 mb-8 text-sm">
+        <p className="text-center text-theme-tertiary mb-8 text-sm">
           You have been signed out successfully.
         </p>
 
@@ -24,11 +24,11 @@ export default function LogoutPage() {
         <Link href="/">
           <Button variant="ghost" fullWidth className="mt-4">Back to home</Button>
         </Link>
-        <p className="mt-8 text-center text-xs text-gray-500">
+        <p className="mt-8 text-center text-xs text-theme-tertiary">
           By continuing, you agree to our {""}
-          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+          <Link href="/terms" className="underline underline-offset-4 hover:text-theme-tertiary">Terms</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-theme-tertiary">Privacy Policy</Link>.
         </p>
       </GlassCard>
     </AuthLayout>

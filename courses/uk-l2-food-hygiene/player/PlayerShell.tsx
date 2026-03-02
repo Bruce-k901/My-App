@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/ui/icons';
 import { MultiChoice } from '../components/MultiChoice';
 import { OnboardingForm } from '../components/OnboardingForm';
 import { PageShell as LayoutShell } from '../components/PageShell';
@@ -12,6 +12,8 @@ import { SingleChoice } from '../components/SingleChoice';
 import { StickyFooterNav } from '../components/StickyFooterNav';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import { canAccessFinalAssessment, getCurrentAssignment } from '@/lib/training/courseAccess';
+import { useCourseProgressStore } from '@/stores/courseProgressStore';
 import type { CourseManifest } from '../schemas/course';
 import type { ModuleManifest } from '../schemas/module';
 import type { Page } from '../schemas/page';
@@ -54,8 +56,21 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { learner, moduleIndex, pageIndex, scores, toPage, setLearner, setModuleScore, setFinalScore } =
     useAttemptStore();
+  const {
+    initialize: initProgressStore,
+    toPage: progressToPage,
+    setModuleScore: progressSetModuleScore,
+    syncProgress,
+  } = useCourseProgressStore();
   const { profile, user } = useAppContext();
   const [homeSiteName, setHomeSiteName] = useState('');
+  const [assignmentCheck, setAssignmentCheck] = useState<{
+    checking: boolean;
+    allowed: boolean;
+    reason?: string;
+    assignmentId?: string;
+  } | null>(null);
+  const [progressStoreInitialized, setProgressStoreInitialized] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -163,9 +178,22 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
     };
   }, [modules, moduleIndex, pageIndex]);
 
-  const persist = useCallback(() => {
+  // Sync progress to database when position changes
+  useEffect(() => {
+    if (!progressStoreInitialized || !currentModule || !currentPage) return;
+
+    const moduleId = currentModule.manifest.id;
+    const pageId = currentPage.id || `page-${pageIndex}`;
+
+    // Sync to database
+    void progressToPage(moduleIndex, pageIndex, moduleId, pageId);
+  }, [moduleIndex, pageIndex, progressStoreInitialized, currentModule, currentPage, progressToPage]);
+
+  const persist = useCallback(async () => {
     try {
       const snapshot = useAttemptStore.getState();
+      
+      // Save to localStorage for backward compatibility
       localStorage.setItem(
         ATTEMPT_STORAGE_KEY,
         JSON.stringify({
@@ -175,12 +203,19 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
           scores: snapshot.scores,
         })
       );
-      toast.success('Progress saved');
+
+      // Sync to database if store is initialized
+      if (progressStoreInitialized) {
+        await syncProgress();
+        toast.success('Progress saved');
+      } else {
+        toast.success('Progress saved');
+      }
     } catch (error) {
       console.error('Failed to persist attempt', error);
       toast.error('Could not save progress');
     }
-  }, []);
+  }, [progressStoreInitialized, syncProgress]);
 
   useEffect(() => {
     return () => {
@@ -190,6 +225,42 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
     };
   }, []);
 
+  // Initialize database-backed progress store
+  useEffect(() => {
+    if (!profile?.id || !course.course_id || progressStoreInitialized) return;
+
+    void (async () => {
+      try {
+        // Get course ID from training_courses table
+        const { data: courseData } = await supabase
+          .from('training_courses')
+          .select('id, company_id')
+          .or(`code.eq.FS-L2,course_id.eq.${course.course_id}`)
+          .maybeSingle();
+
+        if (courseData) {
+          // Check for assignment
+          const assignment = await getCurrentAssignment(profile.id, courseData.id);
+
+          if (assignment?.assignmentId && assignment.companyId) {
+            // Initialize database store
+            await initProgressStore({
+              assignmentId: assignment.assignmentId,
+              courseId: courseData.id,
+              profileId: profile.id,
+              companyId: assignment.companyId,
+              learner: learner || undefined,
+            });
+            setProgressStoreInitialized(true);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize progress store:', error);
+      }
+    })();
+  }, [profile?.id, course.course_id, progressStoreInitialized, initProgressStore, learner]);
+
+  // Load from localStorage for backward compatibility
   useEffect(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem(ATTEMPT_STORAGE_KEY) : null;
     if (saved) {
@@ -213,8 +284,13 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
   }, []);
 
   useEffect(() => {
-    setTitle(currentPage?.type === 'content' ? currentPage.title : undefined);
-  }, [currentModule?.manifest.id, pageIndex, currentPage?.type, currentPage?.title]);
+    // Type guard: only access title when page type is 'content'
+    if (currentPage?.type === 'content') {
+      setTitle(currentPage.title);
+    } else {
+      setTitle(undefined);
+    }
+  }, [currentModule?.manifest.id, pageIndex, currentPage]);
 
   const completeCourse = useCallback(async () => {
     const snapshot = useAttemptStore.getState();
@@ -284,6 +360,10 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
       if (nextIndex >= questions.length) {
         const percent = Math.round((correctCount / questions.length) * 100);
         setModuleScore(moduleId, percent);
+        // Sync module score to database (fire and forget)
+        if (progressStoreInitialized) {
+          void progressSetModuleScore(moduleId, percent);
+        }
         setQuiz(null);
         toast.success(`Module score: ${percent}%`);
         toPage(moduleIndex, pageIndex + 1);
@@ -326,20 +406,120 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
   };
 
   const startQuiz = useCallback(
-    (moduleId: string, poolId: string, count: number) => {
-      const bundle = modules.find((item) => item.manifest.id === moduleId);
-      if (!bundle) return;
-      const available = bundle.pools[poolId] ?? [];
-      if (available.length === 0) {
-        toast.error(`No questions configured for pool ${poolId}`);
+    async (moduleId: string, poolId: string, count: number) => {
+      // Check access control for final assessment
+      let dbCourseId: string | null = null;
+      if (moduleId === 'final' && profile?.id && course.course_id) {
+        setAssignmentCheck({ checking: true, allowed: false });
+        
+        try {
+          // Get course ID from training_courses table using course_id from manifest
+          const { data: courseData } = await supabase
+            .from('training_courses')
+            .select('id')
+            .or(`code.eq.FS-L2,course_id.eq.${course.course_id}`)
+            .maybeSingle();
+
+          if (courseData) {
+            dbCourseId = courseData.id;
+            const accessCheck = await canAccessFinalAssessment(profile.id, courseData.id);
+            
+            if (!accessCheck.allowed) {
+              setAssignmentCheck({
+                checking: false,
+                allowed: false,
+                reason: accessCheck.reason,
+              });
+              toast.error(accessCheck.reason || 'Access denied');
+              return;
+            }
+
+            setAssignmentCheck({
+              checking: false,
+              allowed: true,
+              assignmentId: accessCheck.assignmentId,
+            });
+          } else {
+            // If course not found in DB, allow access (for backward compatibility)
+            setAssignmentCheck({
+              checking: false,
+              allowed: true,
+            });
+          }
+        } catch (error) {
+          console.error('Error checking course access:', error);
+          setAssignmentCheck({
+            checking: false,
+            allowed: false,
+            reason: 'Error checking course assignment. Please try again.',
+          });
+          toast.error('Error checking course access');
+          return;
+        }
+      } else {
+        // For non-final quizzes, try to get course ID from database
+        try {
+          const { data: courseData } = await supabase
+            .from('training_courses')
+            .select('id')
+            .or(`code.eq.FS-L2,course_id.eq.${course.course_id}`)
+            .maybeSingle();
+          
+          if (courseData) {
+            dbCourseId = courseData.id;
+          }
+        } catch (error) {
+          console.error('Error fetching course ID:', error);
+        }
+      }
+
+      // Try to fetch questions from database first
+      let questions: Page[] = [];
+      if (dbCourseId) {
+        try {
+          const response = await fetch(
+            `/api/training/questions?course_id=${dbCourseId}&module_id=${moduleId}&count=${count}&randomize=true`
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.questions && data.questions.length > 0) {
+              questions = data.questions as Page[];
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching questions from database:', error);
+          // Fall through to use hardcoded questions
+        }
+      }
+
+      // Fall back to hardcoded questions if database fetch failed or returned no questions
+      if (questions.length === 0) {
+        const bundle = modules.find((item) => item.manifest.id === moduleId);
+        if (!bundle) {
+          toast.error(`Module ${moduleId} not found`);
+          setCanProceed(true);
+          return;
+        }
+        const available = bundle.pools[poolId] ?? [];
+        if (available.length === 0) {
+          toast.error(`No questions configured for pool ${poolId}`);
+          setCanProceed(true);
+          return;
+        }
+        questions = sliceQuiz(available, count);
+      }
+
+      if (questions.length === 0) {
+        toast.error('No questions available');
         setCanProceed(true);
         return;
       }
-      const questions = sliceQuiz(available, count);
+
       setQuiz({ moduleId, poolId, currentIndex: 0, questions, correctCount: 0, answered: {} });
       setCanProceed(false);
     },
-    [modules]
+    [modules, profile, course]
   );
 
   const handleQuizAnswer = (score: number) => {
@@ -420,13 +600,36 @@ export function PlayerShell({ course, modules }: PlayerShellProps) {
       );
     }
 
+    // Show access denied message if final quiz is blocked
+    if (currentModule.manifest.id === 'final' && assignmentCheck && !assignmentCheck.allowed && !assignmentCheck.checking) {
+      return (
+        <LayoutShell title="Assignment Required" rightPanel={
+          <div className="space-y-3 text-sm text-slate-200">
+            <p className="font-semibold text-white">Final Assessment Access</p>
+            <p>{assignmentCheck.reason}</p>
+            <p className="text-xs text-slate-400 mt-4">
+              Contact your manager to request course assignment.
+            </p>
+          </div>
+        }>
+          <div className="space-y-4 rounded-xl border border-amber-500/20 bg-amber-500/10 p-6 text-amber-200">
+            <h3 className="text-lg font-semibold text-amber-100">Course Assignment Required</h3>
+            <p>{assignmentCheck.reason}</p>
+            <p className="text-sm text-amber-200/80">
+              You can browse the course content, but the final assessment requires a confirmed assignment from your manager.
+            </p>
+          </div>
+        </LayoutShell>
+      );
+    }
+
     return (
       <LayoutShell title={title} rightPanel={rightPanel}>
         <Renderer
           page={currentPage}
           onContinue={() => {
             if (currentPage.type === 'quiz_ref') {
-              startQuiz(currentModule.manifest.id, currentPage.pool, currentPage.count);
+              void startQuiz(currentModule.manifest.id, currentPage.pool, currentPage.count);
               return;
             }
             setCanProceed(true);

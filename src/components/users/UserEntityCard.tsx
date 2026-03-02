@@ -1,10 +1,10 @@
 'use client';
 
 import CardHeader from '@/components/ui/CardHeader';
-import { Input, Select } from '@/components/ui';
-import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
-import { useState } from 'react';
-import { components, layout } from '@/styles/uiTokens';
+import { Select } from '@/components/ui';
+import { X, Archive, Save, Mail, ExternalLink } from '@/components/ui/icons';
+import { components } from '@/styles/uiTokens';
+import Link from 'next/link';
 import '@/styles/globals.css';
 
 interface UserEntityCardProps {
@@ -18,12 +18,10 @@ interface UserEntityCardProps {
   onRoleChange: (_userId: string, _role: string) => void;
   onSave: () => void;
   onCancel: () => void;
-  showPinEdit: boolean;
-  onPinEditToggle: () => void;
-  onPinGenerate: () => void;
   siteOptions: any[];
-  onArchive: (_userId: string) => void;
-  onUnarchive: (_userId: string) => void;
+  onArchive?: (_userId: string) => void;
+  onUnarchive?: (_userId: string) => void;
+  onSendInvite?: (_userId: string, _email: string) => void;
 }
 
 export default function UserEntityCard({
@@ -37,54 +35,64 @@ export default function UserEntityCard({
   onRoleChange,
   onSave,
   onCancel,
-  showPinEdit,
-  onPinEditToggle,
-  onPinGenerate,
   siteOptions,
   onArchive,
   onUnarchive,
+  onSendInvite,
 }: UserEntityCardProps) {
-  const [showPin, setShowPin] = useState(false);
+  const statusLabels: Record<string, string> = {
+    onboarding: 'Onboarding',
+    active: 'Active',
+    inactive: 'Inactive',
+    on_leave: 'On Leave',
+  };
 
   return (
     <div className="
-      bg-white/[0.05] border border-white/[0.1] rounded-xl p-3
+ bg-theme-surface ] border border-theme rounded-xl p-3
       transition-all duration-150 ease-in-out
-      hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]
+      hover:shadow-module-glow
     ">
-      <CardHeader 
-        title={user.full_name || user.email || "—"} 
-        subtitle={subtitle} 
-        showChevron 
-        onToggle={onToggle} 
-        expanded={isExpanded} 
+      <CardHeader
+        title={user.full_name || user.email || "\u2014"}
+        subtitle={subtitle}
+        showChevron
+        onToggle={onToggle}
+        expanded={isExpanded}
       />
 
       {isExpanded && editForm && (
-        <div className="px-4 pb-3 border-t border-white/[0.1]">
+        <div className="px-4 pb-3 border-t border-theme">
           <div className="p-4 space-y-4 overflow-visible">
-            <div className="grid grid-cols-2 gap-3 overflow-visible relative z-auto">
-              {/* Full Name */}
+            {/* Read-only info */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2">
               <div>
-                <label className="text-xs text-neutral-400">Full Name</label>
-                <Input
-                  value={editForm.full_name}
-                  onChange={(e) => onEditFormChange({ full_name: e.target.value })}
-                />
+                <span className="text-xs text-gray-500 dark:text-theme-tertiary">Email</span>
+                <p className="text-sm text-theme-primary truncate">{editForm.email || '\u2014'}</p>
               </div>
-
-              {/* Email */}
               <div>
-                <label className="text-xs text-neutral-400">Email</label>
-                <Input
-                  value={editForm.email}
-                  onChange={(e) => onEditFormChange({ email: e.target.value })}
-                />
+                <span className="text-xs text-gray-500 dark:text-theme-tertiary">Phone</span>
+                <p className="text-sm text-theme-primary">{editForm.phone_number || '\u2014'}</p>
               </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-theme-tertiary">Position</span>
+                <p className="text-sm text-theme-primary">{editForm.position_title || '\u2014'}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-theme-tertiary">Status</span>
+                <p className="text-sm text-theme-primary">{statusLabels[editForm.status] || editForm.status || 'Onboarding'}</p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-theme-tertiary">BOH/FOH</span>
+                <p className="text-sm text-theme-primary">{editForm.boh_foh || 'Not specified'}</p>
+              </div>
+            </div>
 
+            {/* Editable fields: Role & Site */}
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-theme overflow-visible relative z-auto">
               {/* Role */}
               <div>
-                <label className="text-xs text-neutral-400">Role</label>
+                <label className="text-xs text-gray-500 dark:text-theme-tertiary">Role</label>
                 <Select
                   value={editForm.app_role}
                   options={roleOptions}
@@ -95,233 +103,31 @@ export default function UserEntityCard({
                 />
               </div>
 
-              {/* Position Title */}
-              <div>
-                <label className="text-xs text-neutral-400">Position Title</label>
-                <Select
-                  value={editForm.position_title}
-                  options={[
-                    { label: "General Manager", value: "General Manager" },
-                    { label: "Assistant Manager", value: "Assistant Manager" },
-                    { label: "Head Chef", value: "Head Chef" },
-                    { label: "Sous Chef", value: "Sous Chef" },
-                    { label: "Staff", value: "Staff" },
-                    { label: "Owner", value: "Owner" },
-                    { label: "Admin", value: "Admin" },
-                    { label: "Head Office", value: "Head Office" },
-                    { label: "Other", value: "Other" }
-                  ]}
-                  onValueChange={(val: string) => onEditFormChange({ position_title: val })}
-                />
-              </div>
-
               {/* Site */}
               <div>
-                <label className="text-xs text-neutral-400">Site</label>
+                <label className="text-xs text-gray-500 dark:text-theme-tertiary">Site Assignment</label>
                 <Select
-                  value={editForm.home_site}
-                  options={siteOptions}
-                  onValueChange={(val: string) => onEditFormChange({ home_site: val })}
-                />
-              </div>
-
-              {/* BOH/FOH */}
-              <div>
-                <label className="text-xs text-neutral-400">BOH/FOH</label>
-                <Select
-                  value={editForm.boh_foh}
+                  value={editForm.home_site || 'HEAD_OFFICE'}
                   options={[
-                    { value: "BOH", label: "BOH" },
-                    { value: "FOH", label: "FOH" },
-                    { value: "not_specified", label: "Not specified" }
+                    { label: 'Head Office (No Site)', value: 'HEAD_OFFICE' },
+                    ...siteOptions
                   ]}
-                  onValueChange={(val: string) => onEditFormChange({ boh_foh: val })}
+                  onValueChange={(val: string) => {
+                    if (val === 'HEAD_OFFICE') {
+                      onEditFormChange({ home_site: null, site_id: null });
+                    } else {
+                      onEditFormChange({ home_site: val });
+                    }
+                  }}
                 />
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="text-xs text-neutral-400">Phone</label>
-                <Input
-                  value={editForm.phone_number}
-                  onChange={(e) => onEditFormChange({ phone_number: e.target.value })}
-                />
-              </div>
-
-              {/* PIN Code */}
-              <div>
-                <label className="text-xs text-neutral-400">PIN Code</label>
-                <div className={layout.pinFieldContainer}>
-                  <div className={`relative ${layout.pinFieldWidth}`}>
-                    <input
-                      type={showPin ? "text" : "password"}
-                      value={editForm.pin_code || ""}
-                      onChange={(e) => onEditFormChange({ pin_code: e.target.value })}
-                      className={components.pinField}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className={components.pinToggleButton}
-                    >
-                      {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                  <button
-                    onClick={onPinGenerate}
-                    className={components.generateButton}
-                  >
-                    Generate
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Training Certificates Section */}
-            <div className="mt-6 pt-6 border-t border-white/[0.1]">
-              <h3 className="text-base font-semibold text-white mb-4">Training Certificates</h3>
-              
-              <div className="space-y-4">
-                {/* Food Safety */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-neutral-400">Food Safety Level</label>
-                    <Select
-                      value={editForm.food_safety_level ? editForm.food_safety_level.toString() : undefined}
-                      placeholder="Select Level"
-                      options={[
-                        { label: "Level 2", value: "2" },
-                        { label: "Level 3", value: "3" },
-                        { label: "Level 4", value: "4" },
-                        { label: "Level 5", value: "5" }
-                      ]}
-                      onValueChange={(val: string) => onEditFormChange({ 
-                        food_safety_level: val ? parseInt(val) : null
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-neutral-400">Food Safety Expiry Date</label>
-                    <Input
-                      type="date"
-                      value={editForm.food_safety_expiry_date ? editForm.food_safety_expiry_date.split('T')[0] : ""}
-                      onChange={(e) => onEditFormChange({ food_safety_expiry_date: e.target.value || null })}
-                    />
-                  </div>
-                </div>
-
-                {/* H&S */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-neutral-400">H&S Level</label>
-                    <Select
-                      value={editForm.h_and_s_level ? editForm.h_and_s_level.toString() : undefined}
-                      placeholder="Select Level"
-                      options={[
-                        { label: "Level 2", value: "2" },
-                        { label: "Level 3", value: "3" },
-                        { label: "Level 4", value: "4" }
-                      ]}
-                      onValueChange={(val: string) => onEditFormChange({ 
-                        h_and_s_level: val ? parseInt(val) : null
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-neutral-400">H&S Expiry Date</label>
-                    <Input
-                      type="date"
-                      value={editForm.h_and_s_expiry_date ? editForm.h_and_s_expiry_date.split('T')[0] : ""}
-                      onChange={(e) => onEditFormChange({ h_and_s_expiry_date: e.target.value || null })}
-                    />
-                  </div>
-                </div>
-
-                {/* Fire Marshal */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">Fire Marshal Trained</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={editForm.fire_marshal_trained || false}
-                        onChange={(e) => onEditFormChange({ fire_marshal_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
-                      />
-                      <span className="text-xs text-neutral-400">
-                        {editForm.fire_marshal_trained ? "Yes" : "No"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">Fire Marshal Expiry Date</label>
-                    <Input
-                      type="date"
-                      value={editForm.fire_marshal_expiry_date ? editForm.fire_marshal_expiry_date.split('T')[0] : ""}
-                      onChange={(e) => onEditFormChange({ fire_marshal_expiry_date: e.target.value || null })}
-                      disabled={!editForm.fire_marshal_trained}
-                    />
-                  </div>
-                </div>
-
-                {/* First Aid */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">First Aid Trained</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={editForm.first_aid_trained || false}
-                        onChange={(e) => onEditFormChange({ first_aid_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
-                      />
-                      <span className="text-xs text-neutral-400">
-                        {editForm.first_aid_trained ? "Yes" : "No"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">First Aid Expiry Date</label>
-                    <Input
-                      type="date"
-                      value={editForm.first_aid_expiry_date ? editForm.first_aid_expiry_date.split('T')[0] : ""}
-                      onChange={(e) => onEditFormChange({ first_aid_expiry_date: e.target.value || null })}
-                      disabled={!editForm.first_aid_trained}
-                    />
-                  </div>
-                </div>
-
-                {/* COSSH */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">COSSH Trained</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={editForm.cossh_trained || false}
-                        onChange={(e) => onEditFormChange({ cossh_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
-                      />
-                      <span className="text-xs text-neutral-400">
-                        {editForm.cossh_trained ? "Yes" : "No"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">COSSH Expiry Date</label>
-                    <Input
-                      type="date"
-                      value={editForm.cossh_expiry_date ? editForm.cossh_expiry_date.split('T')[0] : ""}
-                      onChange={(e) => onEditFormChange({ cossh_expiry_date: e.target.value || null })}
-                      disabled={!editForm.cossh_trained}
-                    />
-                  </div>
-                </div>
+                <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
+                  {editForm.home_site ? 'Site-based employee' : 'Head office / Executive'}
+                </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className={layout.buttonGroup}>
+            <div className="flex flex-wrap items-center gap-2 pt-4">
               <button
                 onClick={onSave}
                 className={components.saveButton}
@@ -336,11 +142,33 @@ export default function UserEntityCard({
                 <X size={18} />
               </button>
 
+              {/* View Full Profile */}
+              <Link
+                href="/dashboard/people/employees"
+                className="px-3 py-2 border border-theme text-theme-secondary rounded-md hover:bg-theme-hover transition-all duration-200 flex items-center gap-2 text-sm"
+                title="View Full Profile"
+              >
+                <ExternalLink size={16} />
+                Full Profile
+              </Link>
+
+              {/* Send Invite button */}
+              {onSendInvite && user.email && (
+                <button
+                  onClick={() => onSendInvite(user.id, user.email)}
+                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200 flex items-center gap-2"
+                  title="Send Invitation Email"
+                >
+                  <Mail size={18} />
+                  <span className="text-sm">Send Invite</span>
+                </button>
+              )}
+
               {/* Archive/Restore button */}
               {onUnarchive ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className="px-3 py-2 border border-[#EC4899] text-[#EC4899] rounded-md hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200"
                   title="Restore User"
                 >
                   Restore
@@ -348,7 +176,8 @@ export default function UserEntityCard({
               ) : onArchive ? (
                 <button
                   onClick={() => onArchive(user.id)}
-                  className={components.archiveButton}
+                  className="px-3 py-2 border border-[#F97316] text-[#F97316] rounded-md hover:shadow-module-glow transition-all duration-200"
+                  title="Archive User"
                 >
                   <Archive size={18} />
                 </button>

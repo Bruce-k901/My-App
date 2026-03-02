@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -24,19 +25,19 @@ export default function LinkButton({
 
   const variants = {
     primary: cn(
-      "bg-white/[0.06] border border-white/[0.1] text-white",
+      "bg-white/[0.06] border border-white/[0.1] text-theme-primary",
       "hover:bg-white/[0.12] hover:border-white/[0.25]",
-      "shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-[0_0_14px_rgba(236,72,153,0.25)]",
+      "shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)]",
       "transition-all duration-150 ease-in-out backdrop-blur-md",
     ),
     secondary: cn(
-      "bg-transparent text-[#EC4899] border border-[#EC4899]",
-      "hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]",
+      "bg-transparent text-[#D37E91] border border-[#D37E91]",
+      "hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]",
       "transition-all duration-200 ease-in-out backdrop-blur-md"
     ),
     outline:
-      "border border-white/[0.1] text-white hover:bg-white/[0.05]",
-    ghost: "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
+      "border border-white/[0.1] text-theme-primary hover:bg-white/[0.05]",
+    ghost: "text-theme-primary bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
   } as const;
 
   return (

@@ -55,7 +55,7 @@
 }
 
 .regulation-badge {
-  background: #FF006E;
+  background: #544349;
   color: #FFFFFF;
 }
 
@@ -72,7 +72,7 @@
 }
 
 .deploy-button {
-  background: #FF006E;
+  background: #544349;
   color: #FFFFFF;
   border: none;
   padding: 10px 20px;
@@ -84,8 +84,8 @@
 }
 
 .deploy-button:hover {
-  background: #E60060;
-  box-shadow: 0 0 12px rgba(255, 0, 110, 0.3);
+  background: #b0607a;
+  box-shadow: 0 0 12px rgba(211, 126, 145, 0.3);
 }
 
 /* Deploy Modal Styles */
@@ -190,7 +190,7 @@
 }
 
 .regulation-badge {
-  background: #FF006E;
+  background: #544349;
   color: #FFFFFF;
 }
 
@@ -244,7 +244,7 @@
 
 .daypart-select:focus {
   outline: none;
-  border-color: #FF006E;
+  border-color: #544349;
 }
 
 .modal-footer {
@@ -278,13 +278,13 @@
 }
 
 .deploy-button {
-  background: #FF006E;
+  background: #544349;
   color: #FFFFFF;
 }
 
 .deploy-button:hover:not(:disabled) {
-  background: #E60060;
-  box-shadow: 0 0 12px rgba(255, 0, 110, 0.3);
+  background: #b0607a;
+  box-shadow: 0 0 12px rgba(211, 126, 145, 0.3);
 }
 
 .deploy-button:disabled {

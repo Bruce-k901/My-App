@@ -137,7 +137,8 @@ export const pageSchema = z.discriminatedUnion("type", [
               storeRecord: z
                 .object({
                   table: z.string().min(1),
-                  fields: z.record(z.string().min(1)).optional(),
+                  // Zod: z.record requires key and value schemas
+                  fields: z.record(z.string(), z.string().min(1)).optional(),
                 })
                 .optional(),
             })

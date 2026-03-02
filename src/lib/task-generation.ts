@@ -5,6 +5,15 @@ export interface GenerationLog {
   daily_tasks_created?: number
   weekly_tasks_created?: number
   monthly_tasks_created?: number
+  annual_tasks_created?: number
+  ppm_tasks_created?: number
+  callout_tasks_created?: number
+  certificate_tasks_created?: number
+  sop_review_tasks_created?: number
+  ra_review_tasks_created?: number
+  messaging_tasks_created?: number
+  document_expiry_tasks_created?: number
+  total_tasks_created?: number
   triggered_tasks_created?: number
   errors?: string[]
   // Legacy fields for backward compatibility
@@ -13,6 +22,7 @@ export interface GenerationLog {
   monthly_tasks?: number
   triggered_tasks?: number
   status?: 'success' | 'partial' | 'failed'
+  [key: string]: unknown
 }
 
 /**
