@@ -5,16 +5,16 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { 
+import {
   ArrowLeft,
-  User, 
-  FileText, 
-  Calendar, 
-  GraduationCap, 
+  User,
+  FileText,
+  Calendar,
+  GraduationCap,
   MessageSquare,
-  Clock, 
-  Shield, 
-  CreditCard, 
+  Clock,
+  Shield,
+  CreditCard,
   AlertTriangle,
   Edit,
   Mail,
@@ -27,7 +27,8 @@ import {
   Trash2,
   Plus,
   CheckCircle2,
-  CalendarCheck
+  CalendarCheck,
+  UserMinus,
 } from '@/components/ui/icons';
 import type { EmergencyContact, EmployeeProfile, SiteOption, ManagerOption } from '@/types/employee';
 import { InfoRow } from '@/components/people/InfoRow';
@@ -35,9 +36,16 @@ import { EditEmployeeModal } from '@/components/people/EditEmployeeModal';
 import { buildProfileUpdateData, mapProfileToFormData, generateNextEmployeeNumber } from '@/lib/people/employee-save';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import { EmployeeTrainingTab } from '@/components/training/EmployeeTrainingTab';
+import { LazyOffboardingWizard } from '@/components/people/offboarding/LazyOffboardingWizard';
+import { OffboardingChecklistView } from '@/components/people/offboarding/OffboardingChecklistView';
+import { OffboardingTimelineView } from '@/components/people/offboarding/OffboardingTimeline';
+import { calculateOffboardingTimeline } from '@/lib/people/offboarding-timeline';
+import { TERMINATION_REASON_LABELS, DISMISSAL_SUB_REASON_LABELS } from '@/types/offboarding';
+import type { TerminationReason } from '@/types/teamly';
+import type { DismissalSubReason } from '@/types/offboarding';
 import { toast } from 'sonner';
 
-type TabType = 'overview' | 'documents' | 'leave' | 'training' | 'attendance' | 'notes' | 'pay';
+type TabType = 'overview' | 'documents' | 'leave' | 'training' | 'attendance' | 'notes' | 'pay' | 'offboarding';
 
 type Employee = EmployeeProfile;
 
@@ -58,6 +66,7 @@ export default function EmployeeProfilePage() {
   const [managers, setManagers] = useState<{ id: string; full_name: string }[]>([]);
   const [showSiteAssignmentsModal, setShowSiteAssignmentsModal] = useState(false);
   const [siteAssignmentsEmployee, setSiteAssignmentsEmployee] = useState<Employee | null>(null);
+  const [showOffboardingWizard, setShowOffboardingWizard] = useState(false);
   
   useEffect(() => {
     if (employeeId) {
@@ -425,6 +434,9 @@ export default function EmployeeProfilePage() {
     { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'pay', label: 'Pay & Tax', icon: CreditCard },
     { id: 'notes', label: 'Notes', icon: MessageSquare },
+    ...(employee?.status === 'offboarding'
+      ? [{ id: 'offboarding', label: 'Offboarding', icon: UserMinus }]
+      : []),
   ];
 
   const getInitials = (name: string) => {
@@ -588,7 +600,24 @@ export default function EmployeeProfilePage() {
               <Edit className="w-4 h-4" />
               Edit Profile
             </button>
-            
+
+            {/* Terminate / Offboarding status */}
+            {employee.status === 'active' && (
+              <button
+                onClick={() => setShowOffboardingWizard(true)}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-red-500/50 text-red-500 hover:bg-red-500/10 rounded-lg font-medium text-sm transition-all duration-200 ease-in-out"
+              >
+                <UserMinus className="w-4 h-4" />
+                Terminate / Offboard
+              </button>
+            )}
+            {employee.status === 'offboarding' && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <Clock className="w-4 h-4 text-amber-400" />
+                <span className="text-sm text-amber-400 font-medium">Offboarding in progress</span>
+              </div>
+            )}
+
             {/* Alerts */}
             <div className="flex flex-col gap-2">
               {employee.right_to_work_status === 'expired' && (
@@ -679,6 +708,74 @@ export default function EmployeeProfilePage() {
             <p>Notes coming soon</p>
           </div>
         )}
+        {activeTab === 'offboarding' && employee.status === 'offboarding' && (
+          <div className="space-y-6">
+            {/* Termination details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <p className="text-xs text-neutral-500">Reason</p>
+                <p className="text-sm font-medium">
+                  {employee.termination_reason
+                    ? TERMINATION_REASON_LABELS[employee.termination_reason as TerminationReason] || employee.termination_reason
+                    : 'Not set'}
+                  {(employee as any).termination_sub_reason &&
+                    ` — ${DISMISSAL_SUB_REASON_LABELS[(employee as any).termination_sub_reason as DismissalSubReason] || (employee as any).termination_sub_reason}`}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-neutral-500">Last working day</p>
+                <p className="text-sm font-medium">{(employee as any).last_working_day || 'Not set'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-neutral-500">Termination date</p>
+                <p className="text-sm font-medium">{employee.termination_date || 'Not set'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-neutral-500">PILON</p>
+                <p className="text-sm font-medium">{(employee as any).pilon_applicable ? 'Yes' : 'No'}</p>
+              </div>
+            </div>
+
+            {(employee as any).termination_notes && (
+              <div>
+                <p className="text-xs text-neutral-500 mb-1">Notes</p>
+                <p className="text-sm text-neutral-300 bg-theme-muted rounded-lg p-3">
+                  {(employee as any).termination_notes}
+                </p>
+              </div>
+            )}
+
+            {/* Timeline */}
+            {employee.termination_date && (
+              <div>
+                <h4 className="text-sm font-semibold mb-3">Key Dates</h4>
+                <OffboardingTimelineView
+                  timeline={calculateOffboardingTimeline({
+                    terminationInitiatedDate: (employee as any).termination_initiated_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+                    noticeStartDate: (employee as any).termination_initiated_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+                    noticeWeeks: 0,
+                    lastWorkingDay: (employee as any).last_working_day || employee.termination_date,
+                    isPILON: (employee as any).pilon_applicable || false,
+                    terminationDate: employee.termination_date,
+                  })}
+                />
+              </div>
+            )}
+
+            {/* Checklist */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3">Offboarding Checklist</h4>
+              <OffboardingChecklistView
+                profileId={employee.id}
+                companyId={currentUser?.company_id || ''}
+                currentUserId={currentUser?.id || ''}
+                onCompleteOffboarding={() => {
+                  fetchEmployee();
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}
@@ -717,6 +814,18 @@ export default function EmployeeProfilePage() {
           employeeName={siteAssignmentsEmployee.full_name}
           homeSiteId={siteAssignmentsEmployee.home_site}
           companyId={company.id}
+        />
+      )}
+
+      {/* Offboarding Wizard */}
+      {employee && (
+        <LazyOffboardingWizard
+          employee={employee}
+          isOpen={showOffboardingWizard}
+          onClose={() => setShowOffboardingWizard(false)}
+          onComplete={fetchEmployee}
+          currentUserId={currentUser?.id || ''}
+          companyId={currentUser?.company_id || ''}
         />
       )}
     </div>

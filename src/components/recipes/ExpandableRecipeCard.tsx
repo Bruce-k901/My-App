@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -22,7 +22,7 @@ import {
   Loader2,
   ExternalLink
 } from '@/components/ui/icons';
-import { RecipeIngredientsTable } from './RecipeIngredientsTable';
+import { RecipeIngredientsTable, type RecipeIngredientsTableHandle } from './RecipeIngredientsTable';
 import { supabase } from '@/lib/supabase';
 // @salsa — Shared allergen utility for label display
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
@@ -96,6 +96,7 @@ export function ExpandableRecipeCard({
   uomList = [],
   userId
 }: ExpandableRecipeCardProps) {
+  const ingredientsRef = useRef<RecipeIngredientsTableHandle>(null);
   const [draft, setDraft] = useState<Partial<Recipe>>(recipe);
   const [saving, setSaving] = useState(false);
   const [showFinaliseDialog, setShowFinaliseDialog] = useState(false);
@@ -264,9 +265,16 @@ export function ExpandableRecipeCard({
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Save any pending ingredient changes first
+      if (ingredientsRef.current?.hasUnsavedChanges) {
+        const ingredientsSaved = await ingredientsRef.current.saveAll();
+        if (!ingredientsSaved) {
+          toast.error('Some ingredient changes failed to save');
+        }
+      }
+
       await onSave(draft as Recipe);
       // Force reload ingredients after recipe save
-      // The RecipeIngredientsTable will remount due to key={recipe.id}, but we want to ensure it loads
       if (onRecipeUpdate) {
         // Small delay to ensure database has updated
         setTimeout(() => {
@@ -328,7 +336,7 @@ export function ExpandableRecipeCard({
   const TypeIcon = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.icon || UtensilsCrossed : UtensilsCrossed;
   const typeLabel = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.label || 'Recipe' : 'Recipe';
   const typeColor = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.color || 'text-theme-tertiary' : 'text-theme-tertiary';
-  const typeBg = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.bg || 'bg-white/5' : 'bg-white/5';
+  const typeBg = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.bg || 'bg-gray-100 dark:bg-white/5' : 'bg-gray-100 dark:bg-white/5';
 
   return (
     <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
@@ -357,7 +365,7 @@ export function ExpandableRecipeCard({
                 <div className="flex items-center gap-2">
                   <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{recipe.name}</span>
                   {recipe.version_number && recipe.version_number > 1.0 && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-700/50 text-theme-tertiary border border-neutral-600">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-200 dark:bg-neutral-700/50 text-theme-tertiary border border-neutral-300 dark:border-neutral-600">
                       v{recipe.version_number.toFixed(1)}
                     </span>
                   )}
@@ -684,7 +692,7 @@ export function ExpandableRecipeCard({
                   {recipe.allergens.map((allergen) => (
                     <span
                       key={allergen}
-                      className="px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-300 border border-red-500/30"
+                      className="px-2 py-1 rounded-full text-xs bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/30"
                     >
                       {allergenKeyToLabel(allergen)}
                     </span>
@@ -704,7 +712,7 @@ export function ExpandableRecipeCard({
                     {(recipe as any).may_contain_allergens.map((allergen: string) => (
                       <span
                         key={allergen}
-                        className="px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                        className="px-2 py-1 rounded-full text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30"
                       >
                         {allergenKeyToLabel(allergen)}
                       </span>
@@ -734,6 +742,7 @@ export function ExpandableRecipeCard({
                 )}
               </div>
               <RecipeIngredientsTable
+                ref={ingredientsRef}
                 key={recipe.id || 'no-id'} // Force remount when recipe changes
                 recipeId={recipe.id || ''}
                 companyId={companyId}

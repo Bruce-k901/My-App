@@ -57,8 +57,17 @@ export interface ProfileHRExtension {
   // Offboarding
   termination_date?: string | null;
   termination_reason?: TerminationReason | null;
+  termination_sub_reason?: string | null;
+  termination_notes?: string | null;
   exit_interview_completed?: boolean | null;
   eligible_for_rehire?: boolean | null;
+  last_working_day?: string | null;
+  notice_end_date?: string | null;
+  termination_initiated_by?: string | null;
+  termination_initiated_at?: string | null;
+  p45_issued?: boolean | null;
+  p45_issued_date?: string | null;
+  pilon_applicable?: boolean | null;
 }
 
 export interface EmergencyContact {

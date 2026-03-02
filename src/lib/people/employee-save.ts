@@ -124,6 +124,19 @@ export function buildProfileUpdateData(
     cossh_expiry_date: toNullIfEmpty(formData.cossh_expiry_date),
 
     status: formData.status || 'active',
+
+    // Offboarding / Termination
+    termination_date: toNullIfEmpty(formData.termination_date),
+    termination_reason: toNullIfEmpty(formData.termination_reason),
+    termination_sub_reason: toNullIfEmpty(formData.termination_sub_reason),
+    termination_notes: toNullIfEmpty(formData.termination_notes),
+    exit_interview_completed: formData.exit_interview_completed || false,
+    eligible_for_rehire: formData.eligible_for_rehire ?? null,
+    last_working_day: toNullIfEmpty(formData.last_working_day),
+    notice_end_date: toNullIfEmpty(formData.notice_end_date),
+    pilon_applicable: formData.pilon_applicable || false,
+    p45_issued: formData.p45_issued || false,
+    p45_issued_date: toNullIfEmpty(formData.p45_issued_date),
   };
 }
 
@@ -172,6 +185,19 @@ export function mapProfileToFormData(profileData: Record<string, any>): Record<s
     first_aid_expiry_date: profileData.first_aid_expiry_date || '',
     cossh_trained: profileData.cossh_trained || false,
     cossh_expiry_date: profileData.cossh_expiry_date || '',
+
+    // Offboarding / Termination
+    termination_date: profileData.termination_date || '',
+    termination_reason: profileData.termination_reason || '',
+    termination_sub_reason: profileData.termination_sub_reason || '',
+    termination_notes: profileData.termination_notes || '',
+    exit_interview_completed: profileData.exit_interview_completed || false,
+    eligible_for_rehire: profileData.eligible_for_rehire ?? null,
+    last_working_day: profileData.last_working_day || '',
+    notice_end_date: profileData.notice_end_date || '',
+    pilon_applicable: profileData.pilon_applicable || false,
+    p45_issued: profileData.p45_issued || false,
+    p45_issued_date: profileData.p45_issued_date || '',
   };
 }
 

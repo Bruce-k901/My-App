@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Trash2, Save, X, Edit, Loader2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
@@ -46,7 +46,14 @@ interface RecipeIngredientsTableProps {
   isExpanded?: boolean; // Whether the parent card is expanded
 }
 
-export function RecipeIngredientsTable({
+export interface RecipeIngredientsTableHandle {
+  /** Save all pending ingredient changes. Returns true if save succeeded or nothing to save. */
+  saveAll: () => Promise<boolean>;
+  /** Whether there are unsaved ingredient changes. */
+  hasUnsavedChanges: boolean;
+}
+
+export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, RecipeIngredientsTableProps>(function RecipeIngredientsTable({
   recipeId,
   companyId,
   isEditing,
@@ -56,7 +63,7 @@ export function RecipeIngredientsTable({
   uomList = [],
   onYieldCalculated,
   isExpanded = true
-}: RecipeIngredientsTableProps) {
+}, ref) {
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [availableIngredients, setAvailableIngredients] = useState<any[]>([]);
@@ -767,12 +774,12 @@ export function RecipeIngredientsTable({
       console.log('1. Ingredient being saved:', ingredient);
       console.log('2. Parsed quantity:', quantity);
       
-      // CRITICAL: Fetch ingredient with ALL cost-related fields
+      // CRITICAL: Fetch ingredient with ALL cost-related fields (including base_unit_id for unit conversion)
       console.log('3. Fetching ingredient details for:', dataToSave.ingredient_id);
-      
+
       const { data: ingredientData, error: fetchError } = await supabase
         .from('ingredients_library')
-        .select('unit_cost, pack_cost, pack_size, yield_percent, ingredient_name')
+        .select('unit_cost, pack_cost, pack_size, yield_percent, ingredient_name, base_unit_id')
         .eq('id', dataToSave.ingredient_id)
         .single();
 
@@ -818,11 +825,25 @@ export function RecipeIngredientsTable({
       const yieldPercent = ingredientData.yield_percent || 100;
       console.log('7. Yield percent:', yieldPercent);
 
+      // Convert recipe quantity to ingredient's base unit for correct costing
+      // e.g. recipe says 100g but unit_cost is per kg → convert 100g to 0.1kg
+      const baseUnitId = ingredientData.base_unit_id;
+      const convertedQty = (dataToSave.unit_id && baseUnitId && dataToSave.unit_id !== baseUnitId)
+        ? convertUnit(quantity, dataToSave.unit_id, baseUnitId)
+        : quantity;
+
+      console.log('7b. Unit conversion:', {
+        recipe_unit_id: dataToSave.unit_id,
+        base_unit_id: baseUnitId,
+        original_qty: quantity,
+        converted_qty: convertedQty,
+      });
+
       // Calculate line cost with yield factor
-      const lineCost = (unitCost * quantity) / (yieldPercent / 100);
+      const lineCost = (unitCost * convertedQty) / (yieldPercent / 100);
       console.log('8. Calculated line_cost:', {
         unit_cost: unitCost,
-        quantity: quantity,
+        converted_qty: convertedQty,
         yield_percent: yieldPercent,
         line_cost: lineCost
       });
@@ -986,8 +1007,8 @@ export function RecipeIngredientsTable({
     }
   };
 
-  // Batch save all pending changes
-  const handleSaveAll = async () => {
+  // Batch save all pending changes. Returns true if save succeeded or nothing to save.
+  const handleSaveAll = async (): Promise<boolean> => {
     // Collect ALL rows that need saving:
     // 1. Any temp row (new) that has valid data
     // 2. Any existing row marked as modified in pendingChanges
@@ -1025,8 +1046,7 @@ export function RecipeIngredientsTable({
     });
 
     if (rowsToProcess.length === 0) {
-      toast.info('No changes to save');
-      return;
+      return true; // Nothing to save is considered success
     }
 
     setIsSavingAll(true);
@@ -1071,10 +1091,10 @@ export function RecipeIngredientsTable({
           continue;
         }
 
-        // Fetch ingredient cost data from library
+        // Fetch ingredient cost data from library (including base_unit_id for unit conversion)
         const { data: ingredientData, error: fetchError } = await supabase
           .from('ingredients_library')
-          .select('unit_cost, pack_cost, pack_size, yield_percent, ingredient_name')
+          .select('unit_cost, pack_cost, pack_size, yield_percent, ingredient_name, base_unit_id')
           .eq('id', ingredient.ingredient_id)
           .single();
 
@@ -1083,7 +1103,7 @@ export function RecipeIngredientsTable({
           continue;
         }
 
-        // Calculate unit_cost
+        // Calculate unit_cost (cost per base unit, e.g. per kg)
         let unitCost = ingredientData.unit_cost;
         if (!unitCost || unitCost === 0) {
           const packSize = parseFloat(String(ingredientData.pack_size || '0'));
@@ -1096,8 +1116,14 @@ export function RecipeIngredientsTable({
           }
         }
 
+        // Convert recipe quantity to ingredient's base unit for correct costing
+        const baseUnitId = ingredientData.base_unit_id;
+        const convertedQty = (ingredient.unit_id && baseUnitId && ingredient.unit_id !== baseUnitId)
+          ? convertUnit(quantity, ingredient.unit_id, baseUnitId)
+          : quantity;
+
         const yieldPercent = ingredientData.yield_percent || 100;
-        const lineCost = unitCost > 0 ? (unitCost * quantity) / (yieldPercent / 100) : 0;
+        const lineCost = unitCost > 0 ? (unitCost * convertedQty) / (yieldPercent / 100) : 0;
 
         const payload = {
           recipe_id: recipeId,
@@ -1171,13 +1197,21 @@ export function RecipeIngredientsTable({
         onRecipeUpdate();
       }
 
+      return errors.length === 0;
     } catch (err: any) {
       console.error('Save all error:', err);
       toast.error(`Save failed: ${err.message}`, { id: toastId });
+      return false;
     } finally {
       setIsSavingAll(false);
     }
   };
+
+  // Expose saveAll and hasUnsavedChanges to parent via ref
+  useImperativeHandle(ref, () => ({
+    saveAll: handleSaveAll,
+    hasUnsavedChanges,
+  }), [handleSaveAll, hasUnsavedChanges]);
 
   const selectedIngredient = draft?.ingredient_id
     ? availableIngredients.find(ing => ing.id === draft.ingredient_id)
@@ -1339,38 +1373,42 @@ export function RecipeIngredientsTable({
   };
 
   // Memoize cost calculation to prevent recalculation on every render
-  // Use the SAME logic as save to ensure consistency
+  // unit_cost from library = cost per base_unit (e.g. £1.75/kg)
+  // Recipe quantity may be in a different unit (e.g. grams)
+  // Must convert recipe qty to base unit before multiplying
   const calculateCost = useCallback((ingredient: RecipeIngredient): number => {
-    // line_cost is already the total cost for the line (quantity * unit_cost / yield_factor)
-    // So we should use it directly if it exists
-    if (ingredient.line_cost !== null && ingredient.line_cost !== undefined && ingredient.line_cost > 0) {
-      return ingredient.line_cost;
-    }
-    
-    // Otherwise, calculate it from quantity, unit_cost, and yield_percent
-    // Use the SAME logic as handleSave
     const qty = parseFloat(String(ingredient.quantity || '0'));
+    if (qty <= 0) return 0;
+
     let unitCost = ingredient.ingredient_unit_cost || 0;
-    
-    // If unit_cost is 0 or null, try to calculate from pack_cost/pack_size (same as save)
+
+    // If unit_cost is 0 or null, try to calculate from pack_cost/pack_size
     if (!unitCost || unitCost === 0) {
       const packSize = parseFloat(String(ingredient.pack_size || '0'));
       if (ingredient.pack_cost && packSize > 0) {
         unitCost = ingredient.pack_cost / packSize;
       } else {
-        return 0; // Can't calculate without cost data
+        // No cost data available — fall back to stored line_cost if present
+        return ingredient.line_cost || 0;
       }
     }
-    
+
+    // Convert recipe quantity to ingredient's base unit for correct costing
+    // e.g. recipe says 100g but unit_cost is per kg → convert 100g to 0.1kg
+    const ingredientInfo = availableIngredients.find(a => a.id === ingredient.ingredient_id);
+    const baseUnitId = ingredientInfo?.base_unit_id;
+    const convertedQty = (ingredient.unit_id && baseUnitId && ingredient.unit_id !== baseUnitId)
+      ? convertUnit(qty, ingredient.unit_id, baseUnitId)
+      : qty;
+
     const yieldPercent = ingredient.yield_percent || 100;
-    
-    // Calculate: (unit_cost * quantity) / (yield_percent / 100)
+
     if (yieldPercent > 0) {
-      return (unitCost * qty) / (yieldPercent / 100);
+      return (unitCost * convertedQty) / (yieldPercent / 100);
     }
-    
-    return unitCost * qty;
-  }, []);
+
+    return unitCost * convertedQty;
+  }, [availableIngredients, convertUnit]);
 
   // Memoize total cost calculation
   const totalCost = useMemo(() => {
@@ -1929,14 +1967,29 @@ export function RecipeIngredientsTable({
                         />
                       ) : (
                         (() => {
-                          // Display yield-adjusted unit cost so Total = UnitCost × Qty makes sense
+                          // Display unit cost converted to recipe's unit so Total = UnitCost × Qty
+                          // unit_cost from library is per base_unit (e.g. £1.75/kg)
+                          // If recipe uses grams, show cost per gram instead
                           const rawUnitCost = ingredient.ingredient_unit_cost || 0;
                           const yieldPercent = ingredient.yield_percent || 100;
+                          const ingredientInfo = availableIngredients.find(a => a.id === ingredient.ingredient_id);
+                          const baseUnitId = ingredientInfo?.base_unit_id;
+
+                          // Convert from cost-per-base-unit to cost-per-recipe-unit
+                          let costPerRecipeUnit = rawUnitCost;
+                          if (ingredient.unit_id && baseUnitId && ingredient.unit_id !== baseUnitId) {
+                            // How many recipe units fit in 1 base unit? e.g. 1kg = 1000g
+                            const oneBaseInRecipeUnits = convertUnit(1, baseUnitId, ingredient.unit_id);
+                            if (oneBaseInRecipeUnits > 0) {
+                              costPerRecipeUnit = rawUnitCost / oneBaseInRecipeUnits;
+                            }
+                          }
+
                           const effectiveUnitCost = yieldPercent > 0 && yieldPercent < 100
-                            ? rawUnitCost / (yieldPercent / 100)
-                            : rawUnitCost;
+                            ? costPerRecipeUnit / (yieldPercent / 100)
+                            : costPerRecipeUnit;
                           return (
-                            <span className="text-module-fg text-sm" title={yieldPercent < 100 ? `Raw: ${formatUnitCost(rawUnitCost)} (${yieldPercent}% yield)` : undefined}>
+                            <span className="text-module-fg text-sm" title={yieldPercent < 100 ? `Raw: ${formatUnitCost(costPerRecipeUnit)} (${yieldPercent}% yield)` : undefined}>
                               {formatUnitCost(effectiveUnitCost)}
                             </span>
                           );
@@ -2035,7 +2088,7 @@ export function RecipeIngredientsTable({
             className={`flex items-center gap-2 px-6 py-2 font-medium rounded-lg transition-colors ${
               hasUnsavedChanges
                 ? 'bg-module-fg hover:bg-module-fg/90 text-white'
-                : 'bg-theme-surface-elevated0/20 text-theme-tertiary cursor-not-allowed'
+                : 'bg-theme-muted text-theme-tertiary cursor-not-allowed'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSavingAll ? (
@@ -2054,5 +2107,5 @@ export function RecipeIngredientsTable({
       )}
     </div>
   );
-}
+});
 
