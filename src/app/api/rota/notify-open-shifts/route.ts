@@ -258,6 +258,7 @@ export async function POST(req: Request) {
         notes.push({
           company_id: callerProfile.company_id,
           profile_id: person.id,
+          site_id: siteId,
           type: "task",
           title,
           message,
@@ -284,13 +285,12 @@ export async function POST(req: Request) {
       if (nErr) throw nErr;
     }
 
-    // 2) Messaging via OA — channel post + individual DMs
+    // 2) Messaging via OA — channel post only (no individual DMs)
     const messageContent =
       `Open shifts available for ${siteName} (week starting ${rota.week_starting}).\n\n` +
       `${lines.join("\n")}\n\n` +
       `To claim a shift: go to Notifications and tap "Accept shift".`;
 
-    // Post to the site Open Shifts channel via OA
     if (channelId) {
       await oa.sendChannelMessage({
         channelId,
@@ -302,27 +302,14 @@ export async function POST(req: Request) {
           rota_id: rotaId,
           site_id: siteId,
           shift_ids: openShifts.map((s: any) => s.id),
+          actionButton: {
+            label: "View & Accept Shifts",
+            href: "/notifications",
+            style: "primary",
+          },
         },
       });
     }
-
-    // Send individual DMs from OA to each staff member
-    const dmPromises = recipientList.map((person: any) =>
-      oa.sendDM({
-        recipientProfileId: person.id,
-        companyId: callerProfile.company_id,
-        content: messageContent,
-        messageType: "text",
-        metadata: {
-          messageType: "open_shift_offer",
-          kind: "open_shift_offer",
-          rota_id: rotaId,
-          site_id: siteId,
-          shift_ids: openShifts.map((s: any) => s.id),
-        },
-      })
-    );
-    await Promise.allSettled(dmPromises);
 
     // 3) Email
     const emails = recipientList.map((p: any) => p.email).filter(Boolean) as string[];

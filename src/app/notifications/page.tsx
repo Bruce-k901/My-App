@@ -251,7 +251,7 @@ function NotificationsInner() {
           q = q.or(`site_id.in.(${accessibleSiteIds.join(",")}),site_id.is.null`);
         }
         if (userId) {
-          q = q.or(`user_id.eq.${userId},user_id.is.null`);
+          q = q.or(`profile_id.eq.${userId},profile_id.is.null`);
         }
 
         const { data } = await q;
