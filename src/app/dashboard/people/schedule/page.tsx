@@ -700,6 +700,7 @@ function SortableStaffRow({
   onSetCopyingShift,
   isDateClosed,
   isStaffOnLeave,
+  getLeaveLabel,
 }: {
   item: RosterItem;
   index: number;
@@ -715,6 +716,7 @@ function SortableStaffRow({
   onSetCopyingShift: (shift: Shift) => void;
   isDateClosed: (dateStr: string) => boolean;
   isStaffOnLeave: (profileId: string, dateStr: string) => boolean;
+  getLeaveLabel: (profileId: string, dateStr: string) => string;
 }) {
   const {
     attributes,
@@ -823,7 +825,12 @@ function SortableStaffRow({
                 ))}
                 {personShifts.length === 0 && (
                   <div className={`text-[10px] ${isOnLeave ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-theme-secondary'}`}>
-                    {isOnLeave ? `🏖️ ${getLeaveLabel(person.id, ds)}` : '+'}
+                    {isOnLeave ? (
+                      <span className="flex items-center gap-0.5">
+                        <UserX className="w-3 h-3 inline-block" />
+                        {getLeaveLabel(person.id, ds)}
+                      </span>
+                    ) : '+'}
                   </div>
                 )}
               </div>
@@ -5073,6 +5080,7 @@ export default function RotaBuilderPage() {
                         onSetCopyingShift={setCopyingShift}
                         isDateClosed={isDateClosed}
                         isStaffOnLeave={isStaffOnLeave}
+                        getLeaveLabel={getLeaveLabel}
                       />
                     );
                   })}
