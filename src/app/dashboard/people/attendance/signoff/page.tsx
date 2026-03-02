@@ -968,7 +968,7 @@ export default function AttendanceSignOffPage() {
           const { data: newRecord, error } = await supabase
             .from('staff_attendance')
             .insert({
-              user_id: staffId,
+              profile_id: staffId,
               company_id: companyId,
               site_id: selectedSiteId,
               clock_in_time: clockInTime,
