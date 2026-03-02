@@ -453,22 +453,22 @@ export default function PayRatesPage() {
                               ? formatCurrency(rate.base_rate) + '/year'
                               : formatCurrency(rate.base_rate) + (rate.pay_type === 'hourly' ? '/hr' : '/day')
                           ) : (
-                            <span className="text-theme-tertiary/30">—</span>
+                            <span className="text-theme-tertiary/30">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-theme-secondary">
                           {rate?.overtime_multiplier ? `${rate.overtime_multiplier}x` : (
-                            <span className="text-theme-tertiary/30">—</span>
+                            <span className="text-theme-tertiary/30">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-theme-secondary">
                           {rate?.contracted_hours_per_week ? `${rate.contracted_hours_per_week}h` : (
-                            <span className="text-theme-tertiary/30">—</span>
+                            <span className="text-theme-tertiary/30">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-theme-secondary">
                           {rate?.effective_from ? formatDate(rate.effective_from) : (
-                            <span className="text-theme-tertiary/30">—</span>
+                            <span className="text-theme-tertiary/30">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-right">

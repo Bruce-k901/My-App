@@ -295,7 +295,7 @@ export default function NonConformanceDetailPage({ params }: { params: Promise<{
           <div className="text-sm space-y-2">
             <div className="flex justify-between">
               <span className="text-theme-tertiary">Closed at</span>
-              <span className="text-theme-primary font-medium">{nc.closed_at ? new Date(nc.closed_at).toLocaleDateString() : '—'}</span>
+              <span className="text-theme-primary font-medium">{nc.closed_at ? new Date(nc.closed_at).toLocaleDateString() : '-'}</span>
             </div>
             {nc.corrective_action_completed_at && (
               <div className="flex justify-between">

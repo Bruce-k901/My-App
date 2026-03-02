@@ -219,7 +219,7 @@ export default function CreditNotesPage() {
   }
 
   function formatCurrency(amount?: number) {
-    if (amount === null || amount === undefined) return '—';
+    if (amount === null || amount === undefined) return '-';
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
@@ -227,7 +227,7 @@ export default function CreditNotesPage() {
   }
 
   function formatDate(dateString?: string) {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
@@ -437,10 +437,10 @@ export default function CreditNotesPage() {
                         {formatDate(cn.request_date)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
-                        {cn.supplier?.name || '—'}
+                        {cn.supplier?.name || '-'}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {cn.delivery?.invoice_number || '—'}
+                        {cn.delivery?.invoice_number || '-'}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium text-right">
                         {formatCurrency(cn.total)}

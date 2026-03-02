@@ -42,7 +42,7 @@ export default function DayCard({
   
   // Format time from ISO string or TIME
   function formatTime(time: string | null): string {
-    if (!time) return '—';
+    if (!time) return '-';
     if (time.includes('T')) {
       return new Date(time).toLocaleTimeString('en-GB', { 
         hour: '2-digit', 
@@ -54,7 +54,7 @@ export default function DayCard({
   
   // Format hours nicely
   function formatHours(hours: number | null): string {
-    if (hours === null || hours === undefined) return '—';
+    if (hours === null || hours === undefined) return '-';
     return `${hours.toFixed(2)}h`;
   }
   
@@ -243,7 +243,7 @@ export default function DayCard({
                       ) : record.signedOff ? (
                         <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                       ) : (
-                        <span className="text-theme-tertiary">—</span>
+                        <span className="text-theme-tertiary">-</span>
                       )}
                     </td>
                     

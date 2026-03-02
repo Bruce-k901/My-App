@@ -1707,7 +1707,7 @@ export default function DeliveryReviewPage() {
   }
 
   function formatCurrency(amount?: number) {
-    if (amount === null || amount === undefined) return '—';
+    if (amount === null || amount === undefined) return '-';
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
@@ -1715,7 +1715,7 @@ export default function DeliveryReviewPage() {
   }
 
   function formatDate(dateString?: string) {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
@@ -2110,7 +2110,7 @@ export default function DeliveryReviewPage() {
                         </td>
                         <td className="px-2 py-2 text-sm text-theme-primary">{line.description}</td>
                         <td className="px-2 py-2 text-sm text-theme-secondary">
-                          {line.supplier_code || '—'}
+                          {line.supplier_code || '-'}
                         </td>
                         {purchaseOrder && (() => {
                           // Find matching PO line - try by product_variant_id first, then supplier_code, then ingredient name
@@ -2167,7 +2167,7 @@ export default function DeliveryReviewPage() {
                             <>
                               {/* Ordered (PO Qty) */}
                               <td className="px-2 py-2 text-sm text-blue-400 text-right">
-                                {poLine ? poQty : '—'}
+                                {poLine ? poQty : '-'}
                               </td>
                               {/* Delivered */}
                               <td className="px-2 py-2 text-sm text-theme-primary text-right">
@@ -2185,15 +2185,15 @@ export default function DeliveryReviewPage() {
                                       {isShort ? `${qtyVariance}` : `+${qtyVariance}`}
                                     </span>
                                   ) : (
-                                    <span className="text-xs text-green-400">—</span>
+                                    <span className="text-xs text-green-400">-</span>
                                   )
                                 ) : (
-                                  <span className="text-xs text-theme-tertiary">—</span>
+                                  <span className="text-xs text-theme-tertiary">-</span>
                                 )}
                               </td>
                               {/* PO Price */}
                               <td className="px-2 py-2 text-sm text-blue-400 text-right">
-                                {poLine && poPrice > 0 ? formatCurrency(poPrice) : '—'}
+                                {poLine && poPrice > 0 ? formatCurrency(poPrice) : '-'}
                               </td>
                               {/* Invoice Price */}
                               <td className="px-2 py-2 text-sm text-theme-primary text-right">
@@ -2211,10 +2211,10 @@ export default function DeliveryReviewPage() {
                                       {priceUp ? '+' : ''}{formatCurrency(priceVariance)}
                                     </span>
                                   ) : (
-                                    <span className="text-xs text-green-400">—</span>
+                                    <span className="text-xs text-green-400">-</span>
                                   )
                                 ) : (
-                                  <span className="text-xs text-theme-tertiary">—</span>
+                                  <span className="text-xs text-theme-tertiary">-</span>
                                 )}
                               </td>
                             </>
@@ -2252,7 +2252,7 @@ export default function DeliveryReviewPage() {
                             const validName = candidates.find(
                               (name) => name && name !== 'Unknown Item' && name.trim() !== ''
                             );
-                            return validName || '—';
+                            return validName || '-';
                           })()}
                         </td>
                         <td className="px-2 py-2 whitespace-nowrap text-center">

@@ -23,7 +23,7 @@ export function HealthCheckProgress({ report }: HealthCheckProgressProps) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-theme-secondary">Health Score</span>
           <span className="text-2xl font-bold text-theme-primary">
-            {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
+            {report.health_score != null ? `${Math.round(report.health_score)}%` : '-'}
           </span>
           {scoreDelta != null && scoreDelta !== 0 && (
             <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-600 dark:text-red-400'}`}>

@@ -633,7 +633,7 @@ export default function StockItemsPage() {
   }
 
   function formatCurrency(value: number | null | undefined): string {
-    if (value === null || value === undefined) return '—';
+    if (value === null || value === undefined) return '-';
     return `£${value.toFixed(2)}`;
   }
 
@@ -1065,10 +1065,10 @@ export default function StockItemsPage() {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-theme-secondary text-sm">
-                        {item.category?.name || '—'}
+                        {item.category?.name || '-'}
                       </td>
                       <td className="px-4 py-4 text-theme-secondary text-sm">
-                        {item.base_unit?.abbreviation || '—'}
+                        {item.base_unit?.abbreviation || '-'}
                       </td>
                       <td className="px-4 py-4 text-theme-secondary text-sm">
                         {formatCurrency(item.current_cost)}
@@ -1078,7 +1078,7 @@ export default function StockItemsPage() {
                           <span className="text-theme-secondary text-sm">
                             {item.par_level !== null && item.par_level !== undefined
                               ? item.par_level
-                              : '—'}
+                              : '-'}
                           </span>
                           {item.track_stock && item.par_level && item.par_level > 0 && (
                             <AlertCircle className="text-red-600 dark:text-red-400" size={14} />
@@ -1097,7 +1097,7 @@ export default function StockItemsPage() {
                               </span>
                             ))
                           ) : (
-                            <span className="text-theme-tertiary text-xs">—</span>
+                            <span className="text-theme-tertiary text-xs">-</span>
                           )}
                           {item.allergens && item.allergens.length > 3 && (
                             <span className="px-2 py-0.5 text-xs bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded border border-amber-200 dark:border-amber-500/40">

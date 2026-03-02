@@ -89,7 +89,7 @@ export default function DataHealthWidget({ siteId, companyId }: DataHealthWidget
         {/* Score */}
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-[rgb(var(--text-primary))]">
-            {score != null ? `${Math.round(score)}%` : '—'}
+            {score != null ? `${Math.round(score)}%` : '-'}
           </span>
           {scoreDelta != null && scoreDelta !== 0 && (
             <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-400'}`}>

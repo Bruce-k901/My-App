@@ -389,7 +389,7 @@ export default function OvenAndTraysPage() {
                             ))}
                           </div>
                         ) : (
-                          <span className="text-theme-tertiary text-sm">—</span>
+                          <span className="text-theme-tertiary text-sm">-</span>
                         )}
                       </td>
                       <td className="px-4 py-4 text-right">

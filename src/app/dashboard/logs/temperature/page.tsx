@@ -1944,7 +1944,7 @@ export default function TemperatureLogsPage() {
                               <td className="py-3 px-4 font-mono text-base font-semibold text-theme-primary">
                                 {log.reading !== null && log.reading !== undefined
                                   ? `${log.reading}°C`
-                                  : '—'
+                                  : '-'
                                 }
                               </td>
                               
@@ -2016,7 +2016,7 @@ export default function TemperatureLogsPage() {
                                     Yes
                                   </button>
                                 ) : (
-                                  <span className="text-theme-tertiary">—</span>
+                                  <span className="text-theme-tertiary">-</span>
                                 )}
                               </td>
                               
@@ -2039,7 +2039,7 @@ export default function TemperatureLogsPage() {
                                     {log.day_part.replace(/_/g, ' ')}
                                   </span>
                                 ) : (
-                                  <span className="text-theme-tertiary">—</span>
+                                  <span className="text-theme-tertiary">-</span>
                                 )}
                               </td>
                               

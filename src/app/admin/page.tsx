@@ -796,7 +796,7 @@ export default function AdminDashboardPage() {
                   {/* EHO Score Badge */}
                   <div className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center ${getEHOScoreBg(company.eho_score)} border-2 ${company.eho_score !== null && company.eho_score >= 80 ? 'border-green-500/30' : company.eho_score !== null && company.eho_score >= 60 ? 'border-yellow-500/30' : company.eho_score !== null && company.eho_score >= 40 ? 'border-orange-500/30' : 'border-red-500/30'}`}>
                     <span className={`text-xl font-bold ${getEHOScoreColor(company.eho_score)}`}>
-                      {company.eho_score !== null ? company.eho_score : '—'}
+                      {company.eho_score !== null ? company.eho_score : '-'}
                     </span>
                     <span className="text-[10px] text-theme-tertiary font-medium">EHO</span>
                   </div>
@@ -815,7 +815,7 @@ export default function AdminDashboardPage() {
                     <div className="text-center">
                       <div className="text-theme-tertiary mb-1 font-medium">Tasks</div>
                       <div className={`font-semibold ${getEHOScoreColor(company.task_completion_score)}`}>
-                        {company.task_completion_score ?? '—'}%
+                        {company.task_completion_score ?? '-'}%
                       </div>
                     </div>
                     <div className="text-center">

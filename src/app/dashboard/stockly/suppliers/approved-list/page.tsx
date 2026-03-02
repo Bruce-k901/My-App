@@ -180,10 +180,10 @@ export default function ApprovedSupplierListPage() {
                       <span className="hidden print:inline text-xs">{s.risk_rating || 'medium'}</span>
                     </td>
                     <td className="px-4 py-3 text-theme-secondary print:text-gray-600">
-                      {s.approved_at ? new Date(s.approved_at).toLocaleDateString('en-GB') : '—'}
+                      {s.approved_at ? new Date(s.approved_at).toLocaleDateString('en-GB') : '-'}
                     </td>
                     <td className="px-4 py-3 text-theme-secondary print:text-gray-600">
-                      {s.next_review_date ? new Date(s.next_review_date).toLocaleDateString('en-GB') : '—'}
+                      {s.next_review_date ? new Date(s.next_review_date).toLocaleDateString('en-GB') : '-'}
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-theme-secondary print:text-gray-600">

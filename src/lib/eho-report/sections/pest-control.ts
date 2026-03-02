@@ -24,8 +24,8 @@ export function buildPestControlSection(data: EHOReportData): string {
     contractSummary = `
       <div class="info-grid">
         <div class="info-item"><strong>Contractor:</strong> ${c.contractor_name || 'Not specified'}</div>
-        <div class="info-item"><strong>Contract Period:</strong> ${c.contract_start_date || '—'} to ${c.contract_end_date || 'Ongoing'}</div>
-        <div class="info-item"><strong>Routine Visits/Year:</strong> ${c.routine_visits_per_year ?? '—'}</div>
+        <div class="info-item"><strong>Contract Period:</strong> ${c.contract_start_date || '-'} to ${c.contract_end_date || 'Ongoing'}</div>
+        <div class="info-item"><strong>Routine Visits/Year:</strong> ${c.routine_visits_per_year ?? '-'}</div>
         <div class="info-item"><strong>Insurance:</strong> ${insuranceStatus}${c.insurance_expiry_date ? ` (expires ${c.insurance_expiry_date})` : ''}</div>
         <div class="info-item"><strong>Certifications:</strong> ${certBadges.join(' ')}</div>
         ${c.coverage_includes?.length ? `<div class="info-item"><strong>Coverage:</strong> ${c.coverage_includes.join(', ')}</div>` : ''}

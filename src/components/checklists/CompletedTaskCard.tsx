@@ -1472,7 +1472,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                                   {temp.range.min}°C to {temp.range.max}°C
                                 </div>
                               ) : (
- <span className="text-sm text-gray-400 dark:text-theme-tertiary">—</span>
+ <span className="text-sm text-gray-400 dark:text-theme-tertiary">-</span>
                               )}
                             </td>
 

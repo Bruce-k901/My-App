@@ -1216,7 +1216,7 @@ export default function PurchaseOrderDetailPage() {
                       </div>
                       
                       <div className="col-span-2 text-right text-sm text-theme-primary font-medium">
-                        {item.current_price ? `£${item.current_price.toFixed(2)}` : '—'}
+                        {item.current_price ? `£${item.current_price.toFixed(2)}` : '-'}
                       </div>
                       
                       <div className="col-span-2">

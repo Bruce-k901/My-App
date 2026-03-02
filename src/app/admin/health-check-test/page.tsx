@@ -752,7 +752,7 @@ export default function HealthCheckTestPage() {
                           : report.health_score != null && report.health_score >= 50 ? 'text-amber-400'
                           : 'text-red-400'
                         }`}>
-                          {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
+                          {report.health_score != null ? `${Math.round(report.health_score)}%` : '-'}
                         </span>
                         {scoreDelta != null && scoreDelta !== 0 && (
                           <div className={`text-[10px] ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-400'}`}>

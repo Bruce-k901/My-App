@@ -251,13 +251,13 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
             <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Planned Qty</p>
               <p className="text-lg font-semibold text-theme-primary">
-                {batch.planned_quantity ?? '—'} {batch.unit || ''}
+                {batch.planned_quantity ?? '-'} {batch.unit || ''}
               </p>
             </div>
             <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Actual Qty</p>
               <p className="text-lg font-semibold text-theme-primary">
-                {batch.actual_quantity ?? '—'} {batch.unit || ''}
+                {batch.actual_quantity ?? '-'} {batch.unit || ''}
               </p>
               {!batch.actual_quantity && batch.status !== 'completed' && batch.status !== 'cancelled' && (
                 <p className="text-[10px] text-theme-tertiary mt-1">Calculated on completion from outputs</p>
@@ -268,7 +268,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.planned_quantity && batch.actual_quantity
                   ? `${((batch.actual_quantity / batch.planned_quantity) * 100).toFixed(1)}%`
-                  : '—'}
+                  : '-'}
               </p>
               {!batch.actual_quantity && batch.status !== 'completed' && batch.status !== 'cancelled' && (
                 <p className="text-[10px] text-theme-tertiary mt-1">Calculated on completion</p>
@@ -325,11 +325,11 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-xs text-theme-tertiary">Started</p>
-                <p className="text-theme-primary">{batch.started_at ? new Date(batch.started_at).toLocaleString('en-GB') : '—'}</p>
+                <p className="text-theme-primary">{batch.started_at ? new Date(batch.started_at).toLocaleString('en-GB') : '-'}</p>
               </div>
               <div>
                 <p className="text-xs text-theme-tertiary">Completed</p>
-                <p className="text-theme-primary">{batch.completed_at ? new Date(batch.completed_at).toLocaleString('en-GB') : '—'}</p>
+                <p className="text-theme-primary">{batch.completed_at ? new Date(batch.completed_at).toLocaleString('en-GB') : '-'}</p>
               </div>
             </div>
           </div>

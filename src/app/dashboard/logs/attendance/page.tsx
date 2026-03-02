@@ -207,14 +207,14 @@ export default function AttendanceLogsPage() {
   }
 
   function formatDuration(hours: number | null): string {
-    if (hours === null) return '—';
+    if (hours === null) return '-';
     const h = Math.floor(hours);
     const m = Math.floor((hours - h) * 60);
     return `${h}h ${m}m`;
   }
 
   function formatDateTime(dateString: string | null): string {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     try {
       return formatDate(new Date(dateString), 'd MMM yyyy, HH:mm');
     } catch (e) {
@@ -376,7 +376,7 @@ export default function AttendanceLogsPage() {
                         className="border-b border-white/[0.05] hover:bg-white/[0.05] transition-colors"
                       >
                         <td className="py-3 px-4 text-theme-secondary text-sm">
-                          {record.clock_in_time ? formatDate(new Date(record.clock_in_time), 'd MMM yyyy') : '—'}
+                          {record.clock_in_time ? formatDate(new Date(record.clock_in_time), 'd MMM yyyy') : '-'}
                         </td>
                         {isManager && (
                           <td className="py-3 px-4 text-theme-secondary text-sm">

@@ -61,11 +61,11 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mb-3">
             <div>
               <span className="text-theme-tertiary text-xs uppercase tracking-wide">Region</span>
-              <div className="text-theme-primary mt-0.5">{site.region || "—"}</div>
+              <div className="text-theme-primary mt-0.5">{site.region || "-"}</div>
             </div>
             <div>
               <span className="text-theme-tertiary text-xs uppercase tracking-wide">City</span>
-              <div className="text-theme-primary mt-0.5">{site.city || "—"}</div>
+              <div className="text-theme-primary mt-0.5">{site.city || "-"}</div>
             </div>
           </div>
 
@@ -126,9 +126,9 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                         if (!info || typeof info !== "object") return null;
 
                         const formatTime = (obj: any) => {
-                          if (!obj || typeof obj !== "object") return "—";
+                          if (!obj || typeof obj !== "object") return "-";
                           const { hh, mm } = obj;
-                          if (hh == null || mm == null) return "—";
+                          if (hh == null || mm == null) return "-";
                           return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
                         };
 

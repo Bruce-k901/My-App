@@ -119,10 +119,10 @@ export default function EmergencyBreakdowns() {
           <tbody>
             {data.map((b) => (
               <tr key={b.id} className="border-b border-white/[0.05] hover:bg-white/[0.05] transition-colors">
-                <td className="py-2">{b.sites?.name || "—"}</td>
-                <td className="py-2">{b.assets?.name || "—"}</td>
+                <td className="py-2">{b.sites?.name || "-"}</td>
+                <td className="py-2">{b.assets?.name || "-"}</td>
                 <td className="py-2">{b.name}</td>
-                <td className="py-2 text-theme-tertiary">{b.notes || "—"}</td>
+                <td className="py-2 text-theme-tertiary">{b.notes || "-"}</td>
                 <td className="py-2 text-theme-tertiary">
                   {formatDistanceToNow(new Date(b.created_at), { addSuffix: true })}
                 </td>

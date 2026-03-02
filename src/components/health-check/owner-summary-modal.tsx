@@ -143,7 +143,7 @@ export function OwnerSummaryModal({ open, onClose, companyId }: OwnerSummaryModa
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                 <div className="text-3xl font-bold text-theme-primary">
-                  {report.healthScore != null ? `${Math.round(report.healthScore)}%` : '—'}
+                  {report.healthScore != null ? `${Math.round(report.healthScore)}%` : '-'}
                 </div>
                 {scoreDelta != null && scoreDelta !== 0 && (
                   <div className={`text-xs font-medium mt-1 ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-600 dark:text-red-400'}`}>

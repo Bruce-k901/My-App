@@ -183,12 +183,12 @@ export default function ArchivedAssetsPage() {
   });
 
   const formatYears = (years?: number) => {
-    if (!years) return "—";
+    if (!years) return "-";
     return years === 1 ? "1 yr" : `${years} yrs`;
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "—";
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -259,13 +259,13 @@ export default function ArchivedAssetsPage() {
                     <div className="mt-1 text-sm text-theme-secondary">
                       <div className="flex flex-wrap gap-3">
                         <span className="text-theme-secondary">
-                          Model: <span className="text-theme-primary">{asset.model || "—"}</span>
+                          Model: <span className="text-theme-primary">{asset.model || "-"}</span>
                         </span>
                         <span className="text-theme-secondary">
-                          Serial: <span className="text-theme-primary">{asset.serial_number || "—"}</span>
+                          Serial: <span className="text-theme-primary">{asset.serial_number || "-"}</span>
                         </span>
                         <span className="text-theme-secondary">
-                          Category: <span className="text-theme-primary capitalize">{asset.category || "—"}</span>
+                          Category: <span className="text-theme-primary capitalize">{asset.category || "-"}</span>
                         </span>
                         <span className="text-theme-secondary">
                           Archived: <span className="text-theme-primary">{formatDate(asset.archived_at)}</span>
@@ -299,7 +299,7 @@ export default function ArchivedAssetsPage() {
                         <div className="space-y-1">
                           <div className="flex justify-between">
                             <span className="text-theme-tertiary">Status:</span>
-                            <span className="text-theme-primary">{asset.status || "—"}</span>
+                            <span className="text-theme-primary">{asset.status || "-"}</span>
                           </div>
                           {asset.notes && (
                              <div className="flex justify-between">

@@ -4856,7 +4856,7 @@ export default function RotaBuilderPage() {
           )}
           <div className="print-only text-sm">
             <span className="font-semibold">Site:</span>{' '}
-            {sites.find((s) => s.id === selectedSite)?.name || '—'}
+            {sites.find((s) => s.id === selectedSite)?.name || '-'}
           </div>
           <div className="print-only text-sm">
             <span className="font-semibold">Week:</span>{' '}
@@ -5273,7 +5273,7 @@ export default function RotaBuilderPage() {
                 <div className="sticky bottom-0 z-10 bg-theme-button border-t border-theme">
                   <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] divide-x divide-theme">
                     <div className="px-3 py-2 text-xs font-bold text-theme-secondary">Totals</div>
-                    <div className="px-3 py-2 text-xs font-bold text-theme-secondary text-center">—</div>
+                    <div className="px-3 py-2 text-xs font-bold text-theme-secondary text-center">-</div>
                     {weekDays.map((d) => {
                       const ds = d.toISOString().split('T')[0];
                       const isClosed = isDateClosed(ds);
@@ -5556,7 +5556,7 @@ export default function RotaBuilderPage() {
               <TrendingUp className="w-4 h-4 text-theme-secondary" />
               <span className="text-theme-secondary">Forecast Sales:</span>
               <span className="text-theme-primary font-bold">
-                {totalForecastRevenue > 0 ? `£${(totalForecastRevenue / 100).toFixed(0)}` : '—'}
+                {totalForecastRevenue > 0 ? `£${(totalForecastRevenue / 100).toFixed(0)}` : '-'}
               </span>
             </div>
 
@@ -5564,7 +5564,7 @@ export default function RotaBuilderPage() {
               <Target className="w-4 h-4 text-theme-secondary" />
               <span className="text-theme-secondary">Labour %:</span>
               <span className="text-theme-primary font-bold">
-                {totalLabourPct !== null ? `${totalLabourPct.toFixed(1)}%` : '—'}
+                {totalLabourPct !== null ? `${totalLabourPct.toFixed(1)}%` : '-'}
               </span>
             </div>
 

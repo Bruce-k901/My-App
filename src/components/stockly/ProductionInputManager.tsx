@@ -667,7 +667,7 @@ export default function ProductionInputManager({
                         {allocations.map(alloc => (
                           <div key={alloc.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-xs">
-                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '—'}</span>
+                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '-'}</span>
                               <span className="text-theme-secondary">
                                 {alloc.actual_quantity || alloc.planned_quantity} {alloc.unit || display.unit}
                               </span>
@@ -735,7 +735,7 @@ export default function ProductionInputManager({
                           <div key={alloc.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-xs">
                               <CheckCircle className="w-3 h-3 text-emerald-500" />
-                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '—'}</span>
+                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '-'}</span>
                               <span className="text-theme-secondary">
                                 {alloc.actual_quantity || alloc.planned_quantity} {alloc.unit || display.unit}
                               </span>

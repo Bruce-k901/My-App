@@ -99,7 +99,7 @@ export default function CustomerTable({
   };
 
   const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     try {
       return new Date(dateString).toLocaleDateString('en-GB', {
         day: 'numeric',
@@ -107,12 +107,12 @@ export default function CustomerTable({
         year: 'numeric',
       });
     } catch {
-      return '—';
+      return '-';
     }
   };
 
   const formatRelativeTime = (dateString: string | null | undefined) => {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     try {
       const date = new Date(dateString);
       const now = new Date();
@@ -125,7 +125,7 @@ export default function CustomerTable({
       if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
       return formatDate(dateString);
     } catch {
-      return '—';
+      return '-';
     }
   };
 

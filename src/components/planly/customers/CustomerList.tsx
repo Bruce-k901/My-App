@@ -351,18 +351,18 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                   )}
                 </p>
                 <p className="text-sm text-theme-tertiary">
-                  {customer.contact_name || '—'}
+                  {customer.contact_name || '-'}
                 </p>
               </div>
 
               <div className="hidden sm:block">
-                <p className="text-sm text-theme-secondary">{customer.address || '—'}</p>
-                <p className="text-sm text-theme-tertiary">{customer.postcode || '—'}</p>
+                <p className="text-sm text-theme-secondary">{customer.address || '-'}</p>
+                <p className="text-sm text-theme-tertiary">{customer.postcode || '-'}</p>
               </div>
 
               <div className="hidden lg:block">
-                <p className="text-sm text-theme-secondary">{customer.email || '—'}</p>
-                <p className="text-sm text-theme-tertiary">{customer.phone || '—'}</p>
+                <p className="text-sm text-theme-secondary">{customer.email || '-'}</p>
+                <p className="text-sm text-theme-tertiary">{customer.phone || '-'}</p>
               </div>
 
               <div className="hidden lg:block">

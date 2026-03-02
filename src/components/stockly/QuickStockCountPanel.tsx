@@ -454,7 +454,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                         </div>
                       </>
                     ) : (
-                      <div className="col-span-4 text-right text-theme-disabled text-xs">—</div>
+                      <div className="col-span-4 text-right text-theme-disabled text-xs">-</div>
                     )}
                   </div>
                 </div>

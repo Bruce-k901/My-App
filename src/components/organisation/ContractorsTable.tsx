@@ -236,10 +236,10 @@ export default function ContractorsTable() {
                 <td className="px-3 py-2 text-white/90">{r.category}</td>
                 <td className="px-3 py-2 text-theme-primary">{r.name}</td>
                 <td className="px-3 py-2 text-theme-secondary">{r.regions_covered?.[0] || "Unknown"}</td>
-                <td className="px-3 py-2 text-theme-secondary">{r.contact_name || "—"}</td>
-                <td className="px-3 py-2 text-theme-secondary">{r.email || "—"}</td>
-                <td className="px-3 py-2 text-theme-secondary">{r.phone || "—"}</td>
-                <td className="px-3 py-2 text-theme-secondary">{r.contract_expiry || "—"}</td>
+                <td className="px-3 py-2 text-theme-secondary">{r.contact_name || "-"}</td>
+                <td className="px-3 py-2 text-theme-secondary">{r.email || "-"}</td>
+                <td className="px-3 py-2 text-theme-secondary">{r.phone || "-"}</td>
+                <td className="px-3 py-2 text-theme-secondary">{r.contract_expiry || "-"}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
                     <Button

@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
       // Send to each manager
       for (const manager of managers) {
         if (!manager.email) continue
-        const subject = `Shift Pulse Weekly \u2014 ${siteLabel} \u2014 ${dateRangeLabel}`
+        const subject = `Shift Pulse Weekly - ${siteLabel} - ${dateRangeLabel}`
         await sendEmail({ to: manager.email, subject, html })
         emailsSent++
       }

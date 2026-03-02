@@ -171,7 +171,7 @@ export default function DeliveriesPage() {
   }
 
   function formatCurrency(amount?: number) {
-    if (amount === null || amount === undefined) return '—';
+    if (amount === null || amount === undefined) return '-';
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
@@ -179,7 +179,7 @@ export default function DeliveriesPage() {
   }
 
   function formatDate(dateString?: string) {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
@@ -392,10 +392,10 @@ export default function DeliveriesPage() {
                         {formatDate(delivery.delivery_date)}
                       </td>
                       <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap text-sm text-theme-primary">
-                        {delivery.supplier?.name || '—'}
+                        {delivery.supplier?.name || '-'}
                       </td>
                       <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {delivery.invoice_number || '—'}
+                        {delivery.invoice_number || '-'}
                       </td>
                       <td className="hidden md:table-cell px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {delivery.lines?.[0]?.count || 0} items

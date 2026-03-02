@@ -188,7 +188,7 @@ export function ComplianceTable({ employees, onAction }: ComplianceTableProps) {
                         )}
                       </div>
                       <div className="px-4 py-3 hidden md:block">
-                        <span className="text-xs text-theme-secondary">{emp.department || '—'}</span>
+                        <span className="text-xs text-theme-secondary">{emp.department || '-'}</span>
                       </div>
                       <div className="px-4 py-3"><StatusIcon status={emp.rtw} /></div>
                       <div className="px-4 py-3"><StatusIcon status={emp.dbs} /></div>

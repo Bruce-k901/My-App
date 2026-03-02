@@ -253,7 +253,7 @@ export default function CustomPricingPage() {
                           <div className="text-xs text-theme-tertiary">per {product.unit}</div>
                         </div>
                       ) : (
-                        <span className="text-theme-tertiary">—</span>
+                        <span className="text-theme-tertiary">-</span>
                       )}
                     </td>
 
@@ -264,7 +264,7 @@ export default function CustomPricingPage() {
                           {product.discount_percent.toFixed(1)}% off
                         </span>
                       ) : (
-                        <span className="text-theme-tertiary">—</span>
+                        <span className="text-theme-tertiary">-</span>
                       )}
                     </td>
 

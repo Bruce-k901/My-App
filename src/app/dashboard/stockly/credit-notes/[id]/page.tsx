@@ -248,7 +248,7 @@ export default function CreditNoteDetailPage() {
   }
 
   function formatCurrency(amount?: number) {
-    if (amount === null || amount === undefined) return '—';
+    if (amount === null || amount === undefined) return '-';
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
@@ -256,7 +256,7 @@ export default function CreditNoteDetailPage() {
   }
 
   function formatDate(dateString?: string) {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',

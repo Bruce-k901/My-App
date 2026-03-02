@@ -93,7 +93,7 @@ export default function CalculatorKeypad({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-theme-primary truncate">{itemName}</p>
             <p className="text-xs text-theme-tertiary">
-              Expected: {expectedQty ?? '—'} {unit}
+              Expected: {expectedQty ?? '-'} {unit}
             </p>
           </div>
           <button

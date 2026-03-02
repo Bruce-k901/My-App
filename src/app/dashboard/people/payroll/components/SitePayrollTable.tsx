@@ -76,7 +76,7 @@ export default function SitePayrollTable({ site }: Props) {
                   {formatHours(emp.hoursWorked)}
                 </td>
                 <td className="px-4 py-3 text-right text-theme-primary/60">
-                  {emp.holidayHours > 0 ? formatHours(emp.holidayHours) : '—'}
+                  {emp.holidayHours > 0 ? formatHours(emp.holidayHours) : '-'}
                 </td>
                 <td className="px-4 py-3 text-right text-theme-primary">
                   {emp.payType === 'salaried' 
@@ -113,7 +113,7 @@ export default function SitePayrollTable({ site }: Props) {
               <td className="px-4 py-3 text-right text-theme-primary">
                 {formatHours(site.employees.reduce((sum, e) => sum + e.holidayHours, 0))}
               </td>
-              <td className="px-4 py-3 text-right text-theme-primary/60">—</td>
+              <td className="px-4 py-3 text-right text-theme-primary/60">-</td>
               <td className="px-4 py-3 text-right text-theme-primary">{formatCurrency(site.totalGrossPay)}</td>
               <td className="px-4 py-3 text-right" colSpan={2}></td>
               <td className="px-4 py-3 text-right text-blue-600 dark:text-blue-400">

@@ -87,12 +87,12 @@ export default function ContractorsPage() {
         name: row.name || "(Unnamed Contractor)",
         contact_name: row.contact_name || "",
         address: row.address || "",
-        category: row.category || row.contractor_categories?.name || "—", // Use direct category field first, fallback to join
+        category: row.category || row.contractor_categories?.name || "-", // Use direct category field first, fallback to join
         email: row.email || "",
         phone: row.phone || "",
         ooh_phone: row.ooh_phone || "",
         postcode: row.postcode || "",
-        region: row.region || "—",
+        region: row.region || "-",
         website: row.website || "",
         hourly_rate: row.hourly_rate ?? null,
         callout_fee: row.callout_fee ?? null,

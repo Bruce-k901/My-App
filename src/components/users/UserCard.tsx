@@ -40,7 +40,7 @@ export default function UserCard({ user }: { user: any }) {
 
         {user.position_title && (
           <p>
-            {user.position_title} — {user.boh_foh || "N/A"}
+            {user.position_title} - {user.boh_foh || "N/A"}
           </p>
         )}
 

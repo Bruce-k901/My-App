@@ -166,7 +166,7 @@ export default function AdminUsersPage() {
                       {user.company_name}
                     </div>
                   ) : (
-                    <span className="text-theme-tertiary">—</span>
+                    <span className="text-theme-tertiary">-</span>
                   )}
                 </td>
                 <td className="p-4">

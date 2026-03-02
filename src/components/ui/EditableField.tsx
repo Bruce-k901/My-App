@@ -61,7 +61,7 @@ export default function EditableField({
     setEditing(false);
   };
 
-  const displayValue = value || '—';
+  const displayValue = value || '-';
 
   if (!editing) {
     return (

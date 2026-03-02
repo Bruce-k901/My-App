@@ -151,7 +151,7 @@ export default function ShiftPatternForm({ pattern, onSubmit, onClose, isSubmitt
             <div className="w-3 h-8 rounded" style={{ backgroundColor: color }} />
             <div className="flex-1">
               <p className="text-sm font-medium text-theme-primary">
-                {shortCode || name.substring(0, 4).toUpperCase() || '—'}: {formatTime(startTime)} – {formatTime(endTime)}
+                {shortCode || name.substring(0, 4).toUpperCase() || '-'}: {formatTime(startTime)} - {formatTime(endTime)}
               </p>
               <p className="text-xs text-theme-tertiary">
                 {netHours}h net ({breakMins}min break)

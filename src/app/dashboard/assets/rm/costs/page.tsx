@@ -194,12 +194,12 @@ export default function RMCostsPage() {
                       <td className="px-4 py-2 font-mono text-xs text-theme-tertiary">{wo.wo_number}</td>
                       <td className="px-4 py-2 text-theme-primary truncate max-w-[200px]">{wo.title}</td>
                       <td className="px-4 py-2 text-theme-tertiary">{WO_TYPE_CONFIG[wo.wo_type]?.label}</td>
-                      <td className="px-4 py-2 text-theme-tertiary">{wo.contractor_name || '—'}</td>
+                      <td className="px-4 py-2 text-theme-tertiary">{wo.contractor_name || '-'}</td>
                       <td className="px-4 py-2 text-right text-theme-tertiary">
-                        {wo.estimated_cost ? `£${wo.estimated_cost.toFixed(2)}` : '—'}
+                        {wo.estimated_cost ? `£${wo.estimated_cost.toFixed(2)}` : '-'}
                       </td>
                       <td className="px-4 py-2 text-right font-medium text-theme-primary">
-                        {wo.actual_cost ? `£${wo.actual_cost.toFixed(2)}` : '—'}
+                        {wo.actual_cost ? `£${wo.actual_cost.toFixed(2)}` : '-'}
                       </td>
                       <td className="px-4 py-2">
                         <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${WO_STATUS_CONFIG[wo.status]?.bgColour} ${WO_STATUS_CONFIG[wo.status]?.colour}`}>

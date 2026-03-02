@@ -124,7 +124,7 @@ export default function WeeklyEmployeeView({
 
   // Format time from various formats to HH:MM
   function formatTime(time: string | null): string {
-    if (!time) return '—';
+    if (!time) return '-';
 
     // If it's an ISO timestamp
     if (time.includes('T')) {

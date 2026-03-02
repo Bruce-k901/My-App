@@ -234,7 +234,7 @@ export default function NonConformancesPage() {
                           {isOverdue && ' (overdue)'}
                         </span>
                       ) : (
-                        <span className="text-theme-tertiary">—</span>
+                        <span className="text-theme-tertiary">-</span>
                       )}
                     </td>
                     <td className="py-3 text-right text-theme-secondary">{getDaysOpen(nc)}</td>

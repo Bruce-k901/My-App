@@ -138,7 +138,7 @@ export function SiteDetailDialog({ open, onClose, siteId, siteName, companyId }:
                     ? 'bg-amber-500/10 text-amber-400'
                     : 'bg-module-fg/10 text-module-fg'
                 }`}>
-                  {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
+                  {report.health_score != null ? `${Math.round(report.health_score)}%` : '-'}
                 </span>
               )}
             </DialogTitle>

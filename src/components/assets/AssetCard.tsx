@@ -427,7 +427,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                     />
                     <EditableField
                       label="PPM Frequency"
-                      value={asset.ppm_frequency_months ? `every ${asset.ppm_frequency_months} months` : '—'}
+                      value={asset.ppm_frequency_months ? `every ${asset.ppm_frequency_months} months` : '-'}
                       type="text"
                       onSave={(value) => {
                         // Extract number from "every X months" format or just number

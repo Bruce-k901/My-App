@@ -51,7 +51,7 @@ export default function AdminDashboard() {
       <Widget title="Multi-Site Overview">
         <p className="text-theme-secondary text-sm">Summary of sites and active issues.</p>
         <ul className="text-sm text-theme-secondary space-y-2 mt-2">
-          <li className="flex justify-between"><span>Sites</span><span className="text-theme-tertiary">—</span></li>
+          <li className="flex justify-between"><span>Sites</span><span className="text-theme-tertiary">-</span></li>
           <li className="flex justify-between"><span>Open incidents</span><span className="text-theme-tertiary">{incidents.length}</span></li>
           <li className="flex justify-between"><span>Registered assets</span><span className="text-theme-tertiary">{assets.length}</span></li>
         </ul>

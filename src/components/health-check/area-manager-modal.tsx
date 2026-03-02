@@ -142,7 +142,7 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
               <div className="grid grid-cols-4 gap-3">
                 <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-center">
                   <div className={`text-2xl font-bold ${getScoreColor(avgScore)}`}>
-                    {avgScore != null ? `${Math.round(avgScore)}%` : '—'}
+                    {avgScore != null ? `${Math.round(avgScore)}%` : '-'}
                   </div>
                   <div className="text-[10px] text-theme-tertiary mt-1">Avg Score</div>
                 </div>
@@ -192,7 +192,7 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
                           )}
                         </div>
                         <span className={`text-lg font-bold ${getScoreColor(site.healthScore)}`}>
-                          {site.healthScore != null ? `${Math.round(site.healthScore)}%` : '—'}
+                          {site.healthScore != null ? `${Math.round(site.healthScore)}%` : '-'}
                         </span>
                       </div>
 

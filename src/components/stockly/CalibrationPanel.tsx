@@ -129,7 +129,7 @@ export default function CalibrationPanel({ assetId, assetName }: CalibrationPane
                 <tr key={cal.id} className="border-b border-theme/50">
                   <td className="py-2 text-theme-primary">{new Date(cal.calibration_date).toLocaleDateString()}</td>
                   <td className="py-2 text-theme-primary">{cal.calibrated_by}</td>
-                  <td className="py-2 text-theme-tertiary">{cal.method?.replace(/_/g, ' ') || '—'}</td>
+                  <td className="py-2 text-theme-tertiary">{cal.method?.replace(/_/g, ' ') || '-'}</td>
                   <td className="py-2">
                     <span className={`inline-flex items-center gap-1 text-xs font-medium ${
                       cal.result === 'pass' ? 'text-green-600 dark:text-green-400' :
@@ -140,8 +140,8 @@ export default function CalibrationPanel({ assetId, assetName }: CalibrationPane
                       {cal.result.charAt(0).toUpperCase() + cal.result.slice(1)}
                     </span>
                   </td>
-                  <td className="py-2 text-theme-tertiary">{cal.next_calibration_due ? new Date(cal.next_calibration_due).toLocaleDateString() : '—'}</td>
-                  <td className="py-2 text-theme-tertiary">{cal.certificate_reference || '—'}</td>
+                  <td className="py-2 text-theme-tertiary">{cal.next_calibration_due ? new Date(cal.next_calibration_due).toLocaleDateString() : '-'}</td>
+                  <td className="py-2 text-theme-tertiary">{cal.certificate_reference || '-'}</td>
                 </tr>
               ))}
             </tbody>

@@ -31,30 +31,30 @@ export function EmployeeTrainingEditor({
           Training & Certifications
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InfoRow label="Food Safety Level" value={data.food_safety_level ? `Level ${data.food_safety_level}` : '—'} fieldName="food_safety_level" employeeId={employeeId} onUpdate={onUpdate} type="select" options={[
+          <InfoRow label="Food Safety Level" value={data.food_safety_level ? `Level ${data.food_safety_level}` : '-'} fieldName="food_safety_level" employeeId={employeeId} onUpdate={onUpdate} type="select" options={[
             { value: '2', label: 'Level 2' },
             { value: '3', label: 'Level 3' },
             { value: '4', label: 'Level 4' },
             { value: '5', label: 'Level 5' }
           ]} />
-          <InfoRow label="Food Safety Expiry" value={formatDate(data.food_safety_expiry_date) || '—'} fieldName="food_safety_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
-          <InfoRow label="H&S Level" value={data.h_and_s_level ? `Level ${data.h_and_s_level}` : '—'} fieldName="h_and_s_level" employeeId={employeeId} onUpdate={onUpdate} type="select" options={[
+          <InfoRow label="Food Safety Expiry" value={formatDate(data.food_safety_expiry_date) || '-'} fieldName="food_safety_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
+          <InfoRow label="H&S Level" value={data.h_and_s_level ? `Level ${data.h_and_s_level}` : '-'} fieldName="h_and_s_level" employeeId={employeeId} onUpdate={onUpdate} type="select" options={[
             { value: '2', label: 'Level 2' },
             { value: '3', label: 'Level 3' },
             { value: '4', label: 'Level 4' }
           ]} />
-          <InfoRow label="H&S Expiry" value={formatDate(data.h_and_s_expiry_date) || '—'} fieldName="h_and_s_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
+          <InfoRow label="H&S Expiry" value={formatDate(data.h_and_s_expiry_date) || '-'} fieldName="h_and_s_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
           <InfoRow label="Fire Marshal Trained" value={data.fire_marshal_trained ? 'Yes' : 'No'} fieldName="fire_marshal_trained" employeeId={employeeId} onUpdate={onUpdate} type="boolean" />
           {data.fire_marshal_trained && (
-            <InfoRow label="Fire Marshal Expiry" value={formatDate(data.fire_marshal_expiry_date) || '—'} fieldName="fire_marshal_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
+            <InfoRow label="Fire Marshal Expiry" value={formatDate(data.fire_marshal_expiry_date) || '-'} fieldName="fire_marshal_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
           )}
           <InfoRow label="First Aid Trained" value={data.first_aid_trained ? 'Yes' : 'No'} fieldName="first_aid_trained" employeeId={employeeId} onUpdate={onUpdate} type="boolean" />
           {data.first_aid_trained && (
-            <InfoRow label="First Aid Expiry" value={formatDate(data.first_aid_expiry_date) || '—'} fieldName="first_aid_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
+            <InfoRow label="First Aid Expiry" value={formatDate(data.first_aid_expiry_date) || '-'} fieldName="first_aid_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
           )}
           <InfoRow label="COSSH Trained" value={data.cossh_trained ? 'Yes' : 'No'} fieldName="cossh_trained" employeeId={employeeId} onUpdate={onUpdate} type="boolean" />
           {data.cossh_trained && (
-            <InfoRow label="COSSH Expiry" value={formatDate(data.cossh_expiry_date) || '—'} fieldName="cossh_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
+            <InfoRow label="COSSH Expiry" value={formatDate(data.cossh_expiry_date) || '-'} fieldName="cossh_expiry_date" employeeId={employeeId} onUpdate={onUpdate} type="date" />
           )}
         </div>
       </div>

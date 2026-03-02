@@ -241,7 +241,7 @@ export default function BatchListPage() {
                             {batch.use_by_date ? `UB: ${new Date(batch.use_by_date).toLocaleDateString('en-GB')}` : ''}
                             {batch.use_by_date && batch.best_before_date ? ' / ' : ''}
                             {batch.best_before_date ? `BB: ${new Date(batch.best_before_date).toLocaleDateString('en-GB')}` : ''}
-                            {!batch.use_by_date && !batch.best_before_date ? '—' : ''}
+                            {!batch.use_by_date && !batch.best_before_date ? '-' : ''}
                           </span>
                         )}
                       </td>

@@ -41,11 +41,11 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                     {expanded[s.id] ? <ChevronDown className="w-4 h-4 text-theme-secondary" /> : <ChevronRight className="w-4 h-4 text-theme-secondary" />}
                   </button>
                 </td>
-                <td className="px-4 py-2 text-sm text-theme-primary">{s.name || "—"}</td>
-                <td className="px-4 py-2 text-sm text-theme-secondary">—</td>
-                <td className="px-4 py-2 text-sm text-theme-secondary">{s.city || "—"}</td>
-                <td className="px-4 py-2 text-sm text-theme-secondary">{s.region || "—"}</td>
-                <td className="px-4 py-2 text-sm text-theme-secondary">{s.status || "—"}</td>
+                <td className="px-4 py-2 text-sm text-theme-primary">{s.name || "-"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">-</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.city || "-"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.region || "-"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.status || "-"}</td>
                 <td className="px-4 py-2 text-sm">
                   <div className="flex items-center gap-2">
                     <button
@@ -72,35 +72,35 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                         <div>
                           <p className="text-theme-tertiary">Address</p>
-                          <p className="text-theme-primary">{[s.address_line1, s.address_line2].filter(Boolean).join(", ") || "—"}</p>
+                          <p className="text-theme-primary">{[s.address_line1, s.address_line2].filter(Boolean).join(", ") || "-"}</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">City / Postcode</p>
-                          <p className="text-theme-primary">{[s.city, s.postcode].filter(Boolean).join(" ") || "—"}</p>
+                          <p className="text-theme-primary">{[s.city, s.postcode].filter(Boolean).join(" ") || "-"}</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Region</p>
-                          <p className="text-theme-primary">{s.region || "—"}</p>
+                          <p className="text-theme-primary">{s.region || "-"}</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Type</p>
-                          <p className="text-theme-primary">—</p>
+                          <p className="text-theme-primary">-</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Region</p>
-                          <p className="text-theme-primary">{s.region || "—"}</p>
+                          <p className="text-theme-primary">{s.region || "-"}</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Floor Area</p>
-                          <p className="text-theme-primary">—</p>
+                          <p className="text-theme-primary">-</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Opening Date</p>
-                          <p className="text-theme-primary">—</p>
+                          <p className="text-theme-primary">-</p>
                         </div>
                         <div>
                           <p className="text-theme-tertiary">Contact</p>
-                          <p className="text-theme-primary">—</p>
+                          <p className="text-theme-primary">-</p>
                         </div>
                       </div>
                       <div className="mt-4 flex items-center justify-end gap-2">

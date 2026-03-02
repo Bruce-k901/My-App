@@ -959,15 +959,15 @@ function ResultSummary({ payload }: { payload: any }) {
       <dl className="mt-3 grid gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary sm:grid-cols-2">
         <div>
  <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Learner</dt>
-          <dd>{learner.full_name || "—"}</dd>
+          <dd>{learner.full_name || "-"}</dd>
         </div>
         <div>
  <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Position</dt>
-          <dd>{learner.position || "—"}</dd>
+          <dd>{learner.position || "-"}</dd>
         </div>
         <div>
  <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Home site</dt>
-          <dd>{learner.home_site || "—"}</dd>
+          <dd>{learner.home_site || "-"}</dd>
         </div>
         <div>
  <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Final score</dt>

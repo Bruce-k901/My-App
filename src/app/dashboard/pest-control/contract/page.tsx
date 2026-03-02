@@ -157,7 +157,7 @@ export default function PestControlContractPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard label="Annual Value" value={contract.contract_value_annual ? `£${Number(contract.contract_value_annual).toLocaleString()}` : '—'} />
+        <KpiCard label="Annual Value" value={contract.contract_value_annual ? `£${Number(contract.contract_value_annual).toLocaleString()}` : '-'} />
         <KpiCard label="Visits / Year" value={`${contract.routine_visits_per_year || 12}`} />
         <KpiCard label="YTD Spend" value={`£${ytdSpend.toLocaleString('en-GB', { minimumFractionDigits: 2 })}`} />
         <KpiCard label="Visits This Year" value={`${visitCount}`} />

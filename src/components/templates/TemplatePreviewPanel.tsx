@@ -415,7 +415,7 @@ export function TemplatePreviewPanel({ template, customFields, loadingFields, on
                     {(f.min_value != null || f.max_value != null || f.warn_threshold != null || f.fail_threshold != null) && (
                       <div className="flex gap-3 mt-1 text-[10px]">
                         {(f.min_value != null || f.max_value != null) && (
-                          <span className="text-theme-tertiary">Range: {f.min_value ?? '—'} – {f.max_value ?? '—'}{f.unit ? ` ${f.unit}` : ''}</span>
+                          <span className="text-theme-tertiary">Range: {f.min_value ?? '-'} – {f.max_value ?? '-'}{f.unit ? ` ${f.unit}` : ''}</span>
                         )}
                         {f.warn_threshold != null && (
                           <span className="text-amber-500">Warn: {f.warn_threshold}</span>

@@ -54,7 +54,7 @@ export default function UserEntityCard({
       hover:shadow-module-glow
     ">
       <CardHeader
-        title={user.full_name || user.email || "\u2014"}
+        title={user.full_name || user.email || "-"}
         subtitle={subtitle}
         showChevron
         onToggle={onToggle}
@@ -68,15 +68,15 @@ export default function UserEntityCard({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2">
               <div>
                 <span className="text-xs text-gray-500 dark:text-theme-tertiary">Email</span>
-                <p className="text-sm text-theme-primary truncate">{editForm.email || '\u2014'}</p>
+                <p className="text-sm text-theme-primary truncate">{editForm.email || '-'}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-500 dark:text-theme-tertiary">Phone</span>
-                <p className="text-sm text-theme-primary">{editForm.phone_number || '\u2014'}</p>
+                <p className="text-sm text-theme-primary">{editForm.phone_number || '-'}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-500 dark:text-theme-tertiary">Position</span>
-                <p className="text-sm text-theme-primary">{editForm.position_title || '\u2014'}</p>
+                <p className="text-sm text-theme-primary">{editForm.position_title || '-'}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-500 dark:text-theme-tertiary">Status</span>

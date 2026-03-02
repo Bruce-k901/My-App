@@ -25,7 +25,7 @@ export default function StaffDashboard() {
             {temperatureLogs.slice(0, 6).map((l: any) => (
               <li key={l.id} className="flex justify-between">
                 <span>{l.device ?? "Device"}</span>
-                <span className="text-theme-tertiary">{l.reading ?? "—"}</span>
+                <span className="text-theme-tertiary">{l.reading ?? "-"}</span>
               </li>
             ))}
           </ul>

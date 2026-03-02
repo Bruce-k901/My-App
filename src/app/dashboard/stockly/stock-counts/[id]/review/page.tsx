@@ -447,7 +447,7 @@ export default function ReviewCountItemsPage() {
 
   // Helper function to format numbers
   const formatNumber = (value: number | null | undefined, decimals: number = 2): string => {
-    if (value === null || value === undefined) return '—';
+    if (value === null || value === undefined) return '-';
     return value.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
@@ -1942,10 +1942,10 @@ export default function ReviewCountItemsPage() {
                           {formatNumber(overallSummary.varianceCost)}
                         </td>
                         <td className="px-4 py-2 text-right text-theme-primary">
-                          {overallSummary.avgVariancePercentUnits !== null ? `${formatNumber(overallSummary.avgVariancePercentUnits, 2)}%` : '—'}
+                          {overallSummary.avgVariancePercentUnits !== null ? `${formatNumber(overallSummary.avgVariancePercentUnits, 2)}%` : '-'}
                         </td>
                         <td className="px-4 py-2 text-right text-theme-primary">
-                          {overallSummary.avgVariancePercentCost !== null ? `${formatNumber(overallSummary.avgVariancePercentCost, 2)}%` : '—'}
+                          {overallSummary.avgVariancePercentCost !== null ? `${formatNumber(overallSummary.avgVariancePercentCost, 2)}%` : '-'}
                         </td>
                       </tr>
                     </tbody>
@@ -2006,10 +2006,10 @@ export default function ReviewCountItemsPage() {
                                 {formatNumber(libSummary.summary.varianceCost)}
                               </td>
                               <td className="px-4 py-2 text-right text-theme-primary">
-                                {libSummary.summary.avgVariancePercentUnits !== null ? `${formatNumber(libSummary.summary.avgVariancePercentUnits, 2)}%` : '—'}
+                                {libSummary.summary.avgVariancePercentUnits !== null ? `${formatNumber(libSummary.summary.avgVariancePercentUnits, 2)}%` : '-'}
                               </td>
                               <td className="px-4 py-2 text-right text-theme-primary">
-                                {libSummary.summary.avgVariancePercentCost !== null ? `${formatNumber(libSummary.summary.avgVariancePercentCost, 2)}%` : '—'}
+                                {libSummary.summary.avgVariancePercentCost !== null ? `${formatNumber(libSummary.summary.avgVariancePercentCost, 2)}%` : '-'}
                               </td>
                             </tr>
                           );
@@ -2262,12 +2262,12 @@ export default function ReviewCountItemsPage() {
                             >
                               {/* Supplier */}
                               <td className="px-2 py-2.5 text-xs text-theme-secondary text-left" style={{ height: '45px' }}>
-                                {(item.ingredient as any)?.supplier || '—'}
+                                {(item.ingredient as any)?.supplier || '-'}
                               </td>
 
                               {/* Measurement */}
                               <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
-                                {item.unit_of_measurement || '—'}
+                                {item.unit_of_measurement || '-'}
                               </td>
 
                               {/* Opening Stock */}
@@ -2353,7 +2353,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-green-600 dark:text-green-400'
                                   : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
-                                {variancePercentage !== null ? `${formatNumber(variancePercentage, 2)}%` : '—'}
+                                {variancePercentage !== null ? `${formatNumber(variancePercentage, 2)}%` : '-'}
                               </td>
 
                               {/* Variance Cost Percent */}
@@ -2364,7 +2364,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-green-600 dark:text-green-400'
                                   : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
-                                {varianceCostPercent !== null ? `${formatNumber(varianceCostPercent, 2)}%` : '—'}
+                                {varianceCostPercent !== null ? `${formatNumber(varianceCostPercent, 2)}%` : '-'}
                               </td>
 
                               {/* Comments - EDITABLE */}
@@ -2475,7 +2475,7 @@ export default function ReviewCountItemsPage() {
                                   className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
                                   style={{ height: '45px' }}
                                 >
-                                  <span className="text-theme-disabled">—</span>
+                                  <span className="text-theme-disabled">-</span>
                                 </td>
                               )}
 

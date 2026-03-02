@@ -199,9 +199,9 @@ export default function IncidentLog() {
                 .map((i) => (
                 <tr key={i.id} className="border-b border-white/[0.05] hover:bg-white/[0.05]">
                   <td className="py-2 text-theme-secondary">{format(new Date(i.created_at), "d MMM yyyy")}</td>
-                  <td className="py-2 text-theme-secondary">{i.sites?.name || "—"}</td>
+                  <td className="py-2 text-theme-secondary">{i.sites?.name || "-"}</td>
                   <td className="py-2 text-theme-secondary">{i.description}</td>
-                  <td className="py-2 text-theme-tertiary">{i.investigation_notes || "—"}</td>
+                  <td className="py-2 text-theme-tertiary">{i.investigation_notes || "-"}</td>
                   <td className="py-2">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${

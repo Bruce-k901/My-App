@@ -2002,14 +2002,14 @@ export default function AttendanceSignOffPage() {
                             {/* Scheduled Start (read-only from rota) */}
                             <td className="px-4 py-3">
                               <span className="text-sm text-theme-secondary w-24 inline-block text-center">
-                                {dayData.scheduledStart || '—'}
+                                {dayData.scheduledStart || '-'}
                               </span>
                             </td>
 
                             {/* Scheduled End (read-only from rota) */}
                             <td className="px-4 py-3">
                               <span className="text-sm text-theme-secondary w-24 inline-block text-center">
-                                {dayData.scheduledEnd || '—'}
+                                {dayData.scheduledEnd || '-'}
                               </span>
                             </td>
                             
@@ -2040,28 +2040,28 @@ export default function AttendanceSignOffPage() {
                             {/* Day Rota'd Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
                               <span className="text-sm font-medium text-theme-primary">
-                                {dayRotaHours > 0 ? dayRotaHours.toFixed(2) : '—'}
+                                {dayRotaHours > 0 ? dayRotaHours.toFixed(2) : '-'}
                               </span>
                             </td>
 
                             {/* Day Actual Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
                               <span className="text-sm font-medium text-theme-primary">
-                                {dayActualHours > 0 ? dayActualHours.toFixed(2) : '—'}
+                                {dayActualHours > 0 ? dayActualHours.toFixed(2) : '-'}
                               </span>
                             </td>
 
                             {/* Day Rota'd Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
                               <span className="text-sm font-medium text-theme-primary">
-                                {dayRotaCost > 0 ? `£${dayRotaCost.toFixed(2)}` : '—'}
+                                {dayRotaCost > 0 ? `£${dayRotaCost.toFixed(2)}` : '-'}
                               </span>
                             </td>
 
                             {/* Day Actual Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
                               <span className="text-sm font-medium text-theme-primary">
-                                {dayActualCost > 0 ? `£${dayActualCost.toFixed(2)}` : '—'}
+                                {dayActualCost > 0 ? `£${dayActualCost.toFixed(2)}` : '-'}
                               </span>
                             </td>
                             
@@ -2092,7 +2092,7 @@ export default function AttendanceSignOffPage() {
                               ) : dayData.signedOff ? (
                                 <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                               ) : (
-                                <span className="text-theme-tertiary">—</span>
+                                <span className="text-theme-tertiary">-</span>
                               )}
                             </td>
                           </tr>

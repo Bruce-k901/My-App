@@ -82,7 +82,7 @@ export function getPPMStatus(
  * @returns Formatted date string or fallback
  */
 export function formatServiceDate(dateString: string | null | undefined): string {
-  if (!dateString) return '—';
+  if (!dateString) return '-';
   
   try {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -91,7 +91,7 @@ export function formatServiceDate(dateString: string | null | undefined): string
       year: 'numeric',
     });
   } catch {
-    return '—';
+    return '-';
   }
 }
 
