@@ -808,7 +808,7 @@ function SortableStaffRow({
                   ? 'bg-blue-50 dark:bg-blue-500/15 border-l-4 border-l-blue-500 dark:border-l-blue-400'
                   : 'hover:bg-theme-hover'
             }`}
-            title={isOnLeave ? 'On leave' : isClosed ? 'Site closed' : undefined}
+            title={isOnLeave ? getLeaveLabel(person.id, ds) : isClosed ? 'Site closed' : undefined}
           >
             <SortableContext items={personShifts.map((s) => `shift-${s.id}`)}>
               <div className="space-y-1">
@@ -823,7 +823,7 @@ function SortableStaffRow({
                 ))}
                 {personShifts.length === 0 && (
                   <div className={`text-[10px] ${isOnLeave ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-theme-secondary'}`}>
-                    {isOnLeave ? '🏖️ Leave' : '+'}
+                    {isOnLeave ? `🏖️ ${getLeaveLabel(person.id, ds)}` : '+'}
                   </div>
                 )}
               </div>
@@ -2893,27 +2893,46 @@ export default function RotaBuilderPage() {
     if (!leaveRequests || leaveRequests.length === 0) {
       return false;
     }
-    
+
     const date = new Date(dateStr);
     date.setHours(0, 0, 0, 0);
-    
+
     const result = leaveRequests.some(leave => {
       // Check if this leave request is for the given profile
       if (leave.profile_id !== profileId) return false;
       if (!leave.start_date || !leave.end_date) return false;
-      
+
       // Parse leave dates
       const startDate = new Date(leave.start_date);
       startDate.setHours(0, 0, 0, 0);
       const endDate = new Date(leave.end_date);
       endDate.setHours(23, 59, 59, 999);
-      
+
       // Check if the date falls within the leave period
       const isWithinRange = date >= startDate && date <= endDate;
       return isWithinRange;
     });
-    
+
     return result;
+  }, [leaveRequests]);
+
+  // Get a display-friendly leave reason label for a staff member on a specific date
+  const getLeaveLabel = useCallback((profileId: string, dateStr: string): string => {
+    const date = new Date(dateStr);
+    date.setHours(0, 0, 0, 0);
+    const leave = leaveRequests.find(l => {
+      if (l.profile_id !== profileId || !l.start_date || !l.end_date) return false;
+      const s = new Date(l.start_date); s.setHours(0, 0, 0, 0);
+      const e = new Date(l.end_date); e.setHours(23, 59, 59, 999);
+      return date >= s && date <= e;
+    });
+    if (!leave?.reason) return 'Leave';
+    const raw = leave.reason.split(':')[0].trim().toLowerCase();
+    if (raw === 'sick') return 'Sick';
+    if (raw === 'no_show') return 'No-show';
+    if (raw === 'personal') return 'Personal';
+    if (raw === 'other') return 'Other';
+    return leave.reason.split(':')[0].trim() || 'Leave';
   }, [leaveRequests]);
 
   const staffPositionMap = useMemo(() => {
@@ -4327,14 +4346,17 @@ export default function RotaBuilderPage() {
                                 <span className="font-medium text-theme-primary truncate">
                                   {staffMember?.full_name || shift.profile_name || 'Unknown'}
                                 </span>
-                                {isAbsent && (
-                                  <span className="text-[10px] px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded font-medium">
-                                    Absent
-                                  </span>
-                                )}
-                                {isOnLeave && !isAbsent && (
-                                  <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded">
-                                    On Leave
+                                {isOnLeave && (
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                                    isAbsent ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'
+                                  }`}>
+                                    {(() => {
+                                      const raw = (leaveMatch?.reason || '').split(':')[0].trim().toLowerCase();
+                                      if (raw === 'sick') return 'Sick';
+                                      if (raw === 'no_show') return 'No-show';
+                                      if (raw === 'personal') return 'Personal';
+                                      return (leaveMatch?.reason || 'Leave').split(':')[0].trim() || 'Leave';
+                                    })()}
                                   </span>
                                 )}
                                 {shift.isFromOtherSite && (
