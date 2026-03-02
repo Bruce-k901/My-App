@@ -234,7 +234,7 @@ export function useTaskSubmission(
                   severity: 'warning',
                   priority: 'high',
                   status: 'active',
-                  recipient_user_id: managerId,
+                  profile_id: managerId,
                   task_id: task.id,
                   created_by: profile?.id,
                   metadata: {
@@ -343,7 +343,7 @@ export function useTaskSubmission(
                   severity: 'warning',
                   priority: 'high',
                   status: 'active',
-                  recipient_user_id: managerId,
+                  profile_id: managerId,
                   task_id: task.id,
                   created_by: profile?.id,
                   metadata: {

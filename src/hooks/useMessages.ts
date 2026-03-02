@@ -568,19 +568,19 @@ export function useMessages({
               // Try message_mention type first, fallback to 'task' if constraint not updated yet
               const result = await supabase.from("notifications").insert({
                 company_id: conversationData.company_id,
-                recipient_user_id: mentionedUserId,
+                profile_id: mentionedUserId,
                 type: "message_mention" as any, // Type assertion - will fail gracefully if constraint not updated
                 title: `${senderName} mentioned you`,
                 message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}\n\nMessage ID: ${insertResult.id}\nChannel: ${conversationId}`,
                 severity: "info",
               }).select();
-              
+
               // If that fails, try with 'task' type as fallback
               if (result.error && result.error.code === '23514') { // Check constraint violation
                 console.warn('message_mention type not available, using task type');
                 return await supabase.from("notifications").insert({
                   company_id: conversationData.company_id,
-                  recipient_user_id: mentionedUserId,
+                  profile_id: mentionedUserId,
                   type: "task",
                   title: `@${senderName} mentioned you`,
                   message: `You were mentioned in "${conversationName}": ${content.trim().substring(0, 100)}${content.length > 100 ? '...' : ''}`,

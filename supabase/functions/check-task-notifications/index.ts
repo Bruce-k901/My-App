@@ -581,7 +581,7 @@ async function sendPushNotifications(supabase: any, metrics: ExecutionMetrics) {
 
     const { data: pendingNotifications, error: notifError } = await supabase
       .from('notifications')
-      .select('id, recipient_user_id, title, message, type, severity, task_id, conversation_id, link')
+      .select('id, profile_id, title, message, type, severity, task_id, conversation_id, link')
       .eq('push_sent', false)
       .eq('read', false)
       .limit(100)
@@ -600,7 +600,7 @@ async function sendPushNotifications(supabase: any, metrics: ExecutionMetrics) {
 
     console.log(`[INFO] Found ${pendingNotifications.length} pending notifications`)
 
-    const userIds = [...new Set(pendingNotifications.map((n: any) => n.recipient_user_id).filter(Boolean))]
+    const userIds = [...new Set(pendingNotifications.map((n: any) => n.profile_id).filter(Boolean))]
 
     if (userIds.length === 0) {
       console.log('[WARN] No valid user IDs found in pending notifications')
@@ -671,7 +671,7 @@ async function sendPushNotifications(supabase: any, metrics: ExecutionMetrics) {
 
     // Send push notifications
     for (const notification of pendingNotifications) {
-      const userSubscriptions = subscriptionsByUser.get(notification.recipient_user_id) || []
+      const userSubscriptions = subscriptionsByUser.get(notification.profile_id) || []
 
       if (userSubscriptions.length === 0) {
         // No subscription for this user, mark as sent

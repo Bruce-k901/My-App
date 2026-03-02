@@ -257,7 +257,7 @@ export async function POST(req: Request) {
       for (const person of recipientList) {
         notes.push({
           company_id: callerProfile.company_id,
-          recipient_user_id: person.id,
+          profile_id: person.id,
           type: "message",
           title,
           message,

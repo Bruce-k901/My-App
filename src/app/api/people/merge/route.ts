@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
       }
       results.push(await repoint(admin, 'reviews', 'conducted_by', oldId, canonicalProfileId));
       results.push(await repoint(admin, 'training_bookings', 'user_id', oldId, canonicalProfileId));
-      results.push(await repoint(admin, 'notifications', 'recipient_user_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'notifications', 'profile_id', oldId, canonicalProfileId));
       results.push(await repoint(admin, 'user_site_access', 'profile_id', oldId, canonicalProfileId));
       results.push(await repoint(admin, 'shift_swap_requests', 'requesting_profile_id', oldId, canonicalProfileId));
       results.push(await repoint(admin, 'shift_swap_requests', 'target_profile_id', oldId, canonicalProfileId));
