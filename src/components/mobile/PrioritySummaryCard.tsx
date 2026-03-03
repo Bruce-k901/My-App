@@ -137,7 +137,7 @@ export function PrioritySummaryCard() {
           className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10] hover:bg-black/[0.04] dark:hover:bg-white/[0.10] transition-colors"
         >
           <div className="relative">
-            <CheckSquare className="w-6 h-6 text-[#D37E91] mb-1" />
+            <CheckSquare className="w-6 h-6 text-[#8A2B2B] mb-1" />
             {summary.tasksOverdue > 0 && (
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
                 !

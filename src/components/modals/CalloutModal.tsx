@@ -1317,7 +1317,7 @@ export default function CalloutModal({
             onClick={() => setActiveTab('new')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'new'
-                ? 'border-[#D37E91] dark:border-magenta-500 text-[#D37E91] dark:text-magenta-400'
+                ? 'border-[#8A2B2B] dark:border-magenta-500 text-[#8A2B2B] dark:text-magenta-400'
  :'border-transparent text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900'
             }`}
           >
@@ -1327,7 +1327,7 @@ export default function CalloutModal({
             onClick={() => setActiveTab('active')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'active'
-                ? 'border-[#D37E91] dark:border-magenta-500 text-[#D37E91] dark:text-magenta-400'
+                ? 'border-[#8A2B2B] dark:border-magenta-500 text-[#8A2B2B] dark:text-magenta-400'
  :'border-transparent text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900'
             }`}
           >
@@ -1337,7 +1337,7 @@ export default function CalloutModal({
             onClick={() => setActiveTab('history')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'history'
-                ? 'border-[#D37E91] dark:border-magenta-500 text-[#D37E91] dark:text-magenta-400'
+                ? 'border-[#8A2B2B] dark:border-magenta-500 text-[#8A2B2B] dark:text-magenta-400'
  :'border-transparent text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900'
             }`}
           >
@@ -1351,7 +1351,7 @@ export default function CalloutModal({
             {/* Shared sliding indicator */}
             <motion.div
               layoutId="callout-indicator"
-              className="absolute inset-y-0 bg-[#D37E91]/10 dark:bg-teamly/10 border border-[#D37E91] dark:border-teamly/40 rounded-md shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] dark:shadow-black/20"
+              className="absolute inset-y-0 bg-[#8A2B2B]/10 dark:bg-teamly/10 border border-[#8A2B2B] dark:border-teamly/40 rounded-md shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] dark:shadow-black/20"
               transition={{
                 type: "spring",
                 stiffness: 420,
@@ -1374,7 +1374,7 @@ export default function CalloutModal({
                 onClick={() => setCalloutType(option.value as 'reactive' | 'warranty' | 'ppm')}
                 className={`flex-1 flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-200 ${
                   calloutType === option.value
-                    ? 'text-[#D37E91] dark:text-teamly'
+                    ? 'text-[#8A2B2B] dark:text-teamly'
                     : 'text-theme-secondary hover:text-theme-primary'
                 }`}
               >
@@ -1416,7 +1416,7 @@ export default function CalloutModal({
                     className={`w-full h-24 px-4 py-3 bg-theme-surface border rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 transition-all ${
                       !faultDescription.trim() 
                         ? 'border-yellow-400 dark:border-yellow-500/50 focus:ring-yellow-500/50 focus:border-yellow-500/50' 
-                        : 'border-gray-300 dark:border-theme focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50'
+                        : 'border-gray-300 dark:border-theme focus:ring-[#8A2B2B]/50 dark:focus:ring-magenta-500/50 focus:border-[#8A2B2B]/50 dark:focus:border-magenta-500/50'
                     }`}
                     required
                   />
@@ -1446,7 +1446,7 @@ export default function CalloutModal({
                           setSelectedContractorId(e.target.value);
                         }
                       }}
-                      className="w-full px-4 py-3 bg-theme-surface/50 border border-gray-300 dark:border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50 transition-all"
+                      className="w-full px-4 py-3 bg-theme-surface/50 border border-gray-300 dark:border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-magenta-500/50 focus:border-[#8A2B2B]/50 dark:focus:border-magenta-500/50 transition-all"
                       disabled={loadingContractors}
                     >
                       <option value="">Select a contractor...</option>
@@ -1578,7 +1578,7 @@ export default function CalloutModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any additional notes..."
-                  className="w-full h-20 px-4 py-3 bg-theme-surface border border-gray-300 dark:border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-magenta-500/50 focus:border-[#D37E91]/50 dark:focus:border-magenta-500/50 transition-all"
+                  className="w-full h-20 px-4 py-3 bg-theme-surface border border-gray-300 dark:border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-magenta-500/50 focus:border-[#8A2B2B]/50 dark:focus:border-magenta-500/50 transition-all"
                 />
               </div>
         
@@ -1608,7 +1608,7 @@ export default function CalloutModal({
                     handleCreateCallout(e);
                   }}
                   disabled={loading || (requireTroubleshoot && !troubleshootAck)}
- className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-[#D37E91] dark:text-magenta-400 border border-[#D37E91] dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 dark:disabled:border-theme disabled:text-gray-400 dark:disabled:text-gray-400 dark:text-theme-tertiary transition-all text-sm font-medium"
+ className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-[#8A2B2B] dark:text-magenta-400 border border-[#8A2B2B] dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-[#8A2B2B]/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 dark:disabled:border-theme disabled:text-gray-400 dark:disabled:text-gray-400 dark:text-theme-tertiary transition-all text-sm font-medium"
                 >
                   {loading ? 'Sending...' : (
                     <>
@@ -1681,7 +1681,7 @@ export default function CalloutModal({
                             value={updateNotes}
                             onChange={(e) => setUpdateNotes(e.target.value)}
                             placeholder="Add update notes..."
-                            className="w-full h-20 px-3 py-2 bg-theme-surface border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 dark:focus:ring-magenta-500/40 focus:border-[#D37E91]/40 dark:focus:border-magenta-500/40 scrollbar-hide"
+                            className="w-full h-20 px-3 py-2 bg-theme-surface border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 dark:focus:ring-magenta-500/40 focus:border-[#8A2B2B]/40 dark:focus:border-magenta-500/40 scrollbar-hide"
                           />
                         </div>
                         <div className="flex gap-2">
@@ -1708,7 +1708,7 @@ export default function CalloutModal({
                               value={repairSummary}
                               onChange={(e) => setRepairSummary(e.target.value)}
                               placeholder="Describe what was repaired..."
-                              className="w-full h-20 px-3 py-2 bg-theme-surface border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 dark:focus:ring-magenta-500/40 focus:border-[#D37E91]/40 dark:focus:border-magenta-500/40 scrollbar-hide"
+                              className="w-full h-20 px-3 py-2 bg-theme-surface border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 dark:focus:ring-magenta-500/40 focus:border-[#8A2B2B]/40 dark:focus:border-magenta-500/40 scrollbar-hide"
                             />
                           </div>
                           <div className="flex gap-2">
@@ -1725,7 +1725,7 @@ export default function CalloutModal({
                             <Button
                               onClick={() => handleCloseCallout(callout.id)}
                               disabled={loading || !repairSummary.trim()}
-                              className="bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:shadow-lg hover:shadow-[#D37E91]/30 dark:hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200"
+                              className="bg-transparent border border-[#8A2B2B] dark:border-[#8A2B2B] text-[#8A2B2B] dark:text-[#8A2B2B] hover:shadow-lg hover:shadow-[#8A2B2B]/30 dark:hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200"
                             >
                               <CheckCircle size={14} className="mr-1" />
                               Close Callout
@@ -1888,7 +1888,7 @@ export default function CalloutModal({
               <button
                 onClick={handleConfirmCreateCallout}
                 disabled={loading}
-                className="px-4 py-2 bg-transparent text-[#D37E91] dark:text-magenta-400 border border-[#D37E91] dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 bg-transparent text-[#8A2B2B] dark:text-magenta-400 border border-[#8A2B2B] dark:border-magenta-500 rounded-lg hover:shadow-lg hover:shadow-[#8A2B2B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {loading ? 'Sending...' : 'Send Callout'}
               </button>
@@ -1917,7 +1917,7 @@ export default function CalloutModal({
                   }
                   setShowCallOptions(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 bg-[#D37E91]/10 dark:bg-magenta-500/10 border border-[#D37E91]/30 dark:border-magenta-500/30 text-[#D37E91] dark:text-magenta-400 rounded-lg hover:bg-[#D37E91]/20 dark:hover:bg-magenta-500/20 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-[#8A2B2B]/10 dark:bg-magenta-500/10 border border-[#8A2B2B]/30 dark:border-magenta-500/30 text-[#8A2B2B] dark:text-magenta-400 rounded-lg hover:bg-[#8A2B2B]/20 dark:hover:bg-magenta-500/20 transition-colors"
               >
                 <div className="text-2xl">📞</div>
                 <div className="text-left">

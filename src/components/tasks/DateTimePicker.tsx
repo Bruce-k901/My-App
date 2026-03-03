@@ -57,7 +57,7 @@ export default function DateTimePicker({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-theme-secondary">
-        {label} {required && <span className="text-[#D37E91]">*</span>}
+        {label} {required && <span className="text-[#8A2B2B]">*</span>}
       </label>
 
       <div className="grid grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ export default function DateTimePicker({
               e.stopPropagation();
             }}
             min={format(new Date(), 'yyyy-MM-dd')}
-            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 cursor-pointer"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 focus:border-[#8A2B2B]/50 cursor-pointer"
             required={required}
           />
         </div>

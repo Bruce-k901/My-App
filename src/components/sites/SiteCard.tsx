@@ -80,7 +80,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                     <Phone size={14} className="text-theme-tertiary flex-shrink-0" />
                     <a
                       href={`tel:${gm.phone}`}
-                      className="hover:text-[#D37E91] transition-colors break-all"
+                      className="hover:text-[#8A2B2B] transition-colors break-all"
                     >
                       {gm.phone}
                     </a>
@@ -91,7 +91,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                     <Mail size={14} className="text-theme-tertiary flex-shrink-0" />
                     <a
                       href={`mailto:${gm.email}`}
-                      className="hover:text-[#D37E91] transition-colors break-all text-xs md:text-sm"
+                      className="hover:text-[#8A2B2B] transition-colors break-all text-xs md:text-sm"
                     >
                       {gm.email}
                     </a>
@@ -187,8 +187,8 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
               }}
               className="
                 p-2 md:p-2 rounded
-                border border-[#D37E91] text-[#D37E91]
-                hover:shadow-[0_0_6px_#D37E91]
+                border border-[#8A2B2B] text-[#8A2B2B]
+                hover:shadow-[0_0_6px_#8A2B2B]
                 transition
                 active:scale-95
               "

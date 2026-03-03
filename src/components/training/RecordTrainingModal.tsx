@@ -221,7 +221,7 @@ export default function RecordTrainingModal({
     }
   };
 
-  const inputClass = 'w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+  const inputClass = 'w-full px-3 py-2 bg-white dark:bg-[#101214] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
   const labelClass = 'block text-sm font-medium text-theme-secondary mb-1.5';
 
   // Find employee/course display names for locked fields

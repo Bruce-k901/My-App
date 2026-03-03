@@ -30,6 +30,7 @@ import {
   AlertTriangle
 } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
+import { useAppContext } from '@/context/AppContext'
 
 interface CalloutTaskModalProps {
   task: ChecklistTaskWithTemplate
@@ -55,6 +56,7 @@ export default function CalloutTaskModal({
   onComplete
 }: CalloutTaskModalProps) {
   const supabase = createClientComponentClient()
+  const { profile } = useAppContext()
 
   // State
   const [loading, setLoading] = useState(true)
@@ -134,26 +136,35 @@ export default function CalloutTaskModal({
   }, [isOpen, calloutId, supabase])
 
   // Dismiss orphaned task (callout was deleted)
+  // Uses the API route with service-role client to bypass RLS
   const handleDismissOrphanedTask = async () => {
     try {
       setSubmitting(true)
-      const user = (await supabase.auth.getUser()).data.user
-      if (!user) throw new Error('Not authenticated')
+      if (!profile?.id) throw new Error('Not authenticated')
 
-      const { error: taskError } = await supabase
-        .from('checklist_tasks')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-          completed_by: user.id,
-          completion_data: {
-            callout_status: 'dismissed',
-            reason: 'Callout no longer exists',
-          }
-        })
-        .eq('id', task.id)
+      const completionRecord = {
+        task_id: task.id,
+        company_id: (task as any).company_id || profile.company_id,
+        site_id: (task as any).site_id || null,
+        completed_by: profile.id,
+        completed_at: new Date().toISOString(),
+        completion_data: {
+          callout_status: 'dismissed',
+          reason: 'Callout no longer exists',
+        }
+      }
 
-      if (taskError) throw taskError
+      const res = await fetch('/api/tasks/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(completionRecord),
+      })
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || `Failed to dismiss task (${res.status})`)
+      }
+
       onComplete()
       onClose()
     } catch (err) {
@@ -177,15 +188,7 @@ export default function CalloutTaskModal({
       setSubmitting(true)
       setError(null)
 
-      const user = (await supabase.auth.getUser()).data.user
-      if (!user) throw new Error('Not authenticated')
-
-      // Get user's profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .eq('auth_user_id', user.id)
-        .single()
+      if (!profile?.id) throw new Error('Not authenticated')
 
       // Upload document if selected
       let documentUrl: string | null = null
@@ -217,7 +220,7 @@ export default function CalloutTaskModal({
       const timelineEntry = {
         timestamp: new Date().toISOString(),
         action: `Status updated to: ${STATUS_OPTIONS.find(s => s.value === selectedStatus)?.label}`,
-        by: profile?.full_name || user.email,
+        by: profile?.full_name || 'Unknown',
         notes: updateNotes || null
       }
 
@@ -253,22 +256,30 @@ export default function CalloutTaskModal({
 
       // Complete the task if callout is completed/cancelled
       if (selectedStatus === 'completed' || selectedStatus === 'cancelled') {
-        const { error: taskError } = await supabase
-          .from('checklist_tasks')
-          .update({
-            status: 'completed',
-            completed_at: new Date().toISOString(),
-            completed_by: user.id,
-            completion_data: {
-              callout_status: selectedStatus,
-              updated_by: profile?.full_name || user.email,
-              notes: updateNotes || null,
-              repair_summary: repairSummary || null
-            }
-          })
-          .eq('id', task.id)
+        const completionRecord = {
+          task_id: task.id,
+          company_id: (task as any).company_id || profile.company_id,
+          site_id: (task as any).site_id || null,
+          completed_by: profile.id,
+          completed_at: new Date().toISOString(),
+          completion_data: {
+            callout_status: selectedStatus,
+            updated_by: profile?.full_name || 'Unknown',
+            notes: updateNotes || null,
+            repair_summary: repairSummary || null
+          }
+        }
 
-        if (taskError) throw taskError
+        const res = await fetch('/api/tasks/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(completionRecord),
+        })
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          throw new Error(body.error || `Failed to complete task (${res.status})`)
+        }
 
         onComplete()
       }
@@ -426,7 +437,7 @@ export default function CalloutTaskModal({
                 <div className="col-span-2 pt-3 border-t border-theme">
                   <div className="text-xs text-theme-tertiary mb-2">Contractor</div>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-[#D37E91]/80 flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-[#8A2B2B]/80 flex items-center justify-center text-white font-semibold">
                       {contractor.name?.charAt(0) || 'C'}
                     </div>
                     <div>

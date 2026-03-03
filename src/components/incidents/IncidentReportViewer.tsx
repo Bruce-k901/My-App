@@ -442,7 +442,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                           ? 'text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted'
                           : nextStatus === 'closed'
                           ? 'bg-gray-600 hover:bg-gray-700 text-theme-primary dark:bg-gray-700 dark:hover:bg-gray-600'
-                          : 'bg-[#D37E91] hover:bg-[#D37E91]/90 text-white'
+                          : 'bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white'
                       }
                     >
                       {getStatusActionIcon(nextStatus)}
@@ -654,7 +654,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={investigationNotes}
                       onChange={(e) => setInvestigationNotes(e.target.value)}
                       rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 text-sm"
                       placeholder="Record investigation findings..."
                     />
                   ) : (
@@ -672,7 +672,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={rootCause}
                       onChange={(e) => setRootCause(e.target.value)}
                       rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 text-sm"
                       placeholder="What was the root cause?"
                     />
                   ) : (
@@ -690,7 +690,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={correctiveActions}
                       onChange={(e) => setCorrectiveActions(e.target.value)}
                       rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 text-sm"
                       placeholder="What corrective actions are being taken?"
                     />
                   ) : (
@@ -707,7 +707,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       onClick={handleSaveInvestigation}
                       disabled={saving}
                       size="sm"
-                      className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white"
+                      className="bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white"
                     >
                       {saving ? 'Saving...' : 'Save Investigation'}
                     </Button>
@@ -936,7 +936,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
               {onDownload && (
                 <Button
                   onClick={() => onDownload(fullIncident)}
-                  className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-transparent dark:text-[#D37E91] dark:border-[#D37E91] dark:hover:shadow-module-glow transition-all duration-200 ease-in-out"
+                  className="bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white dark:bg-transparent dark:text-[#8A2B2B] dark:border-[#8A2B2B] dark:hover:shadow-module-glow transition-all duration-200 ease-in-out"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download PDF

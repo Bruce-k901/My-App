@@ -209,7 +209,7 @@ export default function DocumentReviewModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#0B0D13] border border-theme rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[#101214] border border-theme rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -274,7 +274,7 @@ export default function DocumentReviewModal({
                 type="date"
                 value={newExpiryDate}
                 onChange={(e) => setNewExpiryDate(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#8A2B2B]"
                 min={new Date().toISOString().split('T')[0]}
               />
               {currentExpiryDate && (
@@ -324,7 +324,7 @@ export default function DocumentReviewModal({
                 value={newVersion}
                 onChange={(e) => setNewVersion(e.target.value)}
                 placeholder="e.g., v2, v3"
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#8A2B2B]"
               />
               {currentVersion && (
  <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">

@@ -124,7 +124,7 @@ export default function TemplateSelector({
   return (
     <div className="space-y-2">
       <label className="flex items-center gap-2 text-sm font-medium text-theme-secondary">
-        <FileText className="w-4 h-4 text-[#D37E91]" />
+        <FileText className="w-4 h-4 text-[#8A2B2B]" />
         Teamly Meeting Template (Optional)
       </label>
       
@@ -135,7 +135,7 @@ export default function TemplateSelector({
           const template = templates.find(t => t.id === templateId);
           onChange(templateId, template?.name);
         }}
-        className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
+        className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 appearance-none cursor-pointer"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'no-repeat',
@@ -143,20 +143,20 @@ export default function TemplateSelector({
           paddingRight: '2.5rem',
         }}
       >
-        <option value="" className="bg-white dark:bg-[#0B0D13] text-theme-primary">
+        <option value="" className="bg-white dark:bg-[#101214] text-theme-primary">
           Select a template...
         </option>
         {loading ? (
-          <option disabled className="bg-white dark:bg-[#0B0D13] text-theme-primary">
+          <option disabled className="bg-white dark:bg-[#101214] text-theme-primary">
             Loading templates...
           </option>
         ) : templates.length === 0 ? (
-          <option disabled className="bg-white dark:bg-[#0B0D13] text-theme-primary">
+          <option disabled className="bg-white dark:bg-[#101214] text-theme-primary">
             No templates available
           </option>
         ) : (
           templates.map((template) => (
-            <option key={template.id} value={template.id} className="bg-white dark:bg-[#0B0D13] text-theme-primary">
+            <option key={template.id} value={template.id} className="bg-white dark:bg-[#101214] text-theme-primary">
               {template.name}
             </option>
           ))

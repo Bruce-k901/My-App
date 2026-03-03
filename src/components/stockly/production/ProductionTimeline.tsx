@@ -150,7 +150,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
         </div>
       </div>
     );
@@ -255,7 +255,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                     {step.tasks.length > 0 && (
                       <button
                         onClick={() => toggleStepExpand(step.id)}
-                        className="text-[#D37E91] text-sm hover:text-[#D37E91]/80 transition-colors"
+                        className="text-[#8A2B2B] text-sm hover:text-[#8A2B2B]/80 transition-colors"
                       >
                         {isExpanded ? 'Hide Details' : 'Show Details'}
                       </button>
@@ -279,7 +279,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                                 className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                                   isCompleted
                                     ? 'bg-green-400/20 border-green-400'
-                                    : 'bg-white/5 border-white/20 hover:border-[#D37E91]'
+                                    : 'bg-white/5 border-white/20 hover:border-[#8A2B2B]'
                                 }`}
                               >
                                 {isCompleted && <CheckCircle2 className="w-3 h-3 text-green-400" />}

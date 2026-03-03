@@ -5,7 +5,7 @@
   "start_url": "/admin/login",
   "display": "standalone",
   "background_color": "#FAFAF7",
-  "theme_color": "#D37E91",
+  "theme_color": "#8A2B2B",
   "orientation": "portrait-primary",
   "scope": "/admin",
   "icons": [

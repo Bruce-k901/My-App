@@ -110,7 +110,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
         </h3>
         <button
           onClick={handleViewAll}
-          className="text-xs text-[#D37E91] hover:text-[#D37E91] transition-colors flex items-center gap-1"
+          className="text-xs text-[#8A2B2B] hover:text-[#8A2B2B] transition-colors flex items-center gap-1"
         >
           View All
           <ChevronRight className="w-3 h-3" />

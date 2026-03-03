@@ -54,7 +54,7 @@ class WidgetErrorBoundary extends Component<
               this.setState({ hasError: false, error: null });
               this.props.onRetry();
             }}
-            className="flex items-center gap-1 text-xs text-[#D37E91] hover:text-[#D37E91]"
+            className="flex items-center gap-1 text-xs text-[#8A2B2B] hover:text-[#8A2B2B]"
           >
             <RefreshCw className="w-3 h-3" />
             Retry
@@ -200,7 +200,7 @@ export function WidgetCard({
         <div className="mt-3 pt-3 border-t border-theme">
           <Link
             href={viewAllHref}
-            className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium"
+            className="text-xs text-[#8A2B2B] hover:text-[#8A2B2B] font-medium"
           >
             {viewAllLabel} →
           </Link>
@@ -229,7 +229,7 @@ export function WidgetEmptyState({
       {icon && <div className="text-[rgb(var(--text-tertiary))] dark:text-theme-disabled mb-2">{icon}</div>}
       <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">{message}</p>
       {actionLabel && actionHref && (
-        <Link href={actionHref} className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium">
+        <Link href={actionHref} className="text-xs text-[#8A2B2B] hover:text-[#8A2B2B] font-medium">
           {actionLabel}
         </Link>
       )}
@@ -243,7 +243,7 @@ export function WidgetEmptyState({
 export function WidgetLoading() {
   return (
     <div className="flex items-center justify-center p-4 h-full min-h-[80px]">
-      <div className="w-6 h-6 border-2 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-[#8A2B2B] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }

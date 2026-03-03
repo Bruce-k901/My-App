@@ -2,7 +2,7 @@ import { getModuleHex, type ModuleKey } from '@/config/module-colors';
 
 /**
  * Convert a hex color string to Lottie's [0-1, 0-1, 0-1] RGB format.
- * Accepts "#F1E194" or "F1E194".
+ * Accepts "#FDF7EF" or "F1E194".
  */
 export function hexToLottieRgb(hex: string): number[] {
   const h = hex.replace('#', '');

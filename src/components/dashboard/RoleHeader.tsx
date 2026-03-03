@@ -31,7 +31,7 @@ export default function RoleHeader() {
     : [...common, ...compliance, ...admin];
 
   return (
-    <header className="border-b border-neutral-800 bg-[#0b0d13]">
+    <header className="border-b border-neutral-800 bg-[#101214]">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <Link href="/dashboard" className="font-semibold">
           Opsly

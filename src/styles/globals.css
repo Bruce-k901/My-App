@@ -8,16 +8,16 @@
 
 :root {
   /* Primary brand gradient */
-  --mobile-primary: #D37E91;
-  --mobile-primary-end: #ACC8A2;
+  --mobile-primary: #8a2b2b;
+  --mobile-primary-end: #f0f4ed;
 
   /* Module accent colors (aligned with --module-* in app/globals.css) */
-  --mobile-checkly: rgb(var(--module-checkly, 241 225 148));
-  --mobile-stockly: rgb(var(--module-stockly, 120 154 153));
-  --mobile-teamly: rgb(var(--module-teamly, 211 126 145));
-  --mobile-planly: rgb(var(--module-planly, 172 200 162));
-  --mobile-assetly: rgb(var(--module-assetly, 243 231 217));
-  --mobile-msgly: rgb(var(--module-msgly, 203 221 233));
+  --mobile-checkly: rgb(var(--module-checkly, 253 247 239));
+  --mobile-stockly: rgb(var(--module-stockly, 205 238 214));
+  --mobile-teamly: rgb(var(--module-teamly, 242 201 201));
+  --mobile-planly: rgb(var(--module-planly, 240 244 237));
+  --mobile-assetly: rgb(var(--module-assetly, 167 255 235));
+  --mobile-msgly: rgb(var(--module-msgly, 167 168 178));
 
   /* Dark theme base */
   --mobile-bg-primary: #0d0d0f;
@@ -201,7 +201,7 @@
 
 /* Gradient accent bar */
 .mobile-gradient-accent {
-  background: linear-gradient(90deg, #D37E91, #544349, #ACC8A2);
+  background: linear-gradient(90deg, #8a2b2b, #002b36, #f0f4ed);
 }
 
 /* ─── App scrollbar ─── */
@@ -270,7 +270,7 @@
 .react-datepicker__input-container input:focus {
   outline: none;
   ring: 2px;
-  ring-color: #D37E91;
+  ring-color: #8a2b2b;
 }
 
 .react-datepicker {
@@ -297,15 +297,15 @@
 }
 
 .react-datepicker__day:hover {
-  background-color: #D37E91;
+  background-color: #8a2b2b;
 }
 
 .react-datepicker__day--selected {
-  background-color: #D37E91;
+  background-color: #8a2b2b;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #D37E91;
+  background-color: #8a2b2b;
 }
 
 /* GM Info Container Styles */
@@ -334,8 +334,8 @@
 
 .gm-email:hover,
 .gm-phone:hover {
-  color: #D37E91;
-  text-shadow: 0 0 6px #D37E91;
+  color: #8a2b2b;
+  text-shadow: 0 0 6px #8a2b2b;
 }
 
 .gm-name {

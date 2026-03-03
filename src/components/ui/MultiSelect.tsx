@@ -75,7 +75,7 @@ export default function MultiSelect({
           "text-theme-primary",
           "transition-all duration-150 ease-in-out",
           "hover:border-blue-400 dark:hover:border-white/20 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.07] hover:shadow-module-glow dark:hover:shadow-module-glow",
-          "focus:border-blue-500 dark:focus:border-blue-500 focus:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:focus:shadow-[0_0_14px_rgba(211,126,145,0.4)] focus:ring-0 focus:outline-none",
+          "focus:border-blue-500 dark:focus:border-blue-500 focus:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:focus:shadow-[0_0_14px_rgba(138, 43, 43,0.4)] focus:ring-0 focus:outline-none",
           disabled && "opacity-50 cursor-not-allowed",
         )}
         aria-haspopup="listbox"
@@ -117,7 +117,7 @@ export default function MultiSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full rounded-md border border-theme bg-white dark:bg-[#14161c]/95 backdrop-blur-md shadow-lg dark:shadow-[0_0_14px_rgba(211,126,145,0.25)]">
+        <div className="absolute z-50 mt-2 w-full rounded-md border border-theme bg-white dark:bg-[#14161c]/95 backdrop-blur-md shadow-lg dark:shadow-[0_0_14px_rgba(138, 43, 43,0.25)]">
           <ul role="listbox" className="max-h-96 overflow-auto py-1">
             {options.length === 0 && (
               <li className="px-3 py-2 text-sm text-theme-tertiary italic">No options available</li>

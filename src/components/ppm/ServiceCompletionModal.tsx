@@ -77,7 +77,7 @@ export default function ServiceCompletionModal({ ppm, asset, user, onClose }: {
         </button>
         <button
           disabled={saving}
-          className="bg-transparent border border-[#D37E91] text-[#D37E91] px-4 py-2 rounded-md hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200"
+          className="bg-transparent border border-[#8A2B2B] text-[#8A2B2B] px-4 py-2 rounded-md hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200"
           onClick={handleSave}
         >
           {saving ? "Saving..." : "Save Service"}

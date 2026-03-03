@@ -193,7 +193,7 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -221,8 +221,8 @@ export default function CompanyDetailPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="w-14 h-14 rounded-xl bg-[#D37E91]/10 flex items-center justify-center">
-            <Building2 className="w-7 h-7 text-[#D37E91]" />
+          <div className="w-14 h-14 rounded-xl bg-[#8A2B2B]/10 flex items-center justify-center">
+            <Building2 className="w-7 h-7 text-[#8A2B2B]" />
           </div>
           <div>
             <h1 className="text-3xl font-bold text-theme-primary">{company.name}</h1>
@@ -234,7 +234,7 @@ export default function CompanyDetailPage() {
         </div>
         <button
           onClick={handleViewAs}
-          className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
         >
           <Eye className="w-5 h-5" />
           View As This Company
@@ -280,7 +280,7 @@ export default function CompanyDetailPage() {
       <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-[#D37E91]" />
+            <Rocket className="w-5 h-5 text-[#8A2B2B]" />
             Setup Progress
             {!onboardingLoading && (
               <span className="text-sm font-normal text-theme-tertiary ml-2">
@@ -290,7 +290,7 @@ export default function CompanyDetailPage() {
           </h2>
           <button
             onClick={handleViewAsSetup}
-            className="flex items-center gap-2 px-3 py-1.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-1.5 bg-[#8A2B2B] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
           >
             <Eye className="w-4 h-4" />
             View As + Enter Setup
@@ -299,7 +299,7 @@ export default function CompanyDetailPage() {
 
         {onboardingLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 text-[#D37E91] animate-spin" />
+            <Loader2 className="w-6 h-6 text-[#8A2B2B] animate-spin" />
           </div>
         ) : (
           <div className="space-y-4">
@@ -316,7 +316,7 @@ export default function CompanyDetailPage() {
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#D37E91] rounded-full transition-all"
+                      className="h-full bg-[#8A2B2B] rounded-full transition-all"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -343,7 +343,7 @@ export default function CompanyDetailPage() {
                     </div>
                     <div className="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[#D37E91] rounded-full transition-all"
+                        className="h-full bg-[#8A2B2B] rounded-full transition-all"
                         style={{ width: `${sectionSteps.length > 0 ? (sectionDone / sectionSteps.length) * 100 : 0}%` }}
                       />
                     </div>
@@ -414,7 +414,7 @@ export default function CompanyDetailPage() {
             </h2>
             <button
               onClick={() => setShowAddUserModal(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#8A2B2B] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
             >
               <UserPlus className="w-4 h-4" />
               Add User

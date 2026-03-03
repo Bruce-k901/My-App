@@ -1101,17 +1101,23 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         }
         
         // 4. For callout follow-up tasks, check if the callout still exists and its asset is not archived
-        // Use the calloutToAssetMap to get the asset_id from the callout_id (source_id)
-        if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
-          const calloutAssetId = calloutToAssetMap.get(task.task_data.source_id)
+        // Detect callout tasks by: source_type, flag_reason, template slug, or callout_id in task_data
+        const calloutRefId = task.task_data?.source_id || task.task_data?.callout_id
+        const isCalloutTask = (
+          task.task_data?.source_type === 'callout_followup' ||
+          task.flag_reason === 'callout_followup' ||
+          task.template?.slug === 'callout-followup'
+        )
+        if (isCalloutTask && calloutRefId) {
+          const calloutAssetId = calloutToAssetMap.get(calloutRefId)
           if (!calloutAssetId) {
             // Callout was deleted (e.g. cascade from asset deletion) — orphaned task
-            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: callout ${task.task_data.source_id} no longer exists`)
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: callout ${calloutRefId} no longer exists`)
             return false
           }
           const isArchived = archivedAssetIds.has(calloutAssetId)
           if (isArchived) {
-            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${task.task_data.source_id})`)
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${calloutRefId})`)
             return false
           }
         }
@@ -2070,7 +2076,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       </div>
 
       {/* Tab Bar: Scheduled / Ad Hoc */}
-      <div className="flex gap-1 rounded-lg bg-gray-100 dark:bg-white/[0.05] p-1 w-fit">
+      <div className="flex gap-1 rounded-lg bg-checkly-mid/[0.08] dark:bg-checkly-mid/[0.05] p-1 w-fit border border-checkly-mid/10 dark:border-checkly-mid/10">
         <button
           type="button"
           onClick={() => setActiveTab('scheduled')}
@@ -2084,7 +2090,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           {tasks.length > 0 && (
             <span className={`px-1.5 py-0.5 rounded-full text-xs ${
               activeTab === 'scheduled'
-                ? 'bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] text-checkly-dark/60 dark:text-checkly/60'
+                ? 'bg-checkly-mid/[0.12] dark:bg-checkly-mid/[0.10] text-checkly-mid dark:text-checkly-mid'
                 : 'bg-gray-200 dark:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'
             }`}>
               {tasks.length}
@@ -2104,7 +2110,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           {adHocTemplates.length > 0 && (
             <span className={`px-1.5 py-0.5 rounded-full text-xs ${
               activeTab === 'adhoc'
-                ? 'bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] text-checkly-dark/60 dark:text-checkly/60'
+                ? 'bg-checkly-mid/[0.12] dark:bg-checkly-mid/[0.10] text-checkly-mid dark:text-checkly-mid'
                 : 'bg-gray-200 dark:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'
             }`}>
               {adHocTemplates.length}
@@ -2173,8 +2179,8 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
                 <div key={dp}>
                   {/* Daypart Header */}
                   <div className="flex items-center gap-3 mb-4 px-1">
-                    <div className="w-10 h-10 rounded-xl bg-checkly-dark/10 dark:bg-checkly/15 border border-checkly-dark/15 dark:border-checkly/20 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-[22px] h-[22px] text-checkly-dark dark:text-checkly" />
+                    <div className="w-10 h-10 rounded-xl bg-checkly-mid/15 dark:bg-checkly-mid/10 border border-checkly-mid/30 dark:border-checkly-mid/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-[22px] h-[22px] text-checkly-mid dark:text-checkly-mid" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-base font-semibold text-checkly-dark dark:text-checkly">
@@ -2184,13 +2190,13 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
                         {config.timeRange}
                       </p>
                     </div>
-                    <span className="text-xs font-medium text-checkly-dark/60 dark:text-checkly/60 px-2.5 py-1 rounded-full bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] border border-checkly-dark/10 dark:border-checkly/15">
+                    <span className="text-xs font-medium text-checkly-mid dark:text-checkly-mid px-2.5 py-1 rounded-full bg-checkly-mid/[0.10] dark:bg-checkly-mid/[0.08] border border-checkly-mid/20 dark:border-checkly-mid/15">
                       {dpTasks.length} task{dpTasks.length !== 1 ? 's' : ''}
                     </span>
                   </div>
 
                   {/* Divider line */}
-                  <div className="mb-3 h-px bg-gradient-to-r from-checkly-dark/25 dark:from-checkly/25 via-checkly-dark/10 dark:via-checkly/10 to-transparent" />
+                  <div className="mb-3 h-px bg-gradient-to-r from-checkly-mid/40 via-checkly-mid/15 to-transparent" />
 
                   {/* Tasks in this daypart */}
                   <div className="space-y-3">

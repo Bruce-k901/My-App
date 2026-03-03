@@ -185,7 +185,7 @@ export function FieldBuilderPanel({ fields, onChange }: FieldBuilderPanelProps) 
           <button
             type="button"
             onClick={handleAddField}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add First Field
@@ -211,7 +211,7 @@ export function FieldBuilderPanel({ fields, onChange }: FieldBuilderPanelProps) 
           <button
             type="button"
             onClick={handleAddField}
-            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[#D37E91]/40 rounded-lg text-sm font-medium text-[#D37E91] hover:bg-[#D37E91]/5 hover:border-[#D37E91] transition-colors"
+            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[#8A2B2B]/40 rounded-lg text-sm font-medium text-[#8A2B2B] hover:bg-[#8A2B2B]/5 hover:border-[#8A2B2B] transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Field

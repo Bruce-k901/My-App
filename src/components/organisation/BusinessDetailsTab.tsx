@@ -665,7 +665,7 @@ export default function BusinessDetailsTab() {
           <label className="block text-sm font-medium mb-1 capitalize">
             {field === "name" ? "Business Name" : field.replace("_", " ")}
             {requiredFields.includes(field) && (
-              <span className="text-[#D37E91] ml-1">*</span>
+              <span className="text-[#8A2B2B] ml-1">*</span>
             )}
           </label>
           {field === "industry" ? (
@@ -673,7 +673,7 @@ export default function BusinessDetailsTab() {
               name="industry"
               value={(form as any).industry || ""}
               onChange={handleChange}
-              className="w-full bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#D37E91]"
+              className="w-full bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#8A2B2B]"
             >
               <option value="">Select industry</option>
               {industryList.map((opt) => (
@@ -685,7 +685,7 @@ export default function BusinessDetailsTab() {
               name="country"
               value={(form as any).country || ""}
               onChange={handleChange}
-              className="w-full bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#D37E91]"
+              className="w-full bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#8A2B2B]"
             >
               <option value="">Select country</option>
               {countryList.map((opt) => (
@@ -699,7 +699,7 @@ export default function BusinessDetailsTab() {
               value={(form as any)[field] || ""}
               onChange={handleChange}
               placeholder={field === "name" ? "Enter business name" : `Enter ${field.replace("_", " ")}`}
-              className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
+              className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#8A2B2B]"
             />
           )}
         </div>
@@ -716,13 +716,13 @@ export default function BusinessDetailsTab() {
 
           {/* Contact Email under City (left column) */}
           <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1">Contact Email <span className="text-[#D37E91]">*</span></label>
+            <label className="block text-sm font-medium mb-1">Contact Email <span className="text-[#8A2B2B]">*</span></label>
             <input
               type="email"
               name="contact_email"
               value={(form as any).contact_email || ""}
               onChange={handleChange}
-              className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
+              className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#8A2B2B]"
             />
           </div>
 
@@ -743,7 +743,7 @@ export default function BusinessDetailsTab() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-md transition-all duration-200 text-sm"
+          className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded-md transition-all duration-200 text-sm"
         >
           {saving ? "Saving..." : (form as any).id ? "Update Company" : "Create Company"}
         </button>
@@ -780,7 +780,7 @@ function Field({ label, name, value, onChange }: FieldProps) {
         name={name}
         value={value || ""}
         onChange={onChange}
-        className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
+        className="bg-theme-muted text-theme-primary p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#8A2B2B]"
       />
     </div>
   );

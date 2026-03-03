@@ -646,7 +646,7 @@ export function EmergencyIncidentModal({
                   type="datetime-local"
                   value={formData.incident_datetime}
                   onChange={(e) => setFormData({ ...formData, incident_datetime: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                   required
                 />
               </div>
@@ -697,7 +697,7 @@ export function EmergencyIncidentModal({
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="e.g., Kitchen - Prep Area"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                   required
                 />
               </div>
@@ -710,7 +710,7 @@ export function EmergencyIncidentModal({
                 onChange={(e) => setFormData({ ...formData, incident_description: e.target.value })}
                 placeholder="Describe what happened, what went wrong, and immediate consequences..."
                 rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 required
               />
             </div>
@@ -752,7 +752,7 @@ export function EmergencyIncidentModal({
                     setLostTimeDays(Number.isNaN(parsed) ? null : Math.max(parsed, 0));
                   }}
                   placeholder="0"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
               </div>
 
@@ -795,7 +795,7 @@ export function EmergencyIncidentModal({
                   value={riddorNotes}
                   onChange={(e) => setRiddorNotes(e.target.value)}
                   placeholder="Add decision notes or supporting detail"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
               </div>
             </div>
@@ -806,7 +806,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={hospitalisation}
                   onChange={(e) => setHospitalisation(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Worker admitted to hospital</span>
               </label>
@@ -816,7 +816,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={publicInvolved}
                   onChange={(e) => setPublicInvolved(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Member of public taken to hospital</span>
               </label>
@@ -826,7 +826,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={reportableDisease}
                   onChange={(e) => setReportableDisease(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Suspected occupational disease</span>
               </label>
@@ -836,7 +836,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={environmentalRelease}
                   onChange={(e) => setEnvironmentalRelease(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Dangerous occurrence / hazardous release</span>
               </label>
@@ -849,7 +849,7 @@ export function EmergencyIncidentModal({
                     type="checkbox"
                     checked={riddorReported}
                     onChange={(e) => setRiddorReported(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                   />
                   <div>
                     <p className="text-sm text-theme-primary font-semibold">RIDDOR report submitted</p>
@@ -866,7 +866,7 @@ export function EmergencyIncidentModal({
                           type="datetime-local"
                           value={riddorReportedDate}
                           onChange={(e) => setRiddorReportedDate(e.target.value)}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                       </div>
                       <div>
@@ -876,7 +876,7 @@ export function EmergencyIncidentModal({
                           value={riddorReference}
                           onChange={(e) => setRiddorReference(e.target.value)}
                           placeholder="e.g., Incident ref number"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                       </div>
                     </div>
@@ -896,7 +896,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.emergency_services_called}
                   onChange={(e) => setFormData({ ...formData, emergency_services_called: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Emergency Services (999) Called</span>
               </label>
@@ -923,7 +923,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.first_aid_provided}
                   onChange={(e) => setFormData({ ...formData, first_aid_provided: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">First Aid Provided</span>
               </label>
@@ -933,7 +933,7 @@ export function EmergencyIncidentModal({
                   type="checkbox"
                   checked={formData.scene_preserved}
                   onChange={(e) => setFormData({ ...formData, scene_preserved: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                 />
                 <span className="text-theme-primary">Scene Preserved for Investigation</span>
               </label>
@@ -946,7 +946,7 @@ export function EmergencyIncidentModal({
                 onChange={(e) => setFormData({ ...formData, immediate_actions: e.target.value })}
                 placeholder="Describe immediate actions taken..."
                 rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
               />
             </div>
           </div>
@@ -989,28 +989,28 @@ export function EmergencyIncidentModal({
                           placeholder="Name"
                           value={casualty.name}
                           onChange={(e) => handleUpdateCasualty(index, 'name', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                         <input
                           type="text"
                           placeholder="Age"
                           value={casualty.age}
                           onChange={(e) => handleUpdateCasualty(index, 'age', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                         <input
                           type="text"
                           placeholder="Injury Type"
                           value={casualty.injury_type}
                           onChange={(e) => handleUpdateCasualty(index, 'injury_type', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B] col-span-2"
                         />
                         <input
                           type="text"
                           placeholder="Treatment"
                           value={casualty.treatment_required}
                           onChange={(e) => handleUpdateCasualty(index, 'treatment_required', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B] col-span-2"
                         />
                       </div>
                     </div>
@@ -1056,14 +1056,14 @@ export function EmergencyIncidentModal({
                             placeholder="Name"
                             value={witness.name}
                             onChange={(e) => handleUpdateWitness(index, 'name', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                           />
                           <input
                             type="text"
                             placeholder="Contact"
                             value={witness.contact}
                             onChange={(e) => handleUpdateWitness(index, 'contact', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                           />
                         </div>
                         <textarea
@@ -1071,7 +1071,7 @@ export function EmergencyIncidentModal({
                           value={witness.statement}
                           onChange={(e) => handleUpdateWitness(index, 'statement', e.target.value)}
                           rows={2}
- className="w-full px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                       </div>
                     </div>
@@ -1135,7 +1135,7 @@ export function EmergencyIncidentModal({
                   className="hidden"
                   id="photo-upload"
                 />
-                <span className="inline-block px-4 py-2 bg-gray-100 dark:bg-white/[0.06] border border-theme text-theme-primary rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.12] hover:border-[#D37E91]/50 dark:hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-sm dark:shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-md dark:hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)] text-sm">
+                <span className="inline-block px-4 py-2 bg-gray-100 dark:bg-white/[0.06] border border-theme text-theme-primary rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.12] hover:border-[#8A2B2B]/50 dark:hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-sm dark:shadow-[0_0_10px_rgba(138, 43, 43,0.15)] hover:shadow-md dark:hover:shadow-[0_0_14px_rgba(138, 43, 43,0.25)] text-sm">
                   Upload Photo
                 </span>
               </label>
@@ -1197,7 +1197,7 @@ export function EmergencyIncidentModal({
                           });
                         }
                       }}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] dark:text-[#D37E91] focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] mt-0.5 flex-shrink-0"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] dark:text-[#8A2B2B] focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B] mt-0.5 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm text-theme-primary font-medium">{task.label}</div>
@@ -1216,7 +1216,7 @@ export function EmergencyIncidentModal({
                             }
                           })}
                           rows={2}
- className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
                         />
                       )}
                     </div>
@@ -1233,7 +1233,7 @@ export function EmergencyIncidentModal({
               type="text"
               value={formData.reported_by}
               onChange={(e) => setFormData({ ...formData, reported_by: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 dark:focus:ring-[#8A2B2B]"
               required
             />
           </div>

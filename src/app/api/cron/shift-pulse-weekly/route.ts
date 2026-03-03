@@ -224,7 +224,7 @@ function buildEmailHtml(data: {
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;margin-top:20px;margin-bottom:20px;">
 
   <!-- Header -->
-  <div style="background:#D37E91;padding:28px 32px;text-align:center;">
+  <div style="background:#8A2B2B;padding:28px 32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:22px;font-weight:600;">Shift Pulse Weekly</h1>
     <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:14px;">${data.siteLabel} &mdash; ${data.dateRangeLabel}</p>
   </div>
@@ -265,7 +265,7 @@ function buildEmailHtml(data: {
   <!-- CTA -->
   <div style="padding:28px 32px;text-align:center;">
     <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.opslytech.com'}/dashboard/people/shift-pulse"
-       style="display:inline-block;background:#D37E91;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">
+       style="display:inline-block;background:#8A2B2B;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">
       View Full Report
     </a>
     <p style="margin:16px 0 0;color:#aaa;font-size:12px;">Sent by Opsly &mdash; Teamly Module</p>

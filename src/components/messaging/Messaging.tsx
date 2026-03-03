@@ -145,7 +145,7 @@ export function Messaging() {
 
   return (
     <div
-      className="flex w-full bg-white dark:bg-[#0B0D13] overflow-hidden relative"
+      className="flex w-full bg-white dark:bg-[#101214] overflow-hidden relative"
       style={{ height: keyboardHeight > 0 ? `calc(100% - ${keyboardHeight}px)` : '100%' }}
     >
       {/* Mobile: Back Button - Only show when viewing a conversation */}
@@ -171,7 +171,7 @@ export function Messaging() {
           w-full md:w-80
           h-full
           flex-shrink-0
-          bg-white dark:bg-[#0B0D13] border-r border-theme
+          bg-white dark:bg-[#101214] border-r border-theme
           overflow-hidden
           flex flex-col
           ${
@@ -202,11 +202,11 @@ export function Messaging() {
         {selectedConversationId ? (
           <>
             {/* Conversation Header - Fixed at top */}
-            <div className="flex-shrink-0 bg-white dark:bg-[#0B0D13] z-10">
+            <div className="flex-shrink-0 bg-white dark:bg-[#101214] z-10">
               <ConversationHeader conversationId={selectedConversationId} />
             </div>
             {/* Content Tabs (Tasks, Images, Files) - Fixed below header */}
-            <div className="flex-shrink-0 bg-white dark:bg-[#0B0D13]">
+            <div className="flex-shrink-0 bg-white dark:bg-[#101214]">
               <ConversationContentTabs conversationId={selectedConversationId} />
             </div>
             {/* Message Thread - Scrollable, takes remaining space */}
@@ -218,7 +218,7 @@ export function Messaging() {
               />
             </div>
             {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0 bg-white dark:bg-[#0B0D13] border-t border-theme">
+            <div className="flex-shrink-0 bg-white dark:bg-[#101214] border-t border-theme">
               <MessageInput
                 conversationId={selectedConversationId}
                 sendMessage={messagesHook.sendMessage}
@@ -243,7 +243,7 @@ export function Messaging() {
               {isMobile && (
                 <button
                   onClick={() => setIsSidebarOpen(true)}
-                  className="mt-4 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 rounded-lg hover:shadow-[0_0_15px_rgba(211, 126, 145,0.5)] transition-all"
+                  className="mt-4 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 rounded-lg hover:shadow-[0_0_15px_rgba(138, 43, 43,0.5)] transition-all"
                 >
                   View Conversations
                 </button>

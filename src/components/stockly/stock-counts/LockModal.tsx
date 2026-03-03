@@ -61,7 +61,7 @@ export default function LockModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white dark:bg-[#0B0D13] border-theme text-theme-primary max-w-md">
+      <DialogContent className="bg-white dark:bg-[#101214] border-theme text-theme-primary max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <Lock className="h-5 w-5 text-blue-600 dark:text-blue-400" />

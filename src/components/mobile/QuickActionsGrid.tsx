@@ -45,8 +45,8 @@ const quickActions: QuickAction[] = [
 // Module-specific actions (Planly removed from mobile - desktop only)
 const moduleActions: Record<string, QuickAction[]> = {
   checkly: [
-    { id: 'sops', icon: FileText, label: 'SOPs', href: '/dashboard/sops/list', color: '#F1E194' },
-    { id: 'risk-assessments', icon: Shield, label: 'Risk Assessments', href: '/dashboard/risk-assessments', color: '#F1E194' },
+    { id: 'sops', icon: FileText, label: 'SOPs', href: '/dashboard/sops/list', color: '#FDF7EF' },
+    { id: 'risk-assessments', icon: Shield, label: 'Risk Assessments', href: '/dashboard/risk-assessments', color: '#FDF7EF' },
   ],
   stockly: [
     { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/dashboard/stockly/deliveries', color: '#10B981' },

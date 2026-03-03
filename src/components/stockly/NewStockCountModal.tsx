@@ -384,7 +384,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                   onClick={() => setFormData(prev => ({ ...prev, count_type: type.value as any }))}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.count_type === type.value
-                      ? 'border-[#D37E91] bg-[#D37E91]/10'
+                      ? 'border-module-fg-mid bg-module-fg-mid/10'
                       : 'border-theme bg-white/[0.03] hover:border-neutral-600'
                   }`}
                 >
@@ -423,7 +423,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           type="checkbox"
                           checked={formData.categories.includes(category.id)}
                           onChange={() => toggleCategory(category.id)}
-                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
+                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-stockly-mid focus:ring-stockly-mid"
                         />
                         <span className="text-theme-primary text-sm">{category.name}</span>
                       </label>
@@ -452,7 +452,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           type="checkbox"
                           checked={formData.storage_areas.includes(area.id)}
                           onChange={() => toggleStorageArea(area.id)}
-                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
+                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-stockly-mid focus:ring-stockly-mid"
                         />
                         <span className="text-theme-primary text-sm">{area.name}</span>
                         {area.area_type && (
@@ -473,7 +473,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-theme-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-theme-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-module-fg-mid/40"
               placeholder="Optional notes about this count..."
             />
           </div>

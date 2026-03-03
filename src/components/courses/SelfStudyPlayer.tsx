@@ -396,7 +396,7 @@ function uiShell(
             type="button"
             onClick={onNext}
             disabled={!onNext}
-            className="rounded-lg border border-[#D37E91]/70 px-4 py-2 text-sm font-semibold text-[#D37E91] dark:text-[#D37E91]/70 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_16px_rgba(211, 126, 145,0.45)] disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
+            className="rounded-lg border border-[#8A2B2B]/70 px-4 py-2 text-sm font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_16px_rgba(138, 43, 43,0.45)] disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
           >
             Next
           </button>
@@ -445,7 +445,7 @@ function Content({
 
   return (
     <div>
-      <h2 className="mb-4 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{title}</h2>
+      <h2 className="mb-4 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">{title}</h2>
       {media ? (
         <img
           src={media}
@@ -469,7 +469,7 @@ function Content({
           <button
             type="button"
             onClick={() => setShowDeck((prev) => !prev)}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#D37E91]/70 px-4 py-2 text-sm font-semibold text-[#D37E91] dark:text-[#D37E91]/70 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_16px_rgba(211, 126, 145,0.45)]"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#8A2B2B]/70 px-4 py-2 text-sm font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_16px_rgba(138, 43, 43,0.45)]"
           >
             {showDeck ? "Hide module deck" : "View module deck"}
           </button>
@@ -529,7 +529,7 @@ function DeckMarkdown({ content }: { content: string }) {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h3 key={`h3-${elements.length}`} className="text-lg font-semibold text-[#D37E91] dark:text-[#D37E91]/70">
+        <h3 key={`h3-${elements.length}`} className="text-lg font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">
           {line.replace(/^##\s+/, "")}
         </h3>
       );
@@ -641,7 +641,7 @@ function Onboarding({
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{page.title}</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">{page.title}</h2>
       <p className="mb-5 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">{page.text}</p>
       <div className="grid gap-4 md:grid-cols-2">
         {page.fields.map((field) => (
@@ -666,7 +666,7 @@ function Onboarding({
       {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
       <button
         type="button"
-        className="mt-4 rounded-lg border border-[#D37E91]/70 px-4 py-2 text-sm font-semibold text-[#D37E91] dark:text-[#D37E91]/70 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_16px_rgba(211, 126, 145,0.45)]"
+        className="mt-4 rounded-lg border border-[#8A2B2B]/70 px-4 py-2 text-sm font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_16px_rgba(138, 43, 43,0.45)]"
         onClick={() => {
           const missing = page.fields.filter((field) => field.required && !state[field.key]);
           if (missing.length) {
@@ -712,7 +712,7 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{page.title}</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">{page.title}</h2>
       {page.media ? (
         <img
           src={page.media}
@@ -737,13 +737,13 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                       onClick={() => setAttempt((prev) => ({ ...prev, [left]: right }))}
                       className={`group flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm transition ${
                         selected
-                          ? "border-[#D37E91]/70 bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] shadow-[0_0_14px_rgba(211, 126, 145,0.35)]"
+                          ? "border-[#8A2B2B]/70 bg-[#8A2B2B]/15 text-[#8A2B2B] dark:text-[#8A2B2B] shadow-[0_0_14px_rgba(138, 43, 43,0.35)]"
                           : "border-[rgb(var(--border))] dark:border-theme text-[rgb(var(--text-secondary))] dark:text-theme-primary hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                       }`}
                     >
                       <Check
                         className={`h-3 w-3 transition ${
- selected ?"opacity-100 text-[#D37E91] dark:text-[#D37E91]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
+ selected ?"opacity-100 text-[#8A2B2B] dark:text-[#8A2B2B]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
                         }`}
                       />
                       <span>{right}</span>
@@ -767,13 +767,13 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                 onClick={() => setAttempt((prev) => ({ ...prev, [index]: step }))}
                 className={`group flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition ${
                   selected
-                    ? "border-[#D37E91]/70 bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] shadow-[0_0_14px_rgba(211, 126, 145,0.35)]"
+                    ? "border-[#8A2B2B]/70 bg-[#8A2B2B]/15 text-[#8A2B2B] dark:text-[#8A2B2B] shadow-[0_0_14px_rgba(138, 43, 43,0.35)]"
                     : "border-[rgb(var(--border))] dark:border-theme bg-[rgb(var(--surface))] dark:bg-neutral-950 text-[rgb(var(--text-secondary))] dark:text-slate-100 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                 }`}
               >
                 <Check
                   className={`h-4 w-4 transition ${
- selected ?"opacity-100 text-[#D37E91] dark:text-[#D37E91]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
+ selected ?"opacity-100 text-[#8A2B2B] dark:text-[#8A2B2B]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
                   }`}
                 />
                 <span>{step}</span>
@@ -794,7 +794,7 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
           <button
             type="button"
             onClick={submit}
-            className="rounded-lg border border-[#D37E91]/70 px-4 py-2 text-sm font-semibold text-[#D37E91] dark:text-[#D37E91]/70 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_16px_rgba(211, 126, 145,0.45)]"
+            className="rounded-lg border border-[#8A2B2B]/70 px-4 py-2 text-sm font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_16px_rgba(138, 43, 43,0.45)]"
           >
             Check
           </button>
@@ -854,7 +854,7 @@ function ModuleQuiz({
   if (maxItems === 0) {
     return (
       <div>
-        <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
+        <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">Module knowledge check</h2>
         <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary">No quiz items configured for this module.</p>
       </div>
     );
@@ -863,7 +863,7 @@ function ModuleQuiz({
   if (index >= maxItems) {
     return (
       <div>
-        <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
+        <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">Module knowledge check</h2>
         <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary">Great work! Moving to the next section…</p>
       </div>
     );
@@ -876,7 +876,7 @@ function ModuleQuiz({
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">Module knowledge check</h2>
       <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-theme-primary">{stem}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
@@ -889,7 +889,7 @@ function ModuleQuiz({
               }
               setIndex((prev) => prev + 1);
             }}
-            className="group flex items-center gap-2 rounded-lg border border-[rgb(var(--border))] dark:border-white/15 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-1.5 text-sm text-[rgb(var(--text-primary))] dark:text-slate-100 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.35)]"
+            className="group flex items-center gap-2 rounded-lg border border-[rgb(var(--border))] dark:border-white/15 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-1.5 text-sm text-[rgb(var(--text-primary))] dark:text-slate-100 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.35)]"
           >
             <Check className="h-3 w-3 opacity-0 transition group-hover:opacity-50" />
             <span>{option}</span>
@@ -911,7 +911,7 @@ function FinalQuiz({ count, onDone }: { count: number; onDone: (percent: number)
 
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Final assessment</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">Final assessment</h2>
       <p className="text-[rgb(var(--text-secondary))] dark:text-theme-primary">
         Complete the {count}-question assessment to finish the course. Your score will appear on the
         completion screen.
@@ -923,13 +923,13 @@ function FinalQuiz({ count, onDone }: { count: number; onDone: (percent: number)
 function Completion({ title, text, payload }: { title: string; text: string; payload: unknown }) {
   return (
     <div>
-      <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{title}</h2>
+      <h2 className="mb-3 text-3xl font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70">{title}</h2>
       <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-theme-primary">{text}</p>
       <ResultSummary payload={payload} />
       <div className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/dashboard/training"
-          className="rounded-lg border border-[#D37E91]/70 px-4 py-2 text-sm font-semibold text-[#D37E91] dark:text-[#D37E91]/70 transition hover:border-[#D37E91] dark:hover:border-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] hover:shadow-[0_0_16px_rgba(211, 126, 145,0.45)]"
+          className="rounded-lg border border-[#8A2B2B]/70 px-4 py-2 text-sm font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]/70 transition hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] hover:shadow-[0_0_16px_rgba(138, 43, 43,0.45)]"
         >
           Return to Training Matrix
         </Link>

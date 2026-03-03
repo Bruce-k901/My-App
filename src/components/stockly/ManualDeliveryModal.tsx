@@ -583,7 +583,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                   {attachedFiles.map((file, i) => (
                     <div key={i} className="border border-theme rounded-lg p-3 flex items-center justify-between bg-white/[0.03]">
                       <div className="flex items-center gap-3 min-w-0">
-                        <FileText className="text-[#D37E91] flex-shrink-0" size={20} />
+                        <FileText className="text-module-fg-mid flex-shrink-0" size={20} />
                         <div className="min-w-0">
                           <p className="text-sm text-theme-primary font-medium truncate">{file.name}</p>
                           <p className="text-xs text-theme-tertiary">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
@@ -600,7 +600,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                   ))}
                 </div>
               )}
-              <div className="border-2 border-dashed border-theme rounded-lg p-4 text-center hover:border-[#D37E91]/50 transition-colors">
+              <div className="border-2 border-dashed border-theme rounded-lg p-4 text-center hover:border-module-fg-mid/50 transition-colors">
                 <input
                   type="file"
                   id="delivery-file-upload"
@@ -613,7 +613,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                 <label htmlFor="delivery-file-upload" className="cursor-pointer flex flex-col items-center gap-2">
                   <Upload className="text-theme-tertiary" size={24} />
                   <div className="text-sm">
-                    <span className="text-[#D37E91] font-medium">Upload files</span>
+                    <span className="text-module-fg-mid font-medium">Upload files</span>
                     <span className="text-theme-tertiary"> or take photo</span>
                   </div>
                   <p className="text-xs text-theme-tertiary">JPEG, PNG, WebP or PDF (max 10MB each)</p>
@@ -891,7 +891,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
         </div>
 
         {/* Actions - sticky at bottom so they're always visible on mobile */}
-        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 pb-4 bg-white dark:bg-[#0B0D13] border-t border-gray-200 dark:border-neutral-800 z-10">
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 pb-4 bg-white dark:bg-[#101214] border-t border-gray-200 dark:border-neutral-800 z-10">
           <div className="flex gap-3">
             <Button
               onClick={() => handleSave(true)}

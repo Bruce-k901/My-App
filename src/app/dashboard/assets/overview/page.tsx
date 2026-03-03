@@ -78,7 +78,7 @@ export default function AssetlyOverviewPage() {
             className="w-full flex items-center justify-between px-5 py-4 hover:bg-theme-hover transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-assetly-dark/10 dark:bg-assetly/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-assetly-mid/15 border border-assetly-mid/30 flex items-center justify-center">
                 <Wrench className="w-4 h-4 text-assetly-dark dark:text-assetly" />
               </div>
               <div className="text-left">
@@ -192,7 +192,7 @@ export default function AssetlyOverviewPage() {
       <div className="space-y-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.title}>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-assetly-dark/40 dark:text-assetly/40 mb-2 px-1">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-assetly-mid dark:text-assetly-mid mb-2 px-1">
               {section.title}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -203,7 +203,7 @@ export default function AssetlyOverviewPage() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 bg-theme-surface border border-theme rounded-xl hover:border-assetly-dark/30 dark:hover:border-assetly/30 hover:bg-assetly-dark/[0.02] dark:hover:bg-assetly/[0.03] transition-colors group"
+                    className="flex items-center gap-3 px-4 py-3 bg-theme-surface border border-theme border-l-3 border-l-assetly-mid/40 rounded-xl hover:border-assetly-dark/30 dark:hover:border-assetly/30 hover:bg-assetly-dark/[0.02] dark:hover:bg-assetly/[0.03] transition-colors group"
                   >
                     <Icon className="w-5 h-5 text-assetly-dark dark:text-assetly flex-shrink-0 group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
@@ -221,13 +221,14 @@ export default function AssetlyOverviewPage() {
       </div>
 
       {/* Recent Activity */}
+      <div className="h-px bg-gradient-to-r from-assetly-mid/40 via-assetly-mid/15 to-transparent" />
       {!loading && (recentWOs.length > 0 || upcomingInspections.length > 0) && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Recent Work Orders */}
           <div className="bg-theme-surface border border-theme rounded-xl">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-theme">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-assetly-mid/25">
               <h3 className="text-sm font-semibold text-theme-primary">Recent Work Orders</h3>
-              <Link href="/dashboard/assets/rm/work-orders" className="text-xs text-assetly-dark dark:text-assetly hover:underline">
+              <Link href="/dashboard/assets/rm/work-orders" className="text-xs text-assetly-mid dark:text-assetly-mid hover:underline">
                 View all
               </Link>
             </div>
@@ -266,9 +267,9 @@ export default function AssetlyOverviewPage() {
 
           {/* Upcoming Inspections */}
           <div className="bg-theme-surface border border-theme rounded-xl">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-theme">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-assetly-mid/25">
               <h3 className="text-sm font-semibold text-theme-primary">Upcoming Inspections</h3>
-              <Link href="/dashboard/assets/rm/inspections" className="text-xs text-assetly-dark dark:text-assetly hover:underline">
+              <Link href="/dashboard/assets/rm/inspections" className="text-xs text-assetly-mid dark:text-assetly-mid hover:underline">
                 View all
               </Link>
             </div>

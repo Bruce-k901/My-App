@@ -768,7 +768,7 @@ export default function CreateTaskModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0B0D13] border border-theme rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-[#101214] border border-theme rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -803,7 +803,7 @@ export default function CreateTaskModal({
                 onClick={() => setActiveType(type)}
                 className={`flex-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#D37E91] text-white shadow-sm'
+                    ? 'bg-[#8A2B2B] text-white shadow-sm'
                     : 'text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-theme'
                 }`}
               >
@@ -894,7 +894,7 @@ export default function CreateTaskModal({
           <button
             onClick={handleCreate}
             disabled={loading || !canSubmit}
-            className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-module-glow transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading 
               ? (isEditing ? 'Updating...' : 'Creating...') 

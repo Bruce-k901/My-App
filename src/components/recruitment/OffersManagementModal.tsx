@@ -287,7 +287,7 @@ export default function OffersManagementModal({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSendOfferModal(true)}
-                className="px-3 py-1.5 text-xs rounded-lg bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/20 flex items-center gap-2"
+                className="px-3 py-1.5 text-xs rounded-lg bg-[#8A2B2B]/10 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:bg-[#8A2B2B]/20 flex items-center gap-2"
               >
                 <Plus className="w-3.5 h-3.5" />
                 New Offer
@@ -315,7 +315,7 @@ export default function OffersManagementModal({
               </div>
               <button
                 onClick={() => setShowSendOfferModal(true)}
-                className="px-4 py-2 rounded-lg bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/20 flex items-center gap-2 mx-auto"
+                className="px-4 py-2 rounded-lg bg-[#8A2B2B]/10 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:bg-[#8A2B2B]/20 flex items-center gap-2 mx-auto"
               >
                 <Plus className="w-4 h-4" />
                 Create First Offer
@@ -399,7 +399,7 @@ export default function OffersManagementModal({
                         {offer.offer_token && (
                           <div className="mt-3 p-2 bg-gray-50 dark:bg-white/[0.02] rounded text-xs">
                             <span className="text-theme-tertiary">Offer Link: </span>
-                            <code className="text-[#D37E91] break-all">
+                            <code className="text-[#8A2B2B] break-all">
                               {window.location.origin}/recruitment/offers/{offer.offer_token}
                             </code>
                           </div>
@@ -421,7 +421,7 @@ export default function OffersManagementModal({
                           <button
                             onClick={() => handleResendOffer(offer)}
                             disabled={resendingOfferId === offer.id}
-                            className="px-3 py-1.5 text-xs rounded bg-[#D37E91]/15 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/25 flex items-center gap-2 disabled:opacity-50"
+                            className="px-3 py-1.5 text-xs rounded bg-[#8A2B2B]/15 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:bg-[#8A2B2B]/25 flex items-center gap-2 disabled:opacity-50"
                           >
                             {resendingOfferId === offer.id ? (
                               <>

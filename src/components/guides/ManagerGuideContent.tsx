@@ -153,18 +153,18 @@ export default function ManagerGuideContent() {
           margin: 40px 0 24px 0;
           border-bottom: 3px solid;
         }
-        .guide-section-header.teamly { border-color: #D37E91; }
-        .guide-section-header.checkly { border-color: #F1E194; }
-        .guide-section-header.stockly { border-color: #789A99; }
-        .guide-section-header.assetly { border-color: #F3E7D9; }
-        .guide-section-header.planly { border-color: #ACC8A2; }
-        .guide-section-header.msgly { border-color: #CBDDE9; }
-        .guide-section-header.general { border-color: #110f0d; }
+        .guide-section-header.teamly { border-color: #8A2B2B; }
+        .guide-section-header.checkly { border-color: #FDF7EF; }
+        .guide-section-header.stockly { border-color: #CDEED6; }
+        .guide-section-header.assetly { border-color: #A7FFEB; }
+        .guide-section-header.planly { border-color: #F0F4ED; }
+        .guide-section-header.msgly { border-color: #A7A8B2; }
+        .guide-section-header.general { border-color: #131517; }
         @media (prefers-color-scheme: dark) {
           .guide-section-header.general { border-color: #a09890; }
         }
         .dark .guide-section-header.general { border-color: #a09890; }
-        .dark .guide-section-header.assetly { border-color: #544349; }
+        .dark .guide-section-header.assetly { border-color: #002B36; }
         .guide-section-header h2 {
           font-size: 24px;
           font-weight: 700;
@@ -176,18 +176,18 @@ export default function ManagerGuideContent() {
           text-transform: uppercase;
           letter-spacing: 2px;
         }
-        .guide-module-label.teamly { color: #C28FA3; }
-        .guide-module-label.checkly { color: #5B0E14; }
-        .guide-module-label.stockly { color: #4E7D7C; }
-        .guide-module-label.assetly { color: #544349; }
-        .guide-module-label.planly { color: #1A2517; }
-        .guide-module-label.msgly { color: #2872A1; }
+        .guide-module-label.teamly { color: #3B0A0A; }
+        .guide-module-label.checkly { color: #7E8052; }
+        .guide-module-label.stockly { color: #1B4242; }
+        .guide-module-label.assetly { color: #002B36; }
+        .guide-module-label.planly { color: #4E7E5D; }
+        .guide-module-label.msgly { color: #1A1C22; }
         .guide-module-label.general { color: #666; }
-        .dark .guide-module-label.checkly { color: #F1E194; }
-        .dark .guide-module-label.stockly { color: #789A99; }
-        .dark .guide-module-label.assetly { color: #F3E7D9; }
-        .dark .guide-module-label.planly { color: #ACC8A2; }
-        .dark .guide-module-label.msgly { color: #CBDDE9; }
+        .dark .guide-module-label.checkly { color: #FDF7EF; }
+        .dark .guide-module-label.stockly { color: #CDEED6; }
+        .dark .guide-module-label.assetly { color: #A7FFEB; }
+        .dark .guide-module-label.planly { color: #F0F4ED; }
+        .dark .guide-module-label.msgly { color: #A7A8B2; }
         .dark .guide-module-label.general { color: #a09890; }
         .guide-step {
           display: flex;
@@ -197,12 +197,12 @@ export default function ManagerGuideContent() {
           border-radius: 8px;
           border-left: 3px solid #ddd;
         }
-        .guide-step.teamly { border-left-color: #D37E91; }
-        .guide-step.checkly { border-left-color: #F1E194; }
-        .guide-step.stockly { border-left-color: #789A99; }
-        .guide-step.assetly { border-left-color: #F3E7D9; }
-        .guide-step.planly { border-left-color: #ACC8A2; }
-        .guide-step.msgly { border-left-color: #CBDDE9; }
+        .guide-step.teamly { border-left-color: #8A2B2B; }
+        .guide-step.checkly { border-left-color: #FDF7EF; }
+        .guide-step.stockly { border-left-color: #CDEED6; }
+        .guide-step.assetly { border-left-color: #A7FFEB; }
+        .guide-step.planly { border-left-color: #F0F4ED; }
+        .guide-step.msgly { border-left-color: #A7A8B2; }
         .guide-step-number {
           width: 28px;
           height: 28px;
@@ -215,15 +215,15 @@ export default function ManagerGuideContent() {
           flex-shrink: 0;
           color: white;
         }
-        .guide-step-number.teamly { background: #D37E91; }
-        .guide-step-number.checkly { background: #F1E194; color: #110f0d; }
-        .guide-step-number.stockly { background: #789A99; color: #110f0d; }
-        .guide-step-number.assetly { background: #544349; }
-        .guide-step-number.planly { background: #ACC8A2; color: #110f0d; }
-        .guide-step-number.msgly { background: #2872A1; }
-        .guide-step-number.general { background: #110f0d; }
-        .dark .guide-step-number.general { background: #a09890; color: #110f0d; }
-        .dark .guide-step-number.assetly { background: #F3E7D9; color: #110f0d; }
+        .guide-step-number.teamly { background: #8A2B2B; }
+        .guide-step-number.checkly { background: #FDF7EF; color: #131517; }
+        .guide-step-number.stockly { background: #CDEED6; color: #131517; }
+        .guide-step-number.assetly { background: #002B36; }
+        .guide-step-number.planly { background: #F0F4ED; color: #131517; }
+        .guide-step-number.msgly { background: #1A1C22; }
+        .guide-step-number.general { background: #131517; }
+        .dark .guide-step-number.general { background: #a09890; color: #131517; }
+        .dark .guide-step-number.assetly { background: #A7FFEB; color: #131517; }
         .guide-nav-path {
           display: inline-flex;
           align-items: center;
@@ -346,28 +346,28 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">You will receive an email invitation from Opsly with a link to set up your account.</p>
 
       <div className="space-y-3 my-4">
-        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#110f0d' }}>
+        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#131517' }}>
           <div className="guide-step-number general">1</div>
           <div>
             <strong className="block mb-1">Open the invitation email</strong>
             <p className="text-sm text-theme-secondary">Click the setup link. You&apos;ll be taken to the account setup page.</p>
           </div>
         </div>
-        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#110f0d' }}>
+        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#131517' }}>
           <div className="guide-step-number general">2</div>
           <div>
             <strong className="block mb-1">Set your password</strong>
             <p className="text-sm text-theme-secondary">Choose a secure password (minimum 6 characters). You can use the password generator if you prefer.</p>
           </div>
         </div>
-        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#110f0d' }}>
+        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#131517' }}>
           <div className="guide-step-number general">3</div>
           <div>
             <strong className="block mb-1">Set your 4-digit PIN</strong>
             <p className="text-sm text-theme-secondary">This PIN is used for quick actions within the app (e.g. completing tasks, clocking in).</p>
           </div>
         </div>
-        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#110f0d' }}>
+        <div className="guide-step bg-theme-muted/20" style={{ borderLeftColor: '#131517' }}>
           <div className="guide-step-number general">4</div>
           <div>
             <strong className="block mb-1">Log in</strong>

@@ -260,7 +260,7 @@ export default function PrintPreviewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#0B0D13] border-white/[0.06] text-white max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-[#101214] border-white/[0.06] text-white max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Print Preview - Count Sheets</DialogTitle>
           <p className="text-theme-tertiary">

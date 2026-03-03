@@ -68,7 +68,7 @@ export const metadata = {
     ],
   },
   other: {
-    'msapplication-TileColor': '#110f0d',
+    'msapplication-TileColor': '#131517',
     'msapplication-config': '/browserconfig.xml',
   },
 };
@@ -79,7 +79,7 @@ export function generateViewport() {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
-    themeColor: "#0b0d13",
+    themeColor: "#101214",
   };
 }
 
@@ -272,7 +272,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#0b0d13" />
+        <meta name="theme-color" content="#101214" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Opsly" />

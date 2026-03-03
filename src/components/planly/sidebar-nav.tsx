@@ -143,7 +143,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-planly-dark/70 dark:text-planly/70 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-planly-mid dark:text-planly-mid tracking-wider font-bold border-b border-planly-mid/25 dark:border-planly-mid/20 pb-2">
           <IconComponent className="w-5 h-5" />
           <span>{item.label}</span>
         </div>
@@ -162,7 +162,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
+            ? 'bg-planly-mid/[0.10] dark:bg-planly-mid/[0.08] text-planly-dark dark:text-planly font-medium border-l-2 border-planly-mid'
             : 'text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary'
         }`}
       >
@@ -198,7 +198,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
             shouldHighlightParent
-              ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
+              ? 'bg-planly-mid/[0.10] dark:bg-planly-mid/[0.08] text-planly-dark dark:text-planly font-medium border-l-2 border-planly-mid'
               : 'text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary'
           }`}
         >
@@ -226,7 +226,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
                   {...(child.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-planly-dark dark:before:bg-planly'
+                      ? 'bg-planly-mid/[0.10] dark:bg-planly-mid/[0.08] text-planly-dark dark:text-planly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-planly-mid'
                       : 'text-theme-tertiary hover:text-theme-secondary'
                   }`}
                 >
@@ -268,14 +268,14 @@ export function PlanlySidebar() {
 
   return (
     <aside
-      className={`bg-sidebar-planly-light dark:bg-sidebar-planly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      className={`bg-sidebar-planly-light dark:bg-sidebar-planly border-r border-planly-mid/25 flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
       style={{ width: displayWidth }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       suppressHydrationWarning
     >
       {/* Header */}
-      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-planly-light dark:bg-sidebar-planly border-b border-module-fg/[0.18]`}>
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-planly-light dark:bg-sidebar-planly border-b border-planly-mid/25`}>
         <Link href="/dashboard/planly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img src="/new_module_logos/planly_light.svg" alt="Planly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
           <img src="/new_module_logos/planly_dark.svg" alt="Planly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
@@ -309,7 +309,7 @@ export function PlanlySidebar() {
       </nav>
 
       {/* Profile + Pin */}
-      <div className="border-t border-module-fg/[0.18]">
+      <div className="border-t border-planly-mid/25">
         {showExpanded ? (
           <div className="p-4 flex items-center gap-1">
             <button

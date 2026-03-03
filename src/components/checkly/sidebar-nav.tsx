@@ -211,7 +211,7 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-checkly-dark/70 dark:text-checkly/70 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-checkly-mid dark:text-checkly-mid tracking-wider font-bold border-b border-checkly-mid/25 dark:border-checkly-mid/20 pb-2">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>
@@ -232,7 +232,7 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-checkly-dark/[0.08] dark:bg-checkly/10 text-checkly-dark dark:text-checkly font-medium'
+            ? 'bg-checkly-mid/[0.10] dark:bg-checkly-mid/[0.08] text-checkly-dark dark:text-checkly font-medium border-l-2 border-checkly-mid'
             : 'text-[#888] dark:text-theme-tertiary hover:bg-checkly-dark/[0.04] dark:hover:bg-checkly/5 hover:text-[#555] dark:hover:text-theme-secondary'
         }`}
       >
@@ -270,7 +270,7 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
             shouldHighlightParent
-              ? 'bg-checkly-dark/[0.08] dark:bg-checkly/10 text-checkly-dark dark:text-checkly font-medium'
+              ? 'bg-checkly-mid/[0.10] dark:bg-checkly-mid/[0.08] text-checkly-dark dark:text-checkly font-medium border-l-2 border-checkly-mid'
               : 'text-[#888] dark:text-theme-tertiary hover:bg-checkly-dark/[0.04] dark:hover:bg-checkly/5 hover:text-[#555] dark:hover:text-theme-secondary'
           }`}
         >
@@ -297,7 +297,7 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
                   href={child.href}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'bg-checkly-dark/[0.08] dark:bg-checkly/10 text-checkly-dark dark:text-checkly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-checkly-dark dark:before:bg-checkly'
+                      ? 'bg-checkly-mid/[0.10] dark:bg-checkly-mid/[0.08] text-checkly-dark dark:text-checkly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-checkly-mid'
                       : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary'
                   }`}
                 >
@@ -325,14 +325,14 @@ export function ChecklySidebar() {
 
   return (
     <aside
-      className={`bg-sidebar-checkly-light dark:bg-sidebar-checkly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      className={`bg-sidebar-checkly-light dark:bg-sidebar-checkly border-r border-checkly-mid/25 flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
       style={{ width: displayWidth }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       suppressHydrationWarning
     >
       {/* Header */}
-      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-checkly-light dark:bg-sidebar-checkly border-b border-module-fg/[0.18]`}>
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-checkly-light dark:bg-sidebar-checkly border-b border-checkly-mid/25`}>
         <Link href="/dashboard/tasks" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img src="/new_module_logos/checkly_light.svg" alt="Checkly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
           <img src="/new_module_logos/checkly_dark.svg" alt="Checkly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
@@ -366,7 +366,7 @@ export function ChecklySidebar() {
       </nav>
 
       {/* Profile + Pin */}
-      <div className="border-t border-module-fg/[0.18]">
+      <div className="border-t border-checkly-mid/25">
         {showExpanded ? (
           <div className="p-4 flex items-center gap-1">
             <button

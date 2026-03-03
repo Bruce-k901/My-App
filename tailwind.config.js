@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-poppins)", "Poppins", "Century Gothic", "system-ui", "sans-serif"],
+        sans: ["var(--font-ubuntu)", "Ubuntu", "Century Gothic", "system-ui", "sans-serif"],
       },
       colors: {
         // Opsly brand colors
@@ -22,16 +22,16 @@ module.exports = {
           900: '#0c4a6e',
         },
         // Brand accent colours
-        "brand-primary": "#544349",   // Cocoa Dust
-        "brand-cta": "#D37E91",       // Blush
-        "opsly-dark": "#0b0d13",
+        "brand-primary": "#2C2C2C",   // Graphite Chrome dark
+        "brand-cta": "#8A2B2B",       // Crimson Smoke mid
+        "opsly-dark": "#101214",
         "opsly-light": "#e5e7eb",
         "opsly-gray": "#64748b",
         // Legacy aliases (mapped to new brand)
         magenta: {
-          400: "#D37E91",
-          500: "#D37E91",
-          600: "#b0607a",
+          400: "#B85555",
+          500: "#8A2B2B",
+          600: "#6E2222",
         },
         blue: {
           400: "#60a5fa",
@@ -39,10 +39,11 @@ module.exports = {
         },
         neutral: {
           900: "#171717",
-          950: "#0b0d13",
+          950: "#101214",
         },
         // Active module colours (set by .module-* class on layout wrapper)
         'module-fg': 'rgb(var(--module-fg) / <alpha-value>)',
+        'module-fg-mid': 'rgb(var(--module-fg-mid) / <alpha-value>)',
         'module-bg-tint': 'rgb(var(--module-bg-tint) / <alpha-value>)',
         // Module colors (driven by CSS variables in globals.css)
         checkly: 'rgb(var(--module-checkly) / <alpha-value>)',
@@ -52,6 +53,19 @@ module.exports = {
         assetly: 'rgb(var(--module-assetly) / <alpha-value>)',
         msgly: 'rgb(var(--module-msgly) / <alpha-value>)',
         forecastly: 'rgb(var(--module-forecastly) / <alpha-value>)',
+        // Module mid variants (for depth, highlights, borders)
+        'checkly-mid': 'rgb(var(--module-checkly-mid) / <alpha-value>)',
+        'stockly-mid': 'rgb(var(--module-stockly-mid) / <alpha-value>)',
+        'teamly-mid': 'rgb(var(--module-teamly-mid) / <alpha-value>)',
+        'planly-mid': 'rgb(var(--module-planly-mid) / <alpha-value>)',
+        'assetly-mid': 'rgb(var(--module-assetly-mid) / <alpha-value>)',
+        'msgly-mid': 'rgb(var(--module-msgly-mid) / <alpha-value>)',
+        'forecastly-mid': 'rgb(var(--module-forecastly-mid) / <alpha-value>)',
+        'forecastly-dark': 'rgb(var(--module-forecastly-dark) / <alpha-value>)',
+        // UI neutral (Graphite Chrome)
+        'ui-chrome': 'rgb(var(--ui-chrome) / <alpha-value>)',
+        'ui-chrome-mid': 'rgb(var(--ui-chrome-mid) / <alpha-value>)',
+        'ui-chrome-dark': 'rgb(var(--ui-chrome-dark) / <alpha-value>)',
         // Module dark variants (for text on light backgrounds)
         'checkly-dark': 'rgb(var(--module-checkly-dark) / <alpha-value>)',
         'stockly-dark': 'rgb(var(--module-stockly-dark) / <alpha-value>)',
@@ -74,20 +88,20 @@ module.exports = {
         'sidebar-assetly-light': 'rgb(var(--sidebar-assetly-light) / <alpha-value>)',
         'sidebar-msgly-light': 'rgb(var(--sidebar-msgly-light) / <alpha-value>)',
         // Mobile-specific colors
-        'mobile-primary': '#D37E91',
+        'mobile-primary': '#8A2B2B',
         'mobile-bg': '#0D0D0F',
         'mobile-bg-secondary': '#1A1A1F',
         'mobile-bg-elevated': '#252530',
         // Consistent card styling tokens
         background: "#111827",
         border: "#1F2937",
-        accent: "#D37E91",
+        accent: "#8A2B2B",
       },
       boxShadow: {
-        glow: "0 0 16px rgba(211,126,145,0.6)",
+        glow: "0 0 16px rgba(138,43,43,0.6)",
         // Brand glow shadows
-        magenta: "0 0 0 1px rgba(211,126,145,0.55), 0 0 12px rgba(211,126,145,0.35)",
-        magentaSm: "0 0 8px #D37E91",
+        magenta: "0 0 0 1px rgba(138,43,43,0.55), 0 0 12px rgba(138,43,43,0.35)",
+        magentaSm: "0 0 8px #8A2B2B",
       },
       keyframes: {
         dropdownFade: {

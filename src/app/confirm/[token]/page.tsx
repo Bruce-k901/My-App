@@ -352,7 +352,7 @@ export default function ConfirmationPage() {
                     value={requestedStartDate}
                     onChange={(e) => setRequestedStartDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#8A2B2B]"
                   />
                 </div>
               ) : (
@@ -367,7 +367,7 @@ export default function ConfirmationPage() {
                       value={requestedDate}
                       onChange={(e) => setRequestedDate(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                      className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#8A2B2B]"
                     />
                   </div>
                   <div>
@@ -391,7 +391,7 @@ export default function ConfirmationPage() {
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={confirmationType === 'offer' ? 'Why do you need a different start date?' : 'Please let us know why you need to reschedule...'}
                   rows={3}
-                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
+                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#8A2B2B] resize-none"
                 />
               </div>
             </div>
@@ -408,7 +408,7 @@ export default function ConfirmationPage() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Please let us know why you need to decline..."
                 rows={3}
-                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
+                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#8A2B2B] resize-none"
               />
             </div>
           )}
@@ -417,7 +417,7 @@ export default function ConfirmationPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-6 py-3 rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-6 py-3 rounded-lg bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">

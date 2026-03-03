@@ -164,14 +164,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
-                    ? 'bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20'
+                    ? 'bg-[#8A2B2B]/10 text-[#8A2B2B] border border-[#8A2B2B]/20'
                     : 'text-gray-500 hover:bg-black/[0.04] hover:text-gray-900'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
                 {showBadge && (
-                  <span className="ml-auto px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full min-w-[20px] text-center">
+                  <span className="ml-auto px-2 py-0.5 text-xs font-semibold bg-[#8A2B2B] text-white rounded-full min-w-[20px] text-center">
                     {ticketCount > 99 ? '99+' : ticketCount}
                   </span>
                 )}

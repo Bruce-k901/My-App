@@ -36,7 +36,7 @@ export function ChartWidgetCard({
     <div
       className={cn(
         'bg-white dark:bg-[#171B2D]',
-        'border-2 border-module-fg/[0.12]',
+        'border-2 border-module-fg-mid/[0.15]',
         'rounded-xl',
         'border-l-[4px]',
         borderColor,
@@ -93,7 +93,7 @@ export function ChartWidgetCard({
 
 export function ChartWidgetSkeleton() {
   return (
-    <div className="bg-white dark:bg-[#171B2D] border-2 border-module-fg/[0.12] rounded-xl p-5 min-h-[280px] animate-pulse shadow-lg">
+    <div className="bg-white dark:bg-[#171B2D] border-2 border-module-fg-mid/[0.15] rounded-xl p-5 min-h-[280px] animate-pulse shadow-lg">
       <div className="flex items-center gap-2 mb-4">
         <div className="h-4 w-12 bg-slate-200 dark:bg-white/10 rounded" />
         <div className="h-4 w-28 bg-slate-200 dark:bg-white/10 rounded" />

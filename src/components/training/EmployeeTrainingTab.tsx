@@ -199,7 +199,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8A2B2B]" />
       </div>
     );
   }
@@ -218,7 +218,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
           {selectedCourses.length > 0 && (
             <button
               onClick={handleAssignSelected}
-              className="px-3 py-1.5 text-sm bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
+              className="px-3 py-1.5 text-sm bg-[#8A2B2B] hover:bg-[#8A2B2B]/80 text-white rounded-lg transition-colors"
             >
               Assign Selected ({selectedCourses.length})
             </button>
@@ -237,7 +237,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                   assignment
                     ? 'bg-blue-500/10 border-blue-500/50'
                     : isSelected
-                    ? 'bg-[#D37E91]/10 border-[#D37E91]/50'
+                    ? 'bg-[#8A2B2B]/10 border-[#8A2B2B]/50'
                     : 'bg-neutral-700/50 border-neutral-600'
                 }`}
               >
@@ -264,7 +264,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                           setSelectedCourses(selectedCourses.filter(id => id !== course.id));
                         }
                       }}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-[#8A2B2B] bg-neutral-700 border-neutral-600 rounded focus:ring-[#8A2B2B]"
                     />
                   )}
                 </div>
@@ -340,7 +340,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                       <Link
                         href={`/api/certificates/${record.id}`}
                         target="_blank"
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#8A2B2B] hover:bg-[#8A2B2B]/80 text-white rounded-lg transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         Certificate

@@ -125,7 +125,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
           delivery_date: deliveryDate,
           invoice_number: invoiceNumber || null,
           subtotal: subtotal,
-          vat_total: vat,
+          tax: vat,
           total: total,
           status: 'confirmed'
         })

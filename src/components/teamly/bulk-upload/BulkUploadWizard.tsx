@@ -227,7 +227,7 @@ export function BulkUploadWizard() {
             {i < STEPS.length - 1 && (
               <div
                 className={`w-8 h-px mx-2 ${
-                  i < currentStepIdx ? 'bg-teamly-dark dark:bg-teamly' : 'bg-theme-muted'
+                  i < currentStepIdx ? 'bg-teamly-dark dark:bg-teamly' : i === currentStepIdx ? 'bg-teamly-mid/40' : 'bg-theme-muted'
                 }`}
               />
             )}

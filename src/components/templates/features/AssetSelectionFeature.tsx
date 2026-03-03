@@ -57,7 +57,7 @@ export function AssetSelectionFeature({
         <h2 className="text-lg font-semibold text-theme-primary">
           Asset Selection
           {selectedAssets.length > 0 && (
-            <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
+            <span className="ml-2 text-sm font-normal text-[#8A2B2B] dark:text-[#8A2B2B]">
               ({selectedAssets.length} selected)
             </span>
           )}
@@ -88,7 +88,7 @@ export function AssetSelectionFeature({
                   // Note: Changing this will filter locally, but won't update the header selector
                   // The header selector is the source of truth for site selection
                 }}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               >
                 <option value="">All Sites ({assets.length} assets)</option>
                 {sites.map((site) => {
@@ -112,7 +112,7 @@ export function AssetSelectionFeature({
                     key={asset.id}
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/50'
+                        ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 border border-[#8A2B2B] dark:border-[#8A2B2B]/50'
                         : 'bg-theme-surface border border-theme hover:bg-theme-hover'
                     }`}
                   >
@@ -120,7 +120,7 @@ export function AssetSelectionFeature({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleAsset(asset.id)}
- className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-surface ] text-[#D37E91] focus:ring-[#D37E91] flex-shrink-0"
+ className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-surface ] text-[#8A2B2B] focus:ring-[#8A2B2B] flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-theme-primary text-sm font-medium">

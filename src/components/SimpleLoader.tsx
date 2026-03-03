@@ -17,7 +17,7 @@ export default function SimpleLoader({ children, fallback }: SimpleLoaderProps) 
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">❌ Error</div>
           <div className="text-theme-secondary mb-4">{error}</div>
-          <a href="/login" className="bg-transparent border border-[#D37E91] text-[#D37E91] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200">
+          <a href="/login" className="bg-transparent border border-[#8A2B2B] text-[#8A2B2B] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200">
             Go to Login
           </a>
         </div>
@@ -30,7 +30,7 @@ export default function SimpleLoader({ children, fallback }: SimpleLoaderProps) 
     return (
       <div className="min-h-screen bg-neutral-950 text-theme-primary flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8A2B2B] mx-auto mb-4"></div>
           <div className="text-xl">Loading...</div>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function SimpleLoader({ children, fallback }: SimpleLoaderProps) 
       <div className="min-h-screen bg-neutral-950 text-theme-primary flex items-center justify-center">
         <div className="text-center">
           <div className="text-yellow-400 text-xl mb-4">No session found</div>
-          <a href="/login" className="bg-transparent border border-[#D37E91] text-[#D37E91] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200">
+          <a href="/login" className="bg-transparent border border-[#8A2B2B] text-[#8A2B2B] px-6 py-2 rounded hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200">
             Go to Login
           </a>
         </div>

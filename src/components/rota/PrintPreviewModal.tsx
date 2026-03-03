@@ -38,17 +38,17 @@ export function PrintPreviewModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="flex flex-col h-[90vh] w-[95vw] max-w-7xl bg-[#0B0D13] border border-white/[0.06] rounded-xl shadow-2xl overflow-hidden">
+      <div className="flex flex-col h-[90vh] w-[95vw] max-w-7xl bg-[#101214] border border-white/[0.06] rounded-xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-white/[0.03]">
           <div className="flex items-center gap-3">
-            <Printer className="w-5 h-5 text-[#D37E91]" />
+            <Printer className="w-5 h-5 text-[#8A2B2B]" />
             <h2 className="text-xl font-semibold text-theme-primary">Print Preview</h2>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
+              className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               Print
@@ -84,7 +84,7 @@ export function PrintPreviewModal({
             </button>
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+              className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200 ease-in-out"
             >
               Print
             </button>

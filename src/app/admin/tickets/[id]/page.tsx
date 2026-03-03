@@ -99,7 +99,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
         </div>
         <Link
           href="/admin/tickets"
-          className="inline-block mt-4 text-[#D37E91] hover:underline"
+          className="inline-block mt-4 text-[#8A2B2B] hover:underline"
         >
           ← Back to tickets
         </Link>
@@ -198,7 +198,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
               href={ticket.page_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-sm text-[#D37E91] hover:underline truncate mt-1"
+              className="block text-sm text-[#8A2B2B] hover:underline truncate mt-1"
             >
               {ticket.page_url}
             </a>

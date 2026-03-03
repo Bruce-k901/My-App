@@ -5,29 +5,33 @@
  * Tailwind classes (bg-checkly, text-planly, border-stockly/20 …) are
  * wired to those variables via tailwind.config.js and should be preferred.
  *
- * Each module has a colour pair: light (for dark theme) + dark (for light theme).
+ * Each module has a colour triplet: light (dark theme) + mid (depth) + dark (light theme).
  * Use MODULE_HEX only where an actual hex string is required — for example
  * in `style={{ color: … }}` or when computing rgba() in JS.
  */
 
 export type ModuleKey = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly' | 'msgly';
 
-export const MODULE_HEX: Record<ModuleKey, { light: string; dark: string }> = {
-  checkly: { light: '#F1E194', dark: '#5B0E14' },
-  stockly: { light: '#789A99', dark: '#6B8F8E' },
-  teamly:  { light: '#D37E91', dark: '#C28FA3' },
-  planly:  { light: '#ACC8A2', dark: '#1A2517' },
-  assetly: { light: '#F3E7D9', dark: '#544349' },
-  msgly:   { light: '#CBDDE9', dark: '#2872A1' },
+/** Brand CTA colour — Crimson Smoke mid */
+export const BRAND_CTA = '#8A2B2B';
+export const BRAND_CTA_RGB = '138, 43, 43';
+
+export const MODULE_HEX: Record<ModuleKey, { light: string; mid: string; dark: string }> = {
+  checkly:  { light: '#FDF7EF', mid: '#D4C6AD', dark: '#7E8052' },   // Champagne Olive
+  stockly:  { light: '#CDEED6', mid: '#4FBDBA', dark: '#1B4242' },   // Velvet Teal
+  teamly:   { light: '#F2C9C9', mid: '#8A2B2B', dark: '#3B0A0A' },   // Crimson Smoke
+  planly:   { light: '#F0F4ED', mid: '#BFD8C1', dark: '#4E7E5D' },   // Jade Silk
+  assetly:  { light: '#A7FFEB', mid: '#14655B', dark: '#002B36' },   // Royal Emerald
+  msgly:    { light: '#A7A8B2', mid: '#5A5C6A', dark: '#1A1C22' },   // Platinum Dusk
 } as const;
 
 export const SIDEBAR_TINTS: Record<ModuleKey, { dark: string; light: string }> = {
-  checkly: { dark: '#12140e', light: '#f8f1e8' },
-  stockly: { dark: '#0d1414', light: '#edf3f3' },
-  teamly:  { dark: '#14100e', light: '#f6eff1' },
-  planly:  { dark: '#0e120d', light: '#eff3ee' },
-  assetly: { dark: '#131110', light: '#f5f2ef' },
-  msgly:   { dark: '#0d1114', light: '#eef2f5' },
+  checkly: { dark: '#0f0f0c', light: '#fcfaf5' },
+  stockly: { dark: '#0a1010', light: '#f3fbf5' },
+  teamly:  { dark: '#100b0b', light: '#faf3f3' },
+  planly:  { dark: '#0d110e', light: '#f6f9f5' },
+  assetly: { dark: '#0a0e0e', light: '#f0fcf9' },
+  msgly:   { dark: '#0d0d0f', light: '#f4f4f6' },
 } as const;
 
 export const MODULE_NAMES: Record<ModuleKey, string> = {
@@ -46,6 +50,13 @@ export const MODULE_NAMES: Record<ModuleKey, string> = {
  */
 export function getModuleHex(module: ModuleKey, resolvedTheme: 'light' | 'dark'): string {
   return resolvedTheme === 'dark' ? MODULE_HEX[module].light : MODULE_HEX[module].dark;
+}
+
+/**
+ * Helper: returns the mid colour (theme-independent, used for depth/borders/highlights).
+ */
+export function getModuleMidHex(module: ModuleKey): string {
+  return MODULE_HEX[module].mid;
 }
 
 /**

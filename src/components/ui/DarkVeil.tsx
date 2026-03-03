@@ -72,12 +72,12 @@ void main(){
 
 // Module colours for the CSS overlay
 const MODULE_COLORS_HEX = [
-  '#F1E194', // checkly
-  '#789A99', // stockly
-  '#D37E91', // teamly
-  '#ACC8A2', // planly
-  '#F3E7D9', // assetly
-  '#CBDDE9', // msgly
+  '#FDF7EF', // checkly
+  '#CDEED6', // stockly
+  '#8A2B2B', // teamly
+  '#F0F4ED', // planly
+  '#A7FFEB', // assetly
+  '#A7A8B2', // msgly
 ];
 
 interface DarkVeilProps {

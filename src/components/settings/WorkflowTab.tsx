@@ -9,7 +9,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
   return (
     <label className="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
-      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#D37E91] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]" />
+      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8A2B2B] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8A2B2B]" />
     </label>
   );
 }
@@ -117,7 +117,7 @@ export function WorkflowTab() {
                   onClick={() => setViewForSection(key, 'table')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors
                     ${(defaultViews[key] ?? 'table') === 'table'
-                      ? 'bg-[#D37E91]/20 text-[#D37E91] font-medium'
+                      ? 'bg-[#8A2B2B]/20 text-[#8A2B2B] font-medium'
                       : 'text-theme-tertiary/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
                     }`}
                 >
@@ -128,7 +128,7 @@ export function WorkflowTab() {
                   onClick={() => setViewForSection(key, 'card')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-theme
                     ${defaultViews[key] === 'card'
-                      ? 'bg-[#D37E91]/20 text-[#D37E91] font-medium'
+                      ? 'bg-[#8A2B2B]/20 text-[#8A2B2B] font-medium'
                       : 'text-theme-tertiary/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
                     }`}
                 >

@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Pay type tag
     const payTypeTag = payFrequency === 'hourly' ? 'Hourly' : 'Salaried'
 
-    // SVG icons as data URIs (duotone style in #b0607a)
+    // SVG icons as data URIs (duotone style in #6E2222)
     const buildingIcon = `<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 256 256'%3E%3Crect x='32' y='48' width='192' height='176' rx='8' fill='%23b0607a' opacity='0.2'/%3E%3Cpath d='M232,224H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V224H24a8,8,0,0,0,0,16H232a8,8,0,0,0,0-16ZM64,56H192V224H160V184a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v40H64Zm80,168H112V192h32ZM88,104a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H96A8,8,0,0,1,88,104Zm48,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H144A8,8,0,0,1,136,104ZM88,144a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H96A8,8,0,0,1,88,144Zm48,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H144A8,8,0,0,1,136,144Z' fill='%23b0607a'/%3E%3C/svg%3E" width="32" height="32" alt="" style="display:block;margin:0 auto;" />`
 
     const calendarIcon = `<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 256 256'%3E%3Crect x='40' y='40' width='176' height='176' rx='8' fill='%23b0607a' opacity='0.2'/%3E%3Cpath d='M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V80H208Z' fill='%23b0607a'/%3E%3C/svg%3E" width="20" height="20" alt="" style="display:inline-block;vertical-align:middle;" />`
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
                           ${mapPinIcon}
                         </td>
                         <td>
-                          <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:13px; color:#b0607a; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Location</div>
+                          <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:13px; color:#6E2222; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Location</div>
                           <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:15px; color:#2D2D2D; font-weight:600;">${siteName}</div>
                           ${siteAddress ? `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:13px; color:#7A7A7A; margin-top:2px;">${siteAddress}</div>` : ''}
                         </td>
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
     <tr>
       <td align="center" style="padding:40px 16px;">
         <!-- Card -->
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px; width:100%; background-color:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 1px 4px rgba(176,96,122,0.08);">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px; width:100%; background-color:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 1px 4px rgba(138,43,43,0.08);">
 
           <!-- Hero Section -->
           <tr>
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
               <!-- Company icon circle -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
                 <tr>
-                  <td style="width:64px; height:64px; background-color:#FFFFFF; border-radius:32px; text-align:center; vertical-align:middle; box-shadow:0 2px 8px rgba(176,96,122,0.15);">
+                  <td style="width:64px; height:64px; background-color:#FFFFFF; border-radius:32px; text-align:center; vertical-align:middle; box-shadow:0 2px 8px rgba(138,43,43,0.15);">
                     ${buildingIcon}
                   </td>
                 </tr>
@@ -159,8 +159,8 @@ export async function POST(request: NextRequest) {
               <!-- Job Offer badge -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:16px;">
                 <tr>
-                  <td style="background-color:rgba(176,96,122,0.15); padding:4px 14px; border-radius:20px;">
-                    <span style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:700; color:#b0607a; text-transform:uppercase; letter-spacing:1px;">Job Offer</span>
+                  <td style="background-color:rgba(138,43,43,0.15); padding:4px 14px; border-radius:20px;">
+                    <span style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:700; color:#6E2222; text-transform:uppercase; letter-spacing:1px;">Job Offer</span>
                   </td>
                 </tr>
               </table>
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
           <!-- Offer Details Section -->
           <tr>
             <td style="padding:28px 24px 0;">
-              <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:700; color:#b0607a; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:16px;">
+              <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:700; color:#6E2222; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:16px;">
                 YOUR OFFER DETAILS
               </div>
             </td>
@@ -195,10 +195,10 @@ export async function POST(request: NextRequest) {
               <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   ${departmentTag ? `<td style="padding-right:6px;">
-                    <span style="display:inline-block; background-color:#F3E8EB; color:#b0607a; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px;">${departmentTag}</span>
+                    <span style="display:inline-block; background-color:#F3E8EB; color:#6E2222; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px;">${departmentTag}</span>
                   </td>` : ''}
                   <td>
-                    <span style="display:inline-block; background-color:#F3E8EB; color:#b0607a; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px;">${payTypeTag}</span>
+                    <span style="display:inline-block; background-color:#F3E8EB; color:#6E2222; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px;">${payTypeTag}</span>
                   </td>
                 </tr>
               </table>
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
                               </td>
                               <td>
                                 <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:11px; color:#A0A0A0; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Pay Rate</div>
-                                <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:14px; color:#b0607a; font-weight:700;">${payText}</div>
+                                <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:14px; color:#6E2222; font-weight:700;">${payText}</div>
                               </td>
                             </tr>
                           </table>
@@ -306,7 +306,7 @@ export async function POST(request: NextRequest) {
             <td style="padding:8px 24px 20px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
-                  <td align="center" style="background-color:#b0607a; border-radius:12px;">
+                  <td align="center" style="background-color:#6E2222; border-radius:12px;">
                     <a href="${offerUrl}" target="_blank" style="display:block; padding:16px 32px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:16px; font-weight:700; color:#ffffff; text-decoration:none; text-align:center;">
                       ${checkIcon}&nbsp;&nbsp;Accept Job Offer
                     </a>
@@ -322,7 +322,7 @@ export async function POST(request: NextRequest) {
           <!-- No URL fallback -->
           <tr>
             <td style="padding:8px 24px 20px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#FDF8F9; border:1px solid rgba(176,96,122,0.15); border-radius:12px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#FDF8F9; border:1px solid rgba(138,43,43,0.15); border-radius:12px;">
                 <tr>
                   <td style="padding:20px; text-align:center;">
                     <p style="margin:0 0 8px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size:15px; color:#2D2D2D; font-weight:600;">Please Respond</p>
@@ -352,7 +352,7 @@ export async function POST(request: NextRequest) {
 
           <!-- Powered by Opsly Footer -->
           <tr>
-            <td style="padding:20px 24px 28px; border-top:1px solid rgba(176,96,122,0.08);">
+            <td style="padding:20px 24px 28px; border-top:1px solid rgba(138,43,43,0.08);">
               <!-- Bar mark -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:10px;">
                 <tr>

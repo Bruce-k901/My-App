@@ -23,7 +23,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string }> = [
   { label: '🛡️ Safety', value: 'safety', color: 'text-red-500' },
   { label: '🔧 Maintenance', value: 'maintenance', color: 'text-orange-500' },
   { label: '🔄 Operations', value: 'operations', color: 'text-cyan-500' },
-  { label: '👥 HR', value: 'hr', color: 'text-[#D37E91]' },
+  { label: '👥 HR', value: 'hr', color: 'text-[#8A2B2B]' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-500' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-600' },
   { label: '💬 General', value: 'general', color: 'text-theme-tertiary' },
@@ -84,7 +84,7 @@ function FileAttachmentDisplay({ file }: { file: { url: string; name: string; si
     >
       <span className="text-2xl flex-shrink-0">{getFileIcon(file.type)}</span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-[#D37E91] dark:text-[#D37E91] truncate group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]">
+        <div className="text-sm font-medium text-[#8A2B2B] dark:text-[#8A2B2B] truncate group-hover:text-[#8A2B2B] dark:group-hover:text-[#8A2B2B]">
           {file.name}
         </div>
         <div className="text-xs text-theme-tertiary">{formatFileSize(file.size)}</div>
@@ -335,7 +335,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0B0D13] overflow-hidden">
+    <div className="flex flex-col h-full bg-white dark:bg-[#101214] overflow-hidden">
       {/* Messages - Scrollable */}
       <div
         ref={threadRef}
@@ -368,11 +368,11 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
               >
                 {showAvatar && !isOwn && (
                   isOpslyAssistant(message.sender_id) ? (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/15 dark:bg-[#D37E91]/25 flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-[#D37E91]" />
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#8A2B2B]/15 dark:bg-[#8A2B2B]/25 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-[#8A2B2B]" />
                     </div>
                   ) : (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center text-xs font-semibold text-[#D37E91] dark:text-[#D37E91]">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 flex items-center justify-center text-xs font-semibold text-[#8A2B2B] dark:text-[#8A2B2B]">
                       {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   )
@@ -388,7 +388,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     <div className="text-xs text-theme-tertiary mb-1 px-2 flex items-center gap-1.5">
                       {message.sender.full_name || message.sender.email?.split('@')[0]}
                       {isOpslyAssistant(message.sender_id) && (
-                        <span className="text-[10px] bg-[#D37E91]/15 text-[#D37E91] px-1.5 py-0.5 rounded-full font-medium">
+                        <span className="text-[10px] bg-[#8A2B2B]/15 text-[#8A2B2B] px-1.5 py-0.5 rounded-full font-medium">
                           Bot
                         </span>
                       )}
@@ -397,7 +397,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
                   {message.reply_to && message.reply_to.id && (
                     <div
-                      className={`mb-2 px-3 py-2 bg-[#D37E91]/10 dark:bg-white/[0.08] border-l-3 border-[#D37E91] dark:border-[#D37E91]/70 rounded text-xs ${
+                      className={`mb-2 px-3 py-2 bg-[#8A2B2B]/10 dark:bg-white/[0.08] border-l-3 border-[#8A2B2B] dark:border-[#8A2B2B]/70 rounded text-xs ${
                         isOwn ? 'ml-auto' : ''
                       }`}
                       onClick={(e) => {
@@ -407,16 +407,16 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         if (repliedMessageElement) {
                           repliedMessageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           // Highlight briefly
-                          repliedMessageElement.classList.add('ring-2', 'ring-[#D37E91]/50');
+                          repliedMessageElement.classList.add('ring-2', 'ring-[#8A2B2B]/50');
                           setTimeout(() => {
-                            repliedMessageElement.classList.remove('ring-2', 'ring-[#D37E91]/50');
+                            repliedMessageElement.classList.remove('ring-2', 'ring-[#8A2B2B]/50');
                           }, 2000);
                         }
                       }}
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Reply className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
+                        <Reply className="w-3 h-3 text-[#8A2B2B] dark:text-[#8A2B2B] flex-shrink-0" />
                         <div className="text-xs text-theme-secondary/50 font-medium">
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
@@ -436,7 +436,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   {/* Forwarded message indicator */}
                   {message.metadata?.forwarded_from_message_id && (
                     <div className="flex items-center gap-2 mb-2 text-xs text-theme-secondary/50">
-                      <Forward className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
+                      <Forward className="w-3 h-3 text-[#8A2B2B] dark:text-[#8A2B2B] flex-shrink-0" />
                       <span>
                         Forwarded from {message.metadata?.forwarded_from_sender || 'Unknown'}
                       </span>
@@ -446,7 +446,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   <div
                     className={`group relative px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
                       isOwn
-                        ? 'bg-[#D37E91]/10 dark:bg-white/[0.03] border border-[#D37E91]/30 dark:border-white/[0.06] text-theme-primary'
+                        ? 'bg-[#8A2B2B]/10 dark:bg-white/[0.03] border border-[#8A2B2B]/30 dark:border-white/[0.06] text-theme-primary'
                         : 'bg-gray-100 dark:bg-white/[0.03] border border-theme text-theme-primary'
                     }`}
                   >
@@ -494,7 +494,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     {message.metadata?.source === 'ticket_comment' && message.metadata?.ticket_title && (
                       <a
                         href={message.metadata.ticket_link || `/dashboard/support/my-tickets/${message.metadata.ticket_id}`}
-                        className="flex items-center gap-1.5 text-xs mt-2 text-[#D37E91] hover:underline"
+                        className="flex items-center gap-1.5 text-xs mt-2 text-[#8A2B2B] hover:underline"
                       >
                         <span>🎫</span>
                         <span>{message.metadata.ticket_title}</span>
@@ -519,7 +519,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
                           message.metadata.actionButton.style === 'secondary'
                             ? 'bg-theme-surface-elevated text-theme-primary hover:bg-theme-hover border border-theme'
-                            : 'bg-[#D37E91]/10 text-[#D37E91] hover:bg-[#D37E91]/20'
+                            : 'bg-[#8A2B2B]/10 text-[#8A2B2B] hover:bg-[#8A2B2B]/20'
                         }`}
                       >
                         {message.metadata.actionButton.label || 'Open'}
@@ -643,7 +643,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 setActiveMenuId(null);
                               }}
                               className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-theme-muted transition-colors ${
-                                message.topic ? 'text-[#D37E91]' : 'text-theme-secondary'
+                                message.topic ? 'text-[#8A2B2B]' : 'text-theme-secondary'
                               }`}
                             >
                               <Tag className="w-4 h-4" />
@@ -696,8 +696,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
           <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center">
-              <div className="w-2 h-2 bg-[#D37E91] dark:bg-[#D37E91] rounded-full animate-pulse" />
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 flex items-center justify-center">
+              <div className="w-2 h-2 bg-[#8A2B2B] dark:bg-[#8A2B2B] rounded-full animate-pulse" />
             </div>
             <div className="px-4 py-2 bg-gray-100 dark:bg-white/[0.05] rounded-lg">
               <div className="flex gap-1">

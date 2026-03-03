@@ -15,8 +15,8 @@ export async function GET() {
     description: "Complete operations platform for hospitality, retail, and manufacturing businesses",
     start_url: "/",
     display: "standalone",
-    background_color: "#110f0d",
-    theme_color: "#D37E91",
+    background_color: "#131517",
+    theme_color: "#8A2B2B",
     orientation: "portrait-primary",
     scope: "/",
     icons: [

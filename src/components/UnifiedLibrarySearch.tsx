@@ -72,9 +72,9 @@ const LIBRARIES = [
     id: 'serving_equipment_library', 
     name: 'Serving Equipment', 
     icon: UtensilsCrossed, 
-    color: 'text-[#D37E91]',
-    bgColor: 'bg-[#D37E91]/15',
-    borderColor: 'border-[#D37E91]/30'
+    color: 'text-[#8A2B2B]',
+    bgColor: 'bg-[#8A2B2B]/15',
+    borderColor: 'border-[#8A2B2B]/30'
   }
 ];
 
@@ -276,7 +276,7 @@ export default function UnifiedLibrarySearch({
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Type to search across all libraries (Ingredients, PPE, Chemicals, Drinks, etc.)..."
- className="w-full bg-theme-button border border-theme rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 transition-all"
+ className="w-full bg-theme-button border border-theme rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:border-[#8A2B2B] focus:ring-2 focus:ring-[#8A2B2B]/20 transition-all"
           autoFocus
         />
         {searchQuery && (

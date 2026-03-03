@@ -369,7 +369,7 @@ export default function RolesAndPermissionsPage() {
           <PermissionGate permission="settings.roles">
             <Button
               onClick={handleNewRole}
-              className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+              className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Role
@@ -408,7 +408,7 @@ export default function RolesAndPermissionsPage() {
                   </Button>
                   <Button
                     onClick={handleSeedDefaultRoles}
-                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-sm"
+                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] text-sm"
                   >
                     <Shield className="w-4 h-4 mr-2" />
                     Seed Default Roles
@@ -493,7 +493,7 @@ export default function RolesAndPermissionsPage() {
                       <Button
                         onClick={handleSaveRole}
                         disabled={updateMutation.isPending || updatePermissionsMutation.isPending}
-                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)]"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save

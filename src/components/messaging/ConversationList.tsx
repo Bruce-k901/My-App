@@ -329,9 +329,9 @@ export function ConversationList({
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white dark:bg-[#0B0D13] overflow-hidden">
+      <div className="flex flex-col h-full bg-white dark:bg-[#101214] overflow-hidden">
         {/* Header with Start Button - Fixed at top with exact height */}
-        <div className="flex-shrink-0 p-4 border-b border-theme bg-white dark:bg-[#0B0D13] h-[140px] flex flex-col justify-between">
+        <div className="flex-shrink-0 p-4 border-b border-theme bg-white dark:bg-[#101214] h-[140px] flex flex-col justify-between">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -342,7 +342,7 @@ export function ConversationList({
               // Prevent any potential form submission or other default behavior
               e.preventDefault();
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#D37E91] border-2 border-[#D37E91] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(211, 126, 145,0.5)] transition-all h-[40px] cursor-pointer pointer-events-auto"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#8A2B2B] border-2 border-[#8A2B2B] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(138, 43, 43,0.5)] transition-all h-[40px] cursor-pointer pointer-events-auto"
             type="button"
             aria-label="Start a new conversation"
           >
@@ -356,13 +356,13 @@ export function ConversationList({
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-full pl-10 pr-4 bg-theme-button border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full h-full pl-10 pr-4 bg-theme-button border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
             />
           </div>
         </div>
 
         {/* Topic Filter - Expandable */}
-        <div className="flex-shrink-0 border-b border-theme bg-white dark:bg-[#0B0D13]">
+        <div className="flex-shrink-0 border-b border-theme bg-white dark:bg-[#101214]">
           <button
             onClick={() => setIsTopicFilterExpanded(!isTopicFilterExpanded)}
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors"
@@ -370,7 +370,7 @@ export function ConversationList({
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-medium text-theme-secondary">Filter by Topic</h3>
               {(filters.topicCategory || filters.isPinned) && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/30 text-[#8A2B2B] dark:text-[#8A2B2B]">
                   Active
                 </span>
               )}
@@ -404,7 +404,7 @@ export function ConversationList({
         </div>
       ) : (
         /* Conversations List - Scrollable */
-        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#D37E91]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#8A2B2B]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-gray-300 dark:text-white/20 mb-4" />
@@ -432,26 +432,26 @@ export function ConversationList({
                 >
                   {/* Left border highlight for selected conversation */}
                   {isSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#D37E91] rounded-r" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#8A2B2B] rounded-r" />
                   )}
                   <div className="flex items-start gap-3">
                     <div className={`flex-shrink-0 p-2 rounded-lg ${
-                      isOA ? 'bg-[#D37E91]/15 dark:bg-[#D37E91]/25' : 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                      isOA ? 'bg-[#8A2B2B]/15 dark:bg-[#8A2B2B]/25' : 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15'
                     }`}>
                       {isOA ? (
-                        <Bot className="w-5 h-5 text-[#D37E91]" />
+                        <Bot className="w-5 h-5 text-[#8A2B2B]" />
                       ) : (
-                        <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
+                        <Icon className="w-5 h-5 text-[#8A2B2B] dark:text-[#8A2B2B]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className={`text-sm font-semibold truncate flex items-center gap-1.5 ${
-                          isSelected ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-primary'
+                          isSelected ? 'text-[#8A2B2B] dark:text-[#8A2B2B]' : 'text-theme-primary'
                         }`}>
                           {name}
                           {isOA && (
-                            <span className="text-[10px] bg-[#D37E91]/15 text-[#D37E91] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+                            <span className="text-[10px] bg-[#8A2B2B]/15 text-[#8A2B2B] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
                               Bot
                             </span>
                           )}
@@ -477,7 +477,7 @@ export function ConversationList({
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       {unreadCount > 0 && (
                         <div className="flex-shrink-0">
-                          <span className="px-2 py-0.5 bg-[#D37E91] text-white text-xs font-semibold rounded-full">
+                          <span className="px-2 py-0.5 bg-[#8A2B2B] text-white text-xs font-semibold rounded-full">
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         </div>

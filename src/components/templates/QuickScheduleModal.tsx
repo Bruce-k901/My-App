@@ -194,7 +194,7 @@ export function QuickScheduleModal({ isOpen, onClose, onComplete, template }: Qu
                 type="checkbox"
                 checked={applyToAll}
                 onChange={e => handleApplyToAll(e.target.checked)}
-                className="rounded border-theme text-[#D37E91] focus:ring-[#D37E91]"
+                className="rounded border-theme text-[#8A2B2B] focus:ring-[#8A2B2B]"
               />
               <span className="text-xs text-theme-secondary">Apply to all sites</span>
             </label>
@@ -205,7 +205,7 @@ export function QuickScheduleModal({ isOpen, onClose, onComplete, template }: Qu
                     type="checkbox"
                     checked={selectedSites.includes(site.id)}
                     onChange={() => toggleSite(site.id)}
-                    className="rounded border-theme text-[#D37E91] focus:ring-[#D37E91]"
+                    className="rounded border-theme text-[#8A2B2B] focus:ring-[#8A2B2B]"
                   />
                   <span className="text-xs text-theme-primary">{site.name}</span>
                 </label>
@@ -225,7 +225,7 @@ export function QuickScheduleModal({ isOpen, onClose, onComplete, template }: Qu
                       onClick={() => toggleDaypart(dp.value)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
                         selectedDayparts.includes(dp.value)
-                          ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                          ? 'bg-[#8A2B2B]/10 text-[#8A2B2B] border-[#8A2B2B]/30'
                           : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
                       }`}
                     >
@@ -247,7 +247,7 @@ export function QuickScheduleModal({ isOpen, onClose, onComplete, template }: Qu
                           type="time"
                           value={daypartTimes[dp] || ''}
                           onChange={e => setDaypartTimes(prev => ({ ...prev, [dp]: e.target.value }))}
-                          className="px-2 py-1 bg-theme-surface border border-theme rounded text-xs text-theme-primary focus:outline-none focus:border-[#D37E91]"
+                          className="px-2 py-1 bg-theme-surface border border-theme rounded text-xs text-theme-primary focus:outline-none focus:border-[#8A2B2B]"
                         />
                       </div>
                     );
@@ -269,7 +269,7 @@ export function QuickScheduleModal({ isOpen, onClose, onComplete, template }: Qu
           <button
             onClick={handleSave}
             disabled={saving || selectedSites.length === 0}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white transition-colors disabled:opacity-50"
           >
             {saving ? (isScheduled ? 'Scheduling...' : 'Assigning...') : (isScheduled ? 'Schedule & Activate' : 'Assign & Activate')}
           </button>

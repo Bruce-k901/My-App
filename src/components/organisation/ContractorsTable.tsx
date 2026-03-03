@@ -210,7 +210,7 @@ export default function ContractorsTable() {
         <div className="text-theme-primary">Maintenance Contractors</div>
         <button
           onClick={openNew}
-          className="w-10 h-10 rounded-md bg-[#D37E91]/25 border border-[#D37E91]/40 text-[#D37E91] hover:bg-[#D37E91]/35 flex items-center justify-center text-2xl font-semibold leading-none"
+          className="w-10 h-10 rounded-md bg-[#8A2B2B]/25 border border-[#8A2B2B]/40 text-[#8A2B2B] hover:bg-[#8A2B2B]/35 flex items-center justify-center text-2xl font-semibold leading-none"
           aria-label="Add Contractor"
         >
           +

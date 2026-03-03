@@ -334,7 +334,7 @@ export default function TemplatesPage() {
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] text-sm"
+              className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#8A2B2B] text-sm"
             />
           </div>
           {categories.length > 1 && (
@@ -343,7 +343,7 @@ export default function TemplatesPage() {
                 onClick={() => setCategoryFilter('all')}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
                   categoryFilter === 'all'
-                    ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                    ? 'bg-[#8A2B2B]/10 text-[#8A2B2B] border-[#8A2B2B]/30'
                     : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
                 }`}
               >
@@ -355,7 +355,7 @@ export default function TemplatesPage() {
                   onClick={() => setCategoryFilter(cat)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
                     categoryFilter === cat
-                      ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                      ? 'bg-[#8A2B2B]/10 text-[#8A2B2B] border-[#8A2B2B]/30'
                       : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
                   }`}
                 >
@@ -398,7 +398,7 @@ export default function TemplatesPage() {
               <p className="text-theme-tertiary text-sm">No templates match your filters.</p>
               <button
                 onClick={() => { setSearchTerm(''); setCategoryFilter('all'); }}
-                className="text-[#D37E91] hover:underline text-sm mt-2"
+                className="text-[#8A2B2B] hover:underline text-sm mt-2"
               >
                 Clear filters
               </button>

@@ -632,7 +632,7 @@ export async function GET(request: NextRequest) {
     <div style="background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
 
       <!-- Accent bar -->
-      <div style="height: 4px; background: linear-gradient(90deg, #D37E91 0%, #9A8EC9 50%, #789A99 100%);"></div>
+      <div style="height: 4px; background: linear-gradient(90deg, #8A2B2B 0%, #9A8EC9 50%, #CDEED6 100%);"></div>
 
       <!-- Title Block -->
       <div style="padding: 28px 32px 0;">
@@ -667,14 +667,14 @@ export async function GET(request: NextRequest) {
           <tr>
             <td align="center" style="padding: 0;">
               <!--[if mso]>
-              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${appUrl}/dashboard" style="height:44px;v-text-anchor:middle;width:220px;" arcsize="18%" fillcolor="#D37E91" strokecolor="#D37E91" strokeweight="0">
+              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${appUrl}/dashboard" style="height:44px;v-text-anchor:middle;width:220px;" arcsize="18%" fillcolor="#8A2B2B" strokecolor="#8A2B2B" strokeweight="0">
                 <w:anchorlock/>
                 <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">Open Dashboard</center>
               </v:roundrect>
               <![endif]-->
               <!--[if !mso]><!-->
               <a href="${appUrl}/dashboard" target="_blank"
-                 style="background-color: #D37E91; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display: inline-block;">
+                 style="background-color: #8A2B2B; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display: inline-block;">
                 Open Dashboard
               </a>
               <!--<![endif]-->

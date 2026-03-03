@@ -32,7 +32,7 @@ export default function OrgSubHeader() {
       {tabs.map((t) => {
         const active = isActive(t.href);
         const base = "px-3 py-1.5 rounded-md text-sm border transition-colors";
-        const onClasses = "bg-[#D37E91]/25 border-[#D37E91]/40 text-[#D37E91] shadow-[0_0_8px_rgba(211, 126, 145,0.35)]";
+        const onClasses = "bg-[#8A2B2B]/25 border-[#8A2B2B]/40 text-[#8A2B2B] shadow-[0_0_8px_rgba(138, 43, 43,0.35)]";
         const offClasses = "bg-white/[0.06] border-white/[0.1] text-theme-primary hover:bg-white/[0.1]";
         return (
           <Link key={t.href} href={t.href} scroll={false} className={`${base} ${active ? onClasses : offClasses}`}>

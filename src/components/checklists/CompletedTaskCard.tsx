@@ -2020,7 +2020,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                       href={photoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="relative aspect-square rounded-lg overflow-hidden border border-theme hover:border-[#D37E91]/50 transition-colors group"
+                      className="relative aspect-square rounded-lg overflow-hidden border border-theme hover:border-[#8A2B2B]/50 transition-colors group"
                     >
                       <img
                         src={photoUrl}

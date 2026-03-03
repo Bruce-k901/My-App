@@ -54,7 +54,7 @@ export function TicketCommentInput({
           placeholder={placeholder}
           rows={4}
           disabled={isSubmitting}
-          className="w-full px-4 py-3 rounded-lg bg-white dark:bg-white/[0.06] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91] disabled:opacity-50 shadow-sm"
+          className="w-full px-4 py-3 rounded-lg bg-white dark:bg-white/[0.06] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] disabled:opacity-50 shadow-sm"
           style={{ border: '1px solid #9CA3AF', color: '#111113', backgroundColor: '#ffffff' }}
         />
       </div>
@@ -81,7 +81,7 @@ export function TicketCommentInput({
         <button
           type="submit"
           disabled={!content.trim() || isSubmitting}
-          className="px-4 py-2 rounded-lg bg-[#D37E91] text-white font-medium hover:bg-[#D37E91]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 rounded-lg bg-[#8A2B2B] text-white font-medium hover:bg-[#8A2B2B]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? 'Sending...' : 'Send Reply'}
         </button>

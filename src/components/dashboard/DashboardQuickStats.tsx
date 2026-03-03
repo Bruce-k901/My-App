@@ -143,11 +143,11 @@ export default function DashboardQuickStats() {
       {/* Today's Tasks */}
       <Link
         href="/dashboard/todays_tasks"
-        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
-          <div className="p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg group-hover:bg-[#D37E91]/20 dark:group-hover:bg-[#D37E91]/25 transition-colors">
-            <CheckSquare className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
+          <div className="p-2 bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15 rounded-lg group-hover:bg-[#8A2B2B]/20 dark:group-hover:bg-[#8A2B2B]/25 transition-colors">
+            <CheckSquare className="w-5 h-5 text-[#8A2B2B] dark:text-[#8A2B2B]" />
           </div>
           {stats.overdueTasks > 0 && (
             <span className="px-2 py-1 text-xs font-semibold bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-full">
@@ -167,13 +167,13 @@ export default function DashboardQuickStats() {
               <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                 {stats.completedTasks} completed
               </span>
-              <span className="text-[#D37E91] dark:text-[#D37E91] font-medium">
+              <span className="text-[#8A2B2B] dark:text-[#8A2B2B] font-medium">
                 {completionRate}%
               </span>
             </div>
             <div className="mt-2 h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#D37E91] rounded-full transition-all duration-500"
+                className="h-full bg-[#8A2B2B] rounded-full transition-all duration-500"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
@@ -184,7 +184,7 @@ export default function DashboardQuickStats() {
       {/* Pending Tasks */}
       <Link
         href="/dashboard/tasks/my-tasks"
-        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg group-hover:bg-yellow-200 dark:group-hover:bg-yellow-500/20 transition-colors">
@@ -207,7 +207,7 @@ export default function DashboardQuickStats() {
       {/* Open Incidents */}
       <Link
         href="/dashboard/incidents"
-        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-lg group-hover:bg-red-200 dark:group-hover:bg-red-500/20 transition-colors">

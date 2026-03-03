@@ -172,7 +172,7 @@ export function BookCourseFromTaskModal({
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-[#8A2B2B] focus:border-transparent"
                 disabled={booking}
               />
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
@@ -224,7 +224,7 @@ export function BookCourseFromTaskModal({
           <button
             onClick={handleBook}
             disabled={booking || !deadline}
-            className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-[#8A2B2B] hover:bg-[#8A2B2B]/80 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {booking ? (
               <>

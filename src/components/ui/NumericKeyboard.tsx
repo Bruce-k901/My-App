@@ -66,7 +66,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
   const keyboard = (
     <div
       data-numeric-keyboard
-      className={`fixed bottom-0 left-0 right-0 ${MOBILE_Z.keyboard} bg-white dark:bg-[#0B0D13] border-t border-gray-200 dark:border-white/[0.06] p-2 pb-[env(safe-area-inset-bottom,8px)]`}
+      className={`fixed bottom-0 left-0 right-0 ${MOBILE_Z.keyboard} bg-white dark:bg-[#101214] border-t border-gray-200 dark:border-white/[0.06] p-2 pb-[env(safe-area-inset-bottom,8px)]`}
       style={{
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
       }}
@@ -171,7 +171,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
             <button
               type="button"
               onClick={handleEnterClick}
-              className="h-12 bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border border-[#D37E91] rounded-lg text-[#D37E91] text-sm font-medium active:bg-[#D37E91]/25 dark:active:bg-[#D37E91]/30 transition-colors touch-manipulation select-none"
+              className="h-12 bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/20 border border-[#8A2B2B] rounded-lg text-[#8A2B2B] text-sm font-medium active:bg-[#8A2B2B]/25 dark:active:bg-[#8A2B2B]/30 transition-colors touch-manipulation select-none"
             >
               Enter
             </button>

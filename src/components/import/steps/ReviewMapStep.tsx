@@ -343,7 +343,7 @@ export function ReviewMapStep({
                       type="text"
                       value={tmpl.name}
                       onChange={e => updateTemplate(idx, { name: e.target.value })}
-                      className="w-full text-sm font-medium text-theme-primary bg-transparent border border-dashed border-theme rounded px-2 py-1.5 focus:border-[#D37E91] focus:outline-none"
+                      className="w-full text-sm font-medium text-theme-primary bg-transparent border border-dashed border-theme rounded px-2 py-1.5 focus:border-[#8A2B2B] focus:outline-none"
                     />
                   </div>
 
@@ -360,7 +360,7 @@ export function ReviewMapStep({
                             onClick={() => toggleFeature(idx, feat.value)}
                             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                               isActive && !isCustomMode
-                                ? 'border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91]'
+                                ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 text-[#8A2B2B]'
                                 : isCustomMode
                                   ? 'border-theme text-theme-tertiary/50'
                                   : 'border-theme text-theme-tertiary hover:border-theme-hover'
@@ -438,7 +438,7 @@ export function ReviewMapStep({
                               type="text"
                               value={item.text}
                               onChange={e => updateChecklistItem(idx, i, e.target.value)}
-                              className="flex-1 text-xs text-theme-secondary bg-transparent border-b border-dashed border-theme px-1 py-0.5 focus:border-[#D37E91] focus:outline-none"
+                              className="flex-1 text-xs text-theme-secondary bg-transparent border-b border-dashed border-theme px-1 py-0.5 focus:border-[#8A2B2B] focus:outline-none"
                               placeholder="Checklist item..."
                             />
                             <button
@@ -455,7 +455,7 @@ export function ReviewMapStep({
                     )}
                     <button
                       onClick={() => addChecklistItem(idx)}
-                      className="flex items-center gap-1 text-xs text-[#D37E91] hover:text-[#D37E91]/80 mt-2 transition-colors"
+                      className="flex items-center gap-1 text-xs text-[#8A2B2B] hover:text-[#8A2B2B]/80 mt-2 transition-colors"
                     >
                       <Plus className="w-3 h-3" /> Add item
                     </button>

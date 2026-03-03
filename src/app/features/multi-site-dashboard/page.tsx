@@ -19,10 +19,10 @@ export default function MultiSiteDashboardPage() {
   return (
     <MarketingSubPageLayout>
       {/* HERO */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#0b0d13]">
+      <section className="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#101214]">
         <div className="flex flex-col items-center justify-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center mb-4">
-            <h1 className="pt-1 pb-1 leading-tight text-5xl md:text-6xl font-bold bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(211, 126, 145,0.4)]">
+            <h1 className="pt-1 pb-1 leading-tight text-5xl md:text-6xl font-bold bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(138, 43, 43,0.4)]">
               Everything your kitchen, store, and head office need in one place
             </h1>
           </div>
@@ -33,7 +33,7 @@ export default function MultiSiteDashboardPage() {
       </section>
 
       {/* PAIRED PITFALLS + FEATURES */}
-      <section className="bg-[#0b0d13] py-10 border-t border-neutral-800">
+      <section className="bg-[#101214] py-10 border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-semibold mb-8 text-theme-primary text-center">
             What it fixes — and how Checkly helps

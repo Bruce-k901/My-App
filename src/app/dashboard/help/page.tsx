@@ -140,18 +140,18 @@ export default function HelpPage() {
       {/* Ask Opsly — primary CTA */}
       <button
         onClick={() => setAiAssistantOpen(true)}
-        className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#D37E91]/10 border border-[#D37E91]/30 active:scale-[0.98] transition-all touch-manipulation"
+        className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#8A2B2B]/10 border border-[#8A2B2B]/30 active:scale-[0.98] transition-all touch-manipulation"
       >
-        <div className="w-12 h-12 rounded-xl bg-[#D37E91]/20 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-6 h-6 text-[#D37E91]" />
+        <div className="w-12 h-12 rounded-xl bg-[#8A2B2B]/20 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-6 h-6 text-[#8A2B2B]" />
         </div>
         <div className="flex-1 text-left">
-          <p className="text-sm font-semibold text-[#D37E91]">Ask Opsly</p>
+          <p className="text-sm font-semibold text-[#8A2B2B]">Ask Opsly</p>
           <p className="text-xs text-theme-tertiary mt-0.5">
             AI assistant for instant help & ticket creation
           </p>
         </div>
-        <ChevronRight className="w-5 h-5 text-[#D37E91]/60 flex-shrink-0" />
+        <ChevronRight className="w-5 h-5 text-[#8A2B2B]/60 flex-shrink-0" />
       </button>
 
       {/* Quick Links */}

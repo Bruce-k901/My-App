@@ -159,7 +159,7 @@ export default function TaskDetailPage() {
             <p className="text-theme-tertiary mb-6">{error || 'Task not found'}</p>
             <button
               onClick={() => router.back()}
-              className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+              className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200"
             >
               Go Back
             </button>
@@ -204,7 +204,7 @@ export default function TaskDetailPage() {
           {!isCompleted && (
             <button
               onClick={() => setShowCompletionModal(true)}
-              className="px-6 py-3 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
+              className="px-6 py-3 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               Complete Task

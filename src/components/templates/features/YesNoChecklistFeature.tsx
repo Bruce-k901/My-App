@@ -97,7 +97,7 @@ export function YesNoChecklistFeature({
                 value={item.text}
                 onChange={(e) => updateItemText(itemIndex, e.target.value)}
                 placeholder="Enter question (e.g. Hot Water Available?)"
-                className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               />
               <button
                 type="button"
@@ -156,7 +156,7 @@ export function YesNoChecklistFeature({
                           ? 'e.g. Follow the corrective action procedure in Ad Hoc tasks'
                           : 'Leave blank if no message needed'
                         }
-                        className="w-full px-3 py-1.5 rounded border border-gray-200 dark:border-neutral-700 bg-white dark:bg-[#0a0c15] text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91] placeholder:text-theme-tertiary/60"
+                        className="w-full px-3 py-1.5 rounded border border-gray-200 dark:border-neutral-700 bg-white dark:bg-[#0a0c15] text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#8A2B2B] placeholder:text-theme-tertiary/60"
                       />
                     </div>
 
@@ -167,7 +167,7 @@ export function YesNoChecklistFeature({
                           type="checkbox"
                           checked={!!option.actions?.logException}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'logException')}
-                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#8A2B2B]"
                         />
                         <AlertTriangle className="w-3 h-3 text-theme-tertiary group-hover:text-amber-500" />
                         <span className="text-xs text-theme-secondary">Flag as exception</span>
@@ -178,7 +178,7 @@ export function YesNoChecklistFeature({
                           type="checkbox"
                           checked={!!option.actions?.requestAction}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'requestAction')}
-                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#8A2B2B]"
                         />
                         <Bell className="w-3 h-3 text-theme-tertiary group-hover:text-blue-500" />
                         <span className="text-xs text-theme-secondary">Notify manager</span>
@@ -189,7 +189,7 @@ export function YesNoChecklistFeature({
                           type="checkbox"
                           checked={!!option.actions?.requireAction}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'requireAction')}
-                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#8A2B2B]"
                         />
                         <FileText className="w-3 h-3 text-theme-tertiary group-hover:text-purple-500" />
                         <span className="text-xs text-theme-secondary">Staff must document action</span>
@@ -205,7 +205,7 @@ export function YesNoChecklistFeature({
         <button
           type="button"
           onClick={addItem}
-          className="flex items-center gap-1.5 text-sm text-[#D37E91] hover:underline transition-colors"
+          className="flex items-center gap-1.5 text-sm text-[#8A2B2B] hover:underline transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Question

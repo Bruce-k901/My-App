@@ -1,6 +1,6 @@
 import "./globals.css";
 import { ReactNode } from "react";
-import { Poppins } from "next/font/google";
+import { Ubuntu } from "next/font/google";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { AppProvider } from "@/context/AppContext";
 import { SiteContextProvider } from "@/contexts/SiteContext";
@@ -19,10 +19,10 @@ import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlob
 import { UserPreferencesProvider } from "@/context/UserPreferencesContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const poppins = Poppins({
+const ubuntu = Ubuntu({
   subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-ubuntu",
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata = {
@@ -69,7 +69,7 @@ export const metadata = {
     ],
   },
   other: {
-    'msapplication-TileColor': '#110f0d',
+    'msapplication-TileColor': '#131517',
     'msapplication-config': '/browserconfig.xml',
   },
 };
@@ -81,13 +81,13 @@ export function generateViewport() {
     maximumScale: 1,
     userScalable: false,
     viewportFit: "cover",
-    themeColor: "#0b0d13",
+    themeColor: "#101214",
   };
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable} suppressHydrationWarning>
+    <html lang="en" className={ubuntu.variable} suppressHydrationWarning>
       <head>
         {/* Critical: Apply theme BEFORE React hydrates to prevent flash */}
         <script
@@ -274,7 +274,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#0b0d13" />
+        <meta name="theme-color" content="#101214" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Opsly" />
@@ -284,7 +284,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
       </head>
-      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-theme-primary font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-theme-primary font-sans ${ubuntu.variable}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>

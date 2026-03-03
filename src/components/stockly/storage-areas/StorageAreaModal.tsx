@@ -145,7 +145,7 @@ export default function StorageAreaModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Main Cellar, Dry Store, Walk-in Fridge"
               required
-              className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary"
+              className="bg-white dark:bg-gray-900 border-theme focus:border-module-fg-mid dark:focus:border-module-fg-mid focus:ring-module-fg-mid/50 dark:focus:ring-module-fg-mid text-theme-primary"
               autoFocus
             />
           </div>
@@ -159,7 +159,7 @@ export default function StorageAreaModal({
               id="division"
               value={divisionValue}
               onChange={(e) => setDivision(e.target.value || '__none__')}
-              className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+              className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg-mid/50 dark:focus:ring-module-fg-mid min-w-[180px] appearance-none cursor-pointer"
             >
               <option value="__none__">None</option>
               {STORAGE_DIVISIONS.map((div) => (
@@ -181,7 +181,7 @@ export default function StorageAreaModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional notes about this storage area..."
-              className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-theme-primary"
+              className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-module-fg-mid/50 dark:focus-visible:ring-module-fg-mid focus-visible:border-module-fg-mid dark:focus-visible:border-module-fg-mid text-theme-primary"
               rows={3}
             />
           </div>
@@ -207,7 +207,7 @@ export default function StorageAreaModal({
             <Button
               type="submit"
               disabled={saving || !name.trim()}
-              className="bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 dark:hover:bg-emerald-700 text-white min-w-[100px]"
+              className="bg-stockly-mid dark:bg-stockly-mid hover:bg-stockly-mid/90 dark:hover:bg-stockly-mid/90 text-white min-w-[100px]"
             >
               {saving ? (
                 <>

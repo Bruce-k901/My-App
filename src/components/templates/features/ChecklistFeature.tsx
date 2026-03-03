@@ -62,13 +62,13 @@ export function ChecklistFeature({
               type="checkbox"
               checked={false}
               readOnly
-              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#D37E91] accent-[#D37E91]"
+              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-[#0f1220] text-[#8A2B2B] accent-[#8A2B2B]"
             />
             <input
               type="text"
               value={item}
               onChange={(e) => updateItem(index, e.target.value)}
-              className="flex-1 px-3 py-1 rounded bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+              className="flex-1 px-3 py-1 rounded bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               placeholder="Checklist item"
             />
             <button
@@ -89,12 +89,12 @@ export function ChecklistFeature({
           onChange={(e) => setNewItem(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && addItem()}
           placeholder="Add new checklist item"
-          className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+          className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
         />
         <button
           type="button"
           onClick={addItem}
-          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/15 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 font-medium"
+          className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/15 hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200 font-medium"
         >
           Add
         </button>

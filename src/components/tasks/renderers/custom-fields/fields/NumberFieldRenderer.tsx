@@ -40,7 +40,7 @@ export function NumberFieldRenderer({ field, value, onChange, disabled }: Number
               ? 'border-red-500 focus:border-red-500'
               : isWarning
                 ? 'border-amber-500 focus:border-amber-500'
-                : 'border-theme focus:border-[#D37E91]'
+                : 'border-theme focus:border-[#8A2B2B]'
           } ${field.unit ? 'pr-14' : ''}`}
         />
         {field.unit && (

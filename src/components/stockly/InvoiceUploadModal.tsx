@@ -205,7 +205,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
             </label>
 
             {!file ? (
-              <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center hover:border-[#D37E91]/50 transition-colors">
+              <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center hover:border-module-fg-mid/50 transition-colors">
                 <input
                   type="file"
                   id="file-upload"
@@ -220,7 +220,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
                 >
                   <Upload className="text-theme-tertiary" size={32} />
                   <div>
-                    <span className="text-[#D37E91] font-medium">Click to upload</span>
+                    <span className="text-module-fg-mid font-medium">Click to upload</span>
                     <span className="text-theme-tertiary"> or drag and drop</span>
                   </div>
                   <p className="text-xs text-theme-tertiary">
@@ -231,7 +231,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
             ) : (
               <div className="border border-theme rounded-lg p-4 flex items-center justify-between bg-white/[0.03]">
                 <div className="flex items-center gap-3">
-                  <FileText className="text-[#D37E91]" size={24} />
+                  <FileText className="text-module-fg-mid" size={24} />
                   <div>
                     <p className="text-sm text-theme-primary font-medium">{file.name}</p>
                     <p className="text-xs text-theme-tertiary">

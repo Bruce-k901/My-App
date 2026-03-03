@@ -404,11 +404,11 @@ export function MessageInput({
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-theme bg-white dark:bg-[#0B0D13] p-2 sm:p-2 md:p-3">
+    <div className="flex-shrink-0 border-t border-theme bg-white dark:bg-[#101214] p-2 sm:p-2 md:p-3">
       {/* Reply Preview - Fixed height to prevent layout shift */}
       <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
-          <div className="px-3 py-2 bg-[#D37E91]/10 dark:bg-white/[0.05] border-l-2 border-[#D37E91] dark:border-[#D37E91]/50 rounded flex items-center justify-between h-full">
+          <div className="px-3 py-2 bg-[#8A2B2B]/10 dark:bg-white/[0.05] border-l-2 border-[#8A2B2B] dark:border-[#8A2B2B]/50 rounded flex items-center justify-between h-full">
             <div className="flex-1 min-w-0 overflow-hidden">
               <div className="text-xs text-theme-secondary mb-1 truncate">Replying to {replyTo.senderName}</div>
               <div className="text-sm text-theme-secondary truncate break-words">{replyTo.content}</div>
@@ -483,7 +483,7 @@ export function MessageInput({
             }}
             placeholder="Type a message... (use @ to mention someone)"
             rows={1}
-            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-full text-theme-primary placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm leading-tight"
+            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-full text-theme-primary placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 text-sm leading-tight"
             style={{
               minHeight: '44px',
               maxHeight: '44px',
@@ -503,10 +503,10 @@ export function MessageInput({
                   onClick={() => selectMention(user)}
                   className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-theme-hover transition-colors ${
                     index === mentionIndex ? 'bg-theme-muted' : ''
-                  } ${user.isParticipant ? 'border-l-2 border-[#D37E91] dark:border-[#D37E91]/50' : ''}`}
+                  } ${user.isParticipant ? 'border-l-2 border-[#8A2B2B] dark:border-[#8A2B2B]/50' : ''}`}
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 flex items-center justify-center">
-                    <User className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15 flex items-center justify-center">
+                    <User className="w-4 h-4 text-[#8A2B2B] dark:text-[#8A2B2B]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-theme-primary truncate">
@@ -518,7 +518,7 @@ export function MessageInput({
                       </div>
                     )}
                     {user.isParticipant && (
-                      <div className="text-xs text-[#D37E91] dark:text-[#D37E91]/70 mt-0.5">
+                      <div className="text-xs text-[#8A2B2B] dark:text-[#8A2B2B]/70 mt-0.5">
                         In this conversation
                       </div>
                     )}
@@ -532,7 +532,7 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-[#D37E91]/10 dark:bg-[#D37E91]/25 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91] rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 hover:bg-[#8A2B2B]/20 dark:hover:bg-[#8A2B2B]/35 text-[#8A2B2B] dark:text-[#8A2B2B] rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Send message"
         >
           <Send className="w-5 h-5" />

@@ -76,7 +76,7 @@ export function PriceChangeReviewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col bg-[#0f1117] border-white/10">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl font-semibold text-theme-primary">
             {significantChanges.length > 0 ? (
@@ -113,7 +113,7 @@ export function PriceChangeReviewModal({
           )}
 
           {/* Bulk actions */}
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="flex items-center justify-between pb-3 border-b border-theme">
             <div className="text-sm text-theme-tertiary">
               {localChanges.length} price change{localChanges.length > 1 ? 's' : ''} detected
               {acceptedCount > 0 && ` | ${acceptedCount} accepted`}
@@ -138,7 +138,7 @@ export function PriceChangeReviewModal({
                   bg-white/[0.03] border rounded-lg p-4 transition-all cursor-pointer
                   ${change.accepted
                     ? 'border-module-fg/30 bg-emerald-500/5'
-                    : 'border-white/10'
+                    : 'border-theme'
                   }
                   ${change.isSignificantChange && change.accepted
                     ? 'border-amber-500/30 bg-amber-500/5'
@@ -219,7 +219,7 @@ export function PriceChangeReviewModal({
 
                 {/* Optional: Recipe impact preview */}
                 {change.affectedRecipes && change.affectedRecipes.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-white/10 ml-7">
+                  <div className="mt-3 pt-3 border-t border-theme ml-7">
                     <div className="text-xs text-theme-tertiary mb-2">
                       Affects {change.affectedRecipes.length} recipe{change.affectedRecipes.length > 1 ? 's' : ''}:
                     </div>
@@ -243,7 +243,7 @@ export function PriceChangeReviewModal({
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
+        <div className="flex items-center justify-between pt-4 border-t border-theme mt-4">
           <Button onClick={onClose} variant="outline" disabled={loading}>
             Cancel
           </Button>

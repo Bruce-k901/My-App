@@ -108,11 +108,11 @@ export default function AdminTicketsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Search tickets..."
-            className="flex-1 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+            className="flex-1 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]"
           />
           <button
             onClick={handleSearch}
-            className="px-6 py-2 rounded-lg bg-[#D37E91] text-white hover:bg-[#D37E91]/80 transition-colors"
+            className="px-6 py-2 rounded-lg bg-[#8A2B2B] text-white hover:bg-[#8A2B2B]/80 transition-colors"
           >
             Search
           </button>
@@ -127,8 +127,8 @@ export default function AdminTicketsPage() {
               onClick={() => handleStatusFilter(status)}
               className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                 filters.status?.includes(status as any)
-                  ? 'bg-[#D37E91] text-white border-[#D37E91]'
-                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-[#D37E91]/50'
+                  ? 'bg-[#8A2B2B] text-white border-[#8A2B2B]'
+                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-[#8A2B2B]/50'
               }`}
             >
               {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}

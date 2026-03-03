@@ -236,7 +236,7 @@ function SingleChoiceInput({ question, value, onChange, disabled }: {
             key={index}
             className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
               value === optValue
-                ? 'border-[#D37E91] bg-[#D37E91]/10'
+                ? 'border-[#8A2B2B] bg-[#8A2B2B]/10'
                 : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
             }`}
           >
@@ -284,7 +284,7 @@ function MultipleChoiceInput({ question, value, onChange, disabled }: {
             key={index}
             className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
               isSelected
-                ? 'border-[#D37E91] bg-[#D37E91]/10'
+                ? 'border-[#8A2B2B] bg-[#8A2B2B]/10'
                 : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
             }`}
           >

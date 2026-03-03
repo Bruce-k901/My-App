@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
   <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
+    <div style="background: linear-gradient(135deg, #8A2B2B 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
       <div style="margin: 0 auto 20px; text-align: center;">
         <svg width="60" height="40" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
           <rect x="10" y="10" width="24" height="110" rx="12" fill="#1B2624"/>
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
         We have received your application and our hiring team will review it shortly. If your experience matches what we're looking for, we'll be in touch to arrange the next steps.
       </p>
       
-      <div style="background: #f9f9f9; border-left: 4px solid #D37E91; padding: 20px; margin: 30px 0; border-radius: 8px;">
+      <div style="background: #f9f9f9; border-left: 4px solid #8A2B2B; padding: 20px; margin: 30px 0; border-radius: 8px;">
         <h3 style="margin: 0 0 10px; color: #333;">What happens next?</h3>
         <ul style="margin: 0; padding-left: 20px; color: #666;">
           <li>Our team will review your application</li>

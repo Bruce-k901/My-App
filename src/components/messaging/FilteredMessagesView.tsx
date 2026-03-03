@@ -183,7 +183,7 @@ export default function FilteredMessagesView({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-theme flex items-center justify-between bg-white dark:bg-[#0B0D13]">
+      <div className="p-4 border-b border-theme flex items-center justify-between bg-white dark:bg-[#101214]">
         <div>
           <h2 className="text-lg font-semibold text-theme-primary">
             {getTopicLabel(topic)}

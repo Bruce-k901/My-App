@@ -224,11 +224,11 @@ export function StartConversationModal({
                 }}
                 className={`p-4 rounded-lg border transition-all ${
                   conversationType === 'direct'
-                    ? 'border-[#D37E91] bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                    ? 'border-[#8A2B2B] bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15'
                     : 'border-theme bg-theme-button hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                 }`}
               >
-                <User className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'direct' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`} />
+                <User className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'direct' ? 'text-[#8A2B2B] dark:text-[#8A2B2B]' : 'text-theme-secondary'}`} />
                 <div className={`text-sm font-medium ${conversationType === 'direct' ? 'text-theme-primary' : 'text-theme-secondary'}`}>
                   Direct Message
                 </div>
@@ -240,11 +240,11 @@ export function StartConversationModal({
                 }}
                 className={`p-4 rounded-lg border transition-all ${
                   conversationType === 'group'
-                    ? 'border-[#D37E91] bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                    ? 'border-[#8A2B2B] bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15'
                     : 'border-theme bg-theme-button hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                 }`}
               >
-                <Users className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'group' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`} />
+                <Users className={`w-6 h-6 mx-auto mb-2 ${conversationType === 'group' ? 'text-[#8A2B2B] dark:text-[#8A2B2B]' : 'text-theme-secondary'}`} />
                 <div className={`text-sm font-medium ${conversationType === 'group' ? 'text-theme-primary' : 'text-theme-secondary'}`}>
                   Group Chat
                 </div>
@@ -261,7 +261,7 @@ export function StartConversationModal({
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder="Enter group name..."
- className="w-full px-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+ className="w-full px-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
               />
             </div>
           )}
@@ -278,7 +278,7 @@ export function StartConversationModal({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or email..."
- className="w-full pl-10 pr-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+ className="w-full pl-10 pr-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
               />
             </div>
           </div>
@@ -293,14 +293,14 @@ export function StartConversationModal({
                   return (
                     <div
                       key={userId}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/30 rounded-lg"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 border border-[#8A2B2B] dark:border-[#8A2B2B]/30 rounded-lg"
                     >
                       <span className="text-sm text-theme-primary">
                         {user?.full_name || user?.email || 'Unknown'}
                       </span>
                       <button
                         onClick={() => handleUserToggle(userId)}
-                        className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91]"
+                        className="text-[#8A2B2B] dark:text-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B]"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -334,15 +334,15 @@ export function StartConversationModal({
                       }}
                       className={`w-full p-3 rounded-lg text-left transition-colors ${
                         isSelected
-                          ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/30'
+                          ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 border border-[#8A2B2B] dark:border-[#8A2B2B]/30'
                           : 'bg-theme-button border border-theme hover:bg-gray-100 dark:hover:bg-white/[0.08]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isSelected ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/35' : 'bg-gray-200 dark:bg-white/[0.1]'
+                          isSelected ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/35' : 'bg-gray-200 dark:bg-white/[0.1]'
                         }`}>
-                          <User className={`w-5 h-5 ${isSelected ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`} />
+                          <User className={`w-5 h-5 ${isSelected ? 'text-[#8A2B2B] dark:text-[#8A2B2B]' : 'text-theme-secondary'}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-theme-primary truncate">
@@ -353,7 +353,7 @@ export function StartConversationModal({
                           </div>
                         </div>
                         {isSelected && (
-                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#D37E91] flex items-center justify-center">
+                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#8A2B2B] flex items-center justify-center">
                             <div className="w-2 h-2 rounded-full bg-white" />
                           </div>
                         )}
@@ -377,7 +377,7 @@ export function StartConversationModal({
           <button
             onClick={handleCreate}
             disabled={isButtonDisabled}
-            className="px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(211, 126, 145,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-magenta-500/50 disabled:text-magenta-500/50 transition-all"
+            className="px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(138, 43, 43,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-magenta-500/50 disabled:text-magenta-500/50 transition-all"
             title={
               isButtonDisabled
                 ? `Disabled: ${creating ? 'Creating...' : selectedUsers.length === 0 ? 'Select at least one user' : conversationType === 'group' && !groupName.trim() ? 'Enter group name' : 'Unknown'}`

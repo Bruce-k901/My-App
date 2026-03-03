@@ -255,7 +255,7 @@ export default function ClockInOut() {
               value={shiftNotes}
               onChange={(e) => setShiftNotes(e.target.value)}
               placeholder="Add handover notes (optional)..."
-              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
               rows={3}
             />
             <div className="flex gap-2">

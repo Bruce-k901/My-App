@@ -31,10 +31,10 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
   const calloutId = taskData?.callout_id
 
   useEffect(() => {
-    if (isOpen && assetId && calloutId) {
+    if (isOpen && assetId) {
       loadData()
     }
-  }, [isOpen, assetId, calloutId])
+  }, [isOpen, assetId])
 
   const loadData = async () => {
     try {
@@ -61,39 +61,42 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
       if (assetError) throw assetError
       setAsset(assetData)
 
-      // Load callout
-      const { data: calloutData, error: calloutError } = await supabase
-        .from('callouts')
-        .select(`
-          id,
-          callout_type,
-          priority,
-          status,
-          fault_description,
-          notes,
-          scheduled_date,
-          created_at,
-          contractors (name, email, phone)
-        `)
-        .eq('id', calloutId)
-        .single()
+      // Load callout (may not exist for scheduled PPM tasks)
+      if (calloutId) {
+        const { data: calloutData, error: calloutError } = await supabase
+          .from('callouts')
+          .select(`
+            id,
+            callout_type,
+            priority,
+            status,
+            fault_description,
+            notes,
+            scheduled_date,
+            created_at,
+            contractors (name, email, phone)
+          `)
+          .eq('id', calloutId)
+          .single()
 
-      if (calloutError) throw calloutError
-      setCallout(calloutData)
+        if (!calloutError && calloutData) {
+          setCallout(calloutData)
+        }
 
-      // Load documents for this callout
-      const { data: docs } = await supabase
-        .from('callout_documents')
-        .select('*')
-        .eq('callout_id', calloutId)
-        .order('created_at', { ascending: false })
+        // Load documents for this callout
+        const { data: docs } = await supabase
+          .from('callout_documents')
+          .select('*')
+          .eq('callout_id', calloutId)
+          .order('created_at', { ascending: false })
 
-      setDocuments(docs || [])
+        setDocuments(docs || [])
+      }
     } catch (err: any) {
-      console.error('Error loading PPM follow-up data:', err)
+      console.error('Error loading PPM follow-up data:', err?.message || err?.code || err)
       showToast({
         title: 'Error',
-        description: 'Failed to load follow-up task details',
+        description: err?.message || 'Failed to load follow-up task details',
         type: 'error'
       })
     }
@@ -111,17 +114,19 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
 
     setLoading(true)
     try {
-      // Add note to callout
-      const { error: noteError } = await supabase
-        .from('callouts')
-        .update({
-          notes: callout.notes
-            ? `${callout.notes}\n\n[${new Date().toLocaleString()}] ${notes}`
-            : `[${new Date().toLocaleString()}] ${notes}`
-        })
-        .eq('id', calloutId)
+      // Add note to callout (if callout exists)
+      if (callout && calloutId) {
+        const { error: noteError } = await supabase
+          .from('callouts')
+          .update({
+            notes: callout.notes
+              ? `${callout.notes}\n\n[${new Date().toLocaleString()}] ${notes}`
+              : `[${new Date().toLocaleString()}] ${notes}`
+          })
+          .eq('id', calloutId)
 
-      if (noteError) throw noteError
+        if (noteError) throw noteError
+      }
 
       // Mark today's follow-up task as complete
       const { error: taskError } = await supabase

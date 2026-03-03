@@ -10,12 +10,12 @@ interface AnimatedHeroLogoProps {
 }
 
 const moduleNames = [
-  { name: 'checkly', color: '#F1E194' },
-  { name: 'stockly', color: '#789A99' },
-  { name: 'teamly', color: '#D37E91' },
-  { name: 'planly', color: '#ACC8A2' },
-  { name: 'assetly', color: '#F3E7D9' },
-  { name: 'msgly', color: '#CBDDE9' },
+  { name: 'checkly', color: '#FDF7EF' },
+  { name: 'stockly', color: '#CDEED6' },
+  { name: 'teamly', color: '#8A2B2B' },
+  { name: 'planly', color: '#F0F4ED' },
+  { name: 'assetly', color: '#A7FFEB' },
+  { name: 'msgly', color: '#A7A8B2' },
   { name: 'opsly', color: '#FFFFFF' },
 ];
 

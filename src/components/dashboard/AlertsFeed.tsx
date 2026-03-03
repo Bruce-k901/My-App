@@ -602,7 +602,7 @@ export default function AlertsFeed() {
   }
 
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-black/10 dark:border-module-fg/[0.12] rounded-xl p-6 space-y-4">
+    <div className="bg-white dark:bg-white/[0.03] border border-black/10 dark:border-module-fg-mid/[0.15] rounded-xl p-6 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -624,7 +624,7 @@ export default function AlertsFeed() {
         <div className="space-y-2 max-h-[400px] overflow-y-auto">
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D37E91]"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8A2B2B]"></div>
               <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Loading alerts...</span>
             </div>
           )}

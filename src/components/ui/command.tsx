@@ -10,7 +10,7 @@ const Command = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
-    className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-[#0B0D13] text-theme-primary ${className}`}
+    className={`flex h-full w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-[#101214] text-theme-primary ${className}`}
     {...props}
   />
 ));
@@ -85,7 +85,7 @@ const CommandItem = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <CommandPrimitive.Item
     ref={ref}
-    className={`relative flex cursor-pointer select-none items-center rounded-md px-2 py-2.5 text-sm outline-none data-[selected=true]:bg-[#D37E91]/10 data-[selected=true]:text-[#D37E91] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06] ${className}`}
+    className={`relative flex cursor-pointer select-none items-center rounded-md px-2 py-2.5 text-sm outline-none data-[selected=true]:bg-[#8A2B2B]/10 data-[selected=true]:text-[#8A2B2B] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06] ${className}`}
     {...props}
   />
 ));

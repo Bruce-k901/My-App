@@ -13,7 +13,7 @@ interface PPMDrawerProps {
 // Loading skeleton for PPM Drawer
 const PPMDrawerSkeleton = () => (
   <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-    <div className="fixed right-0 top-0 h-full w-full max-w-2xl bg-[#0b0d13]/95 border-l border-white/10 shadow-2xl">
+    <div className="fixed right-0 top-0 h-full w-full max-w-2xl bg-[#101214]/95 border-l border-white/10 shadow-2xl">
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="h-6 bg-white/10 rounded w-48 animate-pulse"></div>

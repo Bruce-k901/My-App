@@ -187,7 +187,7 @@ export default function TeamReviewsPage() {
         </div>
         <Link
           href="/dashboard/people/reviews/schedule"
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200 ease-in-out"
         >
           <Calendar className="w-5 h-5" />
           Schedule Review

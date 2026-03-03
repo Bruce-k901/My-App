@@ -4,7 +4,7 @@ export function EHOSection({ title, icon: Icon, children }: { title: string; ico
   return (
     <section className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-2xl p-5">
       <div className="flex items-center gap-3 mb-3">
-        <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
+        <Icon className="w-5 h-5 text-[#8A2B2B] dark:text-[#8A2B2B]" />
         <h2 className="text-lg font-semibold text-theme-primary">{title}</h2>
       </div>
       {children}

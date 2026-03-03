@@ -165,7 +165,7 @@ export function EnhancedWeatherWidget() {
 
   if (locationDenied) {
     return (
-      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-4 mb-5">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-4 mb-5">
         <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <MapPin className="w-5 h-5" />
           <div>
@@ -179,7 +179,7 @@ export function EnhancedWeatherWidget() {
 
   if (loading) {
     return (
-      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-4 mb-5">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-4 mb-5">
         <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading weather...</span>
@@ -190,7 +190,7 @@ export function EnhancedWeatherWidget() {
 
   if (error || !weather) {
     return (
-      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-4 mb-5">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-4 mb-5">
         <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <Wind className="w-5 h-5" />
           <span className="text-sm">{error || 'Weather unavailable'}</span>
@@ -219,7 +219,7 @@ export function EnhancedWeatherWidget() {
       className={cn(
         'bg-gradient-to-r',
         currentWeather.gradient,
-        'border border-module-fg/[0.12] rounded-xl p-4 mb-5 overflow-hidden'
+        'border border-module-fg-mid/[0.15] rounded-xl p-4 mb-5 overflow-hidden'
       )}
     >
       <div className="flex flex-col lg:flex-row lg:items-start gap-4">

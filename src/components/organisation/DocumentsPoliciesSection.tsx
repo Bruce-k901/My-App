@@ -410,7 +410,7 @@ export default function DocumentsPoliciesSection() {
         <div className="relative group">
           <>
             <div
-                className="block rounded-xl p-4 border border-[#D37E91] dark:border-[#D37E91]/40 bg-[#D37E91]/10 dark:bg-white/[0.06] hover:border-[#D37E91] dark:hover:border-[#D37E91]/60 hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
+                className="block rounded-xl p-4 border border-[#8A2B2B] dark:border-[#8A2B2B]/40 bg-[#8A2B2B]/10 dark:bg-white/[0.06] hover:border-[#8A2B2B] dark:hover:border-[#8A2B2B]/60 hover:bg-[#8A2B2B]/10 dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -435,7 +435,7 @@ export default function DocumentsPoliciesSection() {
                           setReplaceDoc(latestDoc);
                           setOpen(true);
                         }}
-                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                        className="p-2.5 rounded-lg bg-[#8A2B2B]/10 hover:bg-[#8A2B2B]/20 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:border-[#8A2B2B]/50 transition-colors"
                         title="Upload file for this placeholder document"
                       >
                         <FileText className="w-5 h-5" />
@@ -448,7 +448,7 @@ export default function DocumentsPoliciesSection() {
                           setSelectedDocument(latestDoc);
                           setShowReviewModal(true);
                         }}
-                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                        className="p-2.5 rounded-lg bg-[#8A2B2B]/10 hover:bg-[#8A2B2B]/20 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:border-[#8A2B2B]/50 transition-colors"
                         title="Edit document - update expiry date or upload new version"
                         disabled={!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)}
                       >
@@ -552,7 +552,7 @@ export default function DocumentsPoliciesSection() {
                                   setReplaceDoc(d);
                                   setOpen(true);
                                 }}
-                                className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                                className="p-2.5 rounded-lg bg-[#8A2B2B]/10 hover:bg-[#8A2B2B]/20 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:border-[#8A2B2B]/50 transition-colors"
                                 title="Upload file for this placeholder document"
                               >
                                 <FileText className="w-5 h-5" />
@@ -565,7 +565,7 @@ export default function DocumentsPoliciesSection() {
                                 setSelectedDocument(d);
                                 setShowReviewModal(true);
                               }}
-                              className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                              className="p-2.5 rounded-lg bg-[#8A2B2B]/10 hover:bg-[#8A2B2B]/20 text-[#8A2B2B] border border-[#8A2B2B]/30 hover:border-[#8A2B2B]/50 transition-colors"
                               title="Edit document - update expiry date or upload new version"
                               disabled={!d.file_path || isPlaceholderFilePath(d.file_path)}
                             >

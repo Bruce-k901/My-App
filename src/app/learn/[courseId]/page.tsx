@@ -51,7 +51,7 @@ export default async function CoursePage({ params, searchParams }: PageProps) {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Course not found</h1>
           <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-4">{courseId}</p>
-          <a href="/dashboard/courses" className="text-[#D37E91] dark:text-[#D37E91] hover:underline">
+          <a href="/dashboard/courses" className="text-[#8A2B2B] dark:text-[#8A2B2B] hover:underline">
             Return to Courses
           </a>
         </div>

@@ -2414,7 +2414,7 @@ export default function EmployeesPage() {
 
                       }}
 
-                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-[#D37E91] rounded-lg hover:bg-[#D37E91]/10 text-sm transition-all"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-[#8A2B2B] rounded-lg hover:bg-[#8A2B2B]/10 text-sm transition-all"
 
                       title="Send Login Invite"
 

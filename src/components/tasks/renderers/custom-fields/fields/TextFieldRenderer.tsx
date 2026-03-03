@@ -25,7 +25,7 @@ export function TextFieldRenderer({ field, value, onChange, disabled }: TextFiel
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={field.placeholder || 'Enter text...'}
-        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#D37E91] transition-colors text-sm disabled:opacity-50"
+        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#8A2B2B] transition-colors text-sm disabled:opacity-50"
       />
     </div>
   );

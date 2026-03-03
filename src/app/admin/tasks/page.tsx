@@ -80,7 +80,7 @@ export default function AdminTasksPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function AdminTasksPage() {
 
           <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             <div className="text-theme-tertiary text-sm mb-2">Completion Rate</div>
-            <div className="text-3xl font-bold text-[#D37E91]">{metrics?.completion_rate || 0}%</div>
+            <div className="text-3xl font-bold text-[#8A2B2B]">{metrics?.completion_rate || 0}%</div>
           </div>
         </div>
       </div>

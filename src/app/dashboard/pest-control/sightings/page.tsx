@@ -286,7 +286,7 @@ export default function PestSightingsPage() {
                             <button
                               onClick={() => handleNotifyContractor(s.id)}
                               disabled={notifyingId === s.id}
-                              className="text-[#D37E91] hover:text-[#D37E91]/80 transition-colors disabled:opacity-50"
+                              className="text-[#8A2B2B] hover:text-[#8A2B2B]/80 transition-colors disabled:opacity-50"
                               title="Notify Contractor"
                             >
                               {notifyingId === s.id ? (
@@ -297,7 +297,7 @@ export default function PestSightingsPage() {
                             </button>
                           )}
                           {s.contractor_notified && (
-                            <span className="text-[#D37E91]/60" title="Contractor notified">
+                            <span className="text-[#8A2B2B]/60" title="Contractor notified">
                               <Send className="w-3.5 h-3.5" />
                             </span>
                           )}
@@ -366,7 +366,7 @@ export default function PestSightingsPage() {
                   <span className="text-xs text-theme-tertiary">
                     {s.reported_by_name || 'Unknown'}
                     {s.contractor_notified && (
-                      <span className="ml-2 text-[#D37E91]/70 inline-flex items-center gap-0.5">
+                      <span className="ml-2 text-[#8A2B2B]/70 inline-flex items-center gap-0.5">
                         <Send className="w-3 h-3" /> Notified
                       </span>
                     )}
@@ -376,7 +376,7 @@ export default function PestSightingsPage() {
                       <button
                         onClick={() => handleNotifyContractor(s.id)}
                         disabled={notifyingId === s.id}
-                        className="px-3 py-1 rounded-md text-xs text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/10 transition-colors disabled:opacity-50 flex items-center gap-1"
+                        className="px-3 py-1 rounded-md text-xs text-[#8A2B2B] border border-[#8A2B2B]/30 hover:bg-[#8A2B2B]/10 transition-colors disabled:opacity-50 flex items-center gap-1"
                       >
                         {notifyingId === s.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />

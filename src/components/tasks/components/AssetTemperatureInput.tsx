@@ -190,7 +190,7 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
       {/* Temperature Input Row */}
       <div data-temp-input className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
         isKeyboardTarget
-          ? 'bg-[#D37E91]/5 dark:bg-[#D37E91]/10 border-[#D37E91]/50 ring-2 ring-[#D37E91]/30'
+          ? 'bg-[#8A2B2B]/5 dark:bg-[#8A2B2B]/10 border-[#8A2B2B]/50 ring-2 ring-[#8A2B2B]/30'
           : isOutOfRange
             ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30'
             : 'bg-theme-hover border-theme'

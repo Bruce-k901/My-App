@@ -170,7 +170,7 @@ export function ClockInButton() {
       <button
         onClick={handleClockInClick}
         disabled={requestingLocation || !siteId || siteId === 'all'}
-        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-[#D37E91]/10 hover:bg-[#D37E91]/10 dark:bg-[#D37E91]/25 dark:hover:bg-[#D37E91]/35 border border-[#D37E91] dark:border-[#D37E91]/50 text-[#D37E91] dark:text-[#D37E91] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-9 md:h-10"
+        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-[#8A2B2B]/10 hover:bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 dark:hover:bg-[#8A2B2B]/35 border border-[#8A2B2B] dark:border-[#8A2B2B]/50 text-[#8A2B2B] dark:text-[#8A2B2B] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-9 md:h-10"
       >
         {requestingLocation ? (
           <>

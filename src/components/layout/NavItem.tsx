@@ -32,7 +32,7 @@ export function NavItem({
         </div>
         <span className="flex-1 text-sm font-medium text-theme-secondary">{label}</span>
         {badge && (
-          <span className="px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full">
+          <span className="px-2 py-0.5 text-xs font-semibold bg-[#8A2B2B] text-white rounded-full">
             {badge}
           </span>
         )}
@@ -78,7 +78,7 @@ export function NavItem({
 
       {/* Badge (optional) */}
       {badge && (
-        <span className="px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full">
+        <span className="px-2 py-0.5 text-xs font-semibold bg-[#8A2B2B] text-white rounded-full">
           {typeof badge === "number" && badge > 99 ? "99+" : badge}
         </span>
       )}

@@ -1192,7 +1192,7 @@ export default function ManagerCalendarPage() {
 
         {/* Calendar View */}
         {activeTab === "calendar" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6 shadow-[0_0_12px_rgba(211,126,145,0.05)]">
+          <div className="bg-[#101214]/80 border border-white/[0.06] rounded-2xl p-6 shadow-[0_0_12px_rgba(138, 43, 43,0.05)]">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
               <button
@@ -1485,7 +1485,7 @@ export default function ManagerCalendarPage() {
 
         {/* Notes Tab - All Notes */}
         {activeTab === "notes" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-[#101214]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               {Object.keys(notes).length === 0 ? (
                 <div className="text-center py-12 text-theme-tertiary">
@@ -1516,7 +1516,7 @@ export default function ManagerCalendarPage() {
 
         {/* Tasks Tab */}
         {activeTab === "tasks" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-[#101214]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               {taskTemplates.length > 0 && !showTaskForm && (
                 <div className="mb-4">
@@ -1661,7 +1661,7 @@ export default function ManagerCalendarPage() {
 
         {/* Reminders Tab */}
         {activeTab === "reminders" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-[#101214]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               {reminders.length === 0 && !showReminderForm && (
                 <div className="text-center py-12 text-theme-tertiary">
@@ -1767,7 +1767,7 @@ export default function ManagerCalendarPage() {
 
         {/* Messages Tab */}
         {activeTab === "messages" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-[#101214]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <button

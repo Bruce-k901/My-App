@@ -95,14 +95,14 @@ export default function CreateCompanyModal({ open, onOpenChange, onSuccess }: Cr
     }, 200);
   };
 
-  const inputClass = 'w-full h-10 rounded-lg border border-gray-300 px-3 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40';
+  const inputClass = 'w-full h-10 rounded-lg border border-gray-300 px-3 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40';
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-[#D37E91]" />
+            <Building2 className="w-5 h-5 text-[#8A2B2B]" />
             {success ? 'Company Created' : 'Create Company'}
           </DialogTitle>
         </DialogHeader>
@@ -138,7 +138,7 @@ export default function CreateCompanyModal({ open, onOpenChange, onSuccess }: Cr
               </button>
               <button
                 onClick={handleClose}
-                className="px-4 py-2.5 bg-[#D37E91] text-white rounded-lg text-sm font-medium hover:bg-[#C06B7E] transition-colors"
+                className="px-4 py-2.5 bg-[#8A2B2B] text-white rounded-lg text-sm font-medium hover:bg-[#C06B7E] transition-colors"
               >
                 Done
               </button>
@@ -244,7 +244,7 @@ export default function CreateCompanyModal({ open, onOpenChange, onSuccess }: Cr
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#D37E91] text-white rounded-lg text-sm font-medium hover:bg-[#C06B7E] transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#8A2B2B] text-white rounded-lg text-sm font-medium hover:bg-[#C06B7E] transition-colors disabled:opacity-50"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {loading ? 'Creating...' : 'Create Company'}

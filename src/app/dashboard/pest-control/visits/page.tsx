@@ -135,7 +135,7 @@ export default function PestControlVisitsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowUpload(true)}
-              className="flex items-center gap-1.5 h-9 sm:h-10 px-3 rounded-lg text-xs sm:text-sm font-medium border border-[#D37E91]/40 text-[#D37E91] hover:bg-[#D37E91]/10 transition-colors"
+              className="flex items-center gap-1.5 h-9 sm:h-10 px-3 rounded-lg text-xs sm:text-sm font-medium border border-[#8A2B2B]/40 text-[#8A2B2B] hover:bg-[#8A2B2B]/10 transition-colors"
             >
               <Sparkle className="w-4 h-4" />
               <span className="hidden sm:inline">Upload Report</span>
@@ -201,7 +201,7 @@ export default function PestControlVisitsPage() {
                         {VISIT_TYPE_LABELS[v.visit_type] || v.visit_type}
                       </span>
                       {v.ai_extracted && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#D37E91]/10 text-[#D37E91]">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#8A2B2B]/10 text-[#8A2B2B]">
                           AI Extracted
                         </span>
                       )}

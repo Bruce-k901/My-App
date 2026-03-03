@@ -14,7 +14,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string; bgColo
   { label: '🛡️ Safety', value: 'safety', color: 'text-red-600 dark:text-red-500', bgColor: 'bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20' },
   { label: '🔧 Maintenance', value: 'maintenance', color: 'text-orange-600 dark:text-orange-500', bgColor: 'bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20' },
   { label: '🔄 Operations', value: 'operations', color: 'text-module-fg dark:text-cyan-500', bgColor: 'bg-cyan-50 dark:bg-module-fg/10 hover:bg-cyan-100 dark:hover:bg-module-fg/10' },
-  { label: '👥 HR', value: 'hr', color: 'text-[#D37E91] dark:text-[#D37E91]', bgColor: 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/25' },
+  { label: '👥 HR', value: 'hr', color: 'text-[#8A2B2B] dark:text-[#8A2B2B]', bgColor: 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15 hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/25' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-600 dark:text-green-500', bgColor: 'bg-green-50 dark:bg-green-500/10 hover:bg-green-100 dark:hover:bg-module-fg/10' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-700 dark:text-red-600', bgColor: 'bg-red-50 dark:bg-red-600/10 hover:bg-red-100 dark:hover:bg-red-600/20' },
   { label: '💬 General', value: 'general', color: 'text-theme-secondary', bgColor: 'bg-gray-50 dark:bg-gray-500/10 hover:bg-gray-100 dark:hover:bg-theme-surface-elevated0/20' },
@@ -45,7 +45,7 @@ export default function TopicTagModal({ isOpen, onClose, currentTopic, onSelectT
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0B0D13] border border-theme rounded-lg shadow-xl max-w-md w-full p-6"
+        className="bg-white dark:bg-[#101214] border border-theme rounded-lg shadow-xl max-w-md w-full p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -80,14 +80,14 @@ export default function TopicTagModal({ isOpen, onClose, currentTopic, onSelectT
                 onClick={() => handleSelect(topic.value)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
                   isSelected
-                    ? `border-[#D37E91] bg-[#D37E91]/10 dark:bg-[#D37E91]/10 ${topic.color}`
+                    ? `border-[#8A2B2B] bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/10 ${topic.color}`
                     : `border-theme ${topic.bgColor} ${topic.color}`
                 }`}
               >
                 <span className="text-lg">{topic.label.split(' ')[0]}</span>
                 <span className="flex-1 text-left font-medium">{topic.label.split(' ').slice(1).join(' ')}</span>
                 {isSelected && (
-                  <span className="text-[#D37E91] text-sm font-medium">✓ Selected</span>
+                  <span className="text-[#8A2B2B] text-sm font-medium">✓ Selected</span>
                 )}
               </button>
             );

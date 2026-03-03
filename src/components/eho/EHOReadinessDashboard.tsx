@@ -674,7 +674,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
     return (
       <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#8A2B2B] dark:text-[#8A2B2B] animate-spin" />
           <span className="ml-3 text-theme-tertiary">Analyzing compliance readiness...</span>
         </div>
       </div>
@@ -697,7 +697,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
       <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]">
+            <div className="p-2 rounded-lg bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 text-[#8A2B2B] dark:text-[#8A2B2B]">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
@@ -707,7 +707,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
           </div>
           <Link
             href="/dashboard/incidents/storage"
-            className="flex items-center gap-2 px-4 py-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/35 border border-[#D37E91] dark:border-[#D37E91]/40 rounded-lg text-[#D37E91] dark:text-[#D37E91] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/35 border border-[#8A2B2B] dark:border-[#8A2B2B]/40 rounded-lg text-[#8A2B2B] dark:text-[#8A2B2B] transition-colors"
           >
             <span className="text-sm font-medium">View Incident Log</span>
             <ExternalLink className="w-4 h-4" />
@@ -881,7 +881,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                 {CATEGORY_LINKS[categoryGroup.category] && (
                   <Link
                     href={CATEGORY_LINKS[categoryGroup.category].href}
-                    className="flex items-center gap-1.5 mr-4 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap flex-shrink-0 transition-colors bg-[#D37E91]/10 dark:bg-[#D37E91]/15 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91]/30 dark:border-[#D37E91]/20"
+                    className="flex items-center gap-1.5 mr-4 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap flex-shrink-0 transition-colors bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/15 hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/25 text-[#8A2B2B] dark:text-[#8A2B2B] border border-[#8A2B2B]/30 dark:border-[#8A2B2B]/20"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {CATEGORY_LINKS[categoryGroup.category].label}

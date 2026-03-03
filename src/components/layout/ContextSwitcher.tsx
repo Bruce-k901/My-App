@@ -139,7 +139,7 @@ export function ContextSwitcher() {
           h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[180px]
           transition-all
           ${isOpen
-            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#D37E91]"
+            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#8A2B2B]"
             : isViewingAs
               ? "bg-amber-500/10 dark:bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/15 dark:hover:bg-amber-500/15"
               : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
@@ -180,7 +180,7 @@ export function ContextSwitcher() {
                     <span className="ml-2 text-xs text-theme-tertiary">(yours)</span>
                   )}
                 </span>
-                {company?.id === comp.id && <Check className="w-4 h-4 text-[#D37E91]" />}
+                {company?.id === comp.id && <Check className="w-4 h-4 text-[#8A2B2B]" />}
               </button>
             );
           })}

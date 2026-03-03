@@ -43,7 +43,7 @@ const STATUS_COLORS = {
  */
 function FeedItemComponent({ item }: { item: FeedItem }) {
   return (
-    <div className="flex gap-2.5 py-2.5 border-b border-module-fg/[0.12]">
+    <div className="flex gap-2.5 py-2.5 border-b border-module-fg-mid/[0.15]">
       <div
         className={cn(
           'w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0',
@@ -70,7 +70,7 @@ function IncidentItemComponent({ incident }: { incident: Incident }) {
   return (
     <Link
       href={`/dashboard/incidents/${incident.id}`}
-      className="block p-2.5 bg-[rgb(var(--surface))] dark:bg-[#1e1a17] rounded-md border border-module-fg/[0.12] mb-1.5 hover:border-[rgb(var(--border-hover))] transition-colors"
+      className="block p-2.5 bg-[rgb(var(--surface))] dark:bg-[#1e1a17] rounded-md border border-module-fg-mid/[0.15] mb-1.5 hover:border-[rgb(var(--border-hover))] transition-colors"
     >
       <div className="flex justify-between items-start mb-1">
         <span className="text-[11.5px] text-[rgb(var(--text-secondary))] font-medium truncate pr-2">
@@ -261,7 +261,7 @@ export function DashboardSidebar({ isOpen = true, onClose }: DashboardSidebarPro
   if (!isOpen) return null;
 
   return (
-    <div className="w-72 border-l border-module-fg/[0.12] bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1714] flex flex-col overflow-hidden h-full">
+    <div className="w-72 border-l border-module-fg-mid/[0.15] bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1714] flex flex-col overflow-hidden h-full">
       {/* Mobile close button */}
       {onClose && (
         <button
@@ -273,7 +273,7 @@ export function DashboardSidebar({ isOpen = true, onClose }: DashboardSidebarPro
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-module-fg/[0.12] flex-shrink-0">
+      <div className="flex border-b border-module-fg-mid/[0.15] flex-shrink-0">
         <button
           onClick={() => setActiveTab('feed')}
           className={cn(
@@ -370,7 +370,7 @@ export function DashboardSidebar({ isOpen = true, onClose }: DashboardSidebarPro
       </div>
 
       {/* Pinned indicator footer */}
-      <div className="px-3.5 py-2 border-t border-module-fg/[0.12] bg-black/[0.03] dark:bg-[#131110] flex items-center gap-1.5 flex-shrink-0">
+      <div className="px-3.5 py-2 border-t border-module-fg-mid/[0.15] bg-black/[0.03] dark:bg-[#131110] flex items-center gap-1.5 flex-shrink-0">
         <Pin className="w-2.5 h-2.5 text-[rgb(var(--text-disabled))]" />
         <span className="text-[9px] text-[rgb(var(--text-disabled))]">Pinned — visible to all staff</span>
       </div>

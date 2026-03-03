@@ -40,7 +40,7 @@ export function CourseResultsClient({
         {/* Print Header - only visible when printing */}
         <div className="hidden print:block text-center mb-8">
           <h1 className="text-3xl font-bold text-black mb-2">Course Completion Certificate</h1>
-          <div className="w-24 h-1 bg-[#D37E91] mx-auto" />
+          <div className="w-24 h-1 bg-[#8A2B2B] mx-auto" />
         </div>
 
         {/* Status Icon */}
@@ -87,7 +87,7 @@ export function CourseResultsClient({
         {/* Course Details */}
         <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/5 border border-[rgb(var(--border))] dark:border-white/10 rounded-xl p-6 space-y-4 print:border-black/20 print:bg-white">
           <div className="flex items-center gap-3 mb-4">
-            <GraduationCap size={20} className="text-[#D37E91]" />
+            <GraduationCap size={20} className="text-[#8A2B2B]" />
             <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white print:text-black">
               Course Details
             </h2>
@@ -137,7 +137,7 @@ export function CourseResultsClient({
                 href={`/api/certificates/${trainingRecordId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#8A2B2B] hover:bg-[#c06b7e] text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
               >
                 <Download size={18} />
                 Download Certificate (PDF)
@@ -155,7 +155,7 @@ export function CourseResultsClient({
           {!passed && (
             <Link
               href={`/learn/${courseId}`}
-              className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#8A2B2B] hover:bg-[#c06b7e] text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
             >
               Retry Course
             </Link>

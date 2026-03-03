@@ -9,7 +9,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
   return (
     <label className="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
-      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#D37E91] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]" />
+      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8A2B2B] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8A2B2B]" />
     </label>
   );
 }
@@ -29,7 +29,7 @@ function ChannelCheckbox({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#D37E91] focus:ring-[#D37E91] bg-transparent"
+        className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#8A2B2B] focus:ring-[#8A2B2B] bg-transparent"
       />
       <span className="text-sm text-theme-secondary/70">{label}</span>
     </label>
@@ -132,7 +132,7 @@ export function NotificationsTab() {
                     type="checkbox"
                     checked={prefs.in_app}
                     onChange={(e) => updateNotification(type, 'in_app', e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#D37E91] focus:ring-[#D37E91] bg-transparent"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#8A2B2B] focus:ring-[#8A2B2B] bg-transparent"
                   />
                 </div>
                 <div className="hidden sm:flex justify-center">
@@ -140,7 +140,7 @@ export function NotificationsTab() {
                     type="checkbox"
                     checked={prefs.email}
                     onChange={(e) => updateNotification(type, 'email', e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#D37E91] focus:ring-[#D37E91] bg-transparent"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#8A2B2B] focus:ring-[#8A2B2B] bg-transparent"
                   />
                 </div>
                 <div className="hidden sm:flex justify-center">
@@ -148,7 +148,7 @@ export function NotificationsTab() {
                     type="checkbox"
                     checked={prefs.push}
                     onChange={(e) => updateNotification(type, 'push', e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#D37E91] focus:ring-[#D37E91] bg-transparent"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#8A2B2B] focus:ring-[#8A2B2B] bg-transparent"
                   />
                 </div>
               </div>
@@ -160,7 +160,7 @@ export function NotificationsTab() {
       {/* Quiet Hours */}
       <div>
         <h3 className="text-lg font-semibold text-theme-primary mb-1 flex items-center gap-2">
-          <BellOff className="w-5 h-5 text-[#D37E91]" />
+          <BellOff className="w-5 h-5 text-[#8A2B2B]" />
           Quiet Hours
         </h3>
         <p className="text-sm text-theme-tertiary/50 mb-4">
@@ -216,24 +216,24 @@ export function NotificationsTab() {
             onClick={() => updatePreference('digest_mode', 'realtime')}
             className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
               ${preferences.digest_mode === 'realtime'
-                ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
+                ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 ring-1 ring-[#8A2B2B]/30'
                 : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
               }`}
           >
-            <Bell className={`w-6 h-6 ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`} />
-            <span className={`text-sm font-medium ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>Real-time</span>
+            <Bell className={`w-6 h-6 ${preferences.digest_mode === 'realtime' ? 'text-[#8A2B2B]' : 'text-theme-tertiary/50'}`} />
+            <span className={`text-sm font-medium ${preferences.digest_mode === 'realtime' ? 'text-[#8A2B2B]' : 'text-theme-secondary'}`}>Real-time</span>
             <span className="text-xs text-theme-tertiary/40">Get alerts as they happen</span>
           </button>
           <button
             onClick={() => updatePreference('digest_mode', 'daily')}
             className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
               ${preferences.digest_mode === 'daily'
-                ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
+                ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 ring-1 ring-[#8A2B2B]/30'
                 : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
               }`}
           >
-            <Mail className={`w-6 h-6 ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`} />
-            <span className={`text-sm font-medium ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>Daily Digest</span>
+            <Mail className={`w-6 h-6 ${preferences.digest_mode === 'daily' ? 'text-[#8A2B2B]' : 'text-theme-tertiary/50'}`} />
+            <span className={`text-sm font-medium ${preferences.digest_mode === 'daily' ? 'text-[#8A2B2B]' : 'text-theme-secondary'}`}>Daily Digest</span>
             <span className="text-xs text-theme-tertiary/40">Summary email each morning</span>
           </button>
         </div>

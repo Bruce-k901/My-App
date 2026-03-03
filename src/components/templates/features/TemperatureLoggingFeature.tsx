@@ -265,7 +265,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="Equipment name"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                       readOnly={!!asset}
                       title={temp.equipment || asset?.name || ''}
                     />
@@ -280,7 +280,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="e.g., FR1"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                     />
                   </div>
                   {!isTemplateMode && (
@@ -292,7 +292,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Temperature (°C)"
                         fontSize="14px"
- className={`w-full px-4 py-2 rounded-lg bg-theme-surface ] border text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] ${
+ className={`w-full px-4 py-2 rounded-lg bg-theme-surface ] border text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] ${
                           isFail ? 'border-red-500' :
                           isWarning ? 'border-yellow-500' :
                           'border-theme'
@@ -316,7 +316,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Min"
                         fontSize="14px"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
@@ -329,7 +329,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Max"
                         fontSize="14px"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
@@ -369,7 +369,7 @@ export function TemperatureLoggingFeature({
               <button
                 type="button"
                 onClick={autoPopulateFromAssets}
-                className="text-sm px-4 py-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/35 rounded-lg border border-[#D37E91] dark:border-[#D37E91]/30 font-medium transition-colors"
+                className="text-sm px-4 py-2 bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/25 text-[#8A2B2B] dark:text-[#8A2B2B] hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/35 rounded-lg border border-[#8A2B2B] dark:border-[#8A2B2B]/30 font-medium transition-colors"
               >
                 + Auto-populate from Assets
               </button>

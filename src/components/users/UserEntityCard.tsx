@@ -156,7 +156,7 @@ export default function UserEntityCard({
               {onSendInvite && user.email && (
                 <button
                   onClick={() => onSendInvite(user.id, user.email)}
-                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200 flex items-center gap-2"
+                  className="px-3 py-2 border border-[#8A2B2B] text-[#8A2B2B] rounded-md hover:shadow-module-glow transition-all duration-200 flex items-center gap-2"
                   title="Send Invitation Email"
                 >
                   <Mail size={18} />
@@ -168,7 +168,7 @@ export default function UserEntityCard({
               {onUnarchive ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200"
+                  className="px-3 py-2 border border-[#8A2B2B] text-[#8A2B2B] rounded-md hover:shadow-module-glow transition-all duration-200"
                   title="Restore User"
                 >
                   Restore

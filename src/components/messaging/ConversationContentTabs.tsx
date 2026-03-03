@@ -184,14 +184,14 @@ export default function ConversationContentTabs({ conversationId }: Conversation
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-[#0B0D13] border-b border-theme p-4">
+      <div className="bg-white dark:bg-[#101214] border-b border-theme p-4">
         <div className="text-theme-secondary text-sm">Loading content...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#0B0D13] border-b border-theme">
+    <div className="bg-white dark:bg-[#101214] border-b border-theme">
       {/* Tabs */}
       <div className="flex gap-1 p-1.5 sm:p-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
@@ -204,7 +204,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
               className={`
                 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm font-medium flex-shrink-0
                 ${isActive
-                  ? 'bg-transparent text-[#D37E91] border border-[#D37E91]'
+                  ? 'bg-transparent text-[#8A2B2B] border border-[#8A2B2B]'
                   : 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary hover:bg-theme-hover'
                 }
               `}
@@ -215,7 +215,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                 <span className={`
                   text-xs px-1.5 sm:px-2 py-0.5 rounded-full
                   ${isActive
-                    ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]'
+                    ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/30 text-[#8A2B2B] dark:text-[#8A2B2B]'
                     : 'bg-theme-muted text-theme-secondary'
                   }
                 `}>
@@ -241,7 +241,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                   className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <FileText className="h-5 w-5 text-[#D37E91] flex-shrink-0" />
+                    <FileText className="h-5 w-5 text-[#8A2B2B] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-theme-primary truncate">{file.file_name || 'Unknown file'}</p>
                       {file.file_size && (
@@ -327,7 +327,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                     </p>
                   )}
                   <button
-                    className="mt-2 text-xs text-[#D37E91] hover:underline"
+                    className="mt-2 text-xs text-[#8A2B2B] hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       window.location.href = `/dashboard/tasks?task=${task.id}`;

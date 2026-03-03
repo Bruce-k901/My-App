@@ -120,7 +120,7 @@ function IconButton({ children, onClick, ariaLabel, variant = "neutral" }: { chi
   );
   const variants = {
     neutral: "border border-gray-200 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.12]",
-    magentaOutline: "border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow",
+    magentaOutline: "border border-[#8A2B2B] text-[#8A2B2B] bg-transparent hover:bg-[#8A2B2B]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow",
     orangeOutline: "border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-module-glow",
     navyOutline: "border border-module-fg text-module-fg bg-transparent hover:bg-module-fg/10 hover:shadow-module-glow",
   } as const;

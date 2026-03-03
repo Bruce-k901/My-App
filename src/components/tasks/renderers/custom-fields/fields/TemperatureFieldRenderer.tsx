@@ -43,7 +43,7 @@ export function TemperatureFieldRenderer({ field, value, onChange, disabled }: T
               ? 'border-red-500 focus:border-red-500'
               : isWarning
                 ? 'border-amber-500 focus:border-amber-500'
-                : 'border-theme focus:border-[#D37E91]'
+                : 'border-theme focus:border-[#8A2B2B]'
           }`}
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-theme-tertiary bg-theme-muted px-2 py-0.5 rounded">

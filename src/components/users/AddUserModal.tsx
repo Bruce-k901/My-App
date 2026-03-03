@@ -491,7 +491,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                     type="checkbox"
                     checked={startOnboarding}
                     onChange={(e) => setStartOnboarding(e.target.checked)}
-                    className="accent-[#D37E91]"
+                    className="accent-[#8A2B2B]"
                   />
                   Start onboarding now
                 </label>
@@ -531,14 +531,14 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
           <div className="flex justify-end gap-2 mt-4">
             <Button
               variant="ghost"
-              className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
+              className="border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/15"
               onClick={onClose}
             >
               Cancel
             </Button>
             <Button
               variant="ghost"
-              className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
+              className="border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/15"
               onClick={handleSubmit}
               disabled={saving}
             >

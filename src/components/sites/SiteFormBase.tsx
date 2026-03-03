@@ -60,10 +60,10 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 // Shared Tailwind class strings for theme-aware styling
-const inputClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const inputClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]";
 const readOnlyInputClasses = "w-full bg-gray-100 dark:bg-neutral-900 cursor-not-allowed border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none";
 const labelClasses = "block text-sm font-medium text-theme-secondary mb-1";
-const selectClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const selectClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]";
 const scheduleSelectClasses = "bg-gray-100 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded pl-2 pr-7 py-1 text-theme-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed";
 const scheduleRowClasses = "flex items-center gap-4 py-1.5 px-3 bg-theme-muted rounded-lg transition-opacity";
 
@@ -845,7 +845,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 <button
                   type="button"
                   onClick={() => setGmEditMode((v) => !v)}
-                  className="px-3 py-1.5 border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15 rounded-md text-sm transition-colors"
+                  className="px-3 py-1.5 border border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/15 rounded-md text-sm transition-colors"
                   aria-pressed={gmEditMode}
                 >
                   {gmEditMode ? "Cancel" : "Update GM"}
@@ -892,7 +892,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                     type="button"
                     onClick={handleSaveAndSync}
                     disabled={!gmEditMode || !formData.gm_user_id || loading}
-                    className="ml-auto px-4 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/50 hover:border-[#D37E91] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="ml-auto px-4 py-2 border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-lg hover:shadow-[#8A2B2B]/50 hover:border-[#8A2B2B] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? "Saving..." : "Save & Sync"}
                   </button>
@@ -913,7 +913,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 <button
                   type="button"
                   onClick={() => setOperatingScheduleOpen(!operatingScheduleOpen)}
-                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-theme-primary mb-3 hover:text-[#D37E91] transition-colors"
+                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-theme-primary mb-3 hover:text-[#8A2B2B] transition-colors"
                 >
                   Operating Schedule
                   <span className={`transform transition-transform ${operatingScheduleOpen ? 'rotate-180' : ''}`}>
@@ -1021,7 +1021,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
               type="button"
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/50 hover:border-[#D37E91] transition-all duration-200 disabled:opacity-50"
+              className="px-6 py-2 border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-lg hover:shadow-[#8A2B2B]/50 hover:border-[#8A2B2B] transition-all duration-200 disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save"}
             </button>

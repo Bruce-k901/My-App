@@ -62,7 +62,7 @@ export default function ConfirmDialog({
             variant={variant === 'destructive' ? 'destructive' : 'default'}
             className={variant === 'destructive'
               ? 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-500/90 dark:hover:bg-orange-500 text-white'
-              : 'bg-[#D37E91] hover:bg-[#D37E91]/90 text-white'
+              : 'bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white'
             }
           >
             {confirmText}

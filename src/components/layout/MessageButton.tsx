@@ -15,7 +15,7 @@ export function MessageButton() {
     >
       <MessageSquare className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
       {unreadCount > 0 && (
-        <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#D37E91] rounded-full text-white text-xs font-bold flex items-center justify-center">
+        <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#8A2B2B] rounded-full text-white text-xs font-bold flex items-center justify-center">
           {unreadCount > 99 ? "99+" : unreadCount}
         </span>
       )}

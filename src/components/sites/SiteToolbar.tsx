@@ -169,7 +169,7 @@ export default function SiteToolbar({
                 console.log("🔥 onAddSite function:", onAddSite);
                 onAddSite?.();
               }}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/40"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2B2B]/40"
               title="Add Site"
             >
               <Plus size={18} />

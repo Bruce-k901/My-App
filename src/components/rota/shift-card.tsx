@@ -42,13 +42,13 @@ export function ShiftCard({
       ref={setNodeRef}
       className={`group relative rounded border-l-2 transition-all ${
         shift.profile_id
-          ? 'bg-theme-muted border-[#D37E91]'
+          ? 'bg-theme-muted border-[#8A2B2B]'
           : 'bg-theme-button/50 border-dashed border-gray-300 dark:border-neutral-500'
       } ${
-        !shift.profile_id && isOver ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10 border-[#D37E91]' : ''
+        !shift.profile_id && isOver ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/10 border-[#8A2B2B]' : ''
       }`}
       style={{ 
-        borderLeftColor: shift.color || '#D37E91',
+        borderLeftColor: shift.color || '#8A2B2B',
       }}
     >
       <div className="p-2">

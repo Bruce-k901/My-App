@@ -185,7 +185,7 @@ export function DocumentUploadFeature({
                     type="text"
                     value={item.fileName}
                     onChange={(e) => handleNameChange(index, e.target.value)}
-                    className="w-full px-2 py-1 text-xs font-medium bg-transparent border border-transparent hover:border-theme focus:border-[#D37E91] rounded text-theme-primary focus:outline-none transition-colors"
+                    className="w-full px-2 py-1 text-xs font-medium bg-transparent border border-transparent hover:border-theme focus:border-[#8A2B2B] rounded text-theme-primary focus:outline-none transition-colors"
                     placeholder="Friendly name"
                   />
                   <a
@@ -214,12 +214,12 @@ export function DocumentUploadFeature({
 
       {/* Add Link form */}
       {showAddLink && (
-        <div className="border border-dashed border-[#D37E91]/40 rounded-lg p-3 space-y-2 bg-[#D37E91]/5">
+        <div className="border border-dashed border-[#8A2B2B]/40 rounded-lg p-3 space-y-2 bg-[#8A2B2B]/5">
           <input
             type="url"
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
-            className="w-full px-2.5 py-1.5 text-xs bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#D37E91]"
+            className="w-full px-2.5 py-1.5 text-xs bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#8A2B2B]"
             placeholder="https://drive.google.com/... or https://dropbox.com/..."
             autoFocus
           />
@@ -227,7 +227,7 @@ export function DocumentUploadFeature({
             type="text"
             value={linkName}
             onChange={(e) => setLinkName(e.target.value)}
-            className="w-full px-2.5 py-1.5 text-xs bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#D37E91]"
+            className="w-full px-2.5 py-1.5 text-xs bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-[#8A2B2B]"
             placeholder="Friendly name (optional)"
           />
           <div className="flex justify-end gap-2">
@@ -241,7 +241,7 @@ export function DocumentUploadFeature({
             <button
               type="button"
               onClick={handleAddLink}
-              className="px-3 py-1 text-xs font-medium rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white transition-colors"
+              className="px-3 py-1 text-xs font-medium rounded-lg bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white transition-colors"
             >
               Add Link
             </button>

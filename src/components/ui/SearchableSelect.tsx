@@ -82,7 +82,7 @@ export function SearchableSelect({
           bg-white/[0.03] border border-theme rounded-lg
           text-left transition-colors
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-neutral-600 cursor-pointer'}
-          ${isOpen ? 'border-[#D37E91]/50 ring-1 ring-[#D37E91]/20' : ''}
+          ${isOpen ? 'border-module-fg-mid/50 ring-1 ring-module-fg-mid/20' : ''}
         `}
       >
         <span className={selectedOption ? 'text-theme-primary' : 'text-theme-tertiary'}>
@@ -124,7 +124,7 @@ export function SearchableSelect({
                   w-full pl-9 pr-3 py-2
                   bg-white/[0.05] border border-theme rounded-md
                   text-theme-primary placeholder-slate-500
-                  focus:outline-none focus:border-[#D37E91]/50
+                  focus:outline-none focus:border-module-fg-mid/50
                   text-sm
                 "
               />
@@ -147,7 +147,7 @@ export function SearchableSelect({
                     w-full flex items-center justify-between px-3 py-2.5
                     text-left text-sm transition-colors
                     ${option.value === value
-                      ? 'bg-[#D37E91]/10 text-[#D37E91]'
+                      ? 'bg-module-fg-mid/10 text-module-fg-mid'
                       : 'text-theme-primary hover:bg-white/[0.05]'
                     }
                   `}

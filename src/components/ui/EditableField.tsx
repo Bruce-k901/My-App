@@ -70,7 +70,7 @@ export default function EditableField({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setEditing(true)}
- className="text-gray-400 dark:text-theme-tertiary hover:text-[#D37E91] dark:hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
+ className="text-gray-400 dark:text-theme-tertiary hover:text-[#8A2B2B] dark:hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
             title="Edit"
           >
             <Edit3 size={14} />

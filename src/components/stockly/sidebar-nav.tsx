@@ -33,10 +33,10 @@ import {
   Users,
   Store,
   Link as LinkIcon,
-  Layers, // @salsa — batch tracking nav icon
-  Shield, // @salsa — recalls nav icon
-  AlertTriangle, // @salsa — non-conformances nav icon
-  ShieldCheck, // @salsa — SALSA dashboard nav icon
+  Layers, // @salsa â€” batch tracking nav icon
+  Shield, // @salsa â€” recalls nav icon
+  AlertTriangle, // @salsa â€” non-conformances nav icon
+  ShieldCheck, // @salsa â€” SALSA dashboard nav icon
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -90,7 +90,7 @@ const navItems: NavItem[] = [
     href: '/dashboard/stockly/stock-counts',
     icon: ClipboardList,
   },
-  // @salsa — Batch tracking navigation
+  // @salsa â€” Batch tracking navigation
   {
     type: 'link',
     label: 'Batches',
@@ -149,14 +149,14 @@ const navItems: NavItem[] = [
     href: '/dashboard/stockly/waste',
     icon: Trash2,
   },
-  // @salsa — Production batch tracking
+  // @salsa â€” Production batch tracking
   {
     type: 'link',
     label: 'Production Batches',
     href: '/dashboard/stockly/production-batches',
     icon: Layers,
   },
-  // @salsa — Phase 4: Traceability and Recalls
+  // @salsa â€” Phase 4: Traceability and Recalls
   {
     type: 'section',
     label: 'COMPLIANCE',
@@ -174,7 +174,7 @@ const navItems: NavItem[] = [
     href: '/dashboard/stockly/recalls',
     icon: Shield,
   },
-  // @salsa — Phase 5: Non-Conformances and SALSA Dashboard
+  // @salsa â€” Phase 5: Non-Conformances and SALSA Dashboard
   {
     type: 'link',
     label: 'Non-Conformances',
@@ -236,7 +236,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-stockly-dark/70 dark:text-stockly/70 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-stockly-mid dark:text-stockly-mid tracking-wider font-bold border-b border-stockly-mid/25 dark:border-stockly-mid/20 pb-2">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>
@@ -259,7 +259,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
         href={item.href}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
+            ? 'bg-stockly-mid/[0.10] dark:bg-stockly-mid/[0.08] text-stockly-dark dark:text-stockly font-medium border-l-2 border-stockly-mid'
             : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
         }`}
       >
@@ -296,7 +296,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
         onClick={(e) => { e.preventDefault(); handleClick(); }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full ${
           shouldHighlightParent
-            ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
+            ? 'bg-stockly-mid/[0.10] dark:bg-stockly-mid/[0.08] text-stockly-dark dark:text-stockly font-medium border-l-2 border-stockly-mid'
             : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
         }`}
       >
@@ -347,7 +347,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
                   href={child.href}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-stockly-dark dark:before:bg-stockly'
+                      ? 'bg-stockly-mid/[0.10] dark:bg-stockly-mid/[0.08] text-stockly-dark dark:text-stockly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-stockly-mid'
                       : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5'
                   }`}
                 >
@@ -375,14 +375,14 @@ export function StocklySidebar() {
 
   return (
     <aside
-      className={`bg-sidebar-stockly-light dark:bg-sidebar-stockly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      className={`bg-sidebar-stockly-light dark:bg-sidebar-stockly border-r border-stockly-mid/25 flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
       style={{ width: displayWidth }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       suppressHydrationWarning
     >
       {/* Header */}
-      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-stockly-light dark:bg-sidebar-stockly border-b border-module-fg/[0.18]`}>
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-stockly-light dark:bg-sidebar-stockly border-b border-stockly-mid/25`}>
         <Link href="/dashboard/stockly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img src="/new_module_logos/stockly_light.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
           <img src="/new_module_logos/stockly_dark.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
@@ -411,7 +411,7 @@ export function StocklySidebar() {
       </nav>
 
       {/* Profile + Pin */}
-      <div className="border-t border-module-fg/[0.18]">
+      <div className="border-t border-stockly-mid/25">
         {showExpanded ? (
           <div className="p-4 flex items-center gap-1">
             <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left">

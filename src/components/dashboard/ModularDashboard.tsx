@@ -81,7 +81,7 @@ export function ModularDashboard({ variant = 'desktop' }: ModularDashboardProps)
       {variant === 'mobile' && (
         <button
           onClick={() => setSettingsOpen(true)}
-          className="fixed right-4 z-30 w-12 h-12 rounded-full bg-[#D37E91] text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          className="fixed right-4 z-30 w-12 h-12 rounded-full bg-[#8A2B2B] text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform"
           style={{ bottom: 'calc(var(--above-tab-bar) + 0.5rem)' }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

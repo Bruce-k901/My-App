@@ -227,7 +227,7 @@ export default function SignupPage() {
                       setEmailSent(false);
                       setPendingSignupData(null);
                     }}
-                    className="text-[#D37E91] hover:text-[#D37E91]/80 underline"
+                    className="text-[#8A2B2B] hover:text-[#8A2B2B]/80 underline"
                   >
                     try again
                   </button>
@@ -298,7 +298,7 @@ export default function SignupPage() {
                     role: e.target.value as "Owner" | "Admin" | "Manager",
                   })
                 }
-                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               >
                 <option value="Owner">Owner</option>
                 <option value="Admin">Admin</option>

@@ -162,7 +162,7 @@ export default function HolidayYearSettings() {
                 setHolidayYearDay(maxDays);
               }
             }}
-            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#101214] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
               <option key={month} value={month}>
@@ -177,7 +177,7 @@ export default function HolidayYearSettings() {
           <select
             value={holidayYearDay}
             onChange={(e) => setHolidayYearDay(parseInt(e.target.value))}
-            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#101214] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {Array.from({ length: getDaysInMonth(holidayYearMonth) }, (_, i) => i + 1).map(day => (
               <option key={day} value={day}>

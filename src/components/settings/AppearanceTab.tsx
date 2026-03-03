@@ -23,14 +23,14 @@ function OptionCard({
       onClick={onClick}
       className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
         ${selected
-          ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
+          ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 ring-1 ring-[#8A2B2B]/30'
           : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
         }`}
     >
-      <div className={`${selected ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`}>
+      <div className={`${selected ? 'text-[#8A2B2B]' : 'text-theme-tertiary/50'}`}>
         {icon}
       </div>
-      <span className={`text-sm font-medium ${selected ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>
+      <span className={`text-sm font-medium ${selected ? 'text-[#8A2B2B]' : 'text-theme-secondary'}`}>
         {label}
       </span>
       {description && (
@@ -66,7 +66,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
   return (
     <label className="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
-      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#D37E91] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]" />
+      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8A2B2B] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8A2B2B]" />
     </label>
   );
 }
@@ -112,7 +112,7 @@ export function AppearanceTab() {
       {/* Font Size */}
       <div>
         <h3 className="text-lg font-semibold text-theme-primary mb-1 flex items-center gap-2">
-          <Type className="w-5 h-5 text-[#D37E91]" />
+          <Type className="w-5 h-5 text-[#8A2B2B]" />
           Font Size
         </h3>
         <p className="text-sm text-theme-tertiary/50 mb-4">
@@ -127,11 +127,11 @@ export function AppearanceTab() {
                 onClick={() => updatePreference('font_size', value)}
                 className={`flex flex-col items-center gap-3 p-4 rounded-xl border transition-all
                   ${selected
-                    ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
+                    ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 ring-1 ring-[#8A2B2B]/30'
                     : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
                   }`}
               >
-                <span className={`font-medium ${selected ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>
+                <span className={`font-medium ${selected ? 'text-[#8A2B2B]' : 'text-theme-secondary'}`}>
                   {label}
                 </span>
                 <span className={`${sampleSize} text-theme-tertiary/50`}>
@@ -168,7 +168,7 @@ export function AppearanceTab() {
       {/* High Contrast */}
       <div>
         <h3 className="text-lg font-semibold text-theme-primary mb-1 flex items-center gap-2">
-          <Contrast className="w-5 h-5 text-[#D37E91]" />
+          <Contrast className="w-5 h-5 text-[#8A2B2B]" />
           High Contrast
         </h3>
         <p className="text-sm text-theme-tertiary/50 mb-4">
@@ -195,7 +195,7 @@ export function AppearanceTab() {
       {/* Reduce Animations */}
       <div>
         <h3 className="text-lg font-semibold text-theme-primary mb-1 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-[#D37E91]" />
+          <Zap className="w-5 h-5 text-[#8A2B2B]" />
           Reduce Animations
         </h3>
         <p className="text-sm text-theme-tertiary/50 mb-4">

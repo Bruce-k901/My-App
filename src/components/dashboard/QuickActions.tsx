@@ -86,7 +86,7 @@ export default function QuickActions() {
           // Toggle menu; timer effect handles auto-close
           setOpen(!open);
         }}
-        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-[#D37E91] text-[#D37E91] shadow-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all"
+        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-[#8A2B2B] text-[#8A2B2B] shadow-lg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all"
       >
         {open ? (
           <Minus className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -113,9 +113,9 @@ export default function QuickActions() {
               className={`flex items-center justify-center gap-1 sm:gap-2 
                 ${isCompact ? "w-9 h-9 sm:w-10 sm:h-10" : "px-2 sm:px-3 py-1 sm:py-1.5"} 
                 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] 
-                rounded-full text-white/90 shadow-[0_0_6px_rgba(211, 126, 145,0.25)] transition-all`}
+                rounded-full text-white/90 shadow-[0_0_6px_rgba(138, 43, 43,0.25)] transition-all`}
             >
-              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D37E91]" />
+              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8A2B2B]" />
               {!isCompact && <span className="text-xs sm:text-sm font-medium">{label}</span>}
             </motion.button>
           </Tooltip>

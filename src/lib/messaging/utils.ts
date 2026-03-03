@@ -22,7 +22,7 @@ export function extractMentions(content: string): string[] {
  */
 export function formatMessageContent(content: string): string {
   // Replace @username with highlighted version
-  return content.replace(/@(\w+)/g, '<span class="text-[#D37E91] font-medium">@$1</span>');
+  return content.replace(/@(\w+)/g, '<span class="text-[#8A2B2B] font-medium">@$1</span>');
 }
 
 /**

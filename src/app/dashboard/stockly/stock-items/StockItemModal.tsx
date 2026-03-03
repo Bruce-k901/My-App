@@ -408,7 +408,7 @@ export default function StockItemModal({
                     </label>
                     <Input
                       {...register('name')}
-                      className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                      className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                       placeholder="e.g., Chicken Breast"
                     />
                     {errors.name && (
@@ -422,7 +422,7 @@ export default function StockItemModal({
                       <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Category *
                       </label>
-                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-module-fg-mid [&_button]:focus:shadow-module-glow [&_button[data-state=open]]:border-module-fg-mid [&_button[data-state=open]]:shadow-module-glow">
                         <Select
                           value={watch('category')}
                           onValueChange={(val) => setValue('category', val)}
@@ -440,7 +440,7 @@ export default function StockItemModal({
                       </label>
                       <Input
                         {...register('sku')}
-                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                         placeholder="SKU code"
                       />
                     </div>
@@ -454,7 +454,7 @@ export default function StockItemModal({
                     <textarea
                       {...register('description')}
                       rows={3}
-                      className="w-full h-24 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30 resize-none"
+                      className="w-full h-24 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30 resize-none"
                       placeholder="Item description"
                     />
                   </div>
@@ -466,7 +466,7 @@ export default function StockItemModal({
                         type="checkbox"
                         {...register('purchasable')}
                         defaultChecked
-                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-stockly-mid focus:ring-stockly-mid"
                       />
                       <span className="text-sm text-theme-tertiary">Purchasable from suppliers</span>
                     </label>
@@ -474,7 +474,7 @@ export default function StockItemModal({
                       <input
                         type="checkbox"
                         {...register('is_prep_item')}
-                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-stockly-mid focus:ring-stockly-mid"
                       />
                       <span className="text-sm text-theme-tertiary">Made in-house (prep item)</span>
                     </label>
@@ -497,7 +497,7 @@ export default function StockItemModal({
                         type="number"
                         step="0.001"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid ${
                           isPrepItem
                             ? 'bg-gray-100 dark:bg-gray-800/30 cursor-not-allowed opacity-50'
                             : 'hover:border-module-fg/30'
@@ -517,7 +517,7 @@ export default function StockItemModal({
                         type="number"
                         step="0.01"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid ${
                           isPrepItem
                             ? 'bg-gray-100 dark:bg-gray-800/30 cursor-not-allowed opacity-50'
                             : 'hover:border-module-fg/30'
@@ -547,7 +547,7 @@ export default function StockItemModal({
                     <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Costing Method
                     </label>
-                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-module-fg-mid [&_button]:focus:shadow-module-glow [&_button[data-state=open]]:border-module-fg-mid [&_button[data-state=open]]:shadow-module-glow">
                         <Select
                           value={watch('costing_method')}
                           onValueChange={(val: any) => setValue('costing_method', val)}
@@ -572,7 +572,7 @@ export default function StockItemModal({
                       type="checkbox"
                       {...register('track_stock')}
                       defaultChecked
-                      className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                      className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-stockly-mid focus:ring-stockly-mid"
                     />
                     <span className="text-sm text-theme-tertiary">Track Stock</span>
                   </label>
@@ -583,7 +583,7 @@ export default function StockItemModal({
                       <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Base Unit *
                       </label>
-                        <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                        <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-module-fg-mid [&_button]:focus:shadow-module-glow [&_button[data-state=open]]:border-module-fg-mid [&_button[data-state=open]]:shadow-module-glow">
                           <Select
                             value={watch('base_unit')}
                             onValueChange={(val) => setValue('base_unit', val)}
@@ -605,7 +605,7 @@ export default function StockItemModal({
                             {...register('par_level')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                             placeholder="Min level"
                           />
                         </div>
@@ -617,7 +617,7 @@ export default function StockItemModal({
                             {...register('reorder_qty')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                             placeholder="Reorder amount"
                           />
                         </div>
@@ -638,7 +638,7 @@ export default function StockItemModal({
                         step="0.01"
                         min="1"
                         max="100"
-                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                         placeholder="100"
                       />
                     </div>
@@ -648,7 +648,7 @@ export default function StockItemModal({
                       </label>
                       <Input
                         {...register('yield_notes')}
-                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-module-fg-mid focus:border-module-fg-mid hover:border-module-fg/30"
                         placeholder="Notes about yield calculation"
                       />
                     </div>
@@ -668,7 +668,7 @@ export default function StockItemModal({
                       <input
                         type="checkbox"
                         {...register(`allergen_${allergen.key}` as any)}
-                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-stockly-mid focus:ring-stockly-mid"
                       />
                       <span className="text-sm text-theme-tertiary">{allergen.label}</span>
                     </label>
@@ -695,7 +695,7 @@ export default function StockItemModal({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="min-w-[160px] h-11 bg-white/[0.03] backdrop-blur-md border border-emerald-500 text-module-fg font-medium hover:shadow-module-glow hover:border-emerald-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:border-emerald-500 flex items-center justify-center gap-2"
+              className="min-w-[160px] h-11 bg-white/[0.03] backdrop-blur-md border border-module-fg-mid text-module-fg font-medium hover:shadow-module-glow hover:border-module-fg-mid/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:border-module-fg-mid flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>

@@ -149,7 +149,7 @@ export default function PlanSelection({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[#D37E91]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#8A2B2B]" />
       </div>
     );
   }
@@ -176,9 +176,9 @@ export default function PlanSelection({
               key={plan.id}
               className={`flex flex-col min-h-[400px] relative transition-all ${
                 isCurrentPlan
-                  ? 'border-[#D37E91] shadow-[0_0_18px_rgba(211, 126, 145,0.35)]'
+                  ? 'border-[#8A2B2B] shadow-[0_0_18px_rgba(138, 43, 43,0.35)]'
                   : isAvailable
-                  ? 'hover:border-[#D37E91]/50 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.2)] cursor-pointer'
+                  ? 'hover:border-[#8A2B2B]/50 hover:shadow-[0_0_12px_rgba(138, 43, 43,0.2)] cursor-pointer'
                   : 'opacity-50 cursor-not-allowed'
               }`}
               onClick={() => {
@@ -188,13 +188,13 @@ export default function PlanSelection({
               }}
             >
               {isCurrentPlan && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#D37E91] text-white px-3 py-1 rounded-full text-xs font-semibold">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#8A2B2B] text-white px-3 py-1 rounded-full text-xs font-semibold">
                   Current Plan
                 </div>
               )}
 
               {plan.name === 'pro' && !isCurrentPlan && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#D37E91] text-theme-primary px-3 py-1 rounded-full text-xs font-semibold">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#8A2B2B] text-theme-primary px-3 py-1 rounded-full text-xs font-semibold">
                   Most Popular
                 </div>
               )}
@@ -213,7 +213,7 @@ export default function PlanSelection({
                 )}
 
                 <div className="mb-4">
-                  <p className="text-3xl font-bold text-[#D37E91] mb-1">
+                  <p className="text-3xl font-bold text-[#8A2B2B] mb-1">
                     {getPlanPrice(plan)}
                   </p>
                   <p className="text-sm text-theme-tertiary">{getPlanPriceDescription(plan)}</p>
@@ -253,7 +253,7 @@ export default function PlanSelection({
                   <Button
                     variant="outline"
                     fullWidth
-                    className="border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+                    className="border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)]"
                   >
                     Select Plan
                   </Button>

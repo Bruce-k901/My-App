@@ -17,20 +17,20 @@ export function MessagingWidget() {
     .slice(0, 3);
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(211,126,145,0.12)]">
+    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(138, 43, 43,0.12)]">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-[#D37E91]" />
+          <MessageSquare className="w-5 h-5 text-[#8A2B2B]" />
           <h2 className="text-lg font-semibold">Messages</h2>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 bg-[#D37E91] text-white text-xs font-semibold rounded-full">
+            <span className="px-2 py-0.5 bg-[#8A2B2B] text-white text-xs font-semibold rounded-full">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
         </div>
         <button
           onClick={() => setMessagingOpen(true)}
-          className="text-xs text-[#D37E91] hover:text-[#D37E91] transition-colors"
+          className="text-xs text-[#8A2B2B] hover:text-[#8A2B2B] transition-colors"
         >
           View All
         </button>
@@ -75,7 +75,7 @@ export function MessagingWidget() {
                     )}
                   </div>
                   {conv.unread_count && conv.unread_count > 0 && (
-                    <span className="ml-2 px-2 py-0.5 bg-[#D37E91] text-white text-xs font-semibold rounded-full flex-shrink-0">
+                    <span className="ml-2 px-2 py-0.5 bg-[#8A2B2B] text-white text-xs font-semibold rounded-full flex-shrink-0">
                       {conv.unread_count}
                     </span>
                   )}
@@ -86,7 +86,7 @@ export function MessagingWidget() {
           {unreadCount > recentConversations.length && (
             <button
               onClick={() => setMessagingOpen(true)}
-              className="block w-full text-center text-xs text-[#D37E91] hover:text-[#D37E91] mt-2"
+              className="block w-full text-center text-xs text-[#8A2B2B] hover:text-[#8A2B2B] mt-2"
             >
               +{unreadCount - recentConversations.length} more conversation{unreadCount - recentConversations.length !== 1 ? 's' : ''}
             </button>

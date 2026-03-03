@@ -11,8 +11,8 @@
 // Color Palette
 export const colors = {
   primary: {
-    magenta: '#D37E91',
-    magentaRgba: '211,126,145',
+    magenta: '#8A2B2B',
+    magentaRgba: '138,43,43',
   },
   secondary: {
     orange: '#F97316',
@@ -29,10 +29,10 @@ export const colors = {
 // Button Variants
 export const buttonVariants = {
   // Primary brand buttons (Save, Cancel, Generate, PIN toggle)
-  primary: 'border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-lg p-2 bg-transparent transition-all duration-200',
+  primary: 'border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded-lg p-2 bg-transparent transition-all duration-200',
 
   // Primary brand with glass effect (Generate button)
-  primaryGlass: 'border border-[#D37E91] text-[#D37E91] bg-white/5 backdrop-blur-sm hover:shadow-module-glow rounded-xl px-4 py-2 transition-all duration-200',
+  primaryGlass: 'border border-[#8A2B2B] text-[#8A2B2B] bg-white/5 backdrop-blur-sm hover:shadow-module-glow rounded-xl px-4 py-2 transition-all duration-200',
 
   // Archive/Orange buttons
   archive: 'border border-[#F97316] text-[#F97316] hover:shadow-module-glow rounded-lg p-2 bg-transparent transition-all duration-200',
@@ -70,7 +70,7 @@ export const components = {
   cancelButton: buttonVariants.primary,
   generateButton: buttonVariants.primaryGlass,
   archiveButton: `${buttonVariants.archive} ${iconButton.archivePosition}`,
-  pinToggleButton: `text-[#D37E91] hover:text-[#e8a0b0] ${iconButton.absolute}`,
+  pinToggleButton: `text-[#8A2B2B] hover:text-[#B85555] ${iconButton.absolute}`,
   pinField: inputVariants.withIcon,
   standardInput: inputVariants.default,
 } as const;

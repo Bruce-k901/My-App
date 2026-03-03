@@ -350,7 +350,7 @@ export function PrepItemRecipeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#0B0D13] border border-white/[0.06] sm:max-w-[500px]">
+      <DialogContent className="bg-[#101214] border border-white/[0.06] sm:max-w-[500px]">
         {isChecking ? (
           <>
             <DialogHeader>

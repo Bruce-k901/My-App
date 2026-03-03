@@ -131,21 +131,21 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap
                 ${active 
-                  ? 'bg-transparent border border-[#D37E91] text-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]' 
+                  ? 'bg-transparent border border-[#8A2B2B] text-[#8A2B2B] shadow-[0_0_12px_rgba(138, 43, 43,0.7)]' 
                   : 'bg-gray-50 dark:bg-white/[0.03] border border-theme hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                 }
               `}
               title={config.description}
             >
-              <Icon className={`h-4 w-4 ${active ? 'text-[#D37E91]' : config.color}`} />
-              <span className={`text-sm font-medium ${active ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>
+              <Icon className={`h-4 w-4 ${active ? 'text-[#8A2B2B]' : config.color}`} />
+              <span className={`text-sm font-medium ${active ? 'text-[#8A2B2B]' : 'text-theme-secondary'}`}>
                 {config.label}
               </span>
               {count > 0 && (
                 <span className={`
                   text-xs px-2 py-0.5 rounded-full
                   ${active 
-                    ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]' 
+                    ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/30 text-[#8A2B2B] dark:text-[#8A2B2B]' 
                     : 'bg-gray-200 dark:bg-white/[0.1] text-theme-secondary'
                   }
                 `}>
@@ -161,7 +161,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
       {(currentFilters.topicCategory || currentFilters.isPinned) && (
         <div className="mt-3 flex items-center gap-2">
           <span className="text-xs text-theme-tertiary">Showing:</span>
-          <span className="text-xs text-[#D37E91] font-medium">
+          <span className="text-xs text-[#8A2B2B] font-medium">
             {currentFilters.isPinned 
               ? 'Pinned Conversations' 
               : topicConfig[currentFilters.topicCategory!].label

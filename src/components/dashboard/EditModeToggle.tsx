@@ -16,7 +16,7 @@ export function EditModeToggle() {
           'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all',
           isEditMode
             ? 'bg-teamly/10 text-teamly border border-teamly/30'
-            : 'bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] text-[rgb(var(--text-disabled))] hover:text-[rgb(var(--text-primary))]'
+            : 'bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] text-[rgb(var(--text-disabled))] hover:text-[rgb(var(--text-primary))]'
         )}
       >
         <GripVertical className="w-3.5 h-3.5" />

@@ -54,7 +54,7 @@ export function PhotoFieldRenderer({ field, value, onChange, disabled }: PhotoFi
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-theme rounded-lg text-sm text-theme-secondary hover:border-[#D37E91] hover:text-[#D37E91] transition-colors disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-theme rounded-lg text-sm text-theme-secondary hover:border-[#8A2B2B] hover:text-[#8A2B2B] transition-colors disabled:opacity-50"
         >
           <Camera className="w-5 h-5" />
           <span>Take or upload photo</span>

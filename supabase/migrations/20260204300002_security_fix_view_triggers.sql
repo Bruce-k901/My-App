@@ -311,6 +311,8 @@ BEGIN
         EXECUTE $func$
             CREATE OR REPLACE FUNCTION public.insert_deliveries()
             RETURNS TRIGGER AS $inner$
+            DECLARE
+                new_id UUID;
             BEGIN
                 -- SECURITY CHECK: Verify user has access to this company
                 IF NOT stockly.stockly_company_access(NEW.company_id) THEN
@@ -318,13 +320,26 @@ BEGIN
                 END IF;
 
                 INSERT INTO stockly.deliveries (
-                    id, company_id, site_id, supplier_id, delivery_date, invoice_number,
-                    invoice_total, status, notes, created_at, updated_at
+                    id, company_id, site_id, supplier_id, purchase_order_id,
+                    delivery_date, delivery_note_number, invoice_number, invoice_date,
+                    subtotal, vat_total, total, tax,
+                    ai_processed, ai_confidence, ai_extraction,
+                    requires_review, document_urls,
+                    status, received_by, confirmed_by, confirmed_at,
+                    created_at, updated_at
                 ) VALUES (
-                    COALESCE(NEW.id, gen_random_uuid()), NEW.company_id, NEW.site_id, NEW.supplier_id,
-                    NEW.delivery_date, NEW.invoice_number, NEW.invoice_total, NEW.status,
-                    NEW.notes, COALESCE(NEW.created_at, NOW()), COALESCE(NEW.updated_at, NOW())
-                );
+                    COALESCE(NEW.id, gen_random_uuid()),
+                    NEW.company_id, NEW.site_id, NEW.supplier_id, NEW.purchase_order_id,
+                    COALESCE(NEW.delivery_date, CURRENT_DATE), NEW.delivery_note_number,
+                    NEW.invoice_number, NEW.invoice_date,
+                    NEW.subtotal, NEW.vat_total, NEW.total, NEW.tax,
+                    COALESCE(NEW.ai_processed, FALSE), NEW.ai_confidence, NEW.ai_extraction,
+                    COALESCE(NEW.requires_review, FALSE), NEW.document_urls,
+                    COALESCE(NEW.status, 'draft'), NEW.received_by, NEW.confirmed_by, NEW.confirmed_at,
+                    COALESCE(NEW.created_at, NOW()), NOW()
+                )
+                RETURNING id INTO new_id;
+                NEW.id := new_id;
                 RETURN NEW;
             END;
             $inner$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -360,10 +375,21 @@ BEGIN
                     site_id = NEW.site_id,
                     supplier_id = NEW.supplier_id,
                     delivery_date = NEW.delivery_date,
+                    delivery_note_number = NEW.delivery_note_number,
                     invoice_number = NEW.invoice_number,
-                    invoice_total = NEW.invoice_total,
-                    status = NEW.status,
-                    notes = NEW.notes,
+                    invoice_date = NEW.invoice_date,
+                    subtotal = COALESCE(NEW.subtotal, OLD.subtotal),
+                    vat_total = COALESCE(NEW.vat_total, OLD.vat_total),
+                    total = COALESCE(NEW.total, OLD.total),
+                    tax = COALESCE(NEW.tax, OLD.tax),
+                    status = COALESCE(NEW.status, OLD.status),
+                    ai_processed = COALESCE(NEW.ai_processed, OLD.ai_processed),
+                    ai_confidence = COALESCE(NEW.ai_confidence, OLD.ai_confidence),
+                    ai_extraction = COALESCE(NEW.ai_extraction, OLD.ai_extraction),
+                    requires_review = COALESCE(NEW.requires_review, OLD.requires_review),
+                    document_urls = COALESCE(NEW.document_urls, OLD.document_urls),
+                    confirmed_by = NEW.confirmed_by,
+                    confirmed_at = NEW.confirmed_at,
                     updated_at = NOW()
                 WHERE id = OLD.id;
                 RETURN NEW;

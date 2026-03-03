@@ -98,7 +98,7 @@ export default function ApplicationConfirmationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     )
   }
@@ -187,19 +187,19 @@ export default function ApplicationConfirmationPage() {
             <h3 className="text-theme-primary font-semibold mb-3">What happens next?</h3>
             <ul className="space-y-2 text-theme-secondary text-sm">
               <li className="flex items-start gap-2">
-                <span className="text-[#D37E91] mt-1">•</span>
+                <span className="text-[#8A2B2B] mt-1">•</span>
                 <span>You'll receive a confirmation email shortly</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#D37E91] mt-1">•</span>
+                <span className="text-[#8A2B2B] mt-1">•</span>
                 <span>Our hiring team will review your application</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#D37E91] mt-1">•</span>
+                <span className="text-[#8A2B2B] mt-1">•</span>
                 <span>If shortlisted, we'll contact you to arrange an interview</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#D37E91] mt-1">•</span>
+                <span className="text-[#8A2B2B] mt-1">•</span>
                 <span>You should hear back from us within 5-7 working days</span>
               </li>
             </ul>
@@ -211,7 +211,7 @@ export default function ApplicationConfirmationPage() {
             </p>
             <Link
               href={`/jobs/${jobIdOrSlug}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-transparent text-[#D37E91] border-2 border-[#D37E91] hover:shadow-[0_0_20px_rgba(211, 126, 145,0.7)] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-transparent text-[#8A2B2B] border-2 border-[#8A2B2B] hover:shadow-[0_0_20px_rgba(138, 43, 43,0.7)] transition-all"
             >
               Back to Job Listing
             </Link>

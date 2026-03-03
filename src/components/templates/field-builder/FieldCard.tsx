@@ -19,7 +19,7 @@ export function FieldCard({ field, index, total, subFields, onEdit, onDelete, on
   const config = FIELD_TYPE_CONFIG[field.field_type] || FIELD_TYPE_CONFIG[FieldType.TEXT];
 
   return (
-    <div className="flex items-center gap-2 p-3 border border-theme rounded-lg bg-white dark:bg-white/[0.02] group hover:border-[#D37E91]/30 transition-colors">
+    <div className="flex items-center gap-2 p-3 border border-theme rounded-lg bg-white dark:bg-white/[0.02] group hover:border-[#8A2B2B]/30 transition-colors">
       {/* Reorder buttons */}
       <div className="flex flex-col gap-0.5">
         <button
@@ -49,7 +49,7 @@ export function FieldCard({ field, index, total, subFields, onEdit, onDelete, on
           )}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#D37E91]/10 text-[#D37E91] font-medium">
+          <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#8A2B2B]/10 text-[#8A2B2B] font-medium">
             {config.label}
           </span>
           {field.unit && (
@@ -70,7 +70,7 @@ export function FieldCard({ field, index, total, subFields, onEdit, onDelete, on
         <button
           type="button"
           onClick={onEdit}
-          className="p-1.5 text-theme-tertiary hover:text-[#D37E91] transition-colors"
+          className="p-1.5 text-theme-tertiary hover:text-[#8A2B2B] transition-colors"
         >
           <Pencil className="w-3.5 h-3.5" />
         </button>

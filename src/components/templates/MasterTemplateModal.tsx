@@ -41,21 +41,21 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
     <button
       onClick={onChange}
       className={`p-3 rounded border transition-all text-left ${enabled 
-        ? 'border-[#D37E91] bg-[#D37E91]/15 dark:bg-[#D37E91]/15' 
-        : 'border-theme bg-white dark:bg-white/[0.02] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'}`}
+        ? 'border-[#8A2B2B] bg-[#8A2B2B]/15 dark:bg-[#8A2B2B]/15' 
+        : 'border-theme bg-white dark:bg-white/[0.02] hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50'}`}
     >
       <div className="flex items-start gap-2">
         <input
           type="checkbox"
           checked={enabled}
           onChange={() => {}}
-          className="mt-1 accent-[#D37E91]"
+          className="mt-1 accent-[#8A2B2B]"
         />
         <div className="flex-1">
           <div className="flex items-center gap-1">
             <span className="text-sm font-medium text-theme-primary">{name}</span>
             <div className="group relative">
-              <Info className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
+              <Info className="w-4 h-4 text-[#8A2B2B] dark:text-[#8A2B2B]" />
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-theme-surface border border-theme text-theme-primary text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
                 {description}
               </div>
@@ -1319,7 +1319,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                 setSelectedSites(allSiteIds);
               }
             }}
-            className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
+            className="w-4 h-4 text-[#8A2B2B] border-gray-300 rounded focus:ring-[#8A2B2B]"
           />
           <span className="text-sm font-medium text-theme-primary">
             Apply to all sites ({availableSites.length})
@@ -1340,7 +1340,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setSelectedSites(selectedSites.filter(id => id !== site.id));
                     }
                   }}
-                  className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
+                  className="w-4 h-4 text-[#8A2B2B] border-gray-300 rounded focus:ring-[#8A2B2B]"
                 />
                 <span className="text-sm text-theme-primary">{site.name}</span>
               </label>
@@ -1408,7 +1408,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
             {/* Compliance Template Linking - for trail_import templates */}
             {isTrailImport && complianceTemplates.length > 0 && (
-              <div className="mt-4 p-4 rounded-lg border border-dashed border-[#D37E91]/40 bg-[#D37E91]/5">
+              <div className="mt-4 p-4 rounded-lg border border-dashed border-[#8A2B2B]/40 bg-[#8A2B2B]/5">
                 <label className="block text-sm font-medium text-theme-primary mb-1">
                   Apply Compliance Template Setup
                 </label>
@@ -1467,7 +1467,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     setNextInstanceDates([]);
                   }
                 }}
- className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               >
                 <option value="Daily">Daily</option>
                 <option value="Weekly">Weekly</option>
@@ -1508,7 +1508,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       }}
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
-                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+                          ? "border-[#8A2B2B] bg-[#8A2B2B]/15 text-[#8A2B2B] dark:text-[#8A2B2B]"
  :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
@@ -1567,7 +1567,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setMonthlyLastWeekday('friday');
                           setMonthlyDay(null);
                         }}
-                        className="w-4 h-4 text-[#D37E91] dark:text-magenta-500"
+                        className="w-4 h-4 text-[#8A2B2B] dark:text-magenta-500"
                       />
                       <label htmlFor="monthly_last_weekday" className="text-sm text-gray-700 dark:text-theme-primary">
                         Last Weekday of Month
@@ -1611,7 +1611,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setNextInstanceDates([]);
                     }
                   }}
- className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 />
  <p className="text-xs text-gray-600 dark:text-theme-tertiary mt-2">
                   Tasks will be automatically scheduled for this date {templateConfig.frequency === 'Annually' ? 'each year' : templateConfig.frequency === 'Bi-Annually' ? 'every 6 months' : 'each quarter'}
@@ -1664,7 +1664,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           }}
                           className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                             weeklyDays.includes(day.value)
-                              ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+                              ? "border-[#8A2B2B] bg-[#8A2B2B]/15 text-[#8A2B2B] dark:text-[#8A2B2B]"
  :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                           }`}
                         >
@@ -1689,7 +1689,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setAnnualDate('');
                         }
                       }}
- className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                     />
                   </div>
                 </div>
@@ -1710,7 +1710,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       onClick={() => toggleDaypart(part.value)}
                       className={`px-4 py-3 rounded-lg border text-center transition-all ${
                         selectedDayparts.includes(part.value)
-                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+                          ? "border-[#8A2B2B] bg-[#8A2B2B]/15 text-[#8A2B2B] dark:text-[#8A2B2B]"
  :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
@@ -1829,7 +1829,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   onChange={(e) => setTemplateConfig(prev => ({ ...prev, purpose: e.target.value }))}
                   placeholder="Why is this task important?"
                   rows={2}
-                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#8A2B2B] placeholder-theme-tertiary resize-none"
                 />
               </div>
               <div>
@@ -1839,7 +1839,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   onChange={(e) => setTemplateConfig(prev => ({ ...prev, method: e.target.value }))}
                   placeholder="Step-by-step instructions for completing the task"
                   rows={3}
-                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#8A2B2B] placeholder-theme-tertiary resize-none"
                 />
               </div>
               <div>
@@ -1849,7 +1849,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   onChange={(e) => setTemplateConfig(prev => ({ ...prev, importance: e.target.value }))}
                   placeholder="What happens if this task is missed or done incorrectly?"
                   rows={2}
-                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#8A2B2B] placeholder-theme-tertiary resize-none"
                 />
               </div>
               <div>
@@ -1859,7 +1859,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   onChange={(e) => setTemplateConfig(prev => ({ ...prev, specialRequirements: e.target.value }))}
                   placeholder="PPE, tools, certifications, or other requirements"
                   rows={2}
-                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#8A2B2B] placeholder-theme-tertiary resize-none"
                 />
               </div>
             </div>
@@ -1880,7 +1880,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             <button
               onClick={() => handleSave(false)}
               disabled={isSaving}
-              className="w-full sm:w-auto px-5 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#D37E91]/10"
+              className="w-full sm:w-auto px-5 py-2 border border-[#8A2B2B] text-[#8A2B2B] rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#8A2B2B]/10"
             >
               {isSaving ? 'Saving...' : 'Save Template'}
             </button>
@@ -1889,7 +1889,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           <button
             onClick={() => handleSave(isTrailImport)}
             disabled={isSaving || (isTrailImport && selectedSites.length === 0)}
-            className="w-full sm:w-auto px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+            className="w-full sm:w-auto px-5 py-2 bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
             {isSaving
               ? (isTrailImport ? 'Scheduling...' : editingTemplate ? 'Updating...' : 'Creating...')

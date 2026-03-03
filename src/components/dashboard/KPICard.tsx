@@ -55,14 +55,14 @@ export function KPICard({
       className={cn(
         'relative overflow-hidden',
         'bg-white dark:bg-[#171B2D]',
-        'border-2 border-module-fg/[0.12]',
+        'border-2 border-module-fg-mid/[0.15]',
         'rounded-xl',
         'p-5',
         'flex-1 min-w-[160px]',
         'flex flex-col gap-3',
         'shadow-lg shadow-black/[0.03] dark:shadow-black/20',
         'transition-all duration-200',
-        href && 'cursor-pointer hover:shadow-xl hover:border-module-fg/[0.25]'
+        href && 'cursor-pointer hover:shadow-xl hover:border-module-fg-mid/[0.30]'
       )}
     >
       {/* Subtle gradient background based on status */}
@@ -111,7 +111,7 @@ export function KPICard({
 
 export function KPICardSkeleton() {
   return (
-    <div className="bg-white dark:bg-[#171B2D] border-2 border-module-fg/[0.12] rounded-xl p-5 flex-1 min-w-[160px] animate-pulse shadow-lg">
+    <div className="bg-white dark:bg-[#171B2D] border-2 border-module-fg-mid/[0.15] rounded-xl p-5 flex-1 min-w-[160px] animate-pulse shadow-lg">
       <div className="flex items-center justify-between mb-3">
         <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-white/5" />
         <div className="w-12 h-6 rounded-full bg-slate-200 dark:bg-white/5" />

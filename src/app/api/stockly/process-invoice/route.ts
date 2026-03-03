@@ -299,20 +299,20 @@ export async function POST(request: NextRequest) {
         invoice_number: extraction.invoice_number || null,
         invoice_date: extraction.invoice_date || null,
         subtotal: extraction.subtotal || 0,
-        vat_total: extraction.tax || 0,
+        tax: extraction.tax || 0,
         total: extraction.total || 0,
         ai_processed: true,
         ai_confidence: extraction.confidence || null,
-        ai_raw_response: extraction,
+        ai_extraction: extraction,
         status: 'draft',
-        invoice_file_path: imageUrl,
+        document_urls: [imageUrl],
       })
       .select()
       .single();
 
     if (deliveryError) {
       console.error('Error creating delivery:', deliveryError);
-      throw new Error('Failed to create delivery record');
+      throw new Error(deliveryError.message || 'Failed to create delivery record');
     }
 
     // Create delivery lines

@@ -67,7 +67,7 @@ export function ActionPrompt({
                 flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors
                 ${confidence === 'high'
                   ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600'
-                  : 'bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]'
+                  : 'bg-transparent text-[#8A2B2B] border border-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)]'
                 }
               `}
             >

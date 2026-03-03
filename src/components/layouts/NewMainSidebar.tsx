@@ -377,7 +377,7 @@ const directLinks: SidebarLink[] = [
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[rgb(var(--surface))] dark:bg-[#110F0D] border-r border-[rgb(var(--border))] dark:border-white/[0.1] flex-col items-center py-4 gap-2 z-50 overflow-y-auto overflow-x-hidden checkly-sidebar-scrollbar" suppressHydrationWarning>
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[rgb(var(--surface))] dark:bg-[#131517] border-r border-[rgb(var(--border))] dark:border-white/[0.1] flex-col items-center py-4 gap-2 z-50 overflow-y-auto overflow-x-hidden checkly-sidebar-scrollbar" suppressHydrationWarning>
         {/* Checkly Logo - Show when on Checkly pages */}
         {(pathname === "/dashboard" || pathname.startsWith("/dashboard/tasks") || pathname.startsWith("/dashboard/checklists") || pathname.startsWith("/dashboard/sops") || pathname.startsWith("/dashboard/incidents") || pathname.startsWith("/dashboard/assets") || pathname.startsWith("/dashboard/logs") || pathname.startsWith("/dashboard/compliance") || pathname.startsWith("/dashboard/eho-report") || pathname.startsWith("/dashboard/libraries") || pathname.startsWith("/dashboard/courses") || pathname.startsWith("/dashboard/ppm") || pathname.startsWith("/dashboard/todays_tasks")) && (
           <Link
@@ -482,7 +482,7 @@ const directLinks: SidebarLink[] = [
 
       {/* Mobile Drawer Sidebar */}
       {mounted && isMobileOpen ? createPortal(
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#110F0D] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#131517] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
             <h2 className="text-lg font-semibold text-theme-primary">Menu</h2>

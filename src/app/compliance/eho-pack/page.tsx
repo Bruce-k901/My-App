@@ -89,7 +89,7 @@ function EHOForm({
           <select
             value={selectedSite}
             onChange={(e) => setSelectedSite(e.target.value)}
- className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+ className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]"
           >
             <option value="">Select site…</option>
             {sites.map((s) => (
@@ -106,7 +106,7 @@ function EHOForm({
             type="date"
             value={start}
             onChange={(e) => setStart(e.target.value)}
- className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+ className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]"
           />
         </div>
 
@@ -116,7 +116,7 @@ function EHOForm({
             type="date"
             value={end}
             onChange={(e) => setEnd(e.target.value)}
- className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+ className="w-full pl-4 pr-10 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]"
           />
         </div>
 
@@ -130,7 +130,7 @@ function EHOForm({
                 value="pdf"
                 checked={format === "pdf"}
                 onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                className="w-4 h-4 text-[#D37E91]"
+                className="w-4 h-4 text-[#8A2B2B]"
               />
               <span className="text-theme-primary">PDF Document</span>
             </label>
@@ -141,7 +141,7 @@ function EHOForm({
                 value="json"
                 checked={format === "json"}
                 onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                className="w-4 h-4 text-[#D37E91]"
+                className="w-4 h-4 text-[#8A2B2B]"
               />
               <span className="text-theme-primary">JSON Data</span>
             </label>
@@ -156,7 +156,7 @@ function EHOForm({
                 type="checkbox"
                 checked={include.tasks}
                 onChange={(e) => setInclude((i) => ({ ...i, tasks: e.target.checked }))}
-                className="w-4 h-4 text-[#D37E91] rounded"
+                className="w-4 h-4 text-[#8A2B2B] rounded"
               />
               <span className="text-theme-primary">Tasks & Checklists</span>
             </label>
@@ -165,7 +165,7 @@ function EHOForm({
                 type="checkbox"
                 checked={include.temperature}
                 onChange={(e) => setInclude((i) => ({ ...i, temperature: e.target.checked }))}
-                className="w-4 h-4 text-[#D37E91] rounded"
+                className="w-4 h-4 text-[#8A2B2B] rounded"
               />
               <span className="text-theme-primary">Temperature Logs</span>
             </label>
@@ -174,7 +174,7 @@ function EHOForm({
                 type="checkbox"
                 checked={include.maintenance}
                 onChange={(e) => setInclude((i) => ({ ...i, maintenance: e.target.checked }))}
-                className="w-4 h-4 text-[#D37E91] rounded"
+                className="w-4 h-4 text-[#8A2B2B] rounded"
               />
               <span className="text-theme-primary">Maintenance</span>
             </label>
@@ -183,7 +183,7 @@ function EHOForm({
                 type="checkbox"
                 checked={include.incidents}
                 onChange={(e) => setInclude((i) => ({ ...i, incidents: e.target.checked }))}
-                className="w-4 h-4 text-[#D37E91] rounded"
+                className="w-4 h-4 text-[#8A2B2B] rounded"
               />
               <span className="text-theme-primary">Incidents</span>
             </label>
@@ -275,7 +275,7 @@ function EHOReportPreview({ siteId, start, end, include }: { siteId: string; sta
     return (
       <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 text-[#D37E91] dark:text-[#D37E91] animate-spin mr-3" />
+          <Loader2 className="w-6 h-6 text-[#8A2B2B] dark:text-[#8A2B2B] animate-spin mr-3" />
           <span className="text-theme-tertiary">Loading preview...</span>
         </div>
       </div>
@@ -298,7 +298,7 @@ function EHOReportPreview({ siteId, start, end, include }: { siteId: string; sta
           const Icon = stat.icon;
           return (
  <div key={stat.label} className="bg-theme-surface ] border border-theme rounded-lg p-2 sm:p-3 md:p-4 text-center">
-              <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D37E91] dark:text-[#D37E91] mx-auto mb-1 sm:mb-2" />
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#8A2B2B] dark:text-[#8A2B2B] mx-auto mb-1 sm:mb-2" />
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-theme-primary">{stat.value}</div>
               <div className="text-[10px] sm:text-xs text-theme-tertiary mt-1">{stat.label}</div>
             </div>
@@ -335,7 +335,7 @@ function EHOHistory({ companyId, siteId }: { companyId: string; siteId: string }
     return (
       <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-center py-4">
-          <Loader2 className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91] animate-spin mr-2" />
+          <Loader2 className="w-5 h-5 text-[#8A2B2B] dark:text-[#8A2B2B] animate-spin mr-2" />
           <span className="text-theme-tertiary text-sm">Loading history...</span>
         </div>
       </div>
@@ -361,7 +361,7 @@ function EHOHistory({ companyId, siteId }: { companyId: string; siteId: string }
                 href={downloadUrl(f.name)}
                 target="_blank"
                 rel="noreferrer"
-                className="sm:ml-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow text-xs sm:text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="sm:ml-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow text-xs sm:text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                 Download
@@ -413,7 +413,7 @@ function EHOGenerateButton({
       <button
         disabled={!payload || loading}
         onClick={onGenerate}
-        className="w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow disabled:opacity-40 disabled:cursor-not-allowed disabled:border-gray-300 dark:disabled:border-white/20 disabled:text-theme-tertiary dark:disabled:text-theme-tertiary text-xs sm:text-base font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden"
+        className="w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow disabled:opacity-40 disabled:cursor-not-allowed disabled:border-gray-300 dark:disabled:border-white/20 disabled:text-theme-tertiary dark:disabled:text-theme-tertiary text-xs sm:text-base font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden"
       >
         {loading ? (
           <>
@@ -442,7 +442,7 @@ function EHOGenerateButton({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow text-xs sm:text-sm rounded-lg transition-all duration-200 w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow text-xs sm:text-sm rounded-lg transition-all duration-200 w-full sm:w-auto justify-center"
           >
             <Download className="w-3 h-3 sm:w-4 sm:h-4" />
             Download {format.toUpperCase()}

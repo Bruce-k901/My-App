@@ -127,7 +127,7 @@ export default function AssetOverview() {
 
   if (loading) {
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Asset Overview</h2>
@@ -135,7 +135,7 @@ export default function AssetOverview() {
           </div>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8A2B2B]"></div>
           <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-tertiary">Loading asset data...</span>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default function AssetOverview() {
   }
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6 space-y-6">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -152,7 +152,7 @@ export default function AssetOverview() {
         </div>
         <Link 
           href="/dashboard/assets"
-          className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] transition-colors"
+          className="text-sm text-[#8A2B2B] dark:text-[#8A2B2B] hover:text-[#8A2B2B] transition-colors"
         >
           View All Assets →
         </Link>
@@ -251,7 +251,7 @@ export default function AssetOverview() {
           <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-tertiary text-sm mb-4">Add your first asset to get started with asset management.</p>
           <Link 
             href="/dashboard/assets"
-            className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] inline-block"
+            className="text-sm text-[#8A2B2B] dark:text-[#8A2B2B] hover:text-[#8A2B2B] inline-block"
           >
             Add Asset →
           </Link>

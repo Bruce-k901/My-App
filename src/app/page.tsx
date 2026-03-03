@@ -201,7 +201,7 @@ function ModulesCarouselSection() {
     },
     teamly: {
       text: 'text-teamly',
-      border: 'hover:border-teamly/30 hover:shadow-[0_0_15px_rgba(211,126,145,0.15)]',
+      border: 'hover:border-teamly/30 hover:shadow-[0_0_15px_rgba(138, 43, 43,0.15)]',
       gradient: 'bg-teamly/[0.04]',
       icon: 'text-teamly',
       dot: 'bg-teamly',
@@ -652,7 +652,7 @@ function DayJourneySection() {
 
                   {/* Dot */}
                   <div className="flex-shrink-0 pt-1.5 sm:pt-2 relative z-10">
-                    <div className="w-2 h-2 rounded-full bg-white/30 ring-4 ring-[#0B0D13]" />
+                    <div className="w-2 h-2 rounded-full bg-white/30 ring-4 ring-[#101214]" />
                   </div>
 
                   {/* Content */}

@@ -57,7 +57,7 @@
         }
 
         return (
-          <div className="min-h-screen flex items-center justify-center bg-[#0B0D13] px-4">
+          <div className="min-h-screen flex items-center justify-center bg-[#101214] px-4">
             <div className="max-w-md w-full bg-white/[0.06] border border-white/[0.1] rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-3 text-red-400">
                 <AlertTriangle className="w-6 h-6" />
@@ -84,7 +84,7 @@
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={this.handleReset}
-                  className="flex-1 bg-[#D37E91] hover:bg-[#D37E91] text-white"
+                  className="flex-1 bg-[#8A2B2B] hover:bg-[#8A2B2B] text-white"
                 >
                   Go to Dashboard
                 </Button>

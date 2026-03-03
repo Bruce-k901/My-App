@@ -45,7 +45,7 @@ export function Header({
     if (pathname?.startsWith('/dashboard/people')) return pick('teamly');
     if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return pick('assetly');
     if (pathname?.startsWith('/dashboard/planly')) return pick('planly');
-    if (pathname?.startsWith('/dashboard/forecastly')) return '#7C3AED'; // Forecastly
+    if (pathname?.startsWith('/dashboard/forecastly')) return isDark ? '#E4E9EC' : '#2A2E35'; // Forecastly (Storm Marble)
     if (pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') ||
         pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') ||
         pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments')) return pick('checkly');
@@ -60,7 +60,7 @@ export function Header({
         pathname?.startsWith('/dashboard/archive') ||
         pathname?.startsWith('/dashboard/settings') ||
         pathname?.startsWith('/dashboard/billing') ||
-        pathname?.startsWith('/dashboard/profile')) return '#1E40AF'; // Navy blue
+        pathname?.startsWith('/dashboard/profile')) return isDark ? '#BDBDBD' : '#585858'; // Graphite Chrome
     return null; // Default - no module color
   };
 
@@ -132,7 +132,7 @@ export function Header({
             <img
               src="/new_logos_opsly/opsly-mark.svg"
               alt="Opsly"
-              className="h-10 w-10 object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(211,126,145,0.5)]"
+              className="h-10 w-10 object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(138, 43, 43,0.5)]"
               loading="eager"
             />
           </Link>
@@ -195,7 +195,7 @@ export function Header({
           {/* Ask Opsly Button */}
           <button
             onClick={() => setAiAssistantOpen(true)}
-            className="flex items-center px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-10"
+            className="flex items-center px-3 py-2 rounded-lg bg-[#8A2B2B]/10 border border-[#8A2B2B]/50 text-[#8A2B2B] hover:bg-[#8A2B2B]/20 hover:shadow-module-glow transition-all h-10"
             aria-label="Ask Opsly"
           >
             <span className="font-medium text-sm whitespace-nowrap">Ask Opsly</span>
@@ -208,7 +208,7 @@ export function Header({
             className={`
               hidden lg:flex items-center justify-center w-10 h-10 rounded-lg transition-all
               ${isBurgerMenuOpen
-                ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#D37E91]"
+                ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#8A2B2B]"
                 : "bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
               }
             `}

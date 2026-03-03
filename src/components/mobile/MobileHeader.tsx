@@ -137,13 +137,13 @@ export function MobileHeader({
               "relative p-2 rounded-full",
               "transition-colors",
               notificationsEnabled
-                ? "bg-[#D37E91]/15 hover:bg-[#D37E91]/25"
+                ? "bg-[#8A2B2B]/15 hover:bg-[#8A2B2B]/25"
                 : "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10"
             )}
             title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
           >
             {notificationsEnabled ? (
-              <Bell size={20} className="text-[#D37E91]" />
+              <Bell size={20} className="text-[#8A2B2B]" />
             ) : (
               <BellOff size={20} className="text-theme-tertiary" />
             )}
@@ -151,7 +151,7 @@ export function MobileHeader({
           {onAvatarClick && (
             <button
               onClick={() => { haptics.medium(); onAvatarClick(); }}
-              className="w-9 h-9 rounded-full bg-[#D37E91] text-white text-sm font-bold flex items-center justify-center touch-manipulation active:scale-95 transition-transform"
+              className="w-9 h-9 rounded-full bg-[#8A2B2B] text-white text-sm font-bold flex items-center justify-center touch-manipulation active:scale-95 transition-transform"
             >
               {getInitials(userName)}
             </button>
@@ -171,7 +171,7 @@ export function MobileHeader({
               onClick={() => handleSiteSelect('all')}
               className={cn(
                 "w-full px-4 py-3 text-left flex items-center justify-between border-b border-black/10 dark:border-white/10",
-                (siteId === 'all' || !siteId) ? 'text-[#D37E91]' : 'text-theme-primary'
+                (siteId === 'all' || !siteId) ? 'text-[#8A2B2B]' : 'text-theme-primary'
               )}
             >
               <span>All Sites</span>
@@ -183,7 +183,7 @@ export function MobileHeader({
                 onClick={() => handleSiteSelect(site.id)}
                 className={cn(
                   "w-full px-4 py-3 text-left flex items-center justify-between border-b border-black/5 dark:border-white/5 last:border-0",
-                  siteId === site.id ? 'text-[#D37E91]' : 'text-theme-secondary'
+                  siteId === site.id ? 'text-[#8A2B2B]' : 'text-theme-secondary'
                 )}
               >
                 <span>{site.name}</span>

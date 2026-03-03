@@ -43,14 +43,14 @@ export function ForecastInput({ date, currentForecast, onSave, onClose }: Foreca
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="0.00"
-            className="w-full pl-7 pr-2 py-1.5 bg-neutral-900 border border-theme rounded text-sm text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#D37E91]"
+            className="w-full pl-7 pr-2 py-1.5 bg-neutral-900 border border-theme rounded text-sm text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#8A2B2B]"
             autoFocus
           />
         </div>
         <div className="flex gap-2">
           <button
             type="submit"
-            className="flex-1 px-2 py-1 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white text-xs rounded transition-colors"
+            className="flex-1 px-2 py-1 bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white text-xs rounded transition-colors"
           >
             Save
           </button>

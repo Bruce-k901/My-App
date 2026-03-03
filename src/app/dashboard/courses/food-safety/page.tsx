@@ -221,7 +221,7 @@ export default async function FoodSafetyCoursePage() {
     >
       <CourseHeader />
 
-      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(211, 126, 145,0.12)]">
+      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(138, 43, 43,0.12)]">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-theme-tertiary">Course mode</p>

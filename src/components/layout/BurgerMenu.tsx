@@ -110,7 +110,7 @@ export function BurgerMenu({
 
       {/* Menu Panel - Desktop only */}
       <div
-        className={`hidden lg:flex fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex-col bg-gray-50 dark:bg-[#0c0a09] transition-transform duration-200 ${
+        className={`hidden lg:flex fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex-col bg-gray-50 dark:bg-[#101214] transition-transform duration-200 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -177,10 +177,10 @@ export function BurgerMenu({
                       }}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left relative ${
                         active
-                          ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                          ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(138, 43, 43,0.12)]'
                           : isSignOut
                             ? 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-[inset_0_0_12px_rgba(239,68,68,0.08)]'
-                            : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                            : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(138, 43, 43,0.12)]'
                       }`}
                     >
                       <Icon className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${active ? 'text-teamly dark:text-teamly' : isSignOut ? 'text-red-500 dark:text-red-400' : 'text-theme-tertiary'}`} />
@@ -191,7 +191,7 @@ export function BurgerMenu({
                         </span>
                       )}
                       {showTicketBadge && (
-                        <span className="ml-auto px-2 py-0.5 text-xs font-bold bg-[#D37E91] text-white rounded-full min-w-[20px] text-center">
+                        <span className="ml-auto px-2 py-0.5 text-xs font-bold bg-[#8A2B2B] text-white rounded-full min-w-[20px] text-center">
                           {unreadTicketCount > 99 ? '99+' : unreadTicketCount}
                         </span>
                       )}
@@ -213,8 +213,8 @@ export function BurgerMenu({
                   onClick={() => handleNavigation('/admin')}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left ${
                     isActive('/admin')
-                      ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
-                      : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                      ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(138, 43, 43,0.12)]'
+                      : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(138, 43, 43,0.12)]'
                   }`}
                 >
                   <Shield className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${isActive('/admin') ? 'text-teamly dark:text-teamly' : 'text-theme-tertiary'}`} />

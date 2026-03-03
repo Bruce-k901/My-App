@@ -118,7 +118,7 @@ export default function AdminCompaniesPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -135,7 +135,7 @@ export default function AdminCompaniesPage() {
           <span className="text-theme-tertiary text-sm">{companies.length} total companies</span>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#8A2B2B] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
             Create Company
@@ -151,7 +151,7 @@ export default function AdminCompaniesPage() {
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40"
         />
       </div>
 
@@ -173,8 +173,8 @@ export default function AdminCompaniesPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#D37E91]/10 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 text-[#D37E91]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#8A2B2B]/10 flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-[#8A2B2B]" />
                   </div>
                   <div>
                     <div className="flex items-center gap-3">
@@ -234,7 +234,7 @@ export default function AdminCompaniesPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleViewAs(company)}
-                      className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg text-sm font-medium transition-all duration-200 ease-in-out"
+                      className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg text-sm font-medium transition-all duration-200 ease-in-out"
                     >
                       <Eye className="w-4 h-4" />
                       View As

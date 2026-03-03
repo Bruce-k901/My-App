@@ -155,7 +155,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
         </div>
       </div>
     );
@@ -226,21 +226,21 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
         <div className="flex items-center gap-2">
           <button
             onClick={handleAutoPack}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <RefreshCw className="w-4 h-4" />
             Auto-Pack
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <Download className="w-4 h-4" />
             Export
           </button>
           <button
             onClick={handlePrint}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <Printer className="w-4 h-4" />
             Print
@@ -253,7 +253,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider border-r border-white/[0.06]">
+              <th className="sticky left-0 z-10 bg-[#101214] px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider border-r border-white/[0.06]">
                 Product
               </th>
               {trayNumbers.map(trayNum => (
@@ -275,7 +275,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
               
               return (
                 <tr key={productName} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 border-r border-white/[0.06]">
+                  <td className="sticky left-0 z-10 bg-[#101214] px-4 py-3 border-r border-white/[0.06]">
                     <div className="text-theme-primary font-medium">{productName}</div>
                   </td>
                   {trayNumbers.map(trayNum => {

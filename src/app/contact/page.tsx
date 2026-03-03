@@ -86,7 +86,7 @@ export default function ContactPage() {
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   required
                   rows={6}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-[#D37E91]"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-[#8A2B2B]"
                 />
               </div>
 

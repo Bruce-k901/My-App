@@ -1283,7 +1283,7 @@ export default function CalendarWidget() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <section className="bg-white/[0.03] dark:bg-[#0b0d13]/80 border-2 border-[#D37E91]/20 dark:border-[#D37E91]/30 rounded-2xl p-4 sm:p-6 shadow-[0_0_20px_rgba(211,126,145,0.15)] dark:shadow-[0_0_20px_rgba(211,126,145,0.25)] fade-in-soft ring-1 ring-[#D37E91]/10 dark:ring-[#D37E91]/20">
+      <section className="bg-white/[0.03] dark:bg-[#101214]/80 border-2 border-[#8A2B2B]/20 dark:border-[#8A2B2B]/30 rounded-2xl p-4 sm:p-6 shadow-[0_0_20px_rgba(138, 43, 43,0.15)] dark:shadow-[0_0_20px_rgba(138, 43, 43,0.25)] fade-in-soft ring-1 ring-[#8A2B2B]/10 dark:ring-[#8A2B2B]/20">
         <CalendarHeader
           filters={filters}
           onFilterChange={setFilters}
@@ -1295,7 +1295,7 @@ export default function CalendarWidget() {
         {loading ? (
           <div className="h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-2 border-[#D37E91] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-[#8A2B2B] border-t-transparent rounded-full animate-spin"></div>
               <div className="text-theme-secondary">Loading calendar...</div>
             </div>
           </div>
@@ -1411,8 +1411,8 @@ function CalendarHeader({
       {/* Top row: Title, Navigation, Full Calendar button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 dark:from-[#D37E91]/30 dark:to-[#D37E91]/20 border-2 border-[#D37E91]/40 dark:border-[#D37E91]/50 shadow-md">
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#D37E91] dark:text-[#D37E91]" />
+          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#8A2B2B]/20 to-[#8A2B2B]/10 dark:from-[#8A2B2B]/30 dark:to-[#8A2B2B]/20 border-2 border-[#8A2B2B]/40 dark:border-[#8A2B2B]/50 shadow-md">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#8A2B2B] dark:text-[#8A2B2B]" />
           </div>
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-theme-primary bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
@@ -1424,7 +1424,7 @@ function CalendarHeader({
           {/* Week Navigation */}
           <button
             onClick={() => navigateWeek("prev")}
-            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/20 hover:border-[#8A2B2B]/40 dark:hover:border-[#8A2B2B]/50 transition-all"
           >
             <ChevronLeft className="w-4 h-4 text-theme-secondary" />
           </button>
@@ -1433,7 +1433,7 @@ function CalendarHeader({
           </span>
           <button
             onClick={() => navigateWeek("next")}
-            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#8A2B2B]/10 dark:hover:bg-[#8A2B2B]/20 hover:border-[#8A2B2B]/40 dark:hover:border-[#8A2B2B]/50 transition-all"
           >
             <ChevronRight className="w-4 h-4 text-theme-secondary" />
           </button>
@@ -1441,7 +1441,7 @@ function CalendarHeader({
           {/* Expand Calendar Button - Icon only */}
           <button
             onClick={onExpandClick}
-            className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/40 dark:border-[#D37E91]/50 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/60 dark:hover:border-[#D37E91]/70 hover:shadow-module-glow transition-all"
+            className="p-2 rounded-lg bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/20 text-[#8A2B2B] border border-[#8A2B2B]/40 dark:border-[#8A2B2B]/50 hover:bg-[#8A2B2B]/20 dark:hover:bg-[#8A2B2B]/30 hover:border-[#8A2B2B]/60 dark:hover:border-[#8A2B2B]/70 hover:shadow-module-glow transition-all"
             title="Full Calendar"
           >
             <Calendar className="w-4 h-4" />
@@ -1476,8 +1476,8 @@ function CalendarHeader({
               inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-yellow-400/40 hover:bg-yellow-500/10",
             },
             pink: {
-              active: "bg-[#D37E91]/25 dark:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91]/70 border-[#D37E91]/50 dark:border-[#D37E91]/60",
-              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-[#D37E91]/40 hover:bg-[#D37E91]/15",
+              active: "bg-[#8A2B2B]/25 dark:bg-[#8A2B2B]/35 text-[#8A2B2B] dark:text-[#8A2B2B]/70 border-[#8A2B2B]/50 dark:border-[#8A2B2B]/60",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-[#8A2B2B]/40 hover:bg-[#8A2B2B]/15",
             },
           };
           return (
@@ -1575,7 +1575,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-7 border-b-2 border-[#D37E91]/20 dark:border-[#D37E91]/30">
+      <div className="grid grid-cols-7 border-b-2 border-[#8A2B2B]/20 dark:border-[#8A2B2B]/30">
         {/* Day headers with + button */}
         {weekDays.map((day) => {
           const dayKey = format(day, "yyyy-MM-dd");
@@ -1588,7 +1588,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
           return (
             <div
               key={dayKey}
-              className="p-2 border-r-2 border-[#D37E91]/10 dark:border-[#D37E91]/20 text-center last:border-r-0 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
+              className="p-2 border-r-2 border-[#8A2B2B]/10 dark:border-[#8A2B2B]/20 text-center last:border-r-0 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex-1">
@@ -1597,7 +1597,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                   </div>
                   <div
                     className={`text-sm font-semibold mt-1 ${
-                      isSameDay(day, new Date()) ? "text-[#D37E91]" : "text-theme-primary"
+                      isSameDay(day, new Date()) ? "text-[#8A2B2B]" : "text-theme-primary"
                     }`}
                   >
                     {format(day, "MMM d")}
@@ -1605,10 +1605,10 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                 </div>
                 <button
                   onClick={handleAddClick}
-                  className="p-1.5 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border-2 border-[#D37E91]/30 dark:border-[#D37E91]/40 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/60 hover:shadow-md transition-all flex-shrink-0"
+                  className="p-1.5 rounded-lg bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/20 border-2 border-[#8A2B2B]/30 dark:border-[#8A2B2B]/40 hover:bg-[#8A2B2B]/20 dark:hover:bg-[#8A2B2B]/30 hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/60 hover:shadow-md transition-all flex-shrink-0"
                   title="Add item"
                 >
-                  <Plus className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91]" />
+                  <Plus className="w-3 h-3 text-[#8A2B2B] dark:text-[#8A2B2B]" />
                 </button>
               </div>
             </div>
@@ -1750,8 +1750,8 @@ function DroppableDayColumn({
   return (
     <div
       ref={drop}
-      className={`border-r-2 border-[#D37E91]/10 dark:border-[#D37E91]/20 last:border-r-0 min-h-[400px] p-2 transition-all ${
-        isOver ? "bg-[#D37E91]/20 dark:bg-[#D37E91]/30 ring-2 ring-[#D37E91]/50 dark:ring-[#D37E91]/60" : "bg-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10"
+      className={`border-r-2 border-[#8A2B2B]/10 dark:border-[#8A2B2B]/20 last:border-r-0 min-h-[400px] p-2 transition-all ${
+        isOver ? "bg-[#8A2B2B]/20 dark:bg-[#8A2B2B]/30 ring-2 ring-[#8A2B2B]/50 dark:ring-[#8A2B2B]/60" : "bg-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10"
       }`}
       onClick={(e) => {
         // Only trigger if clicking on empty space, not on items
@@ -1782,7 +1782,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
     call: "bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 border-2 border-module-fg/30 dark:border-emerald-400/60 shadow-sm hover:shadow-md",
     note: "bg-gradient-to-br from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-sm hover:shadow-md",
     reminder: "bg-gradient-to-br from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-sm hover:shadow-md",
-    message: "bg-gradient-to-br from-[#D37E91]/35 to-[#D37E91]/25 dark:from-[#D37E91]/40 dark:to-[#D37E91]/80/30 border-2 border-[#D37E91]/50 dark:border-[#D37E91]/60 shadow-sm hover:shadow-md",
+    message: "bg-gradient-to-br from-[#8A2B2B]/35 to-[#8A2B2B]/25 dark:from-[#8A2B2B]/40 dark:to-[#8A2B2B]/80/30 border-2 border-[#8A2B2B]/50 dark:border-[#8A2B2B]/60 shadow-sm hover:shadow-md",
   };
 
   const statusIcons: Record<string, string> = {
@@ -1899,7 +1899,7 @@ function CalendarModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0b0d13] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
+        className="bg-white dark:bg-[#101214] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-7xl max-h-[90vh] overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -1922,7 +1922,7 @@ function CalendarModal({
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
-                className="px-3 py-1.5 rounded-lg bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm"
+                className="px-3 py-1.5 rounded-lg bg-transparent text-[#8A2B2B] border border-[#8A2B2B] hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm"
               >
                 Today
               </button>
@@ -1960,7 +1960,7 @@ function CalendarModal({
               <div
                 key={dateKey}
                 className={`min-h-[100px] p-2 border border-white/[0.06] dark:border-white/[0.06] rounded-lg ${
-                  isToday ? "ring-2 ring-[#D37E91]" : ""
+                  isToday ? "ring-2 ring-[#8A2B2B]" : ""
                 } ${isCurrentMonth ? "bg-white/[0.02] dark:bg-white/[0.02]" : "bg-white/[0.01] dark:bg-white/[0.01] opacity-50"}`}
                 onClick={() => {
                   // Switch to week view for this day
@@ -1970,7 +1970,7 @@ function CalendarModal({
               >
                 <div
                   className={`text-sm font-semibold mb-1 ${
- isToday ?"text-[#D37E91]": isCurrentMonth ?"text-theme-primary":"text-theme-tertiary"
+ isToday ?"text-[#8A2B2B]": isCurrentMonth ?"text-theme-primary":"text-theme-tertiary"
                   }`}
                 >
                   {format(day, "d")}
@@ -1985,7 +1985,7 @@ function CalendarModal({
                       call: "bg-module-fg/20 border-module-fg/30",
                       note: "bg-theme-surface-elevated0/20 border-gray-500/30",
                       reminder: "bg-yellow-500/20 border-yellow-500/30",
-                      message: "bg-[#D37E91]/25 border-[#D37E91]/30",
+                      message: "bg-[#8A2B2B]/25 border-[#8A2B2B]/30",
                     };
                     const itemColorClass = miniItemColors[item.type] || miniItemColors.task;
                     return (
@@ -2089,7 +2089,7 @@ function CreateItemModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0b0d13] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-md shadow-2xl"
+        className="bg-white dark:bg-[#101214] border border-white/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-full max-w-md shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -2146,7 +2146,7 @@ function CreateItemModal({
                     inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   pink: {
-                    active: "bg-[#D37E91]/25 text-[#D37E91] border-[#D37E91]/30",
+                    active: "bg-[#8A2B2B]/25 text-[#8A2B2B] border-[#8A2B2B]/30",
                     inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                 };
@@ -2175,7 +2175,7 @@ function CreateItemModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter item title"
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
               autoFocus
             />
           </div>
@@ -2188,7 +2188,7 @@ function CreateItemModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
               rows={3}
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 resize-none"
             />
           </div>
         </div>
@@ -2207,7 +2207,7 @@ function CreateItemModal({
             type="button"
             onClick={handleCreate}
             disabled={loading || !title.trim()}
-            className="flex-1 px-4 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating..." : "Create"}
           </button>

@@ -88,7 +88,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
       if (asset.ppm_id) {
         // Update existing PPM
         const { error } = await supabase
-          .from('ppm_schedule')
+          .from('ppm_schedules')
           .update(ppmData)
           .eq('asset_id', asset.id);
         
@@ -96,7 +96,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
       } else {
         // Create new PPM
         const { error } = await supabase
-          .from('ppm_schedule')
+          .from('ppm_schedules')
           .insert(ppmData);
         
         if (error) throw error;

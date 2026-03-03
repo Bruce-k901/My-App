@@ -31,8 +31,8 @@ export function UpdateToast() {
       style={{ bottom: 'calc(var(--bottom-tab-height, 3.5rem) + env(safe-area-inset-bottom, 0px) + 0.5rem)' }}
     >
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-black/10 dark:border-slate-700 shadow-xl">
-        <div className="w-8 h-8 rounded-lg bg-[#D37E91]/20 flex items-center justify-center flex-shrink-0">
-          <RefreshCw className="w-4 h-4 text-[#D37E91]" />
+        <div className="w-8 h-8 rounded-lg bg-[#8A2B2B]/20 flex items-center justify-center flex-shrink-0">
+          <RefreshCw className="w-4 h-4 text-[#8A2B2B]" />
         </div>
         <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
           A new version is available
@@ -40,7 +40,7 @@ export function UpdateToast() {
         <button
           onClick={handleUpdate}
           onTouchEnd={(e) => { e.preventDefault(); handleUpdate(); }}
-          className="px-5 py-2.5 rounded-lg bg-[#D37E91] hover:bg-[#c06d7f] active:bg-[#b0607a] text-white text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer select-none"
+          className="px-5 py-2.5 rounded-lg bg-[#8A2B2B] hover:bg-[#c06d7f] active:bg-[#6E2222] text-white text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer select-none"
         >
           Update
         </button>

@@ -115,7 +115,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
     try {
       const { error } = await supabase
-        .from('ppm_schedule')
+        .from('ppm_schedules')
         .insert({
           asset_id: formData.asset_id,
           contractor_id: formData.contractor_id || null,

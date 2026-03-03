@@ -255,10 +255,10 @@ export default function ShiftPulsePage() {
               <Line
                 type="monotone"
                 dataKey="avg_rating"
-                stroke="#D37E91"
+                stroke="#8A2B2B"
                 strokeWidth={2}
-                dot={{ fill: '#D37E91', r: 3 }}
-                activeDot={{ r: 5, fill: '#D37E91' }}
+                dot={{ fill: '#8A2B2B', r: 3 }}
+                activeDot={{ r: 5, fill: '#8A2B2B' }}
               />
             </LineChart>
           </ResponsiveContainer>

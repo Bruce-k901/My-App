@@ -156,7 +156,7 @@ export default function ShiftPulseModal({
                 onClick={handleSubmit}
                 disabled={selected === null || submitting}
                 className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                  selected !== null ? 'bg-[#D37E91] hover:bg-[#c46d80]' : 'bg-theme-muted'
+                  selected !== null ? 'bg-[#8A2B2B] hover:bg-[#c46d80]' : 'bg-theme-muted'
                 }`}
               >
                 {submitting ? 'Submitting...' : 'Submit & Clock Out'}

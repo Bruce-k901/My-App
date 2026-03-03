@@ -196,7 +196,7 @@ export function SiteFilter() {
           h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px]
           transition-all
           ${isOpen
-            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#D37E91]"
+            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#8A2B2B]"
             : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
@@ -225,7 +225,7 @@ export function SiteFilter() {
             className="w-full px-4 py-2 flex items-center gap-3 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-left"
           >
             <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white font-medium">All Sites</span>
-            {!selectedSiteId && <Check className="w-4 h-4 text-[#D37E91]" />}
+            {!selectedSiteId && <Check className="w-4 h-4 text-[#8A2B2B]" />}
           </button>
 
           {/* Divider */}
@@ -240,7 +240,7 @@ export function SiteFilter() {
             >
               <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
               <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">{site.name}</span>
-              {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#D37E91]" />}
+              {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#8A2B2B]" />}
             </button>
           ))}
 

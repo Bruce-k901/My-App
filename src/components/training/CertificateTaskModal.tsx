@@ -330,10 +330,10 @@ export default function CertificateTaskModal({
           {/* SECTION 1: Book Training Course (PRIMARY)   */}
           {/* ============================================ */}
           {resolvedCourse && employee && (
-            <div className="rounded-xl border-2 border-[#D37E91]/40 bg-[#D37E91]/[0.06] p-5">
+            <div className="rounded-xl border-2 border-[#8A2B2B]/40 bg-[#8A2B2B]/[0.06] p-5">
               <div className="flex items-center gap-2.5 mb-3">
-                <div className="p-1.5 rounded-lg bg-[#D37E91]/20">
-                  <BookOpen className="w-4 h-4 text-[#D37E91]" />
+                <div className="p-1.5 rounded-lg bg-[#8A2B2B]/20">
+                  <BookOpen className="w-4 h-4 text-[#8A2B2B]" />
                 </div>
                 <h3 className="text-theme-primary font-semibold">Book Training Course</h3>
               </div>
@@ -344,7 +344,7 @@ export default function CertificateTaskModal({
               </p>
 
               <div className="bg-theme-surface/50 rounded-lg p-3 mb-4 flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#D37E91] flex-shrink-0" />
+                <Mail className="w-4 h-4 text-[#8A2B2B] flex-shrink-0" />
                 <div>
                   <div className="text-sm text-theme-primary font-medium">{resolvedCourse.name}</div>
                   <div className="text-xs text-theme-tertiary">£5.00 charge on completion</div>
@@ -354,7 +354,7 @@ export default function CertificateTaskModal({
               <button
                 onClick={() => setShowBookModal(true)}
                 disabled={submitting}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:bg-[#D37E91]/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold text-sm"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#8A2B2B] hover:bg-[#c06b7e] disabled:bg-[#8A2B2B]/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold text-sm"
               >
                 <BookOpen className="w-4 h-4" />
                 Book Course & Complete Task

@@ -38,7 +38,7 @@ export function generateMissingOrderReminderHTML({
     .join('')
 
   const ctaBlock = portalUrl
-    ? `<a href="${escapeHtml(portalUrl)}" style="display: inline-block; background-color: #D37E91; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px;">Place Your Order</a>`
+    ? `<a href="${escapeHtml(portalUrl)}" style="display: inline-block; background-color: #8A2B2B; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px;">Place Your Order</a>`
     : ''
 
   return `<!DOCTYPE html>

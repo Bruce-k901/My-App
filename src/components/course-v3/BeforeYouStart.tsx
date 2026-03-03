@@ -89,8 +89,8 @@ export function BeforeYouStart({ course, assignmentId, savedProgress, onBegin }:
       <div className="max-w-lg w-full space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="w-16 h-16 bg-[#D37E91]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <GraduationCap size={32} className="text-[#D37E91]" />
+          <div className="w-16 h-16 bg-[#8A2B2B]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <GraduationCap size={32} className="text-[#8A2B2B]" />
           </div>
           <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
             Before You Start
@@ -125,7 +125,7 @@ export function BeforeYouStart({ course, assignmentId, savedProgress, onBegin }:
 
           {loading ? (
             <div className="h-16 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#D37E91]" />
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#8A2B2B]" />
             </div>
           ) : (
             <div className="space-y-3">
@@ -193,7 +193,7 @@ export function BeforeYouStart({ course, assignmentId, savedProgress, onBegin }:
               <button
                 onClick={() => onBegin(true)}
                 disabled={loading}
-                className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#8A2B2B] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
               >
                 <BookOpen size={20} />
                 Resume Course
@@ -210,7 +210,7 @@ export function BeforeYouStart({ course, assignmentId, savedProgress, onBegin }:
             <button
               onClick={() => onBegin(false)}
               disabled={loading}
-              className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#8A2B2B] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
             >
               <BookOpen size={20} />
               Begin Course

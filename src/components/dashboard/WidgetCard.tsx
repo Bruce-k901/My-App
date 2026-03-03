@@ -44,7 +44,7 @@ export function WidgetCard({
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className={cn(
         'bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]',
-        'border border-module-fg/[0.12] rounded-lg',
+        'border border-module-fg-mid/[0.15] rounded-lg',
         'border-l-[3px]',
         borderColor,
         'flex flex-col h-full',
@@ -104,7 +104,7 @@ export function WidgetCard({
  */
 export function WidgetSkeleton() {
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-4 animate-pulse">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg-mid/[0.15] rounded-lg p-4 animate-pulse">
       <div className="flex items-center gap-2 mb-3">
         <div className="h-4 w-12 bg-black/10 dark:bg-white/10 rounded" />
         <div className="h-4 w-24 bg-black/10 dark:bg-white/10 rounded" />

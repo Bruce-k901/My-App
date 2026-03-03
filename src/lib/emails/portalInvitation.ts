@@ -50,7 +50,7 @@ export function generatePortalInvitationEmailHTML({
           <tr><td style="padding: 4px 0; color: #52525b; font-size: 14px;">&#x2713;&ensp;Update your delivery preferences</td></tr>
         </table>
 
-        <a href="${escapeHtml(setupUrl)}" style="display: inline-block; background-color: #D37E91; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px;">Set Up Your Account</a>
+        <a href="${escapeHtml(setupUrl)}" style="display: inline-block; background-color: #8A2B2B; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px;">Set Up Your Account</a>
         <p style="color: #a1a1aa; font-size: 12px; margin-top: 30px;">This link expires in 14 days. Questions? Reply to this email or contact ${sender} directly.</p>
       </td>
     </tr>

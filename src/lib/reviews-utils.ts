@@ -66,9 +66,9 @@ export const TEMPLATE_TYPE_CONFIG: Record<string, {
     label: 'Values Review',
     shortLabel: 'Values',
     category: 'performance',
-    color: 'text-[#D37E91]',
-    bgColor: 'bg-[#D37E91]/25',
-    borderColor: 'border-[#D37E91]/30',
+    color: 'text-[#8A2B2B]',
+    bgColor: 'bg-[#8A2B2B]/25',
+    borderColor: 'border-[#8A2B2B]/30',
     icon: Heart
   },
   performance_improvement: {

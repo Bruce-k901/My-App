@@ -115,9 +115,9 @@ export function CreateTaskModal({
         }`}>
           <div className="flex items-center gap-2">
             <div className={`p-1.5 rounded-lg ${
-              isDark ? 'bg-[#161b2e] border border-[#252b42]' : 'bg-[#D37E91]/10 border border-[#D37E91]/20'
+              isDark ? 'bg-[#161b2e] border border-[#252b42]' : 'bg-[#8A2B2B]/10 border border-[#8A2B2B]/20'
             }`}>
-              <ClipboardList className="w-4 h-4 text-[#D37E91]" />
+              <ClipboardList className="w-4 h-4 text-[#8A2B2B]" />
             </div>
             <h3 className={`font-semibold text-sm ${
               isDark ? 'text-white' : 'text-gray-900'
@@ -142,9 +142,9 @@ export function CreateTaskModal({
                 isDark ? 'text-white/50' : 'text-gray-500'
               }`}>Assigned to</label>
               <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                isDark ? 'bg-[#D37E91]/10 border border-[#D37E91]/30' : 'bg-[#D37E91]/10 border border-[#D37E91]/20'
+                isDark ? 'bg-[#8A2B2B]/10 border border-[#8A2B2B]/30' : 'bg-[#8A2B2B]/10 border border-[#8A2B2B]/20'
               }`}>
-                <Check className="w-3.5 h-3.5 text-[#D37E91]" />
+                <Check className="w-3.5 h-3.5 text-[#8A2B2B]" />
                 <span className={`text-sm font-medium flex-1 ${
                   isDark ? 'text-white' : 'text-gray-900'
                 }`}>{selectedProfile.full_name || selectedProfile.email}</span>
@@ -177,7 +177,7 @@ export function CreateTaskModal({
                     className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
                       isDark
                         ? 'bg-[#161b2e] border-[#252b42] text-white placeholder-white/30 focus:ring-[#303754]'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#D37E91]/40'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#8A2B2B]/40'
                     }`}
                   />
                 </div>
@@ -206,7 +206,7 @@ export function CreateTaskModal({
                       }`}
                     >
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${
-                        isDark ? 'bg-[#D37E91]/20 text-[#D37E91]' : 'bg-[#D37E91]/10 text-[#D37E91]'
+                        isDark ? 'bg-[#8A2B2B]/20 text-[#8A2B2B]' : 'bg-[#8A2B2B]/10 text-[#8A2B2B]'
                       }`}>
                         {(profile.full_name || '?')[0].toUpperCase()}
                       </div>
@@ -235,7 +235,7 @@ export function CreateTaskModal({
               className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
                 isDark
                   ? 'bg-[#161b2e] border-[#252b42] text-white placeholder-white/30 focus:ring-[#303754]'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#D37E91]/40'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#8A2B2B]/40'
               }`}
             />
           </div>
@@ -253,7 +253,7 @@ export function CreateTaskModal({
               className={`w-full px-3 py-2 rounded-lg border text-sm resize-none focus:outline-none focus:ring-2 ${
                 isDark
                   ? 'bg-[#161b2e] border-[#252b42] text-white placeholder-white/30 focus:ring-[#303754]'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#D37E91]/40'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#8A2B2B]/40'
               }`}
             />
           </div>
@@ -272,7 +272,7 @@ export function CreateTaskModal({
                 className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
                   isDark
                     ? 'bg-[#161b2e] border-[#252b42] text-white focus:ring-[#303754] [color-scheme:dark]'
-                    : 'bg-white border-gray-300 text-gray-900 focus:ring-[#D37E91]/40'
+                    : 'bg-white border-gray-300 text-gray-900 focus:ring-[#8A2B2B]/40'
                 }`}
               />
             </div>
@@ -322,8 +322,8 @@ export function CreateTaskModal({
             disabled={!selectedProfile || !taskName.trim() || !dueDate}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
               isDark
-                ? 'bg-[#161b2e] border border-[#252b42] text-[#D37E91] hover:bg-[#1c2238] hover:border-[#303754]'
-                : 'bg-transparent border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/10'
+                ? 'bg-[#161b2e] border border-[#252b42] text-[#8A2B2B] hover:bg-[#1c2238] hover:border-[#303754]'
+                : 'bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/10'
             }`}
           >
             <ClipboardList className="w-3.5 h-3.5" />

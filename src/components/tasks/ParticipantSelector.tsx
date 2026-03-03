@@ -208,7 +208,7 @@ export default function ParticipantSelector({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-theme-secondary">
-        {label} {required && <span className="text-[#D37E91]">*</span>}
+        {label} {required && <span className="text-[#8A2B2B]">*</span>}
       </label>
 
       {/* Selected Participants */}
@@ -224,7 +224,7 @@ export default function ParticipantSelector({
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
                   isCurrentUser
                     ? 'bg-gray-100 dark:bg-white/[0.03] border border-theme'
-                    : 'bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border border-[#D37E91]/30 dark:border-[#D37E91]/30'
+                    : 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/20 border border-[#8A2B2B]/30 dark:border-[#8A2B2B]/30'
                 }`}
               >
                 {user.avatar_url ? (
@@ -283,7 +283,7 @@ export default function ParticipantSelector({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by name, role, site..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
@@ -300,7 +300,7 @@ export default function ParticipantSelector({
                         key={siteName}
                         type="button"
                         onClick={() => handleSelectAllAtSite(siteName)}
-                        className="w-full text-left px-2 py-1.5 text-sm text-[#D37E91] hover:bg-[#D37E91]/10 rounded transition-colors flex items-center gap-2"
+                        className="w-full text-left px-2 py-1.5 text-sm text-[#8A2B2B] hover:bg-[#8A2B2B]/10 rounded transition-colors flex items-center gap-2"
                       >
                         <Users className="w-3.5 h-3.5" />
                         <span>Select all from {siteName} ({siteUserCount})</span>
@@ -366,7 +366,7 @@ export default function ParticipantSelector({
       </div>
 
       {selectedParticipants.length === 0 && required && (
-        <p className="text-xs text-[#D37E91]">At least one participant is required</p>
+        <p className="text-xs text-[#8A2B2B]">At least one participant is required</p>
       )}
     </div>
   );

@@ -218,14 +218,14 @@ export default function NotificationConfigSection({
       {/* Section Header with Toggle */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <Bell className="w-5 h-5 text-[#D37E91]" />
+          <Bell className="w-5 h-5 text-[#8A2B2B]" />
           <h2 className="text-lg font-semibold text-theme-primary">Notifications</h2>
         </div>
         <button
           type="button"
           onClick={handleToggle}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            enabled ? 'bg-[#D37E91]' : 'bg-gray-300 dark:bg-gray-600'
+            enabled ? 'bg-[#8A2B2B]' : 'bg-gray-300 dark:bg-gray-600'
           }`}
         >
           <span
@@ -252,7 +252,7 @@ export default function NotificationConfigSection({
               value={config?.subject || ''}
               onChange={(e) => updateConfig({ subject: e.target.value })}
               placeholder={DEFAULT_SUBJECT}
-              className="w-full p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+              className="w-full p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
             />
             <div className="flex flex-wrap gap-1 mt-1.5">
               {PLACEHOLDERS.map((p) => (
@@ -260,7 +260,7 @@ export default function NotificationConfigSection({
                   key={p.tag}
                   type="button"
                   onClick={() => insertPlaceholder(p.tag, subjectRef, 'subject')}
-                  className="text-xs px-2 py-0.5 rounded-full bg-[#D37E91]/10 text-[#D37E91] hover:bg-[#D37E91]/20 transition-colors"
+                  className="text-xs px-2 py-0.5 rounded-full bg-[#8A2B2B]/10 text-[#8A2B2B] hover:bg-[#8A2B2B]/20 transition-colors"
                 >
                   {p.tag}
                 </button>
@@ -279,7 +279,7 @@ export default function NotificationConfigSection({
               onChange={(e) => updateConfig({ message: e.target.value })}
               placeholder={DEFAULT_MESSAGE}
               rows={3}
-              className="w-full p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-none"
+              className="w-full p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B] resize-none"
             />
             <div className="flex flex-wrap gap-1 mt-1.5">
               {PLACEHOLDERS.map((p) => (
@@ -287,7 +287,7 @@ export default function NotificationConfigSection({
                   key={p.tag}
                   type="button"
                   onClick={() => insertPlaceholder(p.tag, messageRef, 'message')}
-                  className="text-xs px-2 py-0.5 rounded-full bg-[#D37E91]/10 text-[#D37E91] hover:bg-[#D37E91]/20 transition-colors"
+                  className="text-xs px-2 py-0.5 rounded-full bg-[#8A2B2B]/10 text-[#8A2B2B] hover:bg-[#8A2B2B]/20 transition-colors"
                 >
                   {p.tag}
                 </button>
@@ -359,8 +359,8 @@ export default function NotificationConfigSection({
                         onClick={() => addUserRecipient(user)}
                         className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-theme-hover transition-colors"
                       >
-                        <div className="w-7 h-7 rounded-full bg-[#D37E91]/15 flex items-center justify-center flex-shrink-0">
-                          <User className="w-3.5 h-3.5 text-[#D37E91]" />
+                        <div className="w-7 h-7 rounded-full bg-[#8A2B2B]/15 flex items-center justify-center flex-shrink-0">
+                          <User className="w-3.5 h-3.5 text-[#8A2B2B]" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm text-theme-primary truncate">
@@ -386,7 +386,7 @@ export default function NotificationConfigSection({
                   value={externalName}
                   onChange={(e) => setExternalName(e.target.value)}
                   placeholder="Name (optional)"
-                  className="w-1/3 p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                  className="w-1/3 p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 />
                 <input
                   type="email"
@@ -399,13 +399,13 @@ export default function NotificationConfigSection({
                     }
                   }}
                   placeholder="email@example.com"
-                  className="flex-1 p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                  className="flex-1 p-2 border border-theme rounded bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 />
                 <button
                   type="button"
                   onClick={addExternalRecipient}
                   disabled={!externalEmail.trim()}
-                  className="px-3 py-2 bg-[#D37E91] text-white rounded text-sm font-medium hover:bg-[#c06e81] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-2 bg-[#8A2B2B] text-white rounded text-sm font-medium hover:bg-[#c06e81] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>

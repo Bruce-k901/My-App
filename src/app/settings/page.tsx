@@ -36,7 +36,7 @@ function SettingsInner() {
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px
               ${activeTab === id
-                ? 'border-[#D37E91] text-[#D37E91]'
+                ? 'border-[#8A2B2B] text-[#8A2B2B]'
                 : 'border-transparent text-theme-tertiary/50 hover:text-theme-secondary dark:hover:text-theme-secondary hover:border-gray-300 dark:hover:border-white/20'
               }`}
           >

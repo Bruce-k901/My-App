@@ -455,7 +455,7 @@ export default function UsersTab() {
               }}
               className={`inline-flex items-center justify-center h-11 w-11 rounded-lg border transition-all duration-150 ease-in-out ${
                 viewArchived
-                  ? "border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow"
+                  ? "border-[#8A2B2B] text-[#8A2B2B] bg-transparent hover:bg-[#8A2B2B]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow"
                   : "border-orange-400 text-orange-400 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_8px_#fb923c]"
               }`}
               aria-label={viewArchived ? "Back to Users" : "View Archived"}
@@ -469,7 +469,7 @@ export default function UsersTab() {
             <Tooltip label="Add User" side="top">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-module-glow"
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#8A2B2B] text-[#8A2B2B] bg-transparent hover:bg-[#8A2B2B]/10 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-module-glow"
                 aria-label="Add User"
               >
                 <Plus className="h-5 w-5" />

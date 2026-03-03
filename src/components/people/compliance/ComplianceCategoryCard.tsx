@@ -34,7 +34,7 @@ export function ComplianceCategoryCard({
     <button
       onClick={onClick}
       className={`flex flex-col gap-2 rounded-xl p-4 text-left transition-all
-        ${active ? 'bg-teamly/10 dark:bg-teamly/10 ring-1 ring-teamly/30' : 'bg-theme-surface-elevated hover:bg-theme-hover'}
+        ${active ? 'bg-teamly-mid/[0.10] dark:bg-teamly-mid/[0.08] ring-1 ring-teamly-mid/40 border-l-3 border-l-teamly-mid' : 'bg-theme-surface-elevated hover:bg-theme-hover'}
         border border-theme`}
     >
       <div className="flex items-center justify-between">

@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
                 
                 // Find the PPM schedule record for this asset
                 const { data: ppmSchedule, error: ppmError } = await serviceClient
-                  .from('ppm_schedule')
+                  .from('ppm_schedules')
                   .select('id, frequency_months, next_service_date')
                   .eq('asset_id', assetId)
                   .order('next_service_date', { ascending: true })
@@ -265,7 +265,7 @@ export async function POST(request: NextRequest) {
 
                 // Update PPM schedule
                 const { error: updatePPMError } = await serviceClient
-                  .from('ppm_schedule')
+                  .from('ppm_schedules')
                   .update({
                     last_service_date: completedDate.toISOString().split('T')[0],
                     next_service_date: nextServiceDate.toISOString().split('T')[0],

@@ -35,22 +35,22 @@ function CourseCard({ course }: { course: Course }) {
   return (
     <Link
       href={course.href}
-      className="group relative flex flex-col rounded-2xl border border-theme bg-theme-surface overflow-hidden transition-all duration-300 hover:border-[#D37E91]/40 hover:shadow-[0_8px_40px_rgba(211,126,145,0.1)] hover:-translate-y-0.5"
+      className="group relative flex flex-col rounded-2xl border border-theme bg-theme-surface overflow-hidden transition-all duration-300 hover:border-[#8A2B2B]/40 hover:shadow-[0_8px_40px_rgba(138, 43, 43,0.1)] hover:-translate-y-0.5"
     >
       {/* Icon header */}
       <div className="relative h-24 bg-theme-surface-elevated flex items-center justify-center overflow-hidden border-b border-theme">
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-[#D37E91]/10">
-          <IconComponent className="h-6 w-6 text-[#D37E91]" />
+        <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-[#8A2B2B]/10">
+          <IconComponent className="h-6 w-6 text-[#8A2B2B]" />
         </div>
         {course.badge && (
-          <span className="absolute top-3 right-3 rounded-full bg-[#D37E91]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#D37E91]">
+          <span className="absolute top-3 right-3 rounded-full bg-[#8A2B2B]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#8A2B2B]">
             {course.badge}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-5 pt-4">
-        <h3 className="text-[15px] font-semibold text-[rgb(var(--text-primary))] group-hover:text-[#D37E91] transition-colors leading-snug mb-1.5">
+        <h3 className="text-[15px] font-semibold text-[rgb(var(--text-primary))] group-hover:text-[#8A2B2B] transition-colors leading-snug mb-1.5">
           {course.title}
         </h3>
 
@@ -67,7 +67,7 @@ function CourseCard({ course }: { course: Course }) {
             <Clock className="h-3.5 w-3.5" />
             {course.duration}
           </div>
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#D37E91] group-hover:gap-2 transition-all">
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-[#8A2B2B] group-hover:gap-2 transition-all">
             Start Course
             <ChevronRight className="h-3.5 w-3.5" />
           </span>
@@ -126,7 +126,7 @@ export default function CoursesPageClient() {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#D37E91] text-white shadow-sm'
+                    ? 'bg-[#8A2B2B] text-white shadow-sm'
                     : 'bg-theme-muted text-[rgb(var(--text-secondary))] hover:bg-theme-hover'
                 }`}
               >
@@ -150,7 +150,7 @@ export default function CoursesPageClient() {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-theme bg-theme-surface py-2 pl-9 pr-4 text-sm text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:border-[#D37E91] focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
+            className="w-full rounded-xl border border-theme bg-theme-surface py-2 pl-9 pr-4 text-sm text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:border-[#8A2B2B] focus:outline-none focus:ring-1 focus:ring-[#8A2B2B]"
           />
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function CoursesPageClient() {
           </p>
           <button
             onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-            className="mt-2 text-xs text-[#D37E91] hover:underline"
+            className="mt-2 text-xs text-[#8A2B2B] hover:underline"
           >
             Clear filters
           </button>

@@ -133,7 +133,7 @@ export function QuickAccess() {
             <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center relative", action.bg)}>
               <action.icon size={24} className={action.color} />
               {action.id === 'messages' && unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center bg-[#D37E91] text-white text-[11px] font-bold rounded-full shadow-sm">
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center bg-[#8A2B2B] text-white text-[11px] font-bold rounded-full shadow-sm">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}

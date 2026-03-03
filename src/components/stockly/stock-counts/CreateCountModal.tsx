@@ -500,7 +500,7 @@ export default function CreateCountModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Weekly Count - W1 Jan 2026"
-                  className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary w-full"
+                  className="bg-white dark:bg-gray-900 border-theme focus:border-module-fg-mid dark:focus:border-module-fg-mid focus:ring-module-fg-mid/50 dark:focus:ring-module-fg-mid text-theme-primary w-full"
                 />
               </div>
 
@@ -511,7 +511,7 @@ export default function CreateCountModal({
                   type="date"
                   value={countDate}
                   onChange={(e) => setCountDate(e.target.value)}
-                  className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary w-full"
+                  className="bg-white dark:bg-gray-900 border-theme focus:border-module-fg-mid dark:focus:border-module-fg-mid focus:ring-module-fg-mid/50 dark:focus:ring-module-fg-mid text-theme-primary w-full"
                 />
               </div>
             </div>
@@ -528,7 +528,7 @@ export default function CreateCountModal({
                     id="site"
                     value={selectedSiteId || ''}
                     onChange={(e) => setSelectedSiteId(e.target.value)}
-                    className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 appearance-none cursor-pointer"
+                    className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg-mid/50 dark:focus:ring-module-fg-mid appearance-none cursor-pointer"
                   >
                     <option value="">Select site...</option>
                     {sites.map(site => (
@@ -559,7 +559,7 @@ export default function CreateCountModal({
                     onClick={() => toggleLibrary(library.type)}
                     className={`flex items-center gap-4 p-5 border rounded-lg cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-600/10 shadow-sm'
+                        ? 'border-module-fg-mid dark:border-module-fg-mid bg-module-fg-mid/[0.06] dark:bg-module-fg-mid/10 shadow-sm'
                         : 'border-theme hover:border-gray-300 dark:hover:border-white/[0.1] bg-theme-surface hover:shadow-sm'
                     }`}
                   >
@@ -597,7 +597,7 @@ export default function CreateCountModal({
             </div>
 
             {selectedLibraries.length > 0 && (
-              <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg p-4">
+              <div className="bg-module-fg-mid/[0.06] dark:bg-module-fg-mid/10 border border-module-fg-mid/30 rounded-lg p-4">
                 <p className="text-module-fg font-medium">
                   Total: {getTotalItems()} items will be loaded for counting
                 </p>
@@ -615,7 +615,7 @@ export default function CreateCountModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes about this count..."
-                className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-theme-primary resize-none w-full"
+                className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-module-fg-mid/50 dark:focus-visible:ring-module-fg-mid focus-visible:border-module-fg-mid dark:focus-visible:border-module-fg-mid text-theme-primary resize-none w-full"
                 rows={3}
               />
             </div>
@@ -642,7 +642,7 @@ export default function CreateCountModal({
             <Button
               onClick={handleCreate}
               disabled={loading || selectedLibraries.length === 0 || !selectedSiteId}
-              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 min-w-[180px] text-white"
+              className="bg-stockly-mid hover:bg-stockly-mid/90 dark:bg-stockly-mid dark:hover:bg-stockly-mid/90 min-w-[180px] text-white"
             >
               {loading ? (
                 <>

@@ -25,7 +25,7 @@ export default function Checkbox({ checked, onCheckedChange, disabled, className
         }}
         className={cn(
           "inline-flex items-center justify-center h-5 w-5 rounded-sm border",
-          checked ? "bg-[#D37E91]/60 border-[#D37E91]" : "bg-gray-200 dark:bg-white/5 border-gray-300 dark:border-white/20",
+          checked ? "bg-[#8A2B2B]/60 border-[#8A2B2B]" : "bg-gray-200 dark:bg-white/5 border-gray-300 dark:border-white/20",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >

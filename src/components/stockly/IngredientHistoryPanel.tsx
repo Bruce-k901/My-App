@@ -46,7 +46,7 @@ const MOVEMENT_TYPE_CONFIG: Record<string, { label: string; icon: React.ElementT
   production_in: { label: 'Produced', icon: Package, color: 'text-teal-500' },
   pos_drawdown: { label: 'Sale', icon: ShoppingCart, color: 'text-cyan-500' },
   internal_sale: { label: 'Internal Sale', icon: ShoppingCart, color: 'text-indigo-500' },
-  staff_sale: { label: 'Staff Sale', icon: ShoppingCart, color: 'text-[#D37E91]' },
+  staff_sale: { label: 'Staff Sale', icon: ShoppingCart, color: 'text-[#8A2B2B]' },
   return_supplier: { label: 'Return', icon: ArrowRightLeft, color: 'text-theme-tertiary' },
 };
 

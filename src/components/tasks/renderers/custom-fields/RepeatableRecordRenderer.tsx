@@ -93,7 +93,7 @@ export function RepeatableRecordRenderer({
         type="button"
         onClick={onAddRecord}
         disabled={disabled}
-        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[#D37E91]/40 rounded-lg text-sm font-medium text-[#D37E91] hover:bg-[#D37E91]/5 hover:border-[#D37E91] transition-colors disabled:opacity-50"
+        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[#8A2B2B]/40 rounded-lg text-sm font-medium text-[#8A2B2B] hover:bg-[#8A2B2B]/5 hover:border-[#8A2B2B] transition-colors disabled:opacity-50"
       >
         <Plus className="w-4 h-4" />
         Add record

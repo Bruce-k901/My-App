@@ -77,17 +77,17 @@ export function DayColumn({
     <div 
       ref={setNodeRef}
       className={`flex flex-col border-r border-gray-200 dark:border-neutral-800 last:border-r-0 transition-colors ${
-        isOver ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10' : ''
-      } ${isToday ? 'bg-[#D37E91]/10/50 dark:bg-[#D37E91]/5' : ''} ${isWeekend ? 'bg-gray-50 dark:bg-neutral-900/50' : ''}`}
+        isOver ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/10' : ''
+      } ${isToday ? 'bg-[#8A2B2B]/10/50 dark:bg-[#8A2B2B]/5' : ''} ${isWeekend ? 'bg-gray-50 dark:bg-neutral-900/50' : ''}`}
     >
       {/* Day Header - Compact */}
-      <div className={`p-1.5 border-b border-gray-200 dark:border-neutral-800 ${isToday ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10' : ''}`}>
+      <div className={`p-1.5 border-b border-gray-200 dark:border-neutral-800 ${isToday ? 'bg-[#8A2B2B]/10 dark:bg-[#8A2B2B]/10' : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1">
-            <span className={`text-xs font-medium ${isToday ? 'text-[#D37E91]' : 'text-theme-tertiary'}`}>
+            <span className={`text-xs font-medium ${isToday ? 'text-[#8A2B2B]' : 'text-theme-tertiary'}`}>
               {dayName}
             </span>
-            <span className={`text-lg font-bold ${isToday ? 'text-[#D37E91]' : 'text-theme-primary'}`}>
+            <span className={`text-lg font-bold ${isToday ? 'text-[#8A2B2B]' : 'text-theme-primary'}`}>
               {dayNum}
             </span>
           </div>

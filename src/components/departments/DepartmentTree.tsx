@@ -143,7 +143,7 @@ export default function DepartmentTree({
           {hasChildren && (
             <button
               onClick={() => toggleExpand(node.department.id)}
-              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#0B0D13] border border-white/[0.1] hover:border-[#D37E91]/50 text-theme-tertiary hover:text-[#D37E91] transition-colors shadow-lg"
+              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#101214] border border-white/[0.1] hover:border-[#8A2B2B]/50 text-theme-tertiary hover:text-[#8A2B2B] transition-colors shadow-lg"
               style={{
                 left: `${indent + 16}px`,
                 top: '1.5rem',

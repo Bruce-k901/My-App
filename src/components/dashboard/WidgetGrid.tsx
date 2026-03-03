@@ -31,7 +31,7 @@ interface WidgetGridProps {
 
 function WidgetErrorFallback({ error }: { error: Error }) {
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-4">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg-mid/[0.15] rounded-lg p-4">
       <div className="text-teamly text-xs font-medium mb-1">Widget Error</div>
       <div className="text-[rgb(var(--text-disabled))] text-xs">{error.message}</div>
     </div>
@@ -128,7 +128,7 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
 
   if (widgetsToRender.length === 0) {
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-8 text-center">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg-mid/[0.15] rounded-lg p-8 text-center">
         <div className="text-[rgb(var(--text-disabled))] text-sm">No widgets to display</div>
         <div className="text-[rgb(var(--text-disabled))]/60 text-xs mt-1">
           Enable modules or customize your dashboard settings

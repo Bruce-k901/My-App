@@ -216,7 +216,7 @@ export function OffboardingWizardModal({
         </div>
 
         {/* Step indicator */}
-        <div className="px-6 py-3 border-b border-neutral-200 dark:border-white/[0.08] shrink-0">
+        <div className="px-6 py-3 border-b border-teamly-mid/25 dark:border-teamly-mid/20 shrink-0">
           <div className="flex items-center gap-1">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex items-center">
@@ -225,7 +225,7 @@ export function OffboardingWizardModal({
                   disabled={i > currentStep}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                     i === currentStep
-                      ? 'bg-teamly-dark/10 dark:bg-teamly/20 dark:text-teamly text-teamly-dark'
+                      ? 'bg-teamly-mid/[0.10] dark:bg-teamly-mid/[0.08] dark:text-teamly text-teamly-dark border border-teamly-mid/30'
                       : i < currentStep
                         ? 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer'
                         : 'text-neutral-400 dark:text-neutral-600 cursor-not-allowed'
@@ -247,7 +247,7 @@ export function OffboardingWizardModal({
                 {i < STEPS.length - 1 && (
                   <div
                     className={`w-6 h-px mx-1 ${
-                      i < currentStep ? 'bg-teamly-dark dark:bg-teamly' : 'bg-neutral-300 dark:bg-neutral-700'
+                      i < currentStep ? 'bg-teamly-dark dark:bg-teamly' : i === currentStep ? 'bg-teamly-mid/40' : 'bg-neutral-300 dark:bg-neutral-700'
                     }`}
                   />
                 )}

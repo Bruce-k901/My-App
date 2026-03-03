@@ -161,7 +161,17 @@
       "Bash(curl.exe:*)",
       "Bash(do grep -q \"CREATE TABLE.*global_documents\" \"$file\")",
       "Bash(set \"SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4\")",
-      "Bash(SUPABASE_SERVICE_ROLE_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4\" node:*)"
+      "Bash(SUPABASE_SERVICE_ROLE_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4\" node:*)",
+      "Bash(employee has no auth_user_id\".\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"c:/Users/bruce/my-app\" diff --name-only HEAD)",
+      "Bash(git -C \"c:/Users/bruce/my-app\" status)",
+      "Bash(git -C \"c:/Users/bruce/my-app\" status --porcelain)",
+      "Bash(git diff:*)",
+      "Bash(cd:*)",
+      "Bash(git -C c:Usersbrucemy-app status)",
+      "Bash(/tmp/fix_remaining.ps1 << 'PSEOF'\n# Fix rgba\\(211... pattern - use Get-ChildItem normally but access files with LiteralPath\n$files = Get-ChildItem -Path 'c:\\\\Users\\\\bruce\\\\my-app\\\\src' -Recurse -Include '*.ts','*.tsx','*.css','*.html' -File\nforeach \\($f in $files\\) {\n    $content = Get-Content -LiteralPath $f.FullName -Raw\n    if \\($content -match 'rgba\\\\\\(211'\\) {\n        $newContent = $content -replace 'rgba\\\\\\(211,\\\\s*126,\\\\s*145,','rgba\\(138, 43, 43,'\n        Set-Content -LiteralPath $f.FullName -Value $newContent -NoNewline\n        Write-Host \"Fixed rgba: $\\($f.FullName\\)\"\n    }\n    if \\($content -match '#[Bb]0607[Aa]'\\) {\n        $newContent2 = if \\($newContent\\) { $newContent } else { $content }\n        $newContent2 = $newContent2 -replace '#[Bb]0607[Aa]','#6E2222'\n        Set-Content -LiteralPath $f.FullName -Value $newContent2 -NoNewline\n        Write-Host \"Fixed b0607a: $\\($f.FullName\\)\"\n    }\n    if \\($content -match '#[Ee]8[Aa]0[Bb]0'\\) {\n        $newContent3 = if \\($newContent2\\) { $newContent2 } elseif \\($newContent\\) { $newContent } else { $content }\n        $newContent3 = $newContent3 -replace '#[Ee]8[Aa]0[Bb]0','#B85555'\n        Set-Content -LiteralPath $f.FullName -Value $newContent3 -NoNewline\n        Write-Host \"Fixed e8a0b0: $\\($f.FullName\\)\"\n    }\n    $newContent = $null\n    $newContent2 = $null\n    $newContent3 = $null\n}\nPSEOF)",
+      "Bash(/tmp/replace-color.ps1:*)",
+      "Bash(/tmp/verify-color.ps1 << 'PSEOF'\n$found = $false\nGet-ChildItem -Path 'c:\\\\Users\\\\bruce\\\\my-app\\\\src' -Recurse -Include '*.tsx','*.ts','*.css','*.js','*.jsx' | ForEach-Object {\n  $content = Get-Content -LiteralPath $_.FullName -Raw -ErrorAction SilentlyContinue\n  if \\($content -and $content -match '#[Dd]37[Ee]91'\\) {\n    $found = $true\n    $count = \\([regex]::Matches\\($content, '#[Dd]37[Ee]91'\\)\\).Count\n    Write-Host \"FOUND $count instances in: $\\($_.FullName\\)\"\n  }\n}\nif \\(-not $found\\) {\n  Write-Host \"SUCCESS: No remaining instances of #D37E91 found in src/\"\n}\nPSEOF)"
     ]
   }
 }

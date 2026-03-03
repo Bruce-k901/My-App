@@ -46,7 +46,7 @@ const SheetContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-[60] gap-4 bg-white dark:bg-[#0B0D13] p-0 shadow-lg",
+        "fixed z-[60] gap-4 bg-white dark:bg-[#101214] p-0 shadow-lg",
         "transition-all duration-500 ease-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         side === "right" && "inset-y-0 right-0 h-full border-l border-theme data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right rounded-none sm:rounded-l-xl pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]",
@@ -59,7 +59,7 @@ const SheetContent = React.forwardRef<
     >
       {children}
       {!hideClose && (
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#0B0D13] disabled:pointer-events-none">
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#101214] disabled:pointer-events-none">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

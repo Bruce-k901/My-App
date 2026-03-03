@@ -133,7 +133,7 @@ export default function ConfirmCoursePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B0D13]">
+      <div className="flex min-h-screen items-center justify-center bg-[#101214]">
         <div className="flex items-center gap-3 text-theme-secondary">
           <Loader2 className="h-5 w-5 animate-spin" />
           Loading assignment details...
@@ -144,11 +144,11 @@ export default function ConfirmCoursePage() {
 
   if (!assignment || !course) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B0D13]">
+      <div className="flex min-h-screen items-center justify-center bg-[#101214]">
         <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-center">
           <h1 className="text-xl font-semibold text-red-300 mb-2">Assignment Not Found</h1>
           <p className="text-red-200/80 mb-4">This assignment could not be found or you do not have access.</p>
-          <Link href="/dashboard" className="text-[#D37E91] hover:underline">
+          <Link href="/dashboard" className="text-[#8A2B2B] hover:underline">
             Return to Dashboard
           </Link>
         </div>
@@ -161,7 +161,7 @@ export default function ConfirmCoursePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] py-12 px-4">
+    <div className="min-h-screen bg-[#101214] py-12 px-4">
       <div className="mx-auto max-w-lg">
         <div className="mb-6">
           <Link 

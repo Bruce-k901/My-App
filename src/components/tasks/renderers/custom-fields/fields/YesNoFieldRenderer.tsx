@@ -138,7 +138,7 @@ export function YesNoFieldRenderer({
                 disabled={disabled}
                 placeholder="Document what action was taken..."
                 rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-none disabled:opacity-50"
+                className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B] resize-none disabled:opacity-50"
               />
             </div>
           )}
@@ -166,7 +166,7 @@ export function YesNoFieldRenderer({
                         checked={isSelected}
                         onChange={() => toggleManager(manager.id)}
                         disabled={disabled}
-                        className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                        className="w-3.5 h-3.5 rounded border-gray-300 accent-[#8A2B2B]"
                       />
                       <span className="text-sm text-theme-primary">{manager.full_name}</span>
                       <span className="text-xs text-theme-tertiary ml-auto">{manager.email}</span>

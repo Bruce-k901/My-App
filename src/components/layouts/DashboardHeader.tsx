@@ -224,7 +224,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           <img
             src={companyLogo}
             alt="Logo"
-            className="h-7 sm:h-9 md:h-10 w-auto max-w-full transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(211,126,145,0.45)] hover:opacity-100 object-contain"
+            className="h-7 sm:h-9 md:h-10 w-auto max-w-full transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(138, 43, 43,0.45)] hover:opacity-100 object-contain"
           />
         </Link>
       </div>
@@ -234,9 +234,9 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/todays_tasks"
-          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-gradient-to-r from-[#D37E91]/25 to-[#544349]/25 border border-[#D37E91]/30 text-white hover:from-[#D37E91]/35 hover:to-[#544349]/35 transition-all shadow-[0_0_10px_rgba(211,126,145,0.2)] hover:shadow-module-glow h-9 md:h-10"
+          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-gradient-to-r from-[#8A2B2B]/25 to-[#002B36]/25 border border-[#8A2B2B]/30 text-white hover:from-[#8A2B2B]/35 hover:to-[#002B36]/35 transition-all shadow-[0_0_10px_rgba(138, 43, 43,0.2)] hover:shadow-module-glow h-9 md:h-10"
         >
-          <ClipboardCheck className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
+          <ClipboardCheck className="w-4 h-4 md:w-5 md:h-5 text-[#8A2B2B] flex-shrink-0" />
           <span className="font-semibold text-xs md:text-sm whitespace-nowrap hidden md:inline">Today's Tasks</span>
         </Link>
 
@@ -253,11 +253,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             }}
             className={
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
-                ? 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-[#D37E91]/30 text-theme-primary hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
+                ? 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-[#8A2B2B]/30 text-theme-primary hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
                 : 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-secondary hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
             }
           >
-            <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
+            <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-[#8A2B2B] flex-shrink-0" />
             <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden md:inline">Incidents</span>
           </div>
 
@@ -339,9 +339,9 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
                       e.stopPropagation();
                     }}
                   >
-                  <div className="bg-[#151210] border border-[#D37E91]/20 border-t-2 border-t-[#D37E91] rounded-xl backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.6)] min-w-[240px] py-3" style={{ backgroundColor: 'rgba(21, 18, 16, 0.98)' }}>
+                  <div className="bg-[#151210] border border-[#8A2B2B]/20 border-t-2 border-t-[#8A2B2B] rounded-xl backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.6)] min-w-[240px] py-3" style={{ backgroundColor: 'rgba(21, 18, 16, 0.98)' }}>
                     {/* Section Title */}
-                    <div className="px-4 py-2 text-sm font-semibold text-[#D37E91] border-b border-white/[0.1] mb-2">
+                    <div className="px-4 py-2 text-sm font-semibold text-[#8A2B2B] border-b border-white/[0.1] mb-2">
                       Incidents
                     </div>
 
@@ -374,12 +374,12 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
                             }}
                             className={
                               isActive
-                                ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-[#D37E91]/25 text-[#D37E91] font-medium"
+                                ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-[#8A2B2B]/25 text-[#8A2B2B] font-medium"
                                 : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                             }
                           >
                             <div className="flex items-center gap-3">
-                              <Icon size={18} className={isActive ? "text-[#D37E91]" : "text-theme-tertiary"} />
+                              <Icon size={18} className={isActive ? "text-[#8A2B2B]" : "text-theme-tertiary"} />
                               {item.label}
                             </div>
                           </Link>
@@ -425,10 +425,10 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           onClick={() => setMessagingOpen(true)}
           className="relative flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-secondary hover:text-white hover:bg-white/[0.12] transition-all h-9 md:h-10"
         >
-          <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
+          <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-[#8A2B2B] flex-shrink-0" />
           <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden md:inline">Messages</span>
           {unreadMessageCount > 0 && (
-            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-[#D37E91] text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-[#8A2B2B] text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
               {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
             </span>
           )}
@@ -437,7 +437,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Ask Opsly Button */}
         <button
           onClick={() => setAiAssistantOpen(true)}
-          className="flex items-center justify-center px-3 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-9 md:h-10"
+          className="flex items-center justify-center px-3 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#8A2B2B]/10 border border-[#8A2B2B]/50 text-[#8A2B2B] hover:bg-[#8A2B2B]/20 hover:shadow-module-glow transition-all h-9 md:h-10"
           aria-label="Ask Opsly"
         >
           <span className="font-medium text-xs md:text-sm whitespace-nowrap">Ask Opsly</span>
@@ -448,7 +448,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
 
         {/* Clock - Hidden on mobile and tablet */}
         <div className="hidden lg:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10" suppressHydrationWarning>
-          <Clock className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
+          <Clock className="w-4 h-4 md:w-5 md:h-5 text-[#8A2B2B] flex-shrink-0" />
           <div className="font-mono text-xs md:text-sm text-theme-primary whitespace-nowrap" suppressHydrationWarning>
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}
           </div>
@@ -461,14 +461,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             onClick={() => setIsBurgerMenuOpen(!isBurgerMenuOpen)}
             className={
               isBurgerMenuOpen
-                ? "relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#D37E91]/25 border border-[#D37E91]/30 text-[#D37E91] transition-all duration-200 hover:text-[#D37E91] hover:bg-[#D37E91]/25"
+                ? "relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#8A2B2B]/25 border border-[#8A2B2B]/30 text-[#8A2B2B] transition-all duration-200 hover:text-[#8A2B2B] hover:bg-[#8A2B2B]/25"
                 : "relative flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-tertiary transition-all duration-200 hover:text-white hover:bg-white/[0.12]"
             }
             aria-label="Menu"
           >
             <Menu className="w-5 h-5" />
             {unreadTicketCount > 0 && (
-              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-[#D37E91] text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
+              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-[#8A2B2B] text-white text-[10px] font-bold rounded-full min-w-[18px] text-center">
                 {unreadTicketCount > 99 ? '99+' : unreadTicketCount}
               </span>
             )}

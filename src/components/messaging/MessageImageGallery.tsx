@@ -99,7 +99,7 @@ export default function MessageImageGallery({ images }: MessageImageGalleryProps
             download={selectedImageData.file_name || 'image'}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute bottom-4 right-4 px-4 py-2 bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="absolute bottom-4 right-4 px-4 py-2 bg-transparent text-[#8A2B2B] border border-[#8A2B2B] rounded-lg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
             onClick={(e) => {
               e.stopPropagation();
               handleDownload(selectedImage, selectedImageData.file_name || 'image');

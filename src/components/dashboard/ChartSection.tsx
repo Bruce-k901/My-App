@@ -21,7 +21,7 @@ interface ChartSectionProps {
 
 function ChartErrorFallback({ error }: { error: Error }) {
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-4 min-h-[280px] flex items-center justify-center">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg-mid/[0.15] rounded-lg p-4 min-h-[280px] flex items-center justify-center">
       <div>
         <div className="text-teamly text-xs font-medium mb-1">Chart Error</div>
         <div className="text-[rgb(var(--text-disabled))] text-xs">{error.message}</div>

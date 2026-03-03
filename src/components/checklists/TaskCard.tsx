@@ -148,7 +148,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true, onDismi
     if (timingStatus === 'pending') return 'border-yellow-500/50 dark:border-yellow-500/50 bg-yellow-500/10 dark:bg-yellow-500/10'
     
     if (isCritical) return 'border-orange-500/50 dark:border-orange-500/50 bg-orange-500/10 dark:bg-orange-500/10'
-    return 'border-[rgb(var(--border))] dark:border-theme hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'
+    return 'border-[rgb(var(--border))] dark:border-theme hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50'
   }
 
   const getStatusIcon = () => {
@@ -203,7 +203,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true, onDismi
   return (
     <div
       onClick={handleCardClick}
-      className={`bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 backdrop-blur-sm border border-[rgb(var(--border))] dark:border-theme rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative ${getStatusColor()}`}
+      className={`bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 backdrop-blur-sm border border-[rgb(var(--border))] dark:border-theme rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative border-l-3 border-l-checkly-mid/50 dark:border-l-checkly-mid/40 ${getStatusColor()}`}
     >
       <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
         {showDetailLink && (

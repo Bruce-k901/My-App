@@ -19,42 +19,60 @@
   --border: 255 255 255 / 0.06;
   --border-hover: 255 255 255 / 0.12;
 
-  /* Module colours — single source of truth
+  /* Module colours — light variants (for dark theme accents)
      Change a module colour here and it updates everywhere. */
-  --module-checkly: 241 225 148; /* #F1E194 */
-  --module-stockly: 120 154 153; /* #789A99 */
-  --module-teamly: 211 126 145; /* #D37E91 */
-  --module-planly: 172 200 162; /* #ACC8A2 */
-  --module-assetly: 243 231 217; /* #F3E7D9 */
-  --module-msgly: 203 221 233; /* #CBDDE9 */
+  --module-checkly: 253 247 239; /* #FDF7EF Champagne Olive light */
+  --module-stockly: 205 238 214; /* #CDEED6 Velvet Teal light */
+  --module-teamly: 242 201 201; /* #F2C9C9 Crimson Smoke light */
+  --module-planly: 240 244 237; /* #F0F4ED Jade Silk light */
+  --module-assetly: 167 255 235; /* #A7FFEB Royal Emerald light */
+  --module-msgly: 167 168 178; /* #A7A8B2 Platinum Dusk light */
+
+  /* Module mid variants — for depth, highlights, borders */
+  --module-checkly-mid: 212 198 173; /* #D4C6AD Champagne Olive mid */
+  --module-stockly-mid: 79 189 186; /* #4FBDBA Velvet Teal mid */
+  --module-teamly-mid: 138 43 43; /* #8A2B2B Crimson Smoke mid */
+  --module-planly-mid: 191 216 193; /* #BFD8C1 Jade Silk mid */
+  --module-assetly-mid: 20 101 91; /* #14655B Royal Emerald mid */
+  --module-msgly-mid: 90 92 106; /* #5A5C6A Platinum Dusk mid */
 
   /* Module dark variants — for text on light backgrounds */
-  --module-checkly-dark: 91 14 20; /* #5B0E14 */
-  --module-stockly-dark: 78 125 124; /* #4e7d7c */
-  --module-teamly-dark: 176 96 122; /* #b0607a */
-  --module-planly-dark: 26 37 23; /* #1A2517 */
-  --module-assetly-dark: 84 67 73; /* #544349 */
-  --module-msgly-dark: 40 114 161; /* #2872A1 */
-  --module-forecastly: 124 58 237; /* #7C3AED */
+  --module-checkly-dark: 126 128 82; /* #7E8052 Champagne Olive dark */
+  --module-stockly-dark: 27 66 66; /* #1B4242 Velvet Teal dark */
+  --module-teamly-dark: 59 10 10; /* #3B0A0A Crimson Smoke dark */
+  --module-planly-dark: 78 126 93; /* #4E7E5D Jade Silk dark */
+  --module-assetly-dark: 0 43 54; /* #002B36 Royal Emerald dark */
+  --module-msgly-dark: 26 28 34; /* #1A1C22 Platinum Dusk dark */
+
+  /* Forecastly — Storm Marble */
+  --module-forecastly: 228 233 236; /* #E4E9EC light */
+  --module-forecastly-mid: 123 143 161; /* #7B8FA1 mid */
+  --module-forecastly-dark: 42 46 53; /* #2A2E35 dark */
+
+  /* UI neutral — Graphite Chrome */
+  --ui-chrome: 189 189 189; /* #BDBDBD light */
+  --ui-chrome-mid: 88 88 88; /* #585858 mid */
+  --ui-chrome-dark: 44 44 44; /* #2C2C2C dark */
 
   /* Sidebar tints — dark theme (colour-shifted dark backgrounds) */
-  --sidebar-checkly: 18 20 14; /* #12140e warm olive-black */
-  --sidebar-stockly: 13 20 20; /* #0d1414 cool teal-black */
-  --sidebar-teamly: 20 16 14; /* #14100e warm rose-black */
-  --sidebar-planly: 14 18 13; /* #0e120d green-black */
-  --sidebar-assetly: 19 17 16; /* #131110 warm brown-black */
-  --sidebar-msgly: 13 17 20; /* #0d1114 steel-black */
+  --sidebar-checkly: 15 15 12; /* olive-tinted near-black */
+  --sidebar-stockly: 10 16 16; /* teal-tinted near-black */
+  --sidebar-teamly: 16 11 11; /* crimson-tinted near-black */
+  --sidebar-planly: 13 17 14; /* jade-tinted near-black */
+  --sidebar-assetly: 10 14 14; /* emerald-tinted near-black */
+  --sidebar-msgly: 13 13 15; /* slate-tinted near-black */
 
   /* Sidebar tints — light theme */
-  --sidebar-checkly-light: 248 241 232; /* #f8f1e8 warm cream */
-  --sidebar-stockly-light: 237 243 243; /* #edf3f3 cool mint */
-  --sidebar-teamly-light: 246 239 241; /* #f6eff1 soft rose */
-  --sidebar-planly-light: 239 243 238; /* #eff3ee sage mist */
-  --sidebar-assetly-light: 245 242 239; /* #f5f2ef warm linen */
-  --sidebar-msgly-light: 238 242 245; /* #eef2f5 ice blue */
+  --sidebar-checkly-light: 252 250 245; /* warm cream */
+  --sidebar-stockly-light: 243 251 245; /* cool mint */
+  --sidebar-teamly-light: 250 243 243; /* soft rose */
+  --sidebar-planly-light: 246 249 245; /* sage mist */
+  --sidebar-assetly-light: 240 252 249; /* emerald mist */
+  --sidebar-msgly-light: 244 244 246; /* pewter mist */
 
   /* Active module defaults (overridden by .module-* class on layout wrapper) */
   --module-fg: var(--module-checkly);
+  --module-fg-mid: var(--module-checkly-mid);
   --module-bg-tint: var(--sidebar-checkly);
 
   /* Theme background tokens — CSS vars so hover:/focus: Tailwind variants work in both themes */
@@ -74,51 +92,63 @@
 /* Apply .module-{name} to a layout wrapper — children use text-module-fg, bg-module-fg/[0.04], etc. */
 .module-checkly {
   --module-fg: var(--module-checkly);
+  --module-fg-mid: var(--module-checkly-mid);
   --module-bg-tint: var(--sidebar-checkly);
 }
 .module-stockly {
   --module-fg: var(--module-stockly);
+  --module-fg-mid: var(--module-stockly-mid);
   --module-bg-tint: var(--sidebar-stockly);
 }
 .module-teamly {
   --module-fg: var(--module-teamly);
+  --module-fg-mid: var(--module-teamly-mid);
   --module-bg-tint: var(--sidebar-teamly);
 }
 .module-planly {
   --module-fg: var(--module-planly);
+  --module-fg-mid: var(--module-planly-mid);
   --module-bg-tint: var(--sidebar-planly);
 }
 .module-assetly {
   --module-fg: var(--module-assetly);
+  --module-fg-mid: var(--module-assetly-mid);
   --module-bg-tint: var(--sidebar-assetly);
 }
 .module-msgly {
   --module-fg: var(--module-msgly);
+  --module-fg-mid: var(--module-msgly-mid);
   --module-bg-tint: var(--sidebar-msgly);
 }
 
 .light .module-checkly {
   --module-fg: var(--module-checkly-dark);
+  --module-fg-mid: var(--module-checkly-mid);
   --module-bg-tint: var(--sidebar-checkly-light);
 }
 .light .module-stockly {
   --module-fg: var(--module-stockly-dark);
+  --module-fg-mid: var(--module-stockly-mid);
   --module-bg-tint: var(--sidebar-stockly-light);
 }
 .light .module-teamly {
   --module-fg: var(--module-teamly-dark);
+  --module-fg-mid: var(--module-teamly-mid);
   --module-bg-tint: var(--sidebar-teamly-light);
 }
 .light .module-planly {
   --module-fg: var(--module-planly-dark);
+  --module-fg-mid: var(--module-planly-mid);
   --module-bg-tint: var(--sidebar-planly-light);
 }
 .light .module-assetly {
   --module-fg: var(--module-assetly-dark);
+  --module-fg-mid: var(--module-assetly-mid);
   --module-bg-tint: var(--sidebar-assetly-light);
 }
 .light .module-msgly {
   --module-fg: var(--module-msgly-dark);
+  --module-fg-mid: var(--module-msgly-mid);
   --module-bg-tint: var(--sidebar-msgly-light);
 }
 
@@ -432,8 +462,8 @@ html.light select {
 
 select:focus {
   outline: none;
-  border-color: #d37e91;
-  box-shadow: 0 0 0 2px rgba(211, 126, 145, 0.5);
+  border-color: #8a2b2b;
+  box-shadow: 0 0 0 2px rgba(138, 43, 43, 0.5);
 }
 
 select:disabled {
@@ -450,7 +480,7 @@ select option {
 }
 
 .dark select option {
-  background-color: #0b0d13 !important;
+  background-color: #101214 !important;
   color: white !important;
 }
 
@@ -463,7 +493,7 @@ html.light select option {
 /* Firefox specific option styling */
 @-moz-document url-prefix() {
   .dark select option {
-    background-color: #0b0d13;
+    background-color: #101214;
     color: white;
   }
   html.light select option {
@@ -485,7 +515,7 @@ html.light select option {
   -webkit-transform: translateZ(0);
   will-change: transform;
   /* Ensure background is opaque */
-  background-color: #0b0d13 !important;
+  background-color: #101214 !important;
   /* Prevent header from being scrollable */
   width: 100%;
 }
@@ -603,7 +633,7 @@ html.light select option {
 
 /* Custom brand glow utility */
 .hover\:shadow-magenta-glow:hover {
-  box-shadow: 0 0 10px 2px rgba(211, 126, 145, 0.5);
+  box-shadow: 0 0 10px 2px rgba(138, 43, 43, 0.5);
 }
 
 /* react-datepicker styles will be imported via component */
@@ -665,7 +695,7 @@ html.light select option {
 }
 
 .regulation-badge {
-  background: #544349;
+  background: #002b36;
   color: #ffffff;
 }
 
@@ -682,7 +712,7 @@ html.light select option {
 }
 
 .deploy-button {
-  background: #d37e91;
+  background: #8a2b2b;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
@@ -694,8 +724,8 @@ html.light select option {
 }
 
 .deploy-button:hover {
-  background: #b0607a;
-  box-shadow: 0 0 12px rgba(211, 126, 145, 0.3);
+  background: #6e2222;
+  box-shadow: 0 0 12px rgba(138, 43, 43, 0.3);
 }
 
 .templates-grid {
@@ -747,7 +777,7 @@ html.light select option {
 
 body {
   @apply font-sans;
-  font-family: var(--font-poppins), "Poppins", "Century Gothic", system-ui, sans-serif;
+  font-family: var(--font-ubuntu), "Ubuntu", "Century Gothic", system-ui, sans-serif;
   color: rgb(var(--text-primary));
   background: rgb(var(--background));
   transition:
@@ -757,10 +787,10 @@ body {
 
 /* Dark mode backgrounds — html gets solid fallback for PWA safe-area edges */
 .dark html {
-  background: #0c0a09;
+  background: #101214;
 }
 .dark body {
-  background: radial-gradient(circle at 20% 30%, #110f0d 0%, #0c0a09 80%);
+  background: radial-gradient(circle at 20% 30%, #131517 0%, #101214 80%);
   color: rgb(var(--text-primary));
 }
 
@@ -911,7 +941,7 @@ p {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(211, 126, 145, 0.25), rgba(120, 154, 153, 0.2));
+    background: linear-gradient(120deg, rgba(138, 43, 43, 0.25), rgba(79, 189, 186, 0.2));
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -921,11 +951,11 @@ p {
   }
 
   .btn-glass:hover {
-    border-color: #d37e91;
+    border-color: #8a2b2b;
     transform: scale(1.04);
     box-shadow:
-      0 0 16px rgba(211, 126, 145, 0.25),
-      0 0 24px rgba(120, 154, 153, 0.15);
+      0 0 16px rgba(138, 43, 43, 0.25),
+      0 0 24px rgba(79, 189, 186, 0.15);
   }
 
   .btn-glass:active {
@@ -946,7 +976,7 @@ p {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(211, 126, 145, 0.35), rgba(120, 154, 153, 0.3));
+    background: linear-gradient(120deg, rgba(138, 43, 43, 0.35), rgba(79, 189, 186, 0.3));
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -956,11 +986,11 @@ p {
   }
 
   .btn-glass-cta:hover {
-    border-color: #d37e91;
+    border-color: #8a2b2b;
     transform: scale(1.05);
     box-shadow:
-      0 0 20px rgba(211, 126, 145, 0.3),
-      0 0 30px rgba(120, 154, 153, 0.25);
+      0 0 20px rgba(138, 43, 43, 0.3),
+      0 0 30px rgba(79, 189, 186, 0.25);
   }
 
   .btn-glass-cta:active {
@@ -1002,7 +1032,7 @@ p {
 /* ----------------------------- */
 
 .hover-glow:hover {
-  box-shadow: 0 0 6px rgba(211, 126, 145, 0.4);
+  box-shadow: 0 0 6px rgba(138, 43, 43, 0.4);
 }
 /* ----------------------------- */
 /* Marketing Typography Override  */
@@ -1359,11 +1389,11 @@ body:has(.marketing-page) .global-footer {
   0%,
   100% {
     opacity: 1;
-    box-shadow: 0 0 0 rgba(211, 126, 145, 0);
+    box-shadow: 0 0 0 rgba(138, 43, 43, 0);
   }
   50% {
     opacity: 0.6;
-    box-shadow: 0 0 8px rgba(211, 126, 145, 0.6);
+    box-shadow: 0 0 8px rgba(138, 43, 43, 0.6);
   }
 }
 
@@ -1371,22 +1401,22 @@ body:has(.marketing-page) .global-footer {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background-color: #d37e91;
+  background-color: #8a2b2b;
   animation: blinkPulse 1.2s ease-in-out infinite;
 }
 
 .textarea-hover-glow:hover {
-  box-shadow: 0 0 14px rgba(211, 126, 145, 0.35);
+  box-shadow: 0 0 14px rgba(138, 43, 43, 0.35);
 }
 
 /* Optional: pulsing glow for active icons */
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 12px rgba(211, 126, 145, 0.35);
+    box-shadow: 0 0 12px rgba(138, 43, 43, 0.35);
   }
   50% {
-    box-shadow: 0 0 20px rgba(211, 126, 145, 0.55);
+    box-shadow: 0 0 20px rgba(138, 43, 43, 0.55);
   }
 }
 
@@ -1396,7 +1426,7 @@ body:has(.marketing-page) .global-footer {
 
 /* Optional global brand glow for primary buttons */
 .btn-glow-magenta:hover {
-  box-shadow: 0 0 12px rgba(211, 126, 145, 0.35);
+  box-shadow: 0 0 12px rgba(138, 43, 43, 0.35);
 }
 
 /* ----------------------------- */
@@ -1426,12 +1456,12 @@ body:has(.marketing-page) .global-footer {
 
 .glow-invalid {
   box-shadow:
-    inset 0 0 0 1px rgba(211, 126, 145, 0.6),
-    0 0 12px rgba(211, 126, 145, 0.45);
+    inset 0 0 0 1px rgba(138, 43, 43, 0.6),
+    0 0 12px rgba(138, 43, 43, 0.45);
 }
 
 .outline-magenta {
-  outline: 2px solid rgba(211, 126, 145, 0.7);
+  outline: 2px solid rgba(138, 43, 43, 0.7);
   outline-offset: 0;
 }
 
@@ -1458,7 +1488,7 @@ input[type="number"] {
 /* SOP Block base styling */
 .sop-block {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(211, 126, 145, 0.3);
+  border: 1px solid rgba(138, 43, 43, 0.3);
   border-radius: 1rem;
   margin-top: 1rem;
   padding: 1rem;

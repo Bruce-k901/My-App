@@ -156,13 +156,13 @@ export default function CalendarReminderWidget() {
       case 'ppm_due':
         return <Clock className="w-4 h-4 text-yellow-400" />;
       default:
-        return <Bell className="w-4 h-4 text-[#D37E91]" />;
+        return <Bell className="w-4 h-4 text-[#8A2B2B]" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-module-fg" />
           <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
@@ -177,7 +177,7 @@ export default function CalendarReminderWidget() {
   }
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] rounded-xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

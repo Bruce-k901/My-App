@@ -44,8 +44,8 @@ function getActivityColor(type: ActivityItem['type']): string {
     case 'task_completed': return '#10B981'; // success green
     case 'task_overdue': return '#EF4444';   // error red
     case 'stock_alert': return '#F59E0B';    // warning amber
-    case 'clock_in': return '#D37E91';       // brand CTA
-    case 'clock_out': return '#D37E91';      // brand CTA
+    case 'clock_in': return '#8A2B2B';       // brand CTA
+    case 'clock_out': return '#8A2B2B';      // brand CTA
     default: return '#6B7280';               // gray
   }
 }
@@ -81,7 +81,7 @@ export function ActivityFeed() {
         <p className="text-sm font-medium text-theme-primary">Unable to load activity</p>
         <button
           onClick={refresh}
-          className="flex items-center gap-1.5 mx-auto mt-2 text-xs text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
+          className="flex items-center gap-1.5 mx-auto mt-2 text-xs text-[#8A2B2B] hover:text-[#8A2B2B]/80 transition-colors"
         >
           <RefreshCw size={12} />
           <span>Retry</span>
@@ -115,7 +115,7 @@ export function ActivityFeed() {
         </h3>
         <button
           onClick={refresh}
-          className="text-xs text-[#D37E91] hover:text-[#D37E91]/80 transition-colors flex items-center gap-1"
+          className="text-xs text-[#8A2B2B] hover:text-[#8A2B2B]/80 transition-colors flex items-center gap-1"
         >
           <RefreshCw size={12} />
           <span>Refresh</span>

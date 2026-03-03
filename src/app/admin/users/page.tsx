@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
   });
 
   const getRoleBadgeColor = (role: string, isAdmin: boolean) => {
-    if (isAdmin) return 'bg-[#D37E91]/20 text-[#D37E91] border-[#D37E91]/30';
+    if (isAdmin) return 'bg-[#8A2B2B]/20 text-[#8A2B2B] border-[#8A2B2B]/30';
     switch (role?.toLowerCase()) {
       case 'owner': return 'bg-purple-50 text-purple-600 border-purple-200';
       case 'admin': return 'bg-blue-50 text-blue-600 border-blue-200';
@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
           placeholder="Search by name, email, or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40"
         />
       </div>
 
@@ -145,7 +145,7 @@ export default function AdminUsersPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       {user.is_platform_admin ? (
-                        <Shield className="w-5 h-5 text-[#D37E91]" />
+                        <Shield className="w-5 h-5 text-[#8A2B2B]" />
                       ) : (
                         <User className="w-5 h-5 text-theme-tertiary" />
                       )}

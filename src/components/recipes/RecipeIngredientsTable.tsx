@@ -1701,7 +1701,7 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
                                   console.groupEnd();
                                 }
                               }}
-                              className="ingredient-dropdown fixed z-[99999] bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme rounded-md shadow-2xl max-h-60 overflow-y-auto"
+                              className="ingredient-dropdown fixed z-[99999] bg-theme-surface-elevated dark:bg-[#101214] border border-theme rounded-md shadow-2xl max-h-60 overflow-y-auto"
                               style={{
                                 top: `${position.top}px`,
                                 left: `${position.left}px`,

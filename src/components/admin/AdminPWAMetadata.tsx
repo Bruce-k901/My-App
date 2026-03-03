@@ -15,11 +15,11 @@ export function AdminPWAMetadata() {
       // Update theme color for admin pages
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');
       if (themeColorMeta) {
-        themeColorMeta.setAttribute('content', '#D37E91');
+        themeColorMeta.setAttribute('content', '#8A2B2B');
       } else {
         const meta = document.createElement('meta');
         meta.name = 'theme-color';
-        meta.content = '#D37E91';
+        meta.content = '#8A2B2B';
         document.head.appendChild(meta);
       }
     } catch (e) {

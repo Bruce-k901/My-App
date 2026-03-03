@@ -118,7 +118,7 @@ export function QuickNavBar() {
       <div
         className={cn(
           'bg-white dark:bg-[#171B2D]',
-          'border-2 border-module-fg/[0.12]',
+          'border-2 border-module-fg-mid/[0.15]',
           'rounded-xl',
           'p-4',
           'shadow-lg shadow-black/[0.03] dark:shadow-black/20'
@@ -157,7 +157,7 @@ export function QuickNavBar() {
               className={cn(
                 'flex items-center gap-2 px-3.5 py-2.5',
                 'bg-slate-50 dark:bg-slate-900/50',
-                'border-2 border-module-fg/[0.12]',
+                'border-2 border-module-fg-mid/[0.15]',
                 'rounded-lg',
                 'text-sm text-[rgb(var(--text-primary))] font-medium',
                 'hover:bg-slate-100 dark:hover:bg-slate-800/50',

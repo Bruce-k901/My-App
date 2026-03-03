@@ -66,13 +66,13 @@ export function WidgetDetailModal({
               'fixed z-[9999]',
               'inset-4 lg:inset-[10%]',
               'bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]',
-              'border border-module-fg/[0.12] rounded-xl',
+              'border border-module-fg-mid/[0.15] rounded-xl',
               'flex flex-col',
               'overflow-hidden'
             )}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-module-fg/[0.12]">
+            <div className="flex items-center justify-between p-4 border-b border-module-fg-mid/[0.15]">
               <div className="flex items-center gap-2">
                 <span
                   className={cn(

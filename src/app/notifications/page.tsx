@@ -532,7 +532,7 @@ function NotificationsInner() {
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold text-theme-primary">Notifications</h1>
                 {unreadCount > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#D37E91] text-white text-xs font-semibold">
+                  <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#8A2B2B] text-white text-xs font-semibold">
                     {unreadCount}
                   </span>
                 )}

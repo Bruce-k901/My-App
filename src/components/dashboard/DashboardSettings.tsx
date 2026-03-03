@@ -34,7 +34,7 @@ export function DashboardSettings() {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="p-2 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] text-[rgb(var(--text-disabled))] hover:text-[rgb(var(--text-primary))] hover:bg-black/[0.06] dark:hover:bg-white/[0.06] transition-colors"
+        className="p-2 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] text-[rgb(var(--text-disabled))] hover:text-[rgb(var(--text-primary))] hover:bg-black/[0.06] dark:hover:bg-white/[0.06] transition-colors"
         title="Dashboard Settings"
       >
         <Settings className="w-4 h-4" />
@@ -51,13 +51,13 @@ export function DashboardSettings() {
       {/* Slide-out panel */}
       <div
         className={cn(
-          'fixed top-0 right-0 h-full w-80 bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border-l border-module-fg/[0.12] z-50',
+          'fixed top-0 right-0 h-full w-80 bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border-l border-module-fg-mid/[0.15] z-50',
           'transform transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-module-fg/[0.12]">
+        <div className="flex items-center justify-between p-4 border-b border-module-fg-mid/[0.15]">
           <h2 className="text-sm font-semibold text-[rgb(var(--text-primary))]">Dashboard Settings</h2>
           <button
             onClick={() => setIsOpen(false)}
@@ -193,10 +193,10 @@ export function DashboardSettings() {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-module-fg/[0.12] bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-module-fg-mid/[0.15] bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]">
           <button
             onClick={resetToDefaults}
-            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-md bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg/[0.12] text-[rgb(var(--text-disabled))] text-[11px] font-medium hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-[rgb(var(--text-secondary))] transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-md bg-black/[0.03] dark:bg-white/[0.03] border border-module-fg-mid/[0.15] text-[rgb(var(--text-disabled))] text-[11px] font-medium hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-[rgb(var(--text-secondary))] transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset to Defaults

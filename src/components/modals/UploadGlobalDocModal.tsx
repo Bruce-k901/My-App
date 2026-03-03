@@ -310,7 +310,7 @@ export default function UploadGlobalDocModal({
           <Select
             label={
               <span className="text-sm text-theme-secondary">
-                Document Type <span className="text-[#D37E91]">*</span>
+                Document Type <span className="text-[#8A2B2B]">*</span>
                 <span className="text-xs text-theme-tertiary ml-2">(Select from EHO requirements)</span>
               </span>
             }
@@ -344,7 +344,7 @@ export default function UploadGlobalDocModal({
 
         <div>
           <label className="block text-sm text-theme-secondary mb-1">
-            Document Name <span className="text-[#D37E91]">*</span>
+            Document Name <span className="text-[#8A2B2B]">*</span>
           </label>
           <Input
             placeholder={form.documentType && form.documentType !== "Other" ? form.documentType : "Enter document name"}
@@ -374,7 +374,7 @@ export default function UploadGlobalDocModal({
             placeholder="Short description or purpose"
             value={form.notes}
             onChange={(e) => handleChange("notes", e.target.value)}
-            className="w-full min-h-[90px] rounded-md px-4 py-2 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.15] focus:border-[#D37E91] focus:shadow-[0_0_14px_rgba(211,126,145,0.4)] focus:ring-0 focus:outline-none"
+            className="w-full min-h-[90px] rounded-md px-4 py-2 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.15] focus:border-[#8A2B2B] focus:shadow-[0_0_14px_rgba(138, 43, 43,0.4)] focus:ring-0 focus:outline-none"
           />
         </div>
 
@@ -389,7 +389,7 @@ export default function UploadGlobalDocModal({
                 setForm(prev => ({ ...prev, file }));
               }
             }}
-            className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#D37E91]/10 dark:file:bg-[#D37E91]/20 file:text-[#D37E91] dark:file:text-white hover:file:bg-[#D37E91]/20 dark:hover:file:bg-[#D37E91]/30"
+            className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#8A2B2B]/10 dark:file:bg-[#8A2B2B]/20 file:text-[#8A2B2B] dark:file:text-white hover:file:bg-[#8A2B2B]/20 dark:hover:file:bg-[#8A2B2B]/30"
           />
           {form.file && (
             <p className="text-xs text-theme-tertiary mt-1">

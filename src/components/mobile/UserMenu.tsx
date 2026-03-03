@@ -118,7 +118,7 @@ export function UserMenu({ isOpen, onClose }: UserMenuProps) {
             <div className="p-5 border-b border-[rgb(var(--border))]">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-[#D37E91] text-white text-lg font-bold flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#8A2B2B] text-white text-lg font-bold flex items-center justify-center flex-shrink-0">
                     {getInitials(userName)}
                   </div>
                   <div className="min-w-0">
@@ -180,7 +180,7 @@ export function UserMenu({ isOpen, onClose }: UserMenuProps) {
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
                       selectedSiteId === 'all'
-                        ? 'text-[#D37E91] bg-[#D37E91]/10'
+                        ? 'text-[#8A2B2B] bg-[#8A2B2B]/10'
                         : 'text-theme-secondary hover:bg-[rgb(var(--theme-bg-hover))]'
                     )}
                   >
@@ -194,7 +194,7 @@ export function UserMenu({ isOpen, onClose }: UserMenuProps) {
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
                         selectedSiteId === site.id
-                          ? 'text-[#D37E91] bg-[#D37E91]/10'
+                          ? 'text-[#8A2B2B] bg-[#8A2B2B]/10'
                           : 'text-theme-secondary hover:bg-[rgb(var(--theme-bg-hover))]'
                       )}
                     >

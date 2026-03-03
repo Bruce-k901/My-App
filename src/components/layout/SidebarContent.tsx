@@ -49,28 +49,28 @@ export function SidebarContent() {
           icon={<CheckSquare />}
           label="Checkly"
           href="/dashboard/tasks"
-          color="#F1E194"
+          color="#FDF7EF"
           active={pathname?.startsWith("/dashboard/tasks") || pathname?.startsWith("/dashboard/todays_tasks")}
         />
         <NavItem
           icon={<Package />}
           label="Stockly"
           href="/dashboard/stockly"
-          color="#789A99"
+          color="#CDEED6"
           active={pathname?.startsWith("/dashboard/stockly")}
         />
         <NavItem
           icon={<Factory />}
           label="Planly"
           href="/dashboard/planly"
-          color="#ACC8A2"
+          color="#F0F4ED"
           active={pathname?.startsWith("/dashboard/planly")}
         />
         <NavItem
           icon={<TrendingUp />}
           label="Forecastly"
           href="/dashboard/forecastly"
-          color="#7C3AED"
+          color="#E4E9EC"
           disabled
           badge="Coming Soon"
         />
@@ -82,7 +82,7 @@ export function SidebarContent() {
           icon={<Wrench />}
           label="Assetly"
           href="/dashboard/assets"
-          color="#F3E7D9"
+          color="#A7FFEB"
           active={pathname?.startsWith("/dashboard/assets")}
         />
       </NavSection>
@@ -93,7 +93,7 @@ export function SidebarContent() {
           icon={<Users />}
           label="Teamly"
           href="/dashboard/people"
-          color="#D37E91"
+          color="#F2C9C9"
           active={pathname?.startsWith("/dashboard/people")}
         />
       </NavSection>

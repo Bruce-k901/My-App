@@ -391,7 +391,9 @@ export default function StocklyDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
-              <Package className="w-8 h-8 text-module-fg" />
+              <div className="w-10 h-10 rounded-xl bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center">
+                <Package className="w-6 h-6 text-module-fg-mid" />
+              </div>
               Stockly
             </h1>
             <p className="text-theme-secondary text-sm flex items-center gap-2 mt-1">
@@ -402,6 +404,10 @@ export default function StocklyDashboard() {
         </div>
 
         {/* Quick Actions */}
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-module-fg-mid">Quick Actions</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-module-fg-mid/30 to-transparent" />
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {quickActions.map((action) => {
           const Component = action.href ? Link : 'button';
@@ -413,10 +419,10 @@ export default function StocklyDashboard() {
             <Component
               key={action.id}
               {...props}
-              className="relative overflow-hidden bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-5 text-left transition-all hover:bg-module-fg/[0.08] hover:border-module-fg hover:-translate-y-px group"
+              className="relative overflow-hidden bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-l-3 border-l-module-fg-mid/50 rounded-xl p-5 text-left transition-all hover:bg-module-fg/[0.08] hover:border-module-fg hover:-translate-y-px group"
             >
-              <div className="w-10 h-10 rounded-lg bg-module-fg/[0.10] flex items-center justify-center mb-3">
-                <action.icon className="w-5 h-5 text-module-fg" />
+              <div className="w-10 h-10 rounded-lg bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center mb-3 group-hover:bg-module-fg-mid/25 transition-colors">
+                <action.icon className="w-5 h-5 text-module-fg-mid" />
               </div>
               <h3 className="text-[rgb(var(--text-primary))] font-semibold">{action.title}</h3>
               <p className="text-[rgb(var(--text-secondary))] text-sm">{action.description}</p>
@@ -428,13 +434,15 @@ export default function StocklyDashboard() {
 
         {/* Alerts */}
         {alerts.length > 0 && (
-          <div className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-module-fg/[0.12] flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-module-fg" />
-            <span className="text-sm font-medium text-[rgb(var(--text-primary))]">Alerts</span>
-            <span className="text-xs text-[rgb(var(--text-tertiary))]">({alerts.length})</span>
+          <div className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-l-3 border-l-module-fg-mid/50 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-module-fg-mid/25 bg-module-fg-mid/[0.04] flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center">
+              <AlertTriangle className="w-3.5 h-3.5 text-module-fg-mid" />
+            </div>
+            <span className="text-sm font-semibold text-module-fg-mid">Alerts</span>
+            <span className="text-xs bg-module-fg-mid/[0.12] text-module-fg-mid px-1.5 py-0.5 rounded-full font-bold">{alerts.length}</span>
           </div>
-          <div className="divide-y divide-module-fg/[0.10]">
+          <div className="divide-y divide-module-fg-mid/[0.12]">
             {alerts.map((alert) => (
               <Link
                 key={alert.id}
@@ -458,36 +466,49 @@ export default function StocklyDashboard() {
         )}
 
         {/* Today's Stats */}
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center">
+            <BarChart3 className="w-3.5 h-3.5 text-module-fg-mid" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-module-fg-mid">Today's Snapshot</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-module-fg-mid/30 to-transparent" />
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link
           href="/dashboard/stockly/stock-items"
-          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-t-2 border-t-module-fg-mid/40 rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg-mid/[0.25] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-module-fg" />
-            <span className="text-[rgb(var(--text-secondary))] text-xs">Stock Value</span>
+            <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 flex items-center justify-center">
+              <Package className="w-3.5 h-3.5 text-module-fg-mid" />
+            </div>
+            <span className="text-module-fg-mid text-xs font-medium">Stock Value</span>
           </div>
           <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.stockValue)}</p>
         </Link>
 
         <Link
           href="/dashboard/stockly/deliveries"
-          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-t-2 border-t-module-fg-mid/40 rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg-mid/[0.25] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Truck className="w-4 h-4 text-module-fg" />
-            <span className="text-[rgb(var(--text-secondary))] text-xs">Deliveries Today</span>
+            <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 flex items-center justify-center">
+              <Truck className="w-3.5 h-3.5 text-module-fg-mid" />
+            </div>
+            <span className="text-module-fg-mid text-xs font-medium">Deliveries Today</span>
           </div>
           <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.deliveriesToday)}</p>
         </Link>
-        
+
         <Link
           href="/dashboard/stockly/reports/wastage"
-          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-t-2 border-t-module-fg-mid/40 rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg-mid/[0.25] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-            <span className="text-[rgb(var(--text-secondary))] text-xs">Wastage Today</span>
+            <div className="w-6 h-6 rounded-md bg-red-500/10 flex items-center justify-center">
+              <Trash2 className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+            </div>
+            <span className="text-module-fg-mid text-xs font-medium">Wastage Today</span>
           </div>
           <p className="text-xl font-bold text-red-600 dark:text-red-400">
             {stats.wastageToday > 0 ? `-${formatCurrency(stats.wastageToday)}` : '£0'}
@@ -496,13 +517,15 @@ export default function StocklyDashboard() {
 
         <Link
           href="/dashboard/stockly/reports/gp"
-          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-t-2 border-t-module-fg-mid/40 rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg-mid/[0.25] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className={`w-4 h-4 ${
-              stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' : 'text-amber-600 dark:text-amber-400'
-            }`} />
-            <span className="text-[rgb(var(--text-secondary))] text-xs">Latest GP</span>
+            <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 flex items-center justify-center">
+              <TrendingDown className={`w-3.5 h-3.5 ${
+                stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg-mid' : 'text-amber-600 dark:text-amber-400'
+              }`} />
+            </div>
+            <span className="text-module-fg-mid text-xs font-medium">Latest GP</span>
           </div>
           <p className={`text-xl font-bold ${
             stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' :
@@ -514,15 +537,21 @@ export default function StocklyDashboard() {
         </div>
 
         {/* Quick Search */}
-        <div className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4">
+        <div className="bg-module-fg/[0.04] border border-module-fg-mid/[0.15] border-l-3 border-l-module-fg-mid/50 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center">
+            <Search className="w-3.5 h-3.5 text-module-fg-mid" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-module-fg-mid">Quick Search</span>
+        </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-module-fg" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-module-fg-mid" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Quick search stock items..."
-            className="w-full pl-10 pr-4 py-3 bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-lg text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:outline-none focus:ring-2 focus:ring-module-fg/[0.25] focus:border-module-fg/[0.25]"
+            className="w-full pl-10 pr-4 py-3 bg-module-fg/[0.04] border border-module-fg-mid/[0.15] rounded-lg text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:outline-none focus:ring-2 focus:ring-module-fg-mid/[0.25] focus:border-module-fg-mid/[0.35]"
           />
           {searching && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary animate-spin" />
@@ -530,7 +559,7 @@ export default function StocklyDashboard() {
         </div>
         
         {searchResults.length > 0 && (
-          <div className="mt-3 divide-y divide-gray-200 dark:divide-white/[0.06]">
+          <div className="mt-3 divide-y divide-module-fg-mid/[0.12]">
             {searchResults.map((item) => (
               <Link
                 key={item.id}
@@ -552,17 +581,26 @@ export default function StocklyDashboard() {
         )}
         </div>
 
-        {/* Setup Links */}
+        {/* Navigation Links */}
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-6 h-6 rounded-md bg-module-fg-mid/15 border border-module-fg-mid/30 flex items-center justify-center">
+            <Settings className="w-3.5 h-3.5 text-module-fg-mid" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-module-fg-mid">Navigation</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-module-fg-mid/30 to-transparent" />
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {setupLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center gap-3 px-4 py-3 border border-module-fg/[0.12] hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] rounded-lg transition-colors group"
+            className="flex items-center gap-3 px-4 py-3 border border-module-fg-mid/[0.15] border-l-2 border-l-module-fg-mid/30 hover:bg-module-fg-mid/[0.06] hover:border-module-fg-mid/[0.25] rounded-lg transition-colors group"
           >
-            <link.icon className="w-5 h-5 text-module-fg transition-colors" />
+            <div className="w-7 h-7 rounded-md bg-module-fg-mid/10 flex items-center justify-center group-hover:bg-module-fg-mid/20 transition-colors">
+              <link.icon className="w-4 h-4 text-module-fg-mid transition-colors" />
+            </div>
             <span className="text-[rgb(var(--text-secondary))] group-hover:text-[rgb(var(--text-primary))] text-sm font-medium">{link.name}</span>
-            <ArrowRight className="w-4 h-4 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg ml-auto transition-colors" />
+            <ArrowRight className="w-4 h-4 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg-mid ml-auto transition-colors" />
           </Link>
         ))}
         </div>

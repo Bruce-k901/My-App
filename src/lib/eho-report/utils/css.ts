@@ -24,7 +24,7 @@ export const REPORT_CSS = `
   .cover-page .brand-bar {
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #D37E91, #8B5CF6);
+    background: linear-gradient(90deg, #8A2B2B, #8B5CF6);
     border-radius: 2px;
     margin-bottom: 20px;
   }
@@ -98,7 +98,7 @@ export const REPORT_CSS = `
   .toc-list .toc-num {
     width: 32px;
     font-weight: 700;
-    color: #D37E91;
+    color: #8A2B2B;
     flex-shrink: 0;
   }
   .toc-list .toc-title { flex: 1; color: #1e293b; font-weight: 500; }
@@ -114,12 +114,12 @@ export const REPORT_CSS = `
     gap: 10px;
     margin-bottom: 10px;
     padding-bottom: 6px;
-    border-bottom: 3px solid #D37E91;
+    border-bottom: 3px solid #8A2B2B;
   }
   .section-number {
     width: 32px;
     height: 32px;
-    background: #D37E91;
+    background: #8A2B2B;
     color: #fff;
     border-radius: 8px;
     display: flex;

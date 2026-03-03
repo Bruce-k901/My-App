@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
           <!-- Header with Gradient -->
           <tr>
-            <td style="background: linear-gradient(135deg, #D37E91 0%, #b0607a 100%); padding: 40px 40px 30px 40px; text-align: center;">
+            <td style="background: linear-gradient(135deg, #8A2B2B 0%, #6E2222 100%); padding: 40px 40px 30px 40px; text-align: center;">
               <!-- Opsly Logo (Bar Mark) -->
               <div style="margin-bottom: 20px;">
                 <svg width="60" height="40" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
               </p>
 
               <!-- Configuration Status Box -->
-              <div style="background-color: #f7fafc; border-left: 4px solid #D37E91; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+              <div style="background-color: #f7fafc; border-left: 4px solid #8A2B2B; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
                 <h3 style="margin: 0 0 16px 0; color: #2d3748; font-size: 16px; font-weight: 600;">
                   Email Configuration Status
                 </h3>
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
               <p style="margin: 0 0 8px 0; color: #718096; font-size: 14px;">
                 This is an automated test email from your
               </p>
-              <p style="margin: 0 0 16px 0; color: #D37E91; font-size: 16px; font-weight: 600;">
+              <p style="margin: 0 0 16px 0; color: #8A2B2B; font-size: 16px; font-weight: 600;">
                 Opsly Operations Platform
               </p>
               <p style="margin: 0; color: #a0aec0; font-size: 12px;">

@@ -135,18 +135,18 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
                 setForm({ ...form, name: e.target.value });
                 setQuery(e.target.value);
               }}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+              className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
               placeholder="Start typing company name..."
               required
             />
             {loading && <div className="absolute right-3 top-8 text-xs text-theme-tertiary">...</div>}
 
             {lookupResults.length > 0 && (
-              <ul className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-md w-full mt-1 max-h-60 overflow-y-auto">
+              <ul className="absolute z-50 bg-theme-surface-elevated border border-theme rounded-lg shadow-lg w-full mt-1 max-h-60 overflow-y-auto">
                 {lookupResults.map((r) => (
                   <li
                     key={r.id}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    className="px-3 py-2 hover:bg-theme-hover cursor-pointer"
                     onClick={() => handleSelect(r)}
                   >
                     <div className="font-medium text-theme-primary">{r.name}</div>
@@ -166,7 +166,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             type="text"
             value={form.contact_name || ""}
             onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             placeholder="Primary contact person"
           />
         </div>
@@ -177,7 +177,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             rows={2}
             value={form.address || ""}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             placeholder="Full business address"
           />
         </div>
@@ -193,7 +193,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               validatePostcode(value);
             }}
             className={`w-full rounded-md border px-2 py-1 text-theme-primary ${
-              postcodeError ? "border-red-500 bg-red-900/20" : "border-gray-600 bg-gray-800"
+              postcodeError ? "border-red-500 bg-red-900/20" : "border-theme bg-theme-surface"
             }`}
             placeholder="SW1A 1AA"
           />
@@ -206,7 +206,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             type="text"
             value={form.region || ""}
             onChange={(e) => setForm({ ...form, region: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             placeholder="Auto-populated from postcode"
           />
         </div>
@@ -218,7 +218,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             placeholder="https://example.com"
             value={form.website || ""}
             onChange={(e) => setForm({ ...form, website: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
           />
         </div>
 
@@ -232,7 +232,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               placeholder="0.00"
               value={form.callout_fee || ""}
               onChange={(e) => setForm({ ...form, callout_fee: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+              className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             />
           </div>
           <div>
@@ -244,7 +244,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               placeholder="0.00"
               value={form.hourly_rate || ""}
               onChange={(e) => setForm({ ...form, hourly_rate: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+              className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             />
           </div>
         </div>
@@ -261,7 +261,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               type="text"
               value={form.phone || ""}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+              className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             />
           </div>
           <div>
@@ -270,14 +270,14 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               type="text"
               value={form.ooh_phone || ""}
               onChange={(e) => setForm({ ...form, ooh_phone: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+              className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
             />
           </div>
         </div>
 
         {/* WhatsApp opt-in */}
         {form.phone && (
-          <div className="flex items-center gap-2 p-3 bg-emerald-900/10 border border-emerald-800/30 rounded-lg">
+          <div className="flex items-center gap-2 p-3 bg-emerald-500/5 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 rounded-lg">
             <input
               type="checkbox"
               id="wa_opted_in"
@@ -297,7 +297,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             type="email"
             value={form.email || ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
           />
         </div>
 
@@ -308,7 +308,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             placeholder="Describe the services this contractor provides..."
             value={form.notes || ""}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
           />
         </div>
 
@@ -357,7 +357,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             id="is_active"
             checked={form.is_active !== undefined ? form.is_active : true}
             onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-[#D37E91] focus:ring-[#D37E91]"
+            className="w-4 h-4 rounded border-theme bg-theme-surface text-[#8A2B2B] focus:ring-[#8A2B2B]"
           />
           <label htmlFor="is_active" className="text-sm font-medium text-theme-tertiary">
             Active Contractor
@@ -375,7 +375,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             type="date"
             value={form.contract_start || ""}
             onChange={(e) => setForm({ ...form, contract_start: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
           />
         </div>
 
@@ -385,7 +385,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             type="date"
             value={form.contract_expiry || ""}
             onChange={(e) => setForm({ ...form, contract_expiry: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
+            className="w-full rounded-md border border-theme bg-theme-surface px-3 py-2 text-theme-primary"
           />
         </div>
 
@@ -528,14 +528,14 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
       <label className="block text-sm font-medium text-theme-tertiary mb-2">Contract File</label>
       
       {value ? (
-        <div className="flex items-center gap-2 p-2 rounded-md border border-gray-600 bg-gray-800">
+        <div className="flex items-center gap-2 p-2 rounded-md border border-theme bg-theme-surface">
           <FileText className="h-4 w-4 text-theme-tertiary" />
           <span className="flex-1 text-sm text-theme-primary truncate">{getFileName(value)}</span>
           <a
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#D37E91] hover:text-[#D37E91]/80 text-xs"
+            className="text-[#8A2B2B] hover:text-[#8A2B2B]/80 text-xs"
           >
             View
           </a>
@@ -563,7 +563,7 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
             variant="ghost"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="w-full border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+            className="w-full border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)]"
           >
             {uploading ? (
               <>Uploading...</>

@@ -123,7 +123,7 @@ export function DashboardSettingsPanel({
                               onChange={() => onToggleWidget(widget.id)}
                               className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]" />
+                            <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8A2B2B]" />
                           </div>
                         </label>
                       );
@@ -157,7 +157,7 @@ export function DashboardSettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface border border-theme hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-colors"
+      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface border border-theme hover:border-[#8A2B2B]/50 dark:hover:border-[#8A2B2B]/50 transition-colors"
       title="Dashboard settings"
     >
       <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />

@@ -113,7 +113,7 @@ function AccordionItem({ site, onRefresh, companyId }: { site: Site; onRefresh?:
                 console.log("🔥 ACCORDION ITEM - Edit button clicked for site:", site.name);
                 handleEditClick();
               }}
-              className="px-3 py-1.5 bg-[#D37E91]/25 hover:bg-[#D37E91]/35 border border-[#D37E91]/40 text-[#D37E91] rounded-md text-sm"
+              className="px-3 py-1.5 bg-[#8A2B2B]/25 hover:bg-[#8A2B2B]/35 border border-[#8A2B2B]/40 text-[#8A2B2B] rounded-md text-sm"
             >
               Edit
             </button>

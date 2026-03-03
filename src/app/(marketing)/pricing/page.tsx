@@ -21,7 +21,7 @@ const modules = [
     name: "Checkly",
     tagline: "Compliance & Quality Control",
     icon: ClipboardCheck,
-    color: "#F1E194",
+    color: "#FDF7EF",
     features: [
       "Digital checklists & task logging",
       "Temperature monitoring & alerts",
@@ -33,7 +33,7 @@ const modules = [
     name: "Stockly",
     tagline: "Inventory & Purchasing",
     icon: Package,
-    color: "#789A99",
+    color: "#CDEED6",
     features: [
       "Real-time stock levels",
       "AI-powered invoice processing",
@@ -45,7 +45,7 @@ const modules = [
     name: "Teamly",
     tagline: "People & Payroll",
     icon: Users,
-    color: "#D37E91",
+    color: "#8A2B2B",
     features: [
       "Staff scheduling & rotas",
       "Time & attendance tracking",
@@ -57,7 +57,7 @@ const modules = [
     name: "Planly",
     tagline: "Production & Orders",
     icon: Factory,
-    color: "#ACC8A2",
+    color: "#F0F4ED",
     features: [
       "Production planning",
       "Customer order management",
@@ -69,7 +69,7 @@ const modules = [
     name: "Assetly",
     tagline: "Asset Management",
     icon: Wrench,
-    color: "#F3E7D9",
+    color: "#A7FFEB",
     features: [
       "Equipment tracking",
       "PPM scheduling",
@@ -81,7 +81,7 @@ const modules = [
     name: "Msgly",
     tagline: "Team Communication",
     icon: MessageSquare,
-    color: "#CBDDE9",
+    color: "#A7A8B2",
     features: [
       "In-app messaging",
       "Task notifications",
@@ -129,7 +129,7 @@ export default function PricingPage() {
 
   return (
     <>
-      <div className="relative overflow-hidden bg-[#0B0D13]">
+      <div className="relative overflow-hidden bg-[#101214]">
         {/* Background */}
         <div className="fixed inset-0 w-full h-full -z-0 pointer-events-none">
           <DarkVeil />

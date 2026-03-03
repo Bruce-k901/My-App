@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       subject: `Contact form: ${name}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #D37E91;">New Contact Form Submission</h2>
+          <h2 style="color: #8A2B2B;">New Contact Form Submission</h2>
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px 12px; font-weight: 600; color: #888; vertical-align: top;">Name</td>

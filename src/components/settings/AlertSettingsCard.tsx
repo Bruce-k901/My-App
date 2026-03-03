@@ -24,7 +24,7 @@ export function AlertSettingsCard() {
   return (
     <div className="bg-white/[0.03] dark:bg-white/[0.03] border border-neutral-200 dark:border-white/[0.06] rounded-xl p-6">
       <h2 className="text-xl font-semibold text-theme-primary mb-2 flex items-center gap-2">
-        <Bell className="w-5 h-5 text-[#D37E91]" />
+        <Bell className="w-5 h-5 text-[#8A2B2B]" />
         In-App Alerts
       </h2>
       <p className="text-sm text-theme-tertiary/50 mb-6">
@@ -89,7 +89,7 @@ export function AlertSettingsCard() {
         {/* Message Alerts */}
         <div className="flex items-center justify-between p-4 rounded-lg bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200 dark:border-white/[0.05]">
           <div className="flex items-start gap-3">
-            <MessageSquare className="w-5 h-5 text-[#D37E91] mt-0.5" />
+            <MessageSquare className="w-5 h-5 text-[#8A2B2B] mt-0.5" />
             <div className="flex-1">
               <p className="font-medium text-theme-primary">Message Alerts</p>
               <p className="text-sm text-theme-tertiary mt-1">
@@ -121,7 +121,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
         onChange={onChange}
         className="sr-only peer"
       />
-      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#D37E91] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]"></div>
+      <div className="w-11 h-6 bg-neutral-200 dark:bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8A2B2B] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8A2B2B]"></div>
     </label>
   );
 }

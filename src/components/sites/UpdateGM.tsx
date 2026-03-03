@@ -67,7 +67,7 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
           <select
             value={selectedGM}
             onChange={(e) => setSelectedGM(e.target.value)}
-            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-theme-primary min-w-[180px] h-11 hover:border-white/20 focus:border-[#D37E91] focus:outline-none"
+            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-theme-primary min-w-[180px] h-11 hover:border-white/20 focus:border-[#8A2B2B] focus:outline-none"
           >
             <option value="">Select GM...</option>
             {gmList.map((gm) => (
@@ -81,7 +81,7 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
             variant="outline"
             disabled={loading}
             onClick={handleUpdate}
-            className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
+            className="border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/15"
           >
             {loading ? "Saving..." : "Save & Sync"}
           </Button>

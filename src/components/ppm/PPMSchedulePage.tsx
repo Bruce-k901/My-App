@@ -562,8 +562,8 @@ export default function PPMSchedulePage() {
                 className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Sites</option>
-                {sites.map(site => (
-                  <option key={site} value={site}>{site}</option>
+                {sites.map((site, i) => (
+                  <option key={`${site}-${i}`} value={site}>{site}</option>
                 ))}
               </select>
             </div>
@@ -577,8 +577,8 @@ export default function PPMSchedulePage() {
                 className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Contractors</option>
-                {contractors.map(contractor => (
-                  <option key={contractor} value={contractor}>{contractor}</option>
+                {contractors.map((contractor, i) => (
+                  <option key={`${contractor}-${i}`} value={contractor}>{contractor}</option>
                 ))}
               </select>
             </div>

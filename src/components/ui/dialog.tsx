@@ -53,7 +53,7 @@ export function DialogContent({ children, className = '', style }: DialogContent
   const hasCustomMaxWidth = /max-w-/.test(className);
   // If className includes overflow-y or overflow-hidden, skip default overflow-y-auto (allows flex scroll layouts)
   const hasCustomOverflow = /overflow-/.test(className);
-  const base = `bg-white dark:bg-[#0B0D13] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-full ${hasCustomOverflow ? '' : 'overflow-y-auto'}`;
+  const base = `bg-white dark:bg-[#101214] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-full ${hasCustomOverflow ? '' : 'overflow-y-auto'}`;
   // Put className last so custom max-w classes can override base styles
   return (
     <div style={style} className={`${base} ${className}`}>

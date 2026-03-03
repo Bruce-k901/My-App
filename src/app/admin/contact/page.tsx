@@ -61,7 +61,7 @@ export default function AdminContactPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function AdminContactPage() {
           placeholder="Search by name, email, or message..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40"
         />
       </div>
 
@@ -108,7 +108,7 @@ export default function AdminContactPage() {
                   <div className="text-theme-primary font-medium">{s.name}</div>
                   <div className="text-theme-tertiary text-sm flex items-center gap-1 mt-0.5">
                     <Mail className="w-3 h-3" />
-                    <a href={`mailto:${s.email}`} className="hover:text-[#D37E91] transition-colors">
+                    <a href={`mailto:${s.email}`} className="hover:text-[#8A2B2B] transition-colors">
                       {s.email}
                     </a>
                   </div>

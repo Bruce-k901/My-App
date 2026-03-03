@@ -457,7 +457,7 @@ export function TemplatePreviewPanel({ template, customFields, loadingFields, on
         {onQuickSchedule && (
           <button
             onClick={onQuickSchedule}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#8A2B2B] hover:bg-[#8A2B2B]/90 text-white transition-colors"
           >
             Quick Schedule
           </button>

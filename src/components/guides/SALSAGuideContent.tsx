@@ -26,9 +26,9 @@ export default function SALSAGuideContent() {
           margin: 40px 0 24px 0;
           border-bottom: 3px solid;
         }
-        .guide-section-header.stockly { border-color: #789A99; }
-        .dark .guide-section-header.stockly { border-color: #789A99; }
-        .guide-section-header.general { border-color: #110f0d; }
+        .guide-section-header.stockly { border-color: #CDEED6; }
+        .dark .guide-section-header.stockly { border-color: #CDEED6; }
+        .guide-section-header.general { border-color: #131517; }
         .dark .guide-section-header.general { border-color: #a09890; }
         .guide-section-header h2 {
           font-size: 24px;
@@ -41,8 +41,8 @@ export default function SALSAGuideContent() {
           text-transform: uppercase;
           letter-spacing: 2px;
         }
-        .guide-module-label.stockly { color: #6B8F8E; }
-        .dark .guide-module-label.stockly { color: #789A99; }
+        .guide-module-label.stockly { color: #1B4242; }
+        .dark .guide-module-label.stockly { color: #CDEED6; }
         .guide-module-label.general { color: #666; }
         .dark .guide-module-label.general { color: #a09890; }
         .guide-step {
@@ -53,7 +53,7 @@ export default function SALSAGuideContent() {
           border-radius: 8px;
           border-left: 3px solid #ddd;
         }
-        .guide-step.stockly { border-left-color: #789A99; }
+        .guide-step.stockly { border-left-color: #CDEED6; }
         .guide-step-number {
           width: 28px;
           height: 28px;
@@ -66,10 +66,10 @@ export default function SALSAGuideContent() {
           flex-shrink: 0;
           color: white;
         }
-        .guide-step-number.stockly { background: #789A99; color: #fff; }
-        .dark .guide-step-number.stockly { background: #789A99; color: #1a1a1a; }
-        .guide-step-number.general { background: #110f0d; }
-        .dark .guide-step-number.general { background: #a09890; color: #110f0d; }
+        .guide-step-number.stockly { background: #CDEED6; color: #fff; }
+        .dark .guide-step-number.stockly { background: #CDEED6; color: #1a1a1a; }
+        .guide-step-number.general { background: #131517; }
+        .dark .guide-step-number.general { background: #a09890; color: #131517; }
         .guide-nav-path {
           display: inline-flex;
           align-items: center;

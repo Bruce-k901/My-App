@@ -229,12 +229,12 @@ export default function CompaniesSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Building2 className="w-8 h-8 text-[#D37E91]" />
+          <Building2 className="w-8 h-8 text-[#8A2B2B]" />
           <h1 className="text-2xl font-bold text-theme-primary">Manage Companies & Brands</h1>
         </div>
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
@@ -277,12 +277,12 @@ export default function CompaniesSettingsPage() {
                       className="flex items-center justify-between p-4 bg-white dark:bg-white/[0.04] border border-theme rounded-lg"
                     >
                       <div className="flex items-center gap-3 flex-1">
-                        <Building2 className={`w-5 h-5 ${isParent ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-blue-500 dark:text-blue-400'}`} />
+                        <Building2 className={`w-5 h-5 ${isParent ? 'text-[#8A2B2B] dark:text-[#8A2B2B]' : 'text-blue-500 dark:text-blue-400'}`} />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-theme-primary font-medium">{company?.name}</span>
                             {uc.is_primary && (
-                              <span className="px-2 py-0.5 bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] text-xs rounded">
+                              <span className="px-2 py-0.5 bg-[#8A2B2B]/25 text-[#8A2B2B] dark:text-[#8A2B2B] text-xs rounded">
                                 Primary
                               </span>
                             )}
@@ -341,7 +341,7 @@ export default function CompaniesSettingsPage() {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="e.g., Okja UK Ltd"
-                  className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
                   required
                 />
               </div>
@@ -353,7 +353,7 @@ export default function CompaniesSettingsPage() {
                       type="checkbox"
                       checked={linkToParent}
                       onChange={(e) => setLinkToParent(e.target.checked)}
-                      className="rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#D37E91] focus:ring-[#D37E91]"
+                      className="rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#8A2B2B] focus:ring-[#8A2B2B]"
                     />
                     Link to parent company (share resources)
                   </label>
@@ -362,7 +362,7 @@ export default function CompaniesSettingsPage() {
                     <select
                       value={parentCompanyId}
                       onChange={(e) => setParentCompanyId(e.target.value)}
-                      className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                      className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/50"
                       required={linkToParent}
                     >
                       <option value="">Select parent company...</option>
@@ -382,7 +382,7 @@ export default function CompaniesSettingsPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full justify-center"
+                className="flex items-center gap-2 px-4 py-2 bg-[#8A2B2B] hover:bg-[#8A2B2B] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full justify-center"
               >
                 <Plus className="w-4 h-4" />
                 {loading ? "Creating..." : "Add Company"}
@@ -435,7 +435,7 @@ export default function CompaniesSettingsPage() {
                           [key]: e.target.checked
                         });
                       }}
-                      className="rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#D37E91] focus:ring-[#D37E91]"
+                      className="rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#8A2B2B] focus:ring-[#8A2B2B]"
                     />
                   </label>
                 ))}

@@ -480,7 +480,7 @@ export default function AdminDashboardPage() {
   if (!mounted) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8A2B2B] animate-spin" />
       </div>
     );
   }
@@ -523,7 +523,7 @@ export default function AdminDashboardPage() {
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -552,8 +552,8 @@ export default function AdminDashboardPage() {
         {/* Total Companies */}
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-[#D37E91]/10 rounded-lg">
-              <Building2 className="w-6 h-6 text-[#D37E91]" />
+            <div className="p-3 bg-[#8A2B2B]/10 rounded-lg">
+              <Building2 className="w-6 h-6 text-[#8A2B2B]" />
             </div>
             {stats && stats.new_companies_this_week > 0 && (
               <span className="text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
@@ -746,8 +746,8 @@ export default function AdminDashboardPage() {
       <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#D37E91]/10 rounded-lg">
-              <Award className="w-6 h-6 text-[#D37E91]" />
+            <div className="p-2.5 bg-[#8A2B2B]/10 rounded-lg">
+              <Award className="w-6 h-6 text-[#8A2B2B]" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-theme-primary">EHO Readiness Scores</h2>
@@ -756,7 +756,7 @@ export default function AdminDashboardPage() {
           </div>
           <Link 
             href="/admin/companies" 
-            className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm flex items-center gap-1 transition-colors"
+            className="text-[#8A2B2B] hover:text-[#8A2B2B]/80 text-sm flex items-center gap-1 transition-colors"
           >
             View all <ArrowRight className="w-4 h-4" />
           </Link>
@@ -802,7 +802,7 @@ export default function AdminDashboardPage() {
                   </div>
                   
                   <div>
-                    <h3 className="text-theme-primary font-semibold group-hover:text-[#D37E91] transition-colors">{company.name}</h3>
+                    <h3 className="text-theme-primary font-semibold group-hover:text-[#8A2B2B] transition-colors">{company.name}</h3>
                     <p className="text-theme-tertiary text-sm">
                       {company.user_count} users • {company.site_count} sites
                     </p>
@@ -832,7 +832,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  <div className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-lg text-sm transition-all duration-200 ease-in-out">
+                  <div className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded-lg text-sm transition-all duration-200 ease-in-out">
                     View Details
                   </div>
                 </div>

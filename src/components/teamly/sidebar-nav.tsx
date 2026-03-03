@@ -226,9 +226,9 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
         }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
           isActive
-            ? 'bg-teamly-dark/[0.08] dark:bg-teamly/10 text-teamly-dark dark:text-teamly font-medium'
+            ? 'bg-teamly-mid/[0.10] dark:bg-teamly-mid/[0.08] text-teamly-dark dark:text-teamly font-medium border-l-2 border-teamly-mid'
             : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5'
-        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-dark dark:before:bg-teamly' : ''}`}
+        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-mid' : ''}`}
       >
         <item.icon className="w-5 h-5 flex-shrink-0" />
         <span className="flex-1">{item.label}</span>
@@ -280,7 +280,7 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
                 href={child.href}
                 className={`block px-3 py-1.5 rounded text-sm transition-colors relative ${
                   isChildActive
-                    ? 'bg-teamly-dark/[0.08] dark:bg-teamly/10 text-teamly-dark dark:text-teamly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-dark dark:before:bg-teamly'
+                    ? 'bg-teamly-mid/[0.10] dark:bg-teamly-mid/[0.08] text-teamly-dark dark:text-teamly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-mid'
                     : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5'
                 }`}
               >
@@ -310,14 +310,14 @@ export function TeamlySidebar() {
 
   return (
     <aside
-      className={`bg-sidebar-teamly-light dark:bg-sidebar-teamly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      className={`bg-sidebar-teamly-light dark:bg-sidebar-teamly border-r border-teamly-mid/25 flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
       style={{ width: displayWidth }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       suppressHydrationWarning
     >
       {/* Header */}
-      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-teamly-light dark:bg-sidebar-teamly border-b border-module-fg/[0.18]`}>
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-teamly-light dark:bg-sidebar-teamly border-b border-teamly-mid/25`}>
         <Link href="/dashboard/people" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img src="/new_module_logos/teamly_light.svg" alt="Teamly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
           <img src="/new_module_logos/teamly_dark.svg" alt="Teamly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
@@ -349,7 +349,7 @@ export function TeamlySidebar() {
       </nav>
 
       {/* Profile + Pin */}
-      <div className="border-t border-module-fg/[0.18]">
+      <div className="border-t border-teamly-mid/25">
         {showExpanded ? (
           <div className="p-4 flex items-center gap-1">
             <button

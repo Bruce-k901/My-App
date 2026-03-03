@@ -117,7 +117,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-assetly-dark/70 dark:text-assetly/70 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-assetly-mid dark:text-assetly-mid tracking-wider font-bold border-b border-assetly-mid/25 dark:border-assetly-mid/20 pb-2">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>
@@ -136,7 +136,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'text-assetly-dark dark:text-assetly bg-assetly-dark/[0.08] dark:bg-assetly/10 font-medium'
+            ? 'bg-assetly-mid/[0.10] dark:bg-assetly-mid/[0.08] text-assetly-dark dark:text-assetly font-medium border-l-2 border-assetly-mid'
             : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5'
         }`}
       >
@@ -158,14 +158,14 @@ export function AssetlySidebar() {
 
   return (
     <aside
-      className={`bg-sidebar-assetly-light dark:bg-sidebar-assetly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      className={`bg-sidebar-assetly-light dark:bg-sidebar-assetly border-r border-assetly-mid/25 flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
       style={{ width: displayWidth }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       suppressHydrationWarning
     >
       {/* Header */}
-      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-assetly-light dark:bg-sidebar-assetly border-b border-module-fg/[0.18]`}>
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-assetly-light dark:bg-sidebar-assetly border-b border-assetly-mid/25`}>
         <Link href="/dashboard/assets" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
           <img src="/new_module_logos/assetly_light.svg" alt="Assetly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
           <img src="/new_module_logos/assetly_dark.svg" alt="Assetly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
@@ -199,7 +199,7 @@ export function AssetlySidebar() {
       </nav>
 
       {/* Profile + Pin */}
-      <div className="border-t border-module-fg/[0.18]">
+      <div className="border-t border-assetly-mid/25">
         {showExpanded ? (
           <div className="p-4 flex items-center gap-1">
             <button

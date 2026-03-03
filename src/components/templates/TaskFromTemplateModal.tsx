@@ -2076,7 +2076,7 @@ export function TaskFromTemplateModal({
           <p className="text-theme-primary mb-4">Template not found</p>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200"
+            className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded transition-all duration-200"
           >
             Close
           </button>
@@ -2145,7 +2145,7 @@ export function TaskFromTemplateModal({
                   onChange={(e) => setFormData({ ...formData, custom_name: e.target.value })}
                   placeholder={existingTask ? (existingTask.custom_name || template?.name || 'Task name') : 'Enter a unique name for this task (e.g., "Front counter setup checklist")'}
                   required={!existingTask}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 />
                 {!existingTask && (
                   <p className="text-xs text-theme-tertiary mt-1">
@@ -2190,7 +2190,7 @@ export function TaskFromTemplateModal({
                           value={taskSiteId}
                           onChange={(e) => setTaskSiteId(e.target.value)}
                           required
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                         >
                           <option value="">Select a site</option>
                           {availableSites.map(site => (
@@ -2234,14 +2234,14 @@ export function TaskFromTemplateModal({
                       onChange={(e) => setFormData({ ...formData, custom_instructions: e.target.value })}
                       placeholder={template?.instructions || 'Instructions will come from template...'}
                       rows={8}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-y"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B] resize-y"
                     />
                   </div>
                 )}
               </div>
 
               {template?.slug === 'training_compliance_management' && (
-                <div className="border border-[#D37E91]/30 bg-[#D37E91]/10 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(211,126,145,0.15)]">
+                <div className="border border-[#8A2B2B]/30 bg-[#8A2B2B]/10 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(138, 43, 43,0.15)]">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-white/90">
                       <p className="font-semibold text-theme-primary">Training Matrix Shortcut</p>
@@ -2252,7 +2252,7 @@ export function TaskFromTemplateModal({
                     <button
                       type="button"
                       onClick={handleOpenMatrix}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-[#D37E91] text-[#D37E91] font-medium rounded-lg transition-all duration-150 hover:bg-[#D37E91]/20 hover:text-white shadow-[0_0_12px_rgba(211,126,145,0.35)]"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-[#8A2B2B] text-[#8A2B2B] font-medium rounded-lg transition-all duration-150 hover:bg-[#8A2B2B]/20 hover:text-white shadow-[0_0_12px_rgba(138, 43, 43,0.35)]"
                     >
                       <span>Open Matrix</span>
                       <ArrowUpRight className="w-4 h-4" />
@@ -2274,7 +2274,7 @@ export function TaskFromTemplateModal({
                   <select
                     value={frequencyOverride || template?.frequency || 'daily'}
                     onChange={(e) => setFrequencyOverride(e.target.value)}
-                    className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                    className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
@@ -2294,7 +2294,7 @@ export function TaskFromTemplateModal({
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     required
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                   />
                 </div>
                 )}
@@ -2309,7 +2309,7 @@ export function TaskFromTemplateModal({
                       type="date"
                       value={formData.anniversary_date || ''}
                       onChange={(e) => setFormData({ ...formData, anniversary_date: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                      className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                     />
                     <p className="text-xs text-theme-tertiary mt-1">
                       Tasks will be scheduled {frequencyOverride === 'quarterly' ? 'every 3 months' : 'every 6 months'} from this date
@@ -2336,7 +2336,7 @@ export function TaskFromTemplateModal({
                             e.target.value = ''; // Reset dropdown
                           }
                         }}
- className="px-3 py-1.5 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-xs focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="px-3 py-1.5 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-xs focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                       >
                         <option value="">+ Add Daypart</option>
                         {availableDayparts
@@ -2363,7 +2363,7 @@ export function TaskFromTemplateModal({
                               key={daypart}
                               className={`border rounded-lg p-3 transition-all ${
                                 isSelected
-                                  ? 'border-[#D37E91]/50 bg-[#D37E91]/10'
+                                  ? 'border-[#8A2B2B]/50 bg-[#8A2B2B]/10'
                                   : 'border-white/10 bg-white/[0.02] hover:border-white/20'
                               }`}
                             >
@@ -2389,7 +2389,7 @@ export function TaskFromTemplateModal({
                                       });
                                     }
                                   }}
-                                  className="w-5 h-5 accent-[#D37E91] cursor-pointer"
+                                  className="w-5 h-5 accent-[#8A2B2B] cursor-pointer"
                                 />
                                 <label className="text-sm font-medium text-theme-primary capitalize flex-1 cursor-pointer" onClick={() => {
                                   if (!isSelected) {
@@ -2453,7 +2453,7 @@ export function TaskFromTemplateModal({
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -2504,7 +2504,7 @@ export function TaskFromTemplateModal({
                   <h2 className="text-lg font-semibold text-theme-primary">
                     Fire Alarm Call Points
                     {callPoints.length > 0 && (
-                      <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
+                      <span className="ml-2 text-sm font-normal text-[#8A2B2B] dark:text-[#8A2B2B]">
                         ({callPoints.length} configured)
                       </span>
                     )}
@@ -2574,7 +2574,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.name}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, name: e.target.value })}
                             placeholder="e.g., Call Point 1 - Front Entrance"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                           />
                         </div>
                         <div>
@@ -2586,7 +2586,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.location}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, location: e.target.value })}
                             placeholder="e.g., Front Entrance, Kitchen, Bar Area"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                           />
                         </div>
                         <button
@@ -2630,7 +2630,7 @@ export function TaskFromTemplateModal({
                             }
                           }}
                           disabled={!newCallPoint.name.trim()}
-                          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
+                          className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                         >
                           Add Call Point
                         </button>
@@ -2711,7 +2711,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="sop-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-[#D37E91]/10 dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded-lg transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-[#8A2B2B]/10 dark:bg-transparent border border-[#8A2B2B] dark:border-[#8A2B2B] text-[#8A2B2B] dark:text-[#8A2B2B] hover:bg-[#8A2B2B]/10 dark:hover:shadow-module-glow rounded-lg transition-all duration-200 cursor-pointer font-medium">
                       Upload SOP Document
                     </span>
                   </label>
@@ -2724,7 +2724,7 @@ export function TaskFromTemplateModal({
                             <span className="text-theme-tertiary text-xs">({formatFileSize(sop.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
+                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-[#8A2B2B] dark:text-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] text-sm font-medium">
                               View
                             </a>
                             <button
@@ -2755,7 +2755,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#8A2B2B] dark:border-[#8A2B2B] text-[#8A2B2B] dark:text-[#8A2B2B] hover:bg-[#8A2B2B]/10 dark:hover:shadow-module-glow rounded transition-all duration-200 cursor-pointer font-medium">
                       Upload Risk Assessment
                     </span>
                   </label>
@@ -2768,7 +2768,7 @@ export function TaskFromTemplateModal({
                             <span className="text-theme-tertiary text-xs">({formatFileSize(ra.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
+                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-[#8A2B2B] dark:text-[#8A2B2B] hover:text-[#8A2B2B] dark:hover:text-[#8A2B2B] text-sm font-medium">
                               View
                             </a>
                             <button
@@ -2865,7 +2865,7 @@ export function TaskFromTemplateModal({
                         toast.error('Company ID not available');
                       }
                     }}
-                    className="px-3 py-1 text-xs text-[#D37E91] hover:text-[#D37E91] border border-[#D37E91]/30 rounded hover:bg-[#D37E91]/15 transition-colors"
+                    className="px-3 py-1 text-xs text-[#8A2B2B] hover:text-[#8A2B2B] border border-[#8A2B2B]/30 rounded hover:bg-[#8A2B2B]/15 transition-colors"
                     title="Refresh library data from database"
                   >
                     Refresh
@@ -2877,7 +2877,7 @@ export function TaskFromTemplateModal({
                     setSelectedLibraryType(e.target.value);
                     setTempLibrarySelection([]); // Reset temp selection when changing library
                   }}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
                 >
                   <option value="">-- Select a library --</option>
                   {libraryData.ppe.length > 0 && <option value="ppe">PPE Library</option>}
@@ -2936,7 +2936,7 @@ export function TaskFromTemplateModal({
                                         setTempLibrarySelection(tempLibrarySelection.filter(id => id !== itemId));
                                       }
                                     }}
-                                    className="w-4 h-4 accent-[#D37E91] cursor-pointer"
+                                    className="w-4 h-4 accent-[#8A2B2B] cursor-pointer"
                                   />
                                   <span className="text-theme-primary text-sm flex-1">{getItemName(item)}</span>
                                 </label>
@@ -2971,7 +2971,7 @@ export function TaskFromTemplateModal({
                               toast.success(`Added ${tempLibrarySelection.length} item(s) from ${selectedLibraryType.replace('_', ' ')} library`);
                             }}
                             disabled={tempLibrarySelection.length === 0}
-                            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
+                            className="px-4 py-2 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                           >
                             Add to Task
                           </button>
@@ -3012,7 +3012,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('ppe');
                               setTempLibrarySelection(formData.selectedLibraries.ppe); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit PPE Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3058,7 +3058,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('chemicals');
                               setTempLibrarySelection(formData.selectedLibraries.chemicals); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit Chemicals Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3104,7 +3104,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('equipment');
                               setTempLibrarySelection(formData.selectedLibraries.equipment); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit Equipment Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3149,7 +3149,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('ingredients');
                               setTempLibrarySelection(formData.selectedLibraries.ingredients); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit Ingredients Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3194,7 +3194,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('drinks');
                               setTempLibrarySelection(formData.selectedLibraries.drinks); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit Drinks Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3239,7 +3239,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('disposables');
                               setTempLibrarySelection(formData.selectedLibraries.disposables); // Pre-populate with current selections
                             }}
-                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
+                            className="text-[#8A2B2B] hover:text-[#8A2B2B] p-1 rounded hover:bg-white/5"
                             title="Edit Disposables Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3288,7 +3288,7 @@ export function TaskFromTemplateModal({
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Add any additional notes for this task..."
                 rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#8A2B2B] focus:border-[#8A2B2B]"
               />
             </div>
           </div>
@@ -3305,7 +3305,7 @@ export function TaskFromTemplateModal({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+              className="px-5 py-2 bg-[#8A2B2B] hover:bg-[#8A2B2B] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
               {saving 
                 ? (existingTask || existingSiteChecklist ? 'Saving...' : 'Creating...') 

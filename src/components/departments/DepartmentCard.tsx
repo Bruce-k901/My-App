@@ -23,8 +23,8 @@ export default function DepartmentCard({
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:border-white/[0.12] transition-colors">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3 flex-1">
-          <div className="p-2 bg-[#D37E91]/10 rounded-lg flex-shrink-0">
-            <Building2 className="w-5 h-5 text-[#D37E91]" />
+          <div className="p-2 bg-[#8A2B2B]/10 rounded-lg flex-shrink-0">
+            <Building2 className="w-5 h-5 text-[#8A2B2B]" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-theme-primary mb-1">{department.name}</h3>
@@ -81,7 +81,7 @@ export default function DepartmentCard({
               <Mail className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`mailto:${department.contact_email}`}
-                className="text-[#D37E91] hover:underline"
+                className="text-[#8A2B2B] hover:underline"
               >
                 {department.contact_email}
               </a>
@@ -92,7 +92,7 @@ export default function DepartmentCard({
               <Phone className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`tel:${department.contact_phone}`}
-                className="text-[#D37E91] hover:underline"
+                className="text-[#8A2B2B] hover:underline"
               >
                 {department.contact_phone}
               </a>
@@ -103,7 +103,7 @@ export default function DepartmentCard({
               <Phone className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`tel:${department.contact_mobile}`}
-                className="text-[#D37E91] hover:underline"
+                className="text-[#8A2B2B] hover:underline"
               >
                 {department.contact_mobile} (Mobile)
               </a>

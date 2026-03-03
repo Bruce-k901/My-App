@@ -104,7 +104,7 @@ export default function ContractorCard({
                 <p className="text-theme-tertiary text-sm flex items-center gap-2">
                   Sites Serviced
                   {typeof contractor.site_count === 'number' && (
-                    <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#D37E91]/25 border border-[#D37E91]/40 text-[#D37E91]/70">
+                    <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#8A2B2B]/25 border border-[#8A2B2B]/40 text-[#8A2B2B]/70">
                       {contractor.site_count} Sites
                     </span>
                   )}
@@ -132,8 +132,8 @@ export default function ContractorCard({
               }}
               className="
                 p-2 rounded
-                border border-[#D37E91] text-[#D37E91]
-                hover:shadow-[0_0_6px_#D37E91]
+                border border-[#8A2B2B] text-[#8A2B2B]
+                hover:shadow-[0_0_6px_#8A2B2B]
                 transition
               "
             >
@@ -180,7 +180,7 @@ function LinkField({ label, value, type, showPlaceholder = false }: { label: str
       <p className="text-theme-tertiary text-sm">{label}</p>
       <a 
         href={href}
-        className="text-theme-primary text-sm hover:text-[#D37E91] transition flex items-center gap-2"
+        className="text-theme-primary text-sm hover:text-[#8A2B2B] transition flex items-center gap-2"
       >
         {icon}
         {value}

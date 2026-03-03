@@ -644,7 +644,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         }
       }}
     >
-      <div className="bg-neutral-900 border border-white/10 rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-full sm:max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[rgb(var(--surface-elevated))] border border-theme rounded-lg w-full max-w-4xl p-4 sm:p-6 max-h-full sm:max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold text-theme-primary mb-6">
           {contractor ? "Edit Contractor" : "Add Contractor"}
         </h2>
@@ -652,10 +652,10 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         <ContractorForm form={form} setForm={setForm} isEditing={!!contractor?.id} />
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button 
-            variant="ghost" 
-            className="border border-white/[0.1] hover:border-white/[0.25] hover:bg-white/[0.07]" 
-            onClick={onClose} 
+          <Button
+            variant="ghost"
+            className="border border-theme hover:border-theme-hover hover:bg-theme-hover"
+            onClick={onClose}
             disabled={loading}
           >
             Cancel

@@ -59,12 +59,12 @@ export default function UserCard({ user }: { user: any }) {
               e.stopPropagation();
               generateCode();
             }}
-            className="text-xs px-3 py-1 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+            className="text-xs px-3 py-1 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200"
           >
             Generate Code
           </button>
 
-          {loginCode && <span className="font-mono text-[#D37E91] text-xs">{loginCode}</span>}
+          {loginCode && <span className="font-mono text-[#8A2B2B] text-xs">{loginCode}</span>}
         </div>
       </CardContent>
     </Card>

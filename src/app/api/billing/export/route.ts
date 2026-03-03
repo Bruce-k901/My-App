@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         .eq("company_id", companyId);
 
       const { data: ppmSchedules } = await adminSupabase
-        .from("ppm_schedule")
+        .from("ppm_schedules")
         .select("*")
         .in("asset_id", assets?.map((a: any) => a.id) || []);
 

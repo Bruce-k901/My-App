@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40"
               placeholder="admin@opsly.app"
             />
           </div>
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A2B2B]/40 focus:border-[#8A2B2B]/40"
               placeholder="••••••••"
             />
           </div>
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
+            className="w-full py-3 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

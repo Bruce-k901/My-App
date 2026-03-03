@@ -24,7 +24,7 @@ export function DateFieldRenderer({ field, value, onChange, disabled }: DateFiel
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] transition-colors text-sm disabled:opacity-50"
+        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-[#8A2B2B] transition-colors text-sm disabled:opacity-50"
       />
     </div>
   );

@@ -95,7 +95,7 @@ export function ModuleBar() {
     <div
       className={cn(
         "h-14 border-b px-6 flex items-center fixed top-16 left-0 right-0 z-30 print:hidden",
-        "bg-[rgb(var(--module-bg-tint))] border-module-fg/[0.18]"
+        "bg-[rgb(var(--module-bg-tint))] border-module-fg-mid/25"
       )}
     >
       <div className="flex-1" />
@@ -118,7 +118,7 @@ export function ModuleBar() {
                   {module.name}
                 </span>
                 {module.badge && (
-                  <span className="px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-semibold bg-[#8A2B2B] text-white rounded-full">
                     {module.badge}
                   </span>
                 )}
@@ -155,7 +155,7 @@ export function ModuleBar() {
               </span>
               {/* Active bottom border indicator */}
               {isActive && (
-                <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full bg-module-fg" />
+                <span className="absolute bottom-0 left-2 right-2 h-[3px] rounded-t-full bg-gradient-to-r from-module-fg via-module-fg-mid to-module-fg" />
               )}
             </Link>
           );

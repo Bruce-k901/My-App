@@ -38,7 +38,7 @@ export default function CardHeader({
                     <a
                       href={`mailto:${trimmedPart}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="hover:text-[#D37E91] transition-colors duration-200"
+                      className="hover:text-[#8A2B2B] transition-colors duration-200"
                     >
                       {trimmedPart}
                     </a>
@@ -54,7 +54,7 @@ export default function CardHeader({
                     <a
                       href={`tel:${trimmedPart}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="hover:text-[#D37E91] transition-colors duration-200"
+                      className="hover:text-[#8A2B2B] transition-colors duration-200"
                     >
                       {trimmedPart}
                     </a>

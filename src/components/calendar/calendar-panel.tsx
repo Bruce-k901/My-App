@@ -17,7 +17,7 @@ export function CalendarPanel() {
           <SheetTitle className="text-theme-primary">Daily Notes & Actions</SheetTitle>
         </SheetHeader>
         
-        <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-[#0b0d13]">
+        <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-[#101214]">
           <CalendarWidget />
         </div>
       </SheetContent>

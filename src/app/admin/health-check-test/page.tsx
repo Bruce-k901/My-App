@@ -37,27 +37,27 @@ import {
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import type { HealthCheckItem, HealthCheckModule } from '@/types/health-check'
 
-// ---------- Admin button styles (always dark context on #0B0D13) ----------
+// ---------- Admin button styles (always dark context on #101214) ----------
 
 const btnBase = 'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:pointer-events-none'
-const btnPrimary = `${btnBase} h-10 px-5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-module-glow`
+const btnPrimary = `${btnBase} h-10 px-5 bg-transparent border border-[#8A2B2B] text-[#8A2B2B] hover:bg-[#8A2B2B]/10 hover:shadow-module-glow`
 const btnGhost = `${btnBase} h-10 px-5 bg-transparent border border-white/20 text-theme-tertiary hover:bg-white/[0.06] hover:text-white hover:border-white/30`
 const btnDestructive = `${btnBase} h-10 px-5 bg-red-500/90 text-white hover:bg-red-500 border border-red-500/50`
-const btnOutline = `${btnBase} h-9 px-3 bg-transparent border border-white/15 text-theme-tertiary hover:border-[#D37E91]/50 hover:text-[#D37E91] hover:shadow-module-glow`
+const btnOutline = `${btnBase} h-9 px-3 bg-transparent border border-white/15 text-theme-tertiary hover:border-[#8A2B2B]/50 hover:text-[#8A2B2B] hover:shadow-module-glow`
 
 // Admin Select overrides — targets the Radix trigger <button> inside the Select wrapper
 const adminSelectCls = [
   '[&_button]:!bg-white/5',
-  '[&_button]:!border-[rgba(211,126,145,0.4)]',
+  '[&_button]:!border-[rgba(138, 43, 43,0.4)]',
   '[&_button]:!text-theme-primary',
   '[&_button]:!shadow-none',
   '[&_button_svg]:!text-theme-tertiary',
-  '[&_button]:hover:!border-[rgba(211,126,145,0.7)]',
-  '[&_button]:hover:!shadow-[0_0_10px_rgba(211,126,145,0.2)]',
-  '[&_button]:focus:!border-[#D37E91]',
-  '[&_button]:focus:!shadow-[0_0_14px_rgba(211,126,145,0.3)]',
-  '[&_button[data-state=open]]:!border-[#D37E91]',
-  '[&_button[data-state=open]]:!shadow-[0_0_14px_rgba(211,126,145,0.3)]',
+  '[&_button]:hover:!border-[rgba(138, 43, 43,0.7)]',
+  '[&_button]:hover:!shadow-[0_0_10px_rgba(138, 43, 43,0.2)]',
+  '[&_button]:focus:!border-[#8A2B2B]',
+  '[&_button]:focus:!shadow-[0_0_14px_rgba(138, 43, 43,0.3)]',
+  '[&_button[data-state=open]]:!border-[#8A2B2B]',
+  '[&_button[data-state=open]]:!shadow-[0_0_14px_rgba(138, 43, 43,0.3)]',
 ].join(' ')
 
 // ---------- Types ----------

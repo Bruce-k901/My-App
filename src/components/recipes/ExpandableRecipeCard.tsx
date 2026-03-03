@@ -520,7 +520,7 @@ export function ExpandableRecipeCard({
 
       {/* EXPANDED VIEW - New Layout */}
       {isExpanded && (
-        <div className="border-t border-theme dark:border-theme bg-theme-surface-elevated dark:bg-[#0B0D13]">
+        <div className="border-t border-theme dark:border-theme bg-theme-surface-elevated dark:bg-[#101214]">
           <div className="p-6 space-y-6">
             
             {/* Editing Form */}
@@ -986,7 +986,7 @@ export function ExpandableRecipeCard({
 
       {/* Enhanced SOP Creation/Update Dialog */}
       <Dialog open={showSopDialog} onOpenChange={setShowSopDialog}>
-        <DialogContent className="bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme">
+        <DialogContent className="bg-theme-surface-elevated dark:bg-[#101214] border border-theme">
           <DialogHeader>
             <DialogTitle className="text-[rgb(var(--text-primary))] dark:text-white">
               {linkedSOPId ? 'Update SOP' : 'Create SOP'} for {recipe.name}

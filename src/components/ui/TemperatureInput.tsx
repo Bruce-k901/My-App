@@ -164,9 +164,9 @@ export function TemperatureInput({
         name={name}
         className={cn(
           "w-full rounded-lg bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary px-3 py-2",
-          "placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50",
+          "placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2B2B]/50 focus-visible:border-[#8A2B2B]/50",
           "hover:bg-theme-surface-elevated dark:hover:bg-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600 transition-colors",
-          showKeyboard && isMobile && "ring-2 ring-[#D37E91]/50 border-[#D37E91]/50",
+          showKeyboard && isMobile && "ring-2 ring-[#8A2B2B]/50 border-[#8A2B2B]/50",
           className
         )}
         // Use fontSize prop if provided, otherwise prevent zoom on iOS (16px) or use default 14px

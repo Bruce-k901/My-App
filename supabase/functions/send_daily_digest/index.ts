@@ -129,7 +129,7 @@ Deno.serve(async () => {
           : "All Sites";
         const html = `
           <div style="font-family: Inter,ui-sans-serif,system-ui,Arial; color:#0f172a; max-width:560px; margin:0 auto;">
-            <div style="background: linear-gradient(135deg, #D37E91 0%, #b0607a 100%); padding:24px; border-radius:12px 12px 0 0; text-align:center;">
+            <div style="background: linear-gradient(135deg, #8A2B2B 0%, #6E2222 100%); padding:24px; border-radius:12px 12px 0 0; text-align:center;">
               <div style="margin:0 auto 12px; text-align:center;"><svg width="60" height="40" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="24" height="110" rx="12" fill="#1B2624"/><rect x="44" y="30" width="24" height="90" rx="12" fill="#8B2E3E"/><rect x="78" y="15" width="24" height="105" rx="12" fill="#D9868C"/><rect x="112" y="25" width="24" height="95" rx="12" fill="#5D8AA8"/><rect x="146" y="10" width="24" height="110" rx="12" fill="#87B0D6"/><rect x="180" y="20" width="24" height="100" rx="12" fill="#9AC297"/></svg></div>
               <p style="margin:0; color:rgba(255,255,255,0.9); font-size:13px; font-weight:500;">Opsly Operations Platform</p>
             </div>

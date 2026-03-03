@@ -37,7 +37,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const ACTION_BUTTON_CLS =
-  'rounded-md px-2.5 py-1 text-xs font-medium transition-colors bg-teamly/10 text-teamly hover:bg-teamly/20';
+  'rounded-md px-2.5 py-1 text-xs font-medium transition-colors bg-teamly-mid/[0.10] text-teamly-dark dark:text-teamly border border-teamly-mid/30 hover:bg-teamly-mid/[0.18]';
 
 function StatusBadge({ status }: { status: ComplianceStatus }) {
   const cfg = STATUS_CONFIG[status];

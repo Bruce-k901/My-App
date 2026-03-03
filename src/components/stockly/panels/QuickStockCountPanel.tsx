@@ -512,7 +512,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/10 flex items-center gap-3 bg-[#0B0D13]/50 backdrop-blur-sm">
+      <div className="p-4 border-t border-white/10 flex items-center gap-3 bg-[#101214]/50 backdrop-blur-sm">
         <button
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors text-sm font-medium"

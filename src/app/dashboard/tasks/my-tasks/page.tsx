@@ -233,7 +233,7 @@ export default function MyTasksPage() {
           </p>
           <a 
             href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+            className="inline-block px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(138, 43, 43,0.7)] rounded-lg transition-all duration-200"
           >
             Go to Business Details
           </a>

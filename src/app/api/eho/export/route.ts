@@ -277,7 +277,7 @@ function generatePdfHtml(
 
     /* Header */
     .header {
-      border-bottom: 3px solid #D37E91;
+      border-bottom: 3px solid #8A2B2B;
       padding-bottom: 16px;
       margin-bottom: 24px;
     }
