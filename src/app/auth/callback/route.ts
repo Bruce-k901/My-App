@@ -91,6 +91,22 @@ export async function GET(request: Request) {
   const { getSupabaseAdmin } = await import('@/lib/supabaseAdmin');
   const supabaseAdmin = getSupabaseAdmin();
 
+  // Check if user already has a profile with a company_id
+  // This handles invited staff who were already linked to a company by the invite API.
+  // Without this check, invited staff would have a NEW empty company created below
+  // (because no company has created_by = their user id), overwriting their real company.
+  const { data: linkedProfile } = await supabaseAdmin
+    .from('profiles')
+    .select('id, company_id, app_role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (linkedProfile?.company_id) {
+    console.log('ℹ️ User already linked to company (invited staff) — skipping company creation:', linkedProfile.company_id);
+    console.log('🚀 Redirecting to:', next);
+    return NextResponse.redirect(new URL(next, request.url));
+  }
+
   // Check if company already exists for this user (check multiple fields)
   const { data: existingCompany } = await supabaseAdmin
     .from('companies')
