@@ -166,7 +166,7 @@ export async function POST(req: Request) {
         const { data: newUser, error: createError } = await admin.auth.admin.createUser({
           email: emailLower,
           email_confirm: false,
-          user_metadata: { full_name, company_id },
+          user_metadata: { full_name, company_id, app_role: roleValue },
         });
 
         if (createError) {
@@ -211,11 +211,12 @@ export async function POST(req: Request) {
     }
 
     // Step 2: Create or update profile
+    // Use UPSERT to handle the race condition where the handle_new_user trigger
+    // creates a profile (without company_id) before we can insert ours.
     const existingProfileData = existingProfile && existingProfile.length > 0 ? existingProfile[0] : null;
     const profileId = existingProfileData?.id || authUserId || crypto.randomUUID();
-    const isUpdate = !!existingProfileData;
-    
-    console.log(`🟢 ${isUpdate ? 'Updating' : 'Creating'} profile with ID: ${profileId} ${authUserId ? '(from auth user)' : existingProfileData ? '(existing profile)' : '(generated)'}`);
+
+    console.log(`🟢 Upserting profile with ID: ${profileId} ${authUserId ? '(from auth user)' : existingProfileData ? '(existing profile)' : '(generated)'}`);
 
     // Helper function to convert empty strings to null (especially important for UUID fields)
     const nullIfEmpty = (value: any): any => {
@@ -287,35 +288,28 @@ export async function POST(req: Request) {
       cossh_expiry_date: cossh_expiry_date || null,
     };
 
-    console.log(`🔍 Profile data to ${isUpdate ? 'update' : 'insert'}:`, JSON.stringify(profileData, null, 2));
+    console.log(`🔍 Profile data to upsert:`, JSON.stringify(profileData, null, 2));
     console.log(`🔍 Profile ID: ${profileId}, Auth User ID: ${authUserId || 'none'}`);
 
-    let dbError;
-    if (isUpdate) {
-      // Update existing profile
-      const { error: updateError } = await admin
-        .from("profiles")
-        .update(profileData)
-        .eq("id", profileId);
-      dbError = updateError;
-    } else {
-      // Insert new profile
-      const { error: insertError } = await admin
-        .from("profiles")
-        .insert({
+    // UPSERT: handles both new profiles AND profiles pre-created by the
+    // handle_new_user trigger (which lack company_id, correct role, etc.)
+    const { error: dbError } = await admin
+      .from("profiles")
+      .upsert(
+        {
           id: profileId,
           ...profileData,
-        });
-      dbError = insertError;
-    }
+        },
+        { onConflict: "id" }
+      );
 
     if (dbError) {
-      console.error(`❌ ${isUpdate ? 'Update' : 'Insert'} failed:`, dbError);
+      console.error(`❌ Upsert failed:`, dbError);
       console.error(`❌ Full error object:`, JSON.stringify(dbError, null, 2));
       console.error(`❌ Profile data attempted:`, JSON.stringify({ id: profileId, ...profileData }, null, 2));
       return NextResponse.json(
         {
-          error: `${isUpdate ? 'Update' : 'Insert'} failed`,
+          error: `Upsert failed`,
           details: dbError.message || dbError,
           code: dbError.code,
           hint: dbError.hint,
@@ -324,8 +318,36 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log(`✅ User ${isUpdate ? 'updated' : 'saved'}: ${email} (${profileId})${invitationSent ? ' - Email sent' : ' - No email sent (check logs)'}`);
-    
+    console.log(`✅ User saved: ${email} (${profileId})${invitationSent ? ' - Email sent' : ' - No email sent (check logs)'}`);
+
+    // Step 2b: Ensure user_companies row exists (for AppContext company lookup)
+    if (company_id && profileId) {
+      try {
+        const { error: ucError } = await admin
+          .from("user_companies")
+          .upsert(
+            {
+              profile_id: profileId,
+              company_id,
+              app_role: roleValue,
+              is_primary: true,
+            },
+            { onConflict: "profile_id,company_id" }
+          );
+        if (ucError) {
+          // Non-critical — log but don't fail user creation
+          // Table might not exist yet if migration hasn't run
+          if (ucError.code !== '42P01') {
+            console.warn(`⚠️ user_companies upsert failed (non-critical):`, ucError.message);
+          }
+        } else {
+          console.log(`✅ user_companies row ensured for profile ${profileId}`);
+        }
+      } catch (ucErr) {
+        console.warn(`⚠️ user_companies upsert exception (non-critical):`, ucErr);
+      }
+    }
+
     // Step 3: Ensure user has messaging access (add to default company channel)
     if (company_id && profileId) {
       try {
@@ -387,13 +409,13 @@ export async function POST(req: Request) {
     }
     
     // Return response with email status
-    const response: any = { 
-      ok: true, 
-      id: profileId, 
-      invited: invitationSent, 
-      updated: isUpdate 
+    const response: any = {
+      ok: true,
+      id: profileId,
+      invited: invitationSent,
+      updated: !!existingProfileData,
     };
-    
+
     // If email wasn't sent but user exists, provide helpful message
     if (!invitationSent && existingProfileData) {
       response.warning = "User profile updated but email may not have been sent. Check terminal logs and Inbucket.";
