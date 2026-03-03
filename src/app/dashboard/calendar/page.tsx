@@ -1062,7 +1062,7 @@ export default function ManagerCalendarPage() {
         </div>
 
         {/* Content */}
-        <div className="px-4 py-4 pb-4">
+        <div className="px-4 py-4" style={{ paddingBottom: 'calc(var(--above-tab-bar) + 5rem)' }}>
           {/* Notes for the day */}
           {mobileNotes && (
             <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4">
@@ -1101,7 +1101,7 @@ export default function ManagerCalendarPage() {
             setCreateTaskModalOpen(true);
           }}
           className="
-            fixed z-40
+            fixed z-[51]
             w-14 h-14
             rounded-full
             bg-[#FF6B9D] hover:bg-[#FF6B9D]/80
@@ -1112,7 +1112,7 @@ export default function ManagerCalendarPage() {
             active:scale-95 touch-manipulation
             right-5
           "
-          style={{ bottom: 'calc(var(--above-tab-bar) + 0.5rem)' }}
+          style={{ bottom: 'calc(var(--above-tab-bar) + 1rem)' }}
           aria-label="Create task"
         >
           <Plus className="w-7 h-7" />
