@@ -101,28 +101,35 @@ export async function GET(req: Request) {
     const fixErrors: string[] = [];
 
     if (shouldFix) {
-      // Fix ID mismatches — update profile.id to match auth user id
-      // OR create a new profile with the auth user's id
+      // Fix ID mismatches — delete old profile, recreate with correct auth user ID
       for (const mismatch of idMismatches) {
-        // Strategy: create/upsert a profile with the correct auth user ID,
-        // copying data from the email-matched profile
         const existingProfile = profileByEmail.get(mismatch.email?.toLowerCase());
         if (existingProfile) {
-          const { error } = await admin.from("profiles").upsert(
-            {
-              id: mismatch.authId, // Use the AUTH user's ID
-              email: existingProfile.email,
-              full_name: existingProfile.full_name,
-              company_id: existingProfile.company_id || OKJA_COMPANY_ID,
-              app_role: existingProfile.app_role || "Staff",
-            },
-            { onConflict: "id" }
-          );
-          if (error) {
-            fixErrors.push(`ID_FIX ${mismatch.email}: ${error.message}`);
+          // Step 1: Delete the old profile with the wrong ID
+          const { error: delError } = await admin
+            .from("profiles")
+            .delete()
+            .eq("id", mismatch.profileId);
+
+          if (delError) {
+            fixErrors.push(`DELETE ${mismatch.email}: ${delError.message}`);
+            continue;
+          }
+
+          // Step 2: Insert new profile with the correct auth user ID
+          const { error: insError } = await admin.from("profiles").insert({
+            id: mismatch.authId,
+            email: existingProfile.email,
+            full_name: existingProfile.full_name,
+            company_id: existingProfile.company_id || OKJA_COMPANY_ID,
+            app_role: existingProfile.app_role || "Staff",
+          });
+
+          if (insError) {
+            fixErrors.push(`INSERT ${mismatch.email}: ${insError.message}`);
           } else {
             fixedIdMismatches++;
-            report.push(`FIXED ID mismatch for ${mismatch.email}: profile.id ${mismatch.profileId} → ${mismatch.authId}`);
+            report.push(`FIXED ${mismatch.email}: deleted profile ${mismatch.profileId}, created with auth ID ${mismatch.authId}`);
           }
         }
 
