@@ -156,8 +156,10 @@ export function useTaskTimers({
       return [];
     }
 
+    // Exclude ad-hoc (on-demand) tasks — they fire immediately and shouldn't
+    // trigger scheduled overdue notifications
     return ((data || []) as TaskSummary[]).filter(
-      (t) => !t.template_id || t.task_data?.source === 'cron' || t.task_data?.source_type
+      (t) => t.task_data?.source_type !== 'ad_hoc'
     );
   }, [companyId, siteId, userId, userRole]);
 
@@ -381,7 +383,7 @@ export function useTaskTimers({
             const newTask = record as TaskSummary;
             if (newTask.due_time && (newTask.status === 'pending' || newTask.status === 'in_progress')) {
               // Check it passes the same filters as fetchTasks
-              const validTask = !newTask.template_id || newTask.task_data?.source === 'cron' || newTask.task_data?.source_type;
+              const validTask = newTask.task_data?.source_type !== 'ad_hoc';
               if (validTask) {
                 await resolveTemplateNames([newTask]);
                 if (!mountedRef.current) return;
