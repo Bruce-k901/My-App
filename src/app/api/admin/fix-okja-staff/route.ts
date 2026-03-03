@@ -26,7 +26,16 @@ export async function GET(req: Request) {
       .select("id, email, company_id, app_role, full_name");
     report.push(`Total profiles: ${allProfiles?.length || 0}`);
 
-    // ── 3. Get ALL companies ──
+    // ── 3. Get user_companies rows ──
+    let userCompaniesRows: any[] = [];
+    try {
+      const { data } = await admin.from("user_companies").select("profile_id, company_id, is_primary, app_role");
+      userCompaniesRows = data || [];
+    } catch {
+      report.push("user_companies table not found");
+    }
+
+    // ── 4. Get ALL companies ──
     const { data: allCompanies } = await admin
       .from("companies")
       .select("id, name, created_by");
@@ -34,97 +43,96 @@ export async function GET(req: Request) {
     // Build lookup maps
     const profileById = new Map((allProfiles || []).map((p) => [p.id, p]));
     const profileByEmail = new Map((allProfiles || []).map((p) => [p.email?.toLowerCase(), p]));
+    const ucByProfileId = new Map(userCompaniesRows.map((uc) => [uc.profile_id, uc]));
 
-    // ── 4. Find problems ──
-    const orphanedAuthUsers: any[] = []; // auth user with no profile
-    const wrongCompany: any[] = []; // profile exists but company_id is wrong/null
-    const okjaProfiles: any[] = []; // profiles correctly linked to Okja
-    const phantomCompanies: any[] = []; // "My Company" or companies with no profiles
+    // ── 5. Detailed per-user analysis ──
+    const userAnalysis: any[] = [];
+    const idMismatches: any[] = [];
+    const missingUserCompanies: any[] = [];
 
     for (const u of allUsers.users) {
-      const profile = profileById.get(u.id);
+      const profileByID = profileById.get(u.id);
       const profileByMail = profileByEmail.get(u.email?.toLowerCase() || "");
+      const uc = ucByProfileId.get(u.id);
 
-      if (!profile && !profileByMail) {
-        orphanedAuthUsers.push({
+      const analysis: any = {
+        authId: u.id,
+        email: u.email,
+        hasProfileById: !!profileByID,
+        hasProfileByEmail: !!profileByMail,
+        profileId: profileByID?.id || profileByMail?.id || null,
+        profileCompanyId: (profileByID || profileByMail)?.company_id || null,
+        profileRole: (profileByID || profileByMail)?.app_role || null,
+        hasUserCompaniesRow: !!uc,
+        metadataCompanyId: u.user_metadata?.company_id || null,
+        idMatch: profileByID ? "YES" : profileByMail ? "EMAIL_ONLY" : "NONE",
+      };
+
+      // Flag ID mismatches — profile found by email but NOT by auth user ID
+      if (!profileByID && profileByMail) {
+        analysis.PROBLEM = "ID_MISMATCH: profile.id != auth_user.id (AppContext cannot find this profile)";
+        idMismatches.push({
           authId: u.id,
+          profileId: profileByMail.id,
           email: u.email,
-          metadata_company_id: u.user_metadata?.company_id || null,
-          metadata_app_role: u.user_metadata?.app_role || null,
-          metadata_full_name: u.user_metadata?.full_name || null,
-          created_at: u.created_at,
-        });
-      } else {
-        const p = profile || profileByMail;
-        if (p && p.company_id === OKJA_COMPANY_ID) {
-          okjaProfiles.push({ id: p.id, email: p.email, role: p.app_role });
-        } else if (p && (!p.company_id || p.company_id !== OKJA_COMPANY_ID)) {
-          // Check if this user SHOULD be in Okja (invited via Okja admin)
-          // We check: was this user created around the same time as other Okja staff?
-          wrongCompany.push({
-            authId: u.id,
-            profileId: p.id,
-            email: p.email,
-            current_company_id: p.company_id,
-            current_company_name: allCompanies?.find((c) => c.id === p.company_id)?.name || "NONE",
-            metadata_company_id: u.user_metadata?.company_id || null,
-            role: p.app_role,
-          });
-        }
-      }
-    }
-
-    // Find phantom companies
-    for (const co of allCompanies || []) {
-      const profileCount = (allProfiles || []).filter((p) => p.company_id === co.id).length;
-      if (profileCount === 0 || co.name === "My Company") {
-        phantomCompanies.push({
-          id: co.id,
-          name: co.name,
-          created_by: co.created_by,
-          linkedProfiles: profileCount,
+          profileCompanyId: profileByMail.company_id,
+          profileRole: profileByMail.app_role,
         });
       }
+
+      // Flag missing user_companies
+      if (profileByID && profileByID.company_id && !uc) {
+        missingUserCompanies.push({
+          profileId: u.id,
+          email: u.email,
+          companyId: profileByID.company_id,
+        });
+      }
+
+      userAnalysis.push(analysis);
     }
 
-    report.push(`Okja profiles (OK): ${okjaProfiles.length}`);
-    report.push(`Orphaned auth users (no profile): ${orphanedAuthUsers.length}`);
-    report.push(`Profiles with wrong/null company: ${wrongCompany.length}`);
-    report.push(`Phantom/empty companies: ${phantomCompanies.length}`);
+    report.push(`ID mismatches (profile exists but wrong ID): ${idMismatches.length}`);
+    report.push(`Missing user_companies rows: ${missingUserCompanies.length}`);
 
-    // ── 5. FIX if requested ──
-    let fixed = 0;
-    let created = 0;
-    let deleted = 0;
+    // ── 6. FIX if requested ──
+    let fixedIdMismatches = 0;
+    let fixedUserCompanies = 0;
     const fixErrors: string[] = [];
 
     if (shouldFix) {
-      // Fix orphaned auth users — create profiles linked to Okja
-      for (const orphan of orphanedAuthUsers) {
-        const { error } = await admin.from("profiles").upsert(
-          {
-            id: orphan.authId,
-            email: orphan.email?.toLowerCase(),
-            full_name: orphan.metadata_full_name || orphan.email?.split("@")[0] || "User",
-            company_id: OKJA_COMPANY_ID,
-            app_role: "Staff",
-          },
-          { onConflict: "id" }
-        );
-        if (error) {
-          fixErrors.push(`CREATE ${orphan.email}: ${error.message}`);
-        } else {
-          created++;
-          report.push(`CREATED profile for ${orphan.email} → Okja`);
+      // Fix ID mismatches — update profile.id to match auth user id
+      // OR create a new profile with the auth user's id
+      for (const mismatch of idMismatches) {
+        // Strategy: create/upsert a profile with the correct auth user ID,
+        // copying data from the email-matched profile
+        const existingProfile = profileByEmail.get(mismatch.email?.toLowerCase());
+        if (existingProfile) {
+          const { error } = await admin.from("profiles").upsert(
+            {
+              id: mismatch.authId, // Use the AUTH user's ID
+              email: existingProfile.email,
+              full_name: existingProfile.full_name,
+              company_id: existingProfile.company_id || OKJA_COMPANY_ID,
+              app_role: existingProfile.app_role || "Staff",
+            },
+            { onConflict: "id" }
+          );
+          if (error) {
+            fixErrors.push(`ID_FIX ${mismatch.email}: ${error.message}`);
+          } else {
+            fixedIdMismatches++;
+            report.push(`FIXED ID mismatch for ${mismatch.email}: profile.id ${mismatch.profileId} → ${mismatch.authId}`);
+          }
         }
 
-        // Also ensure user_companies row
+        // Ensure user_companies row with correct profile_id
         try {
           await admin.from("user_companies").upsert(
             {
-              profile_id: orphan.authId,
-              company_id: OKJA_COMPANY_ID,
-              app_role: "Staff",
+              profile_id: mismatch.authId,
+              company_id: mismatch.profileCompanyId || OKJA_COMPANY_ID,
+              app_role: mismatch.profileRole || "Staff",
               is_primary: true,
             },
             { onConflict: "profile_id,company_id" }
@@ -134,46 +142,24 @@ export async function GET(req: Request) {
         }
       }
 
-      // Fix profiles with wrong/null company → point to Okja
-      for (const wrong of wrongCompany) {
-        // Only fix if the profile's company is a phantom "My Company" or NULL
-        const isPhantom = phantomCompanies.some((pc) => pc.id === wrong.current_company_id);
-        const isNull = !wrong.current_company_id;
-
-        if (isPhantom || isNull) {
-          const { error } = await admin
-            .from("profiles")
-            .update({ company_id: OKJA_COMPANY_ID, app_role: "Staff" })
-            .eq("id", wrong.profileId);
-          if (error) {
-            fixErrors.push(`FIX ${wrong.email}: ${error.message}`);
-          } else {
-            fixed++;
-            report.push(`FIXED ${wrong.email}: ${wrong.current_company_name} → Okja`);
+      // Fix missing user_companies rows
+      for (const missing of missingUserCompanies) {
+        try {
+          const { error } = await admin.from("user_companies").upsert(
+            {
+              profile_id: missing.profileId,
+              company_id: missing.companyId,
+              app_role: "Staff",
+              is_primary: true,
+            },
+            { onConflict: "profile_id,company_id" }
+          );
+          if (!error) {
+            fixedUserCompanies++;
+            report.push(`CREATED user_companies for ${missing.email}`);
           }
-
-          try {
-            await admin.from("user_companies").upsert(
-              {
-                profile_id: wrong.profileId,
-                company_id: OKJA_COMPANY_ID,
-                app_role: "Staff",
-                is_primary: true,
-              },
-              { onConflict: "profile_id,company_id" }
-            );
-          } catch {
-            // non-critical
-          }
-        }
-      }
-
-      // Delete phantom companies with 0 profiles
-      for (const pc of phantomCompanies) {
-        if (pc.linkedProfiles === 0) {
-          await admin.from("companies").delete().eq("id", pc.id);
-          deleted++;
-          report.push(`DELETED empty company "${pc.name}" (${pc.id})`);
+        } catch {
+          // non-critical
         }
       }
     }
@@ -183,16 +169,13 @@ export async function GET(req: Request) {
       summary: {
         totalAuthUsers: allUsers.users.length,
         totalProfiles: allProfiles?.length || 0,
-        okjaProfilesOk: okjaProfiles.length,
-        orphanedAuthUsers: orphanedAuthUsers.length,
-        wrongCompanyProfiles: wrongCompany.length,
-        phantomCompanies: phantomCompanies.length,
-        ...(shouldFix && { profilesCreated: created, profilesFixed: fixed, companiesDeleted: deleted }),
+        idMismatches: idMismatches.length,
+        missingUserCompanies: missingUserCompanies.length,
+        ...(shouldFix && { fixedIdMismatches, fixedUserCompanies }),
       },
-      orphanedAuthUsers,
-      wrongCompanyProfiles: wrongCompany,
-      phantomCompanies,
-      okjaProfiles,
+      idMismatches,
+      missingUserCompanies,
+      allUsers: userAnalysis,
       report,
       ...(fixErrors.length > 0 && { fixErrors }),
     });
