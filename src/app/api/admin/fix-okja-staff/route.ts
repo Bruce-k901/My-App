@@ -101,15 +101,41 @@ export async function GET(req: Request) {
     const fixErrors: string[] = [];
 
     if (shouldFix) {
-      // Fix ID mismatches — delete old profile, recreate with correct auth user ID
+      // Fix ID mismatches — move FK references, delete old profile, recreate with correct auth user ID
       for (const mismatch of idMismatches) {
         const existingProfile = profileByEmail.get(mismatch.email?.toLowerCase());
         if (existingProfile) {
+          const oldId = mismatch.profileId;
+          const newId = mismatch.authId;
+
+          // Step 0: Update all FK references from old profile ID to new ID
+          // This prevents FK constraint violations on delete
+          const fkTables = [
+            { table: "profiles", column: "reports_to" },
+            { table: "notifications", column: "profile_id" },
+            { table: "tasks", column: "assigned_to" },
+            { table: "tasks", column: "created_by" },
+            { table: "messaging_messages", column: "sender_id" },
+            { table: "messaging_channel_members", column: "profile_id" },
+            { table: "staff_attendance", column: "profile_id" },
+            { table: "time_entries", column: "profile_id" },
+            { table: "leave_requests", column: "profile_id" },
+            { table: "user_companies", column: "profile_id" },
+          ];
+
+          for (const fk of fkTables) {
+            try {
+              await admin.from(fk.table).update({ [fk.column]: newId }).eq(fk.column, oldId);
+            } catch {
+              // Table might not exist — ignore
+            }
+          }
+
           // Step 1: Delete the old profile with the wrong ID
           const { error: delError } = await admin
             .from("profiles")
             .delete()
-            .eq("id", mismatch.profileId);
+            .eq("id", oldId);
 
           if (delError) {
             fixErrors.push(`DELETE ${mismatch.email}: ${delError.message}`);
@@ -118,7 +144,7 @@ export async function GET(req: Request) {
 
           // Step 2: Insert new profile with the correct auth user ID
           const { error: insError } = await admin.from("profiles").insert({
-            id: mismatch.authId,
+            id: newId,
             email: existingProfile.email,
             full_name: existingProfile.full_name,
             company_id: existingProfile.company_id || OKJA_COMPANY_ID,
@@ -129,7 +155,7 @@ export async function GET(req: Request) {
             fixErrors.push(`INSERT ${mismatch.email}: ${insError.message}`);
           } else {
             fixedIdMismatches++;
-            report.push(`FIXED ${mismatch.email}: deleted profile ${mismatch.profileId}, created with auth ID ${mismatch.authId}`);
+            report.push(`FIXED ${mismatch.email}: moved FKs + deleted ${oldId} + created ${newId}`);
           }
         }
 
