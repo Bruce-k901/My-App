@@ -588,6 +588,22 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     },
   }),
 
+  // ─── FOOD SAFETY: Blue Plaster Register ───
+  buildComplianceTemplate({
+    slug: "blue_plaster_record",
+    name: "Blue Plaster Record",
+    description:
+      "Record blue plaster application for SALSA compliance. Log the person, injury, plaster type, and application details.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "triggered",
+    dayparts: [],
+    assignedRole: "staff",
+    evidenceTypes: ["custom_fields"],
+    complianceStandard: "SALSA (Safe and Local Supplier Approval)",
+    isCritical: true,
+  }),
+
   // ─── FOOD SAFETY: Staff Sickness ───
   buildComplianceTemplate({
     slug: "staff_sickness_exclusion_log",
