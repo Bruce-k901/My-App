@@ -284,11 +284,14 @@ export default function DailyChecklistPage() {
         const existingIds = new Set((existingCallouts || []).map((c: any) => c.id))
         const validTasks = (data || []).filter((t: any) => {
           const cId = t.task_data?.source_id || t.task_data?.callout_id
-          return !cId || existingIds.has(cId)
+          // No callout ID = malformed task, filter it out
+          if (!cId) return false
+          return existingIds.has(cId)
         })
         setUpcomingTasks(validTasks)
       } else {
-        setUpcomingTasks(data || [])
+        // No valid callout IDs — all tasks are orphaned/malformed, show none
+        setUpcomingTasks([])
       }
     } catch (error) {
       console.error('Failed to fetch upcoming tasks:', error)
@@ -653,7 +656,7 @@ export default function DailyChecklistPage() {
           
           // PRIORITY 2: Include expiry tasks (they may also have template_id but no site_checklist_id)
           const sourceType = task.task_data?.source_type || task.task_data?.type;
-const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate', 'ppm_overdue', 'ppm_no_schedule', 'callout_followup', 'ppm_followup'];
+const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_expiry', 'document_expiry', 'training_certificate', 'ppm_overdue', 'ppm_no_schedule', 'ppm_followup'];
           if (expiryTypes.includes(sourceType)) {
             console.log('✅ Including expiry task:', task.id, sourceType, task.custom_name);
             return true;
@@ -798,7 +801,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         }
         
         // Exclude callout_followup tasks - they're shown in the upcoming section
-        if (task.flag_reason === 'callout_followup') {
+        if (task.flag_reason === 'callout_followup' || task.task_data?.source_type === 'callout_followup') {
           return false
         }
         

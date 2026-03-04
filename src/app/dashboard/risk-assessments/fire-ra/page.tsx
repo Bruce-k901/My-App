@@ -24,7 +24,7 @@ import FireRASummary from '@/components/fire-ra/FireRASummary';
 import FireRATaskReviewModal from '@/components/fire-ra/FireRATaskReviewModal';
 import { useFireRAAI } from '@/hooks/useFireRAAI';
 import { previewTasks, generateTasks, applyTaskLinks } from '@/lib/fire-ra/task-generation';
-import { extractActionItems } from '@/lib/fire-ra/utils';
+import { extractActionItems, flattenChecklist } from '@/lib/fire-ra/utils';
 import type {
   FireRAAssessmentData,
   FireRAScreeningResult,
@@ -75,23 +75,32 @@ function FireRAContent() {
   // Load sites
   useEffect(() => {
     if (!companyId) return;
-    setLoading(true);
-    supabase
-      .from('sites')
-      .select('id, name, address')
-      .eq('company_id', companyId)
-      .order('name')
-      .then(({ data }) => {
+    const loadSites = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('sites')
+          .select('id, name, address_line1, address_line2, city, postcode, region')
+          .eq('company_id', companyId)
+          .order('name');
+        if (error) {
+          console.error('[Fire RA] Error loading sites:', error);
+        }
         setSites(data || []);
-        setLoading(false);
-      });
-  }, [companyId]);
+      } catch (err) {
+        console.error('[Fire RA] Failed to load sites:', err);
+      } finally {
+        // Only clear loading if we're not also loading an existing RA
+        if (!editId) setLoading(false);
+      }
+    };
+    loadSites();
+  }, [companyId, editId]);
 
-  // Set assessor from profile
+  // Set assessor from profile (only once when profile loads)
   useEffect(() => {
-    if (profile?.full_name && assessmentData && !assessmentData.generalInfo.assessorName) {
+    if (profile?.full_name) {
       setAssessmentData(prev => {
-        if (!prev) return prev;
+        if (!prev || prev.generalInfo.assessorName) return prev;
         return {
           ...prev,
           generalInfo: { ...prev.generalInfo, assessorName: profile.full_name },
@@ -99,7 +108,7 @@ function FireRAContent() {
         };
       });
     }
-  }, [profile, assessmentData]);
+  }, [profile?.full_name]);
 
   // Load existing RA when editing
   useEffect(() => {
@@ -150,13 +159,16 @@ function FireRAContent() {
   }, [title, editId]);
 
   // Auto-set review date 12 months from assessment date
+  const assessmentDate = assessmentData?.generalInfo.assessmentDate;
   useEffect(() => {
-    if (assessmentData?.generalInfo.assessmentDate && !assessmentData.generalInfo.reviewDate) {
-      const d = new Date(assessmentData.generalInfo.assessmentDate);
+    if (!assessmentDate) return;
+    setAssessmentData(prev => {
+      if (!prev || prev.generalInfo.reviewDate) return prev;
+      const d = new Date(assessmentDate);
       d.setFullYear(d.getFullYear() + 1);
-      updateGeneralInfo({ reviewDate: d.toISOString().split('T')[0] });
-    }
-  }, [assessmentData?.generalInfo.assessmentDate]);
+      return { ...prev, generalInfo: { ...prev.generalInfo, reviewDate: d.toISOString().split('T')[0] } };
+    });
+  }, [assessmentDate]);
 
   // Screening complete handler
   const handleScreeningComplete = useCallback((result: FireRAScreeningResult) => {
@@ -168,10 +180,8 @@ function FireRAContent() {
       const site = sites.find(s => s.id === siteId);
       if (site) {
         data.generalInfo.premisesName = site.name;
-        if (site.address) {
-          const addr = typeof site.address === 'string' ? site.address : JSON.stringify(site.address);
-          data.generalInfo.premisesAddress = addr;
-        }
+        const addr = [site.address_line1, site.address_line2, site.city, site.region, site.postcode].filter(Boolean).join(', ');
+        if (addr) data.generalInfo.premisesAddress = addr;
       }
     }
     // Set premises description from screening
@@ -187,6 +197,27 @@ function FireRAContent() {
     setScreeningComplete(true);
     setActiveSection(1);
   }, [siteId, sites, profile]);
+
+  // Site change handler — syncs siteId + generalInfo premises fields
+  const handleSiteChange = useCallback((newSiteId: string) => {
+    setSiteId(newSiteId);
+    if (!newSiteId) return;
+    const site = sites.find(s => s.id === newSiteId);
+    if (site && assessmentData) {
+      const addr = [site.address_line1, site.address_line2, site.city, site.region, site.postcode].filter(Boolean).join(', ');
+      setAssessmentData(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          generalInfo: {
+            ...prev.generalInfo,
+            premisesName: site.name,
+            premisesAddress: addr || prev.generalInfo.premisesAddress,
+          },
+        };
+      });
+    }
+  }, [sites, assessmentData]);
 
   // Update helpers
   const updateGeneralInfo = (partial: Partial<FireRAGeneralInfo>) => {
@@ -248,20 +279,52 @@ function FireRAContent() {
       existingText,
     });
 
-    if (result?.suggestion) {
-      // Apply the suggestion to the item
-      const fieldMap: Record<FireRAAIField, { textKey: keyof typeof item; aiKey: keyof typeof item }> = {
-        finding: { textKey: 'finding', aiKey: 'findingAiGenerated' },
-        existing_controls: { textKey: 'existingControls', aiKey: 'existingControlsAiGenerated' },
-        action_required: { textKey: 'actionRequired', aiKey: 'actionRequiredAiGenerated' },
+    if (result?.suggestedChecklist && result.suggestedChecklist.length > 0) {
+      // Merge AI checklist suggestions into item's checklist
+      const checklistFieldMap: Record<FireRAAIField, 'findingChecklist' | 'existingControlsChecklist' | 'actionRequiredChecklist'> = {
+        finding: 'findingChecklist',
+        existing_controls: 'existingControlsChecklist',
+        action_required: 'actionRequiredChecklist',
       };
-      const mapping = fieldMap[field];
-      const updatedItem = { ...item, [mapping.textKey]: result.suggestion, [mapping.aiKey]: true };
-      const updatedSection = {
-        ...section,
-        items: section.items.map(i => i.id === item.id ? updatedItem : i),
+      const checklistKey = checklistFieldMap[field];
+      const existing = item[checklistKey];
+      if (existing) {
+        const newSuggestions = result.suggestedChecklist.filter(
+          ai => !existing.checklist.some(e => e.label.toLowerCase() === ai.label.toLowerCase())
+        );
+        const merged = { ...existing, checklist: [...existing.checklist, ...newSuggestions] };
+        const flat = flattenChecklist(merged);
+        const textKey = field === 'finding' ? 'finding' : field === 'existing_controls' ? 'existingControls' : 'actionRequired';
+        const updatedItem = { ...item, [checklistKey]: merged, [textKey]: flat, [`${textKey}AiGenerated`]: true };
+        const updatedSection = { ...section, items: section.items.map(i => i.id === item.id ? updatedItem : i) };
+        updateSection(sectionNumber, updatedSection);
+      }
+    } else if (result?.suggestion) {
+      // Fallback: add AI text suggestion as a custom checked item in checklist
+      const checklistFieldMap: Record<FireRAAIField, 'findingChecklist' | 'existingControlsChecklist' | 'actionRequiredChecklist'> = {
+        finding: 'findingChecklist',
+        existing_controls: 'existingControlsChecklist',
+        action_required: 'actionRequiredChecklist',
       };
-      updateSection(sectionNumber, updatedSection);
+      const checklistKey = checklistFieldMap[field];
+      const existing = item[checklistKey];
+      if (existing) {
+        // Split suggestion into lines and add as individual checklist items
+        const lines = result.suggestion.split('\n').map(l => l.replace(/^[-*]\s*/, '').trim()).filter(Boolean);
+        const newItems = lines
+          .filter(line => !existing.checklist.some(e => e.label.toLowerCase() === line.toLowerCase()))
+          .map((line, idx) => ({
+            id: `ai_${Date.now()}_${idx}`,
+            label: line,
+            checked: false,
+            isCustom: false,
+            aiSuggested: true,
+          }));
+        const merged = { ...existing, checklist: [...existing.checklist, ...newItems] };
+        const updatedItem = { ...item, [checklistKey]: merged };
+        const updatedSection = { ...section, items: section.items.map(i => i.id === item.id ? updatedItem : i) };
+        updateSection(sectionNumber, updatedSection);
+      }
     }
   };
 
@@ -293,7 +356,6 @@ function FireRAContent() {
         assessment_data: assessmentData,
         linked_sops: [],
         linked_ppe: [],
-        linked_equipment: [],
         highest_risk_level: highestRisk,
         total_hazards: totalHazards,
         hazards_controlled: hazardsControlled,
@@ -416,7 +478,7 @@ function FireRAContent() {
           </label>
           <select
             value={siteId}
-            onChange={(e) => setSiteId(e.target.value)}
+            onChange={(e) => handleSiteChange(e.target.value)}
             className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
           >
             <option value="">All sites / not specified</option>
@@ -509,7 +571,7 @@ function FireRAContent() {
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Site/Location</label>
             <select
               value={siteId}
-              onChange={(e) => setSiteId(e.target.value)}
+              onChange={(e) => handleSiteChange(e.target.value)}
               className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="">Select site...</option>
@@ -547,85 +609,28 @@ function FireRAContent() {
         </div>
       </section>
 
-      {/* Section 1: General Information */}
-      {activeSection === 1 && (
-        <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme space-y-4">
-          <h2 className="text-lg font-semibold text-theme-primary">
-            Section 1: General Information
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Name</label>
-              <input
-                value={assessmentData.generalInfo.premisesName}
-                onChange={(e) => updateGeneralInfo({ premisesName: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Description</label>
-              <input
-                value={assessmentData.generalInfo.premisesDescription}
-                onChange={(e) => updateGeneralInfo({ premisesDescription: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Address</label>
-              <input
-                value={assessmentData.generalInfo.premisesAddress}
-                onChange={(e) => updateGeneralInfo({ premisesAddress: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Responsible Person Name</label>
-              <input
-                value={assessmentData.generalInfo.responsiblePersonName}
-                onChange={(e) => updateGeneralInfo({ responsiblePersonName: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Responsible Person Role</label>
-              <input
-                value={assessmentData.generalInfo.responsiblePersonRole}
-                onChange={(e) => updateGeneralInfo({ responsiblePersonRole: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Assessor Qualifications</label>
-              <input
-                value={assessmentData.generalInfo.assessorQualifications}
-                onChange={(e) => updateGeneralInfo({ assessorQualifications: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Previous Assessment Date</label>
-              <input
-                type="date"
-                value={assessmentData.generalInfo.previousAssessmentDate}
-                onChange={(e) => updateGeneralInfo({ previousAssessmentDate: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Previous Assessment Reference</label>
-              <input
-                value={assessmentData.generalInfo.previousAssessmentRef}
-                onChange={(e) => updateGeneralInfo({ previousAssessmentRef: e.target.value })}
-                className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-              />
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Mobile Section Selector */}
+      <div className="lg:hidden">
+        <select
+          value={activeSection}
+          onChange={(e) => setActiveSection(parseInt(e.target.value))}
+          className="w-full mb-4 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+        >
+          {FIRE_RA_SECTIONS.map(def => {
+            const section = assessmentData.sections.find(s => s.sectionNumber === def.number);
+            const applicable = section?.isApplicable ?? true;
+            return (
+              <option key={def.number} value={def.number} disabled={!applicable}>
+                {def.number}. {def.name} {!applicable ? '(N/A)' : ''}
+              </option>
+            );
+          })}
+        </select>
+      </div>
 
-      {/* Main Content: Section Nav + Section Panel */}
+      {/* Main Content: Section Nav + Section Panel side by side */}
       <div className="flex gap-6">
-        {/* Section Navigation (desktop sidebar) */}
+        {/* Section Navigation (desktop sidebar, sticky) */}
         <div className="hidden lg:block w-64 shrink-0">
           <div className="sticky top-24">
             <FireRASectionNav
@@ -637,47 +642,104 @@ function FireRAContent() {
           </div>
         </div>
 
-        {/* Mobile Section Selector */}
-        <div className="lg:hidden w-full">
-          <select
-            value={activeSection}
-            onChange={(e) => setActiveSection(parseInt(e.target.value))}
-            className="w-full mb-4 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
-          >
-            {FIRE_RA_SECTIONS.map(def => {
-              const section = assessmentData.sections.find(s => s.sectionNumber === def.number);
-              const applicable = section?.isApplicable ?? true;
-              return (
-                <option key={def.number} value={def.number} disabled={!applicable}>
-                  {def.number}. {def.name} {!applicable ? '(N/A)' : ''}
-                </option>
-              );
-            })}
-          </select>
+        {/* Active Section Content */}
+        <div className="flex-1 min-w-0">
+          {activeSection === 1 && (
+            <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme space-y-4">
+              <h2 className="text-lg font-semibold text-theme-primary">
+                Section 1: General Information
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Name</label>
+                  <input
+                    value={assessmentData.generalInfo.premisesName}
+                    onChange={(e) => updateGeneralInfo({ premisesName: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Description</label>
+                  <input
+                    value={assessmentData.generalInfo.premisesDescription}
+                    onChange={(e) => updateGeneralInfo({ premisesDescription: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Premises Address</label>
+                  <input
+                    value={assessmentData.generalInfo.premisesAddress}
+                    onChange={(e) => updateGeneralInfo({ premisesAddress: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Responsible Person Name</label>
+                  <input
+                    value={assessmentData.generalInfo.responsiblePersonName}
+                    onChange={(e) => updateGeneralInfo({ responsiblePersonName: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Responsible Person Role</label>
+                  <input
+                    value={assessmentData.generalInfo.responsiblePersonRole}
+                    onChange={(e) => updateGeneralInfo({ responsiblePersonRole: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Assessor Qualifications</label>
+                  <input
+                    value={assessmentData.generalInfo.assessorQualifications}
+                    onChange={(e) => updateGeneralInfo({ assessorQualifications: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Previous Assessment Date</label>
+                  <input
+                    type="date"
+                    value={assessmentData.generalInfo.previousAssessmentDate}
+                    onChange={(e) => updateGeneralInfo({ previousAssessmentDate: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Previous Assessment Reference</label>
+                  <input
+                    value={assessmentData.generalInfo.previousAssessmentRef}
+                    onChange={(e) => updateGeneralInfo({ previousAssessmentRef: e.target.value })}
+                    className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {activeSection >= 2 && activeSection <= 11 && (
+            <FireRASectionPanel
+              section={assessmentData.sections.find(s => s.sectionNumber === activeSection)!}
+              tier={tier}
+              premisesType={assessmentData.screening.answers.premisesType}
+              onSectionChange={(updated) => updateSection(activeSection, updated)}
+              onAIAssist={handleAIAssist}
+              aiLoading={aiLoading}
+            />
+          )}
+
+          {activeSection === 12 && (
+            <FireRASummary
+              assessmentData={assessmentData}
+              signOff={assessmentData.signOff}
+              onSignOffChange={(updated) =>
+                setAssessmentData(prev => prev ? { ...prev, signOff: updated } : prev)
+              }
+            />
+          )}
         </div>
-      </div>
-
-      {/* Active Section Content */}
-      <div className="lg:ml-[280px]">
-        {activeSection >= 2 && activeSection <= 11 && (
-          <FireRASectionPanel
-            section={assessmentData.sections.find(s => s.sectionNumber === activeSection)!}
-            tier={tier}
-            onSectionChange={(updated) => updateSection(activeSection, updated)}
-            onAIAssist={handleAIAssist}
-            aiLoading={aiLoading}
-          />
-        )}
-
-        {activeSection === 12 && (
-          <FireRASummary
-            assessmentData={assessmentData}
-            signOff={assessmentData.signOff}
-            onSignOffChange={(updated) =>
-              setAssessmentData(prev => prev ? { ...prev, signOff: updated } : prev)
-            }
-          />
-        )}
       </div>
 
       {/* Sticky Save Bar */}

@@ -214,6 +214,18 @@ export function exportFireRAPdf(options: FireRAPdfOptions): void {
       yPos += 8;
     }
 
+    // Helper: format checklist data for PDF cells
+    const formatChecklist = (checklist: any, fallback: string): string => {
+      if (checklist?.checklist?.some((o: any) => o.checked)) {
+        const items = checklist.checklist
+          .filter((o: any) => o.checked)
+          .map((o: any) => `\u2713 ${o.label}`);
+        if (checklist.notes?.trim()) items.push(checklist.notes.trim());
+        return items.join('\n') || fallback || '-';
+      }
+      return fallback || '-';
+    };
+
     // Items table
     const itemRows = section.items.map(item => {
       const score = computeItemRiskScore(item);
@@ -221,10 +233,10 @@ export function exportFireRAPdf(options: FireRAPdfOptions): void {
       return [
         item.itemNumber,
         item.itemName.slice(0, 50),
-        item.finding || '-',
-        item.existingControls || '-',
+        formatChecklist(item.findingChecklist, item.finding),
+        formatChecklist(item.existingControlsChecklist, item.existingControls),
         score > 0 ? `${score} (${riskInfo?.level})` : '-',
-        item.actionRequired || '-',
+        formatChecklist(item.actionRequiredChecklist, item.actionRequired),
         item.priority || '-',
         item.targetDate || '-',
       ];

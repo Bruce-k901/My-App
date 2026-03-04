@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import { SalesPeriodSelector, periodToDateRange } from '@/components/stockly/sales/SalesPeriodSelector';
+import type { PeriodKey, DateRange } from '@/components/stockly/sales/SalesPeriodSelector';
 import {
   Receipt,
   Plus,
@@ -67,6 +69,10 @@ export default function SalesManagementPage() {
     covers: 0
   });
   
+  // Period selector
+  const [period, setPeriod] = useState<PeriodKey>('30d');
+  const [dateRange, setDateRange] = useState<DateRange>(() => periodToDateRange('30d'));
+
   const [showImportModal, setShowImportModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -93,11 +99,16 @@ export default function SalesManagementPage() {
     payment_method: 'card'
   });
 
+  function handlePeriodChange(newPeriod: PeriodKey, range: DateRange) {
+    setPeriod(newPeriod);
+    setDateRange(range);
+  }
+
   useEffect(() => {
     if (companyId) {
       loadData();
     }
-  }, [companyId, siteId]);
+  }, [companyId, siteId, dateRange.from, dateRange.to]);
 
   async function loadData() {
     setLoading(true);
@@ -147,15 +158,12 @@ export default function SalesManagementPage() {
     if (!companyId) return;
     
     try {
-      // Get last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
       let query = supabase
         .from('daily_sales_summary')
         .select('*')
         .eq('company_id', companyId)
-        .gte('summary_date', thirtyDaysAgo.toISOString().split('T')[0])
+        .gte('summary_date', dateRange.from)
+        .lte('summary_date', dateRange.to)
         .order('summary_date', { ascending: false });
       
       // Only filter by site_id if it's a valid UUID (not "all")
@@ -565,7 +573,10 @@ export default function SalesManagementPage() {
         </div>
       )}
 
-      {/* 30-Day Summary Cards */}
+      {/* Period Selector */}
+      <SalesPeriodSelector value={period} onChange={handlePeriodChange} />
+
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
  <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
@@ -636,7 +647,7 @@ export default function SalesManagementPage() {
       {/* Daily Sales Table */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-theme-primary">Daily Sales (Last 30 Days)</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">Daily Sales</h2>
         </div>
         
         {dailySummaries.length === 0 ? (

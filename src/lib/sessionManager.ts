@@ -90,7 +90,7 @@ export class SessionManager {
   private async handleUserSession(session: Session) {
     try {
       const profile = await this.fetchUserProfile(session.user.id);
-      
+
       this.updateState({
         user: session.user,
         session,

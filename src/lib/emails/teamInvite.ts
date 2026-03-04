@@ -44,7 +44,8 @@ export function generateTeamInviteEmailHTML({
         <h2 style="color: #1a1a2e; font-size: 22px; font-weight: bold; margin: 0 0 10px;">You've Been Invited to Opsly</h2>
         <p style="color: #52525b; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">${bodyText}</p>
         <a href="${escapeHtml(inviteUrl)}" style="display: inline-block; background-color: #8A2B2B; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px;">Set Up My Account</a>
-        <p style="color: #a1a1aa; font-size: 12px; margin-top: 30px;">If you weren't expecting this invitation, you can safely ignore this email.</p>
+        <p style="color: #71717a; font-size: 12px; margin-top: 24px;">This invite link will expire in <strong>24 hours</strong>. If it has expired, ask your manager to resend the invitation.</p>
+        <p style="color: #a1a1aa; font-size: 12px; margin-top: 12px;">If you weren't expecting this invitation, you can safely ignore this email.</p>
       </td>
     </tr>
   </table>

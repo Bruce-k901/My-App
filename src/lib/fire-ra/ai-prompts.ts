@@ -38,7 +38,8 @@ Guidelines for your responses:
 - Keep findings factual and observation-based
 - Flag anything that requires professional assessment
 - Do NOT auto-fill risk ratings - those are the user's judgement
-- Keep responses concise and focused`;
+- Keep responses concise and focused
+- When asked for checklist items, return a JSON array of strings. Each string should be a single concise observation, control, or action item suitable for a checkbox list.`;
 
 function buildPremisesContext(ctx: PromptContext): string {
   const section = FIRE_RA_SECTIONS.find(s => s.number === ctx.sectionNumber);
@@ -61,40 +62,42 @@ ${buildPremisesContext(ctx)}`;
 }
 
 export function buildUserPrompt(ctx: PromptContext, mode: FireRAAIMode, field: string): string {
+  const fieldLabel = field === 'finding' ? 'findings' : field === 'existing_controls' ? 'existing controls' : 'actions required';
+
   switch (mode) {
     case 'generate': {
-      if (ctx.userInput) {
-        return `Based on this information about the premises: "${ctx.userInput}"
+      const extra = ctx.userInput ? `\nAdditional context from the assessor: "${ctx.userInput}"` : '';
+      return `Suggest 4-6 additional checklist items for the "${fieldLabel}" of item ${ctx.itemNumber} (${ctx.itemName || field}) in a ${ctx.premisesType}.
+${extra}
+Each item should be a concise one-line ${field === 'finding' ? 'observation or hazard' : field === 'existing_controls' ? 'fire safety control or measure in place' : 'practical remedial action with timeframe if relevant'}.
 
-Generate a clear, specific finding for item ${ctx.itemNumber} (${ctx.itemName || field}).
+Be specific to a ${ctx.premisesType} premises (${ctx.tier} tier, ${ctx.floorCount} floors, occupancy ${ctx.occupancy}).
 
-Write 2-4 sentences covering what should be observed and assessed for this item in a ${ctx.premisesType}. Be specific to this premises type.`;
-      }
-      return `Generate a finding for item ${ctx.itemNumber} (${ctx.itemName || field}) in a ${ctx.premisesType}.
-
-Write 2-4 sentences covering what should typically be observed and assessed for this item. Be specific to this premises type and consider the ${ctx.tier} complexity tier.`;
+Return ONLY a JSON array of strings, like: ["Item 1", "Item 2", "Item 3"]`;
     }
 
     case 'improve': {
-      return `Review and improve this ${field === 'finding' ? 'finding' : field === 'existing_controls' ? 'existing controls description' : 'action recommendation'}:
+      return `The assessor has already selected these items for "${fieldLabel}" of item ${ctx.itemNumber}:
 
-"${ctx.existingText}"
+${ctx.existingText}
 
-Suggest improvements to make it more specific, comprehensive, or better aligned with UK fire safety standards. Maintain the user's intent but enhance clarity and completeness. Return the improved text directly (not as suggestions or bullet points).`;
+Suggest 3-5 ADDITIONAL checklist items that are missing or would strengthen the assessment for a ${ctx.premisesType}. Do not repeat items already selected.
+
+Return ONLY a JSON array of strings, like: ["Item 1", "Item 2", "Item 3"]`;
     }
 
     case 'suggest_actions': {
-      return `Based on this assessment item (${ctx.itemNumber}):
+      return `Based on the findings for item ${ctx.itemNumber} in a ${ctx.premisesType}:
 
-Finding: "${ctx.existingText}"
+${ctx.existingText}
 
-Suggest specific, practical remedial actions for a ${ctx.premisesType}. For each action:
-- State what needs to be done clearly
+Suggest 3-5 specific, practical remedial actions. For each action:
+- Be concise (one line per action)
 - Include realistic timeframes where relevant
 - Reference any applicable UK standards
 - Prioritise safety-critical actions first
 
-Write as a concise paragraph of recommended actions, not as bullet points.`;
+Return ONLY a JSON array of strings, like: ["Action 1", "Action 2", "Action 3"]`;
     }
 
     default:

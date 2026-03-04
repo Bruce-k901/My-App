@@ -5,6 +5,11 @@
 ALTER TABLE stockly.sales ADD COLUMN IF NOT EXISTS payment_details JSONB;
 ALTER TABLE stockly.sales ADD COLUMN IF NOT EXISTS discount_details JSONB;
 
+-- Recreate the public.sales view so it picks up the new columns
+-- (PostgreSQL resolves SELECT * at view creation time, not query time)
+CREATE OR REPLACE VIEW public.sales AS
+SELECT * FROM stockly.sales;
+
 -- Update the INSTEAD OF INSERT trigger to pass through new columns
 CREATE OR REPLACE FUNCTION public.insert_sales()
 RETURNS TRIGGER AS $$

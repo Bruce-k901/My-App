@@ -151,7 +151,7 @@ export default function RiskAssessmentViewPage() {
   };
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="max-w-3xl mx-auto space-y-4 pb-8">
       {/* Header */}
       <div className="flex items-center gap-3 px-1 pt-2">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
@@ -516,22 +516,64 @@ export default function RiskAssessmentViewPage() {
                           <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${risk.color}`}>{risk.level} ({score})</span>
                         )}
                       </div>
-                      {item.finding && (
+                      {(item.finding || item.findingChecklist) && (
                         <div>
                           <span className="text-[10px] font-medium text-theme-tertiary uppercase">Finding</span>
-                          <p className="text-xs text-theme-primary mt-0.5">{item.finding}</p>
+                          {item.findingChecklist?.checklist?.some((o: any) => o.checked) ? (
+                            <ul className="text-xs text-theme-primary mt-0.5 space-y-0.5">
+                              {item.findingChecklist.checklist.filter((o: any) => o.checked).map((o: any) => (
+                                <li key={o.id} className="flex items-start gap-1.5">
+                                  <CheckCircle size={12} className="text-green-500 mt-0.5 shrink-0" />
+                                  <span>{o.label}</span>
+                                </li>
+                              ))}
+                              {item.findingChecklist.notes && (
+                                <li className="text-theme-tertiary italic ml-5">{item.findingChecklist.notes}</li>
+                              )}
+                            </ul>
+                          ) : item.finding ? (
+                            <p className="text-xs text-theme-primary mt-0.5">{item.finding}</p>
+                          ) : null}
                         </div>
                       )}
-                      {item.existingControls && (
+                      {(item.existingControls || item.existingControlsChecklist) && (
                         <div>
                           <span className="text-[10px] font-medium text-theme-tertiary uppercase">Existing Controls</span>
-                          <p className="text-xs text-theme-primary mt-0.5">{item.existingControls}</p>
+                          {item.existingControlsChecklist?.checklist?.some((o: any) => o.checked) ? (
+                            <ul className="text-xs text-theme-primary mt-0.5 space-y-0.5">
+                              {item.existingControlsChecklist.checklist.filter((o: any) => o.checked).map((o: any) => (
+                                <li key={o.id} className="flex items-start gap-1.5">
+                                  <CheckCircle size={12} className="text-green-500 mt-0.5 shrink-0" />
+                                  <span>{o.label}</span>
+                                </li>
+                              ))}
+                              {item.existingControlsChecklist.notes && (
+                                <li className="text-theme-tertiary italic ml-5">{item.existingControlsChecklist.notes}</li>
+                              )}
+                            </ul>
+                          ) : item.existingControls ? (
+                            <p className="text-xs text-theme-primary mt-0.5">{item.existingControls}</p>
+                          ) : null}
                         </div>
                       )}
-                      {item.actionRequired && (
+                      {(item.actionRequired || item.actionRequiredChecklist) && (
                         <div>
                           <span className="text-[10px] font-medium text-theme-tertiary uppercase">Action Required</span>
-                          <p className="text-xs text-theme-primary mt-0.5">{item.actionRequired}</p>
+                          {item.actionRequiredChecklist?.checklist?.some((o: any) => o.checked) ? (
+                            <ul className="text-xs text-theme-primary mt-0.5 space-y-0.5">
+                              {item.actionRequiredChecklist.checklist.filter((o: any) => o.checked).map((o: any) => (
+                                <li key={o.id} className="flex items-start gap-1.5">
+                                  <CheckCircle size={12} className="text-green-500 mt-0.5 shrink-0" />
+                                  <span>{o.label}</span>
+                                </li>
+                              ))}
+                              {item.actionRequiredChecklist.notes && (
+                                <li className="text-theme-tertiary italic ml-5">{item.actionRequiredChecklist.notes}</li>
+                              )}
+                            </ul>
+                          ) : item.actionRequired ? (
+                            <p className="text-xs text-theme-primary mt-0.5">{item.actionRequired}</p>
+                          ) : null}
                           <div className="flex gap-3 mt-1 text-[10px] text-theme-tertiary">
                             {item.priority && <span>Priority: {item.priority}</span>}
                             {item.targetDate && <span>Due: {item.targetDate}</span>}

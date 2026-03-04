@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySquareWebhook } from '@/lib/square/webhook';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { syncSingleOrder } from '@/lib/square/sync';
+import { syncSquareCatalog } from '@/lib/square/catalog-sync';
 import { processStockDrawdowns } from '@/lib/square/drawdown';
 
 /**
@@ -11,6 +12,7 @@ import { processStockDrawdowns } from '@/lib/square/drawdown';
 export async function POST(request: NextRequest) {
   const signatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
   if (!signatureKey) {
+    console.error('[webhook/square] SQUARE_WEBHOOK_SIGNATURE_KEY not set');
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
   }
 
@@ -18,12 +20,20 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get('x-square-hmacsha256-signature') || '';
 
-  // Build the webhook URL (must match what's registered in Square Dashboard)
-  const webhookUrl = `${new URL(request.url).origin}/api/webhooks/square`;
+  // Use the exact URL registered in Square Dashboard.
+  // On Vercel, request.url can have an internal hostname or www prefix that
+  // doesn't match what Square used to compute the HMAC, causing verification
+  // to fail. SQUARE_WEBHOOK_URL lets you pin the exact registered URL.
+  const webhookUrl =
+    process.env.SQUARE_WEBHOOK_URL ||
+    `${new URL(request.url).origin}/api/webhooks/square`;
 
   const isValid = await verifySquareWebhook(signatureKey, webhookUrl, rawBody, signature);
   if (!isValid) {
-    console.warn('[webhook/square] Invalid signature');
+    const requestOrigin = new URL(request.url).origin;
+    console.warn(
+      `[webhook/square] Invalid signature. webhookUrl=${webhookUrl}, requestOrigin=${requestOrigin}, hasSignature=${!!signature}`,
+    );
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
@@ -135,14 +145,12 @@ export async function POST(request: NextRequest) {
       }
 
       case 'catalog.version.updated': {
-        // Flag that catalog has changed — product mappings may need refresh
-        await supabase
-          .from('integration_connections')
-          .update({
-            last_error: 'Square catalog updated — product mappings may need review',
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', connection.id);
+        // Sync the catalog into pos_menu_items
+        try {
+          await syncSquareCatalog(connection.company_id);
+        } catch (catalogErr) {
+          console.error('[webhook/square] Catalog sync error:', catalogErr);
+        }
         break;
       }
 

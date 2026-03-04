@@ -12,6 +12,7 @@ import type {
   FireRAGeneralInfo,
   FireRASignOff,
   RiskLevel,
+  ChecklistFieldData,
 } from '@/types/fire-ra';
 import { FIRE_RA_SECTIONS, SECTION_ITEMS, getRiskLevel } from './constants';
 
@@ -283,4 +284,19 @@ export function computeHazardsControlled(assessmentData: FireRAAssessmentData): 
     .reduce((sum, s) => sum + s.items.filter(i =>
       computeItemRiskScore(i) > 0 && i.actionRequired.trim() !== '' && i.linkedTaskId !== null
     ).length, 0);
+}
+
+// ---------------------------------------------------------------------------
+// Checklist Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Flatten a ChecklistFieldData into a plain text string.
+ * Checked items become `- {label}` lines; notes appended at end.
+ */
+export function flattenChecklist(data: ChecklistFieldData): string {
+  const checked = data.checklist.filter(o => o.checked).map(o => `- ${o.label}`);
+  const lines = [...checked];
+  if (data.notes.trim()) lines.push(data.notes.trim());
+  return lines.join('\n');
 }

@@ -5,11 +5,12 @@ import { Plus, Sparkles } from '@/components/ui/icons';
 import { FIRE_RA_SECTIONS, SECTION_ITEMS } from '@/lib/fire-ra/constants';
 import { createEmptyItem, computeSectionCompletion } from '@/lib/fire-ra/utils';
 import FireRAItemCard from './FireRAItemCard';
-import type { FireRASection, FireRAItem, FireRAAIField, FireRAComplexityTier } from '@/types/fire-ra';
+import type { FireRASection, FireRAItem, FireRAAIField, FireRAComplexityTier, PremisesType } from '@/types/fire-ra';
 
 interface FireRASectionPanelProps {
   section: FireRASection;
   tier: FireRAComplexityTier;
+  premisesType: PremisesType;
   onSectionChange: (updated: FireRASection) => void;
   onAIAssist?: (sectionNumber: number, itemNumber: string, field: FireRAAIField) => void;
   aiLoading?: Record<string, boolean>;
@@ -18,6 +19,7 @@ interface FireRASectionPanelProps {
 export default function FireRASectionPanel({
   section,
   tier,
+  premisesType,
   onSectionChange,
   onAIAssist,
   aiLoading = {},
@@ -105,6 +107,7 @@ export default function FireRASectionPanel({
             onAIAssist={onAIAssist ? (field) => onAIAssist(section.sectionNumber, item.itemNumber, field) : undefined}
             aiLoading={aiLoading}
             canDelete={!SECTION_ITEMS[section.sectionNumber]?.some(d => d.itemNumber === item.itemNumber)}
+            premisesType={premisesType}
           />
         ))}
       </div>

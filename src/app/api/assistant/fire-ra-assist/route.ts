@@ -110,9 +110,31 @@ export async function POST(request: NextRequest) {
       .join('\n')
       .trim();
 
+    // Try to parse as JSON array for checklist mode
+    let suggestedChecklist;
+    try {
+      // Extract JSON array even if surrounded by markdown code fences
+      const jsonMatch = suggestion.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
+          suggestedChecklist = parsed.map((label: string, idx: number) => ({
+            id: `ai_${Date.now()}_${idx}`,
+            label: label.trim(),
+            checked: false,
+            isCustom: false,
+            aiSuggested: true,
+          }));
+        }
+      }
+    } catch {
+      // Not valid JSON - keep suggestion as plain text fallback
+    }
+
     const result: FireRAAIAssistResponse = {
       suggestion,
       mode: effectiveMode,
+      ...(suggestedChecklist ? { suggestedChecklist } : {}),
     };
 
     return NextResponse.json(result);

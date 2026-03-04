@@ -554,7 +554,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       //   email: data?.email 
       // });
       setProfile(data);
-      
+
+      // Stamp last_login (fire-and-forget)
+      supabase
+        .from('profiles')
+        .update({ last_login: new Date().toISOString() })
+        .eq('id', userId)
+        .then(({ error }) => {
+          if (error) console.warn('Failed to update last_login:', error.message);
+        });
+
       // Check if admin is viewing as another company
       const viewingAs = sessionStorage.getItem('admin_viewing_as_company');
       if (viewingAs) {

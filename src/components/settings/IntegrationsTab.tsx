@@ -5,6 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { Printer, Receipt, Plug, CheckCircle, AlertTriangle, Loader2, X, Save } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { SquareConnectionFlow } from './SquareConnectionFlow';
+import { LablitConnectionFlow } from './LablitConnectionFlow';
 
 type IntegrationType = 'label_printer' | 'pos_system' | 'xero' | 'quickbooks' | 'other';
 type IntegrationStatus = 'connected' | 'disconnected' | 'error' | 'pending';
@@ -23,6 +24,7 @@ interface IntegrationConnection {
 interface IntegrationCard {
   type: IntegrationType;
   name: string;
+  integrationName?: string; // DB discriminator — matches integration_connections.integration_name
   description: string;
   icon: React.ElementType;
   comingSoon: boolean;
@@ -33,8 +35,18 @@ interface IntegrationCard {
 const INTEGRATION_CATALOG: IntegrationCard[] = [
   {
     type: 'label_printer',
-    name: 'Label Printer',
-    description: 'Connect a label printer for batch labels, allergen labels, and product stickers.',
+    name: 'Labl.it',
+    integrationName: 'Labl.it',
+    description: 'Push product and batch data to Labl.it cloud for PPDS, allergen, and HACCP label printing.',
+    icon: Printer,
+    comingSoon: false,
+    customFlow: true,
+  },
+  {
+    type: 'label_printer',
+    name: 'Label Printer (Generic)',
+    integrationName: 'Generic',
+    description: 'Connect a network label printer for batch labels and product stickers.',
     icon: Printer,
     comingSoon: false,
     configFields: [
@@ -142,8 +154,10 @@ export function IntegrationsTab() {
     }
   }
 
-  function getConnection(type: IntegrationType): IntegrationConnection | undefined {
-    return connections.find(c => c.integration_type === type);
+  function getConnection(type: IntegrationType, integrationName?: string): IntegrationConnection | undefined {
+    return connections.find(c =>
+      c.integration_type === type && (!integrationName || c.integration_name === integrationName),
+    );
   }
 
   function openConfigure(card: IntegrationCard) {
@@ -230,7 +244,7 @@ export function IntegrationsTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {INTEGRATION_CATALOG.map((card) => {
             const Icon = card.icon;
-            const connection = getConnection(card.type);
+            const connection = getConnection(card.type, card.integrationName);
             const isConfiguring = configuringType === card.type;
             // For POS, status reflects per-site: only "connected" if this site has a location
             const effectiveStatus = card.type === 'pos_system' && connection?.status === 'connected' && !sitePos?.pos_location_id
@@ -239,7 +253,7 @@ export function IntegrationsTab() {
 
             return (
               <div
-                key={card.type}
+                key={card.integrationName ? `${card.type}-${card.integrationName}` : card.type}
                 className={`border rounded-xl p-5 transition-colors ${
                   card.comingSoon
                     ? 'border-theme bg-gray-50/50 dark:bg-white/[0.01] opacity-70'
@@ -288,6 +302,14 @@ export function IntegrationsTab() {
                       onRefresh={loadConnections}
                     />
                   )
+                )}
+
+                {/* Custom flow for Labl.it */}
+                {card.customFlow && card.integrationName === 'Labl.it' && (
+                  <LablitConnectionFlow
+                    connection={connection ?? null}
+                    onRefresh={loadConnections}
+                  />
                 )}
 
                 {/* Generic integrations — error display, config form, action buttons */}

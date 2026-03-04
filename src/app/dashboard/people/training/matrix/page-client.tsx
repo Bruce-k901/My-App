@@ -80,7 +80,7 @@ export function ComplianceMatrixPageClient() {
 
       if (!isAdminOrOwner && !isManager) {
         query = query.eq('profile_id', profile.id);
-      } else if (selectedSiteId) {
+      } else if (selectedSiteId && selectedSiteId !== 'all') {
         query = query.eq('home_site', selectedSiteId);
       } else if (isManager && profile.site_id) {
         query = query.eq('home_site', profile.site_id);

@@ -146,6 +146,12 @@ const navItems: NavItem[] = [
   },
   {
     type: 'link',
+    label: 'Menu',
+    href: '/dashboard/stockly/menu',
+    icon: Store,
+  },
+  {
+    type: 'link',
     label: 'Waste Log',
     href: '/dashboard/stockly/waste',
     icon: Trash2,

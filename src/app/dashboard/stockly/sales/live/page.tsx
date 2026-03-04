@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useLiveSalesData } from '@/hooks/useLiveSalesData';
-import type { PaymentBreakdown, DiscountBreakdown, TopItem, HourlyData } from '@/hooks/useLiveSalesData';
+import type { PaymentBreakdown, DiscountBreakdown, TopItem, HourlyData, DailyData, SourceBreakdown, FulfillmentBreakdown } from '@/hooks/useLiveSalesData';
+import { SalesPeriodSelector, periodToDateRange } from '@/components/stockly/sales/SalesPeriodSelector';
+import type { PeriodKey, DateRange } from '@/components/stockly/sales/SalesPeriodSelector';
 import {
   DollarSign,
   Users,
@@ -19,6 +21,9 @@ import {
   Tag,
   Percent,
   BarChart3,
+  Store,
+  Truck,
+  Heart,
 } from '@/components/ui/icons';
 import Link from 'next/link';
 import {
@@ -71,9 +76,24 @@ const PAYMENT_ICONS: Record<string, typeof CreditCard> = {
 
 export default function LiveSalesPage() {
   const { companyId, siteId } = useAppContext();
-  const { data, loading, lastUpdated, refresh } = useLiveSalesData(companyId, siteId);
+
+  // Period state
+  const [period, setPeriod] = useState<PeriodKey>('today');
+  const [dateRange, setDateRange] = useState<DateRange>(() => periodToDateRange('today'));
+
+  const { data, loading, lastUpdated, isLive, isSingleDay, refresh } = useLiveSalesData(
+    companyId,
+    siteId,
+    { dateFrom: dateRange.from, dateTo: dateRange.to },
+  );
+
   const [refreshing, setRefreshing] = useState(false);
   const [timeAgoStr, setTimeAgoStr] = useState('');
+
+  function handlePeriodChange(newPeriod: PeriodKey, range: DateRange) {
+    setPeriod(newPeriod);
+    setDateRange(range);
+  }
 
   // Update "time ago" every 5 seconds
   useEffect(() => {
@@ -98,6 +118,11 @@ export default function LiveSalesPage() {
     );
   }
 
+  // Chart data — hourly for single day, daily for multi-day
+  const chartData = isSingleDay ? data.hourlyRevenue : data.dailyRevenue;
+  const chartDataKey = isSingleDay ? 'hour' : 'label';
+  const chartTitle = isSingleDay ? 'Revenue by Hour' : 'Daily Revenue';
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -111,25 +136,29 @@ export default function LiveSalesPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
-              Live Sales
+              {isLive ? 'Live Sales' : 'Sales'}
             </h1>
             <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">
-              Today&apos;s sales updating in real-time
+              {isLive
+                ? "Today\u2019s sales updating in real-time"
+                : `Sales data for selected period`}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Live indicator */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-            </span>
-            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-              Updated {timeAgoStr}
-            </span>
-          </div>
+          {/* Live indicator — only when viewing today */}
+          {isLive && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+              </span>
+              <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                Updated {timeAgoStr}
+              </span>
+            </div>
+          )}
 
           <button
             onClick={handleRefresh}
@@ -140,6 +169,24 @@ export default function LiveSalesPage() {
           </button>
         </div>
       </div>
+
+      {/* Period Selector */}
+      <SalesPeriodSelector value={period} onChange={handlePeriodChange} />
+
+      {/* Empty state — no transactions */}
+      {data.transactionCount === 0 && (
+        <div className="bg-theme-surface-elevated border border-theme rounded-xl p-8 text-center">
+          <Receipt className="w-10 h-10 text-[rgb(var(--text-secondary))]/30 dark:text-theme-tertiary/30 mx-auto mb-3" />
+          <p className="text-[rgb(var(--text-primary))] dark:text-white font-medium mb-1">
+            No sales {isLive ? 'yet today' : 'in this period'}
+          </p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-4">
+            {isLive
+              ? 'Sales will appear here as Square orders come in.'
+              : 'Try selecting a different date range.'}
+          </p>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -175,20 +222,20 @@ export default function LiveSalesPage() {
         />
       </div>
 
-      {/* Hourly Revenue Chart */}
-      {data.hourlyRevenue.length > 0 && (
+      {/* Revenue Chart */}
+      {chartData.length > 0 && (
         <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-4 h-4 text-module-fg" />
             <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
-              Revenue by Hour
+              {chartTitle}
             </h2>
           </div>
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={data.hourlyRevenue} barCategoryGap="20%">
+            <BarChart data={chartData} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
               <XAxis
-                dataKey="hour"
+                dataKey={chartDataKey}
                 tick={{ fontSize: 11, fill: 'rgb(var(--text-secondary))' }}
                 axisLine={false}
                 tickLine={false}
@@ -200,7 +247,7 @@ export default function LiveSalesPage() {
                 tickFormatter={(v: number) => `£${v}`}
               />
               <Tooltip
-                content={<HourlyTooltip />}
+                content={isSingleDay ? <HourlyTooltip /> : <DailyTooltip />}
                 cursor={{ fill: 'rgba(255,255,255,0.03)' }}
               />
               <Bar
@@ -214,8 +261,8 @@ export default function LiveSalesPage() {
         </div>
       )}
 
-      {/* Bottom grid: Payment + Discounts + Top Items */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* Payment + Discounts row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Payment Breakdown */}
         <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
@@ -226,7 +273,7 @@ export default function LiveSalesPage() {
           </div>
           {data.paymentBreakdown.length === 0 ? (
             <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-              No transactions yet today
+              No payment data available
             </p>
           ) : (
             <div className="space-y-3">
@@ -247,7 +294,7 @@ export default function LiveSalesPage() {
           </div>
           {data.discountBreakdown.length === 0 ? (
             <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-              No discounts applied today
+              No discounts in this period
             </p>
           ) : (
             <div className="space-y-3">
@@ -257,27 +304,200 @@ export default function LiveSalesPage() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Top Items */}
-        <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-module-fg" />
-            <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
-              Top Sellers
-            </h2>
-          </div>
-          {data.topItems.length === 0 ? (
-            <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-              No items sold yet today
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {data.topItems.map((item, i) => (
-                <TopItemRow key={item.name} item={item} rank={i + 1} />
-              ))}
+      {/* Tips + Order Source + Fulfillment row */}
+      {(data.tipsSummary.totalTips > 0 || data.orderSourceBreakdown.length > 0 || data.fulfillmentBreakdown.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Tips */}
+          <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="w-4 h-4 text-pink-500 dark:text-pink-400" />
+              <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                Tips
+              </h2>
             </div>
+            {data.tipsSummary.totalTips > 0 ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Total tips</span>
+                  <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                    {formatCurrencyDecimal(data.tipsSummary.totalTips)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Tipped orders</span>
+                  <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white">
+                    {data.tipsSummary.tippedOrders} of {data.transactionCount}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Avg tip</span>
+                  <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white">
+                    {formatCurrencyDecimal(data.tipsSummary.avgTip)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                No tips in this period
+              </p>
+            )}
+          </div>
+
+          {/* Order Source */}
+          <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Store className="w-4 h-4 text-module-fg" />
+              <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                Order Source
+              </h2>
+            </div>
+            {data.orderSourceBreakdown.length === 0 ? (
+              <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                No source data available
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {data.orderSourceBreakdown.map(src => {
+                  const pct = data.totalRevenue > 0 ? (src.revenue / data.totalRevenue) * 100 : 0;
+                  return (
+                    <div key={src.source}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-[rgb(var(--text-primary))] dark:text-white truncate">
+                          {src.source}
+                        </span>
+                        <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary ml-2 shrink-0">
+                          {src.count} ({pct.toFixed(0)}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-theme-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-module-fg rounded-full"
+                          style={{ width: `${Math.min(pct, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Fulfillment Type */}
+          <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Truck className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                Fulfillment
+              </h2>
+            </div>
+            {data.fulfillmentBreakdown.length === 0 ? (
+              <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                No fulfillment data available
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {data.fulfillmentBreakdown.map(f => {
+                  const pct = data.totalRevenue > 0 ? (f.revenue / data.totalRevenue) * 100 : 0;
+                  return (
+                    <div key={f.type}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-[rgb(var(--text-primary))] dark:text-white">
+                          {f.label}
+                        </span>
+                        <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary shrink-0">
+                          {f.count} ({pct.toFixed(0)}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-theme-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 dark:bg-blue-400 rounded-full"
+                          style={{ width: `${Math.min(pct, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Items Sold — full-width table */}
+      <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <BarChart3 className="w-4 h-4 text-module-fg" />
+          <h2 className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+            Items Sold
+          </h2>
+          {data.topItems.length > 0 && (
+            <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary ml-auto">
+              {data.topItems.length} item{data.topItems.length !== 1 ? 's' : ''}
+            </span>
           )}
         </div>
+        {data.topItems.length === 0 ? (
+          <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+            {isSingleDay && !isLive
+              ? 'Item data not available for summary view'
+              : 'No items sold in this period'}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary border-b border-theme">
+                  <th className="text-left pb-2 pr-3 font-medium">#</th>
+                  <th className="text-left pb-2 pr-3 font-medium">Item</th>
+                  <th className="text-right pb-2 pr-3 font-medium">Qty</th>
+                  <th className="text-right pb-2 pr-3 font-medium">Revenue</th>
+                  <th className="text-right pb-2 pr-3 font-medium">Avg Price</th>
+                  <th className="text-right pb-2 font-medium">% of Sales</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.topItems.map((item, i) => {
+                  const avgPrice = item.quantity > 0 ? item.revenue / item.quantity : 0;
+                  const share = data.totalRevenue > 0 ? (item.revenue / data.totalRevenue) * 100 : 0;
+                  return (
+                    <tr key={item.name} className="border-b border-theme/50 last:border-0">
+                      <td className="py-2 pr-3 text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                        {i + 1}
+                      </td>
+                      <td className="py-2 pr-3 text-[rgb(var(--text-primary))] dark:text-white truncate max-w-[200px]">
+                        {item.name}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                        {item.quantity}
+                      </td>
+                      <td className="py-2 pr-3 text-right font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                        {formatCurrencyDecimal(item.revenue)}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                        {formatCurrencyDecimal(avgPrice)}
+                      </td>
+                      <td className="py-2 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-16 h-1.5 bg-theme-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-module-fg rounded-full"
+                              style={{ width: `${Math.min(share, 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-10 text-right">
+                            {share.toFixed(1)}%
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -351,28 +571,19 @@ function DiscountRow({ item }: { item: DiscountBreakdown }) {
   );
 }
 
-function TopItemRow({ item, rank }: { item: TopItem; rank: number }) {
+function HourlyTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; payload: HourlyData }>; label?: string }) {
+  if (!active || !payload?.length) return null;
+  const entry = payload[0].payload;
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-5 text-right shrink-0">
-        {rank}
-      </span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-[rgb(var(--text-primary))] dark:text-white truncate">
-          {item.name}
-        </p>
-      </div>
-      <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary shrink-0">
-        x{item.quantity}
-      </span>
-      <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white shrink-0 w-16 text-right">
-        {formatCurrency(item.revenue)}
-      </span>
+    <div className="bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-xs shadow-lg">
+      <p className="text-white font-medium">{label}</p>
+      <p className="text-green-400">{formatCurrency(entry.revenue)}</p>
+      <p className="text-gray-400">{entry.count} order{entry.count !== 1 ? 's' : ''}</p>
     </div>
   );
 }
 
-function HourlyTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; payload: HourlyData }>; label?: string }) {
+function DailyTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; payload: DailyData }>; label?: string }) {
   if (!active || !payload?.length) return null;
   const entry = payload[0].payload;
   return (

@@ -202,6 +202,36 @@ export async function syncSquareSales(
             scope: d.scope,
           })) : null;
 
+          // Service charges (tips, delivery fees, etc.)
+          const serviceCharges = (order as Record<string, unknown>).serviceCharges as Array<Record<string, unknown>> | undefined;
+          const serviceChargeList = (serviceCharges ?? []).map(sc => ({
+            name: (sc.name as string) || 'Service Charge',
+            amount: moneyToNumber(sc.amountMoney as SquareMoney),
+            percentage: sc.percentage as string | undefined,
+            type: sc.type as string | undefined,
+          }));
+          const serviceChargeDetails = serviceChargeList.length > 0 ? serviceChargeList : null;
+
+          // Tips = service charges with tip/gratuity in the name
+          const tipsAmount = serviceChargeList
+            .filter(sc => /tip|gratuity/i.test(sc.name))
+            .reduce((sum, sc) => sum + sc.amount, 0);
+
+          // Fulfillment type (PICKUP, DELIVERY, SHIPMENT, or null for dine-in)
+          const fulfillments = (order as Record<string, unknown>).fulfillments as Array<Record<string, unknown>> | undefined;
+          const fulfillmentType = (fulfillments ?? []).length > 0
+            ? ((fulfillments ?? [])[0].type as string) || null
+            : null;
+
+          // Returns data
+          const returns = (order as Record<string, unknown>).returns as Array<Record<string, unknown>> | undefined;
+          const returnsData = (returns ?? []).length > 0 ? returns : null;
+
+          // Order source (Square POS, Square Online, DoorDash, etc.)
+          const orderSource = (order as Record<string, unknown>).source
+            ? ((order as Record<string, unknown>).source as Record<string, unknown>)?.name as string || null
+            : null;
+
           const grossRevenue = moneyToNumber(order.totalMoney);
           const discounts = moneyToNumber(order.totalDiscountMoney);
           const netRevenue = grossRevenue - discounts;
@@ -224,20 +254,40 @@ export async function syncSquareSales(
             payment_method: paymentMethod,
             payment_details: paymentDetails,
             discount_details: discountDetails,
+            customer_id: (order as Record<string, unknown>).customerId || null,
+            order_source: orderSource,
+            fulfillment_type: fulfillmentType,
+            tips_amount: tipsAmount,
+            service_charges: serviceChargeDetails,
+            returns_data: returnsData,
             status: 'completed',
+            created_at: order.closedAt || order.createdAt || new Date().toISOString(),
           };
 
           salesBatch.push(saleRecord);
           affectedDates.add(saleDate);
 
-          // Map line items
-          const lineItems = (order.lineItems ?? []).map((item) => ({
-            item_name: item.name || 'Unknown Item',
-            category_name: item.catalogObjectId ? `square:${item.catalogObjectId}` : null,
-            quantity: Number(item.quantity || '1'),
-            unit_price: moneyToNumber(item.basePriceMoney),
-            line_total: moneyToNumber(item.totalMoney),
-          }));
+          // Map line items with modifiers, variation, notes
+          const lineItems = (order.lineItems ?? []).map((item) => {
+            const mods = (item as Record<string, unknown>).modifiers as Array<Record<string, unknown>> | undefined;
+            return {
+              item_name: item.name || 'Unknown Item',
+              category_name: item.catalogObjectId ? `square:${item.catalogObjectId}` : null,
+              catalog_object_id: item.catalogObjectId || null,
+              quantity: Number(item.quantity || '1'),
+              unit_price: moneyToNumber(item.basePriceMoney),
+              line_total: moneyToNumber(item.totalMoney),
+              variation_name: (item as Record<string, unknown>).variationName as string || null,
+              item_note: (item as Record<string, unknown>).note as string || null,
+              modifiers: (mods ?? []).length > 0
+                ? mods!.map(m => ({
+                    name: (m.name as string) || 'Modifier',
+                    amount: moneyToNumber(m.totalPriceMoney as SquareMoney),
+                    catalog_modifier_id: (m.catalogObjectId as string) || null,
+                  }))
+                : null,
+            };
+          });
 
           itemsBatch.push({ saleIndex: salesBatch.length - 1, items: lineItems });
           result.revenueTotal += totalAmount;
@@ -271,12 +321,11 @@ export async function syncSquareSales(
           }
 
           if (allItems.length > 0) {
-            // Insert in chunks of 100
+            // Insert via RPC to bypass PostgREST schema cache issues with the view
             for (let i = 0; i < allItems.length; i += 100) {
               const chunk = allItems.slice(i, i + 100);
               const { error: itemsError } = await supabase
-                .from('sale_items')
-                .insert(chunk);
+                .rpc('batch_insert_sale_items', { items: chunk });
               if (itemsError) {
                 console.error('[square/sync] Sale items insert error:', itemsError);
               }

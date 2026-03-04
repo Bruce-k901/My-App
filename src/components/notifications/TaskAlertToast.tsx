@@ -2,6 +2,7 @@
 
 import { Clock, AlertTriangle, ArrowRight, X, BellOff } from '@/components/ui/icons';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface TaskAlertToastProps {
   toastId: string | number;
@@ -61,20 +62,25 @@ export function TaskAlertToast({
   onSnooze,
   onDismiss,
 }: TaskAlertToastProps) {
-  const handleSnooze = (minutes: number) => {
+  const router = useRouter();
+
+  const handleSnooze = (e: React.MouseEvent, minutes: number) => {
+    e.stopPropagation();
     onSnooze(taskId, minutes);
     toast.dismiss(toastId);
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onDismiss(taskId);
     toast.dismiss(toastId);
   };
 
-  const handleGoToTask = () => {
-    onDismiss(taskId);
+  const handleGoToTask = (e: React.MouseEvent) => {
+    e.stopPropagation();
     toast.dismiss(toastId);
-    window.location.href = `/dashboard/todays_tasks?task=${taskId}`;
+    onDismiss(taskId);
+    router.push(`/dashboard/todays_tasks?task=${taskId}`);
   };
 
   const formatOverdue = (mins?: number) => {
@@ -119,7 +125,7 @@ export function TaskAlertToast({
           )}
         </div>
         <button
-          onClick={handleDismiss}
+          onClick={(e) => handleDismiss(e)}
           className="shrink-0 rounded p-1 hover:bg-black/10 dark:hover:bg-white/10"
           aria-label="Dismiss"
         >
@@ -159,7 +165,7 @@ export function TaskAlertToast({
         {[15, 30].map((mins) => (
           <button
             key={mins}
-            onClick={() => handleSnooze(mins)}
+            onClick={(e) => handleSnooze(e, mins)}
             className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors ${
               isOverdue
                 ? 'bg-red-200 dark:bg-red-900/80 text-red-700 dark:text-red-200 hover:bg-red-300 dark:hover:bg-red-800'
@@ -173,7 +179,7 @@ export function TaskAlertToast({
 
       {/* Go to task */}
       <button
-        onClick={handleGoToTask}
+        onClick={(e) => handleGoToTask(e)}
         className={`mt-4 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-colors ${
           isOverdue
             ? 'bg-red-200 dark:bg-red-500/20 text-red-700 dark:text-red-200 hover:bg-red-300 dark:hover:bg-red-500/30'

@@ -11,8 +11,11 @@ import CCPRecordForm from '@/components/stockly/CCPRecordForm';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import {
   ArrowLeft, Layers, ChefHat, Calendar, Clock, CheckCircle, XCircle,
-  Play, Square, Thermometer, Package, AlertTriangle, Plus, Info, Trash2,
+  Play, Square, Thermometer, Package, AlertTriangle, Plus, Info, Trash2, Printer, Loader2,
 } from '@/components/ui/icons';
+import { useLablitConnection } from '@/hooks/integrations/useLablitConnection';
+import { useAppContext } from '@/context/AppContext';
+import { toast } from 'sonner';
 
 const STATUS_CONFIG: Record<ProductionBatchStatus, { label: string; color: string; icon: React.ElementType }> = {
   planned: { label: 'Planned', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: Calendar },
@@ -34,6 +37,46 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
   const [actionLoading, setActionLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [pushingLabelId, setPushingLabelId] = useState<string | null>(null);
+  const [pushingAll, setPushingAll] = useState(false);
+  const lablit = useLablitConnection();
+  const { companyId } = useAppContext();
+
+  async function handlePushToLablit(outputId?: string) {
+    if (!companyId || !batch) return;
+    const isPushAll = !outputId;
+    if (isPushAll) setPushingAll(true);
+    else setPushingLabelId(outputId);
+
+    try {
+      const res = await fetch('/api/integrations/lablit/push-label', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyId,
+          batchId: batch.id,
+          outputId: outputId || undefined,
+          type: 'production_output',
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        if (data.placeholder) {
+          toast.info('Label data mapped - Labl.it API push will activate once API access is confirmed');
+        } else {
+          toast.success('Label pushed to Labl.it');
+        }
+      } else {
+        toast.error(data.error || 'Failed to push label');
+      }
+    } catch {
+      toast.error('Failed to push label');
+    } finally {
+      setPushingLabelId(null);
+      setPushingAll(false);
+    }
+  }
 
   useEffect(() => {
     loadBatch();
@@ -183,6 +226,16 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
             >
               <Trash2 className="w-4 h-4" />
               Delete
+            </button>
+          )}
+          {lablit.connected && batch.outputs && batch.outputs.length > 0 && (
+            <button
+              onClick={() => handlePushToLablit()}
+              disabled={pushingAll}
+              className="flex items-center gap-1.5 px-3 py-2 border border-stockly-dark/30 dark:border-stockly/30 text-stockly-dark dark:text-stockly rounded-lg text-sm font-medium hover:bg-stockly-dark/5 dark:hover:bg-stockly/5 disabled:opacity-50"
+            >
+              {pushingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
+              {pushingAll ? 'Pushing...' : 'Push All Labels'}
             </button>
           )}
         </div>
@@ -399,6 +452,16 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
                           {output.best_before_date && <span>BB: {new Date(output.best_before_date).toLocaleDateString('en-GB')}</span>}
                         </div>
                       </div>
+                      {lablit.connected && outputType !== 'waste' && (
+                        <button
+                          onClick={() => handlePushToLablit(output.id)}
+                          disabled={pushingLabelId === output.id}
+                          className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-stockly-dark dark:text-stockly border border-stockly-dark/20 dark:border-stockly/20 rounded-lg hover:bg-stockly-dark/5 dark:hover:bg-stockly/5 disabled:opacity-50 shrink-0"
+                        >
+                          {pushingLabelId === output.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Printer className="w-3 h-3" />}
+                          {pushingLabelId === output.id ? 'Pushing...' : 'Push Label'}
+                        </button>
+                      )}
                     </div>
                   );
                 })}

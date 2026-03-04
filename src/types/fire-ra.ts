@@ -62,6 +62,23 @@ export interface RiskLevelInfo {
 }
 
 // ---------------------------------------------------------------------------
+// Checklist (premises-type-specific checkbox options)
+// ---------------------------------------------------------------------------
+
+export interface ChecklistOption {
+  id: string;
+  label: string;
+  checked: boolean;
+  isCustom: boolean;
+  aiSuggested: boolean;
+}
+
+export interface ChecklistFieldData {
+  checklist: ChecklistOption[];
+  notes: string;
+}
+
+// ---------------------------------------------------------------------------
 // Assessment Items & Sections
 // ---------------------------------------------------------------------------
 
@@ -71,14 +88,20 @@ export interface FireRAItem {
   id: string;
   itemNumber: string;     // e.g. '2.1', '5.7'
   itemName: string;
+  // Legacy string fields — always synced from checklists for backward compat
   finding: string;
   findingAiGenerated: boolean;
   existingControls: string;
   existingControlsAiGenerated: boolean;
-  likelihood: number;     // 1-5
-  severity: number;       // 1-5
   actionRequired: string;
   actionRequiredAiGenerated: boolean;
+  // Structured checklist fields (undefined in old saved data)
+  findingChecklist?: ChecklistFieldData;
+  existingControlsChecklist?: ChecklistFieldData;
+  actionRequiredChecklist?: ChecklistFieldData;
+  // Risk & metadata
+  likelihood: number;     // 1-5
+  severity: number;       // 1-5
   priority: FireRAPriority | '';
   targetDate: string;     // ISO date string
   linkedTaskId: string | null;
@@ -164,6 +187,7 @@ export interface FireRAAIAssistRequest {
 export interface FireRAAIAssistResponse {
   suggestion: string;
   mode: FireRAAIMode;
+  suggestedChecklist?: ChecklistOption[];
 }
 
 // ---------------------------------------------------------------------------
