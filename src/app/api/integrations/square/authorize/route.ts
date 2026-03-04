@@ -8,6 +8,7 @@ const SCOPES = [
   'PAYMENTS_READ',
   'ORDERS_READ',
   'ITEMS_READ',
+  'EMPLOYEES_READ',
 ];
 
 export async function GET(request: NextRequest) {

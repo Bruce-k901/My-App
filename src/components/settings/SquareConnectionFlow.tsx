@@ -10,8 +10,10 @@ import {
   RefreshCw,
   Clock,
   ExternalLink,
+  Users,
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
+import { SquareEmployeeMappings } from './SquareEmployeeMappings';
 
 interface SitePosConfig {
   pos_provider: string | null;
@@ -51,6 +53,11 @@ export function SquareConnectionFlow({ connection, siteHasLocation, sitePosConfi
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [laborSyncEnabled, setLaborSyncEnabled] = useState(
+    (connection?.config?.enable_labor_sync as boolean) ?? false,
+  );
+  const [togglingLabor, setTogglingLabor] = useState(false);
+  const [laborSyncing, setLaborSyncing] = useState(false);
 
   // Determine the current step based on connection + site state
   const step: FlowStep = (() => {
@@ -191,6 +198,62 @@ export function SquareConnectionFlow({ connection, siteHasLocation, sitePosConfi
       toast.error('Failed to disconnect');
     } finally {
       setDisconnecting(false);
+    }
+  }
+
+  async function handleToggleLaborSync(enabled: boolean) {
+    if (!companyId || !connection) return;
+    setTogglingLabor(true);
+    try {
+      const res = await fetch('/api/settings/integrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company_id: companyId,
+          integration_type: 'pos_system',
+          integration_name: 'Square',
+          config: { ...connection.config, enable_labor_sync: enabled },
+          status: 'connected',
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        setLaborSyncEnabled(enabled);
+        toast.success(enabled ? 'Timecard sync enabled' : 'Timecard sync disabled');
+        onRefresh();
+      }
+    } catch {
+      toast.error('Failed to update setting');
+    } finally {
+      setTogglingLabor(false);
+    }
+  }
+
+  async function handleLaborSync() {
+    if (!companyId || !siteId) return;
+    setLaborSyncing(true);
+    try {
+      const res = await fetch('/api/integrations/square/labor/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId, siteId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        const r = data.result;
+        toast.success(
+          `Synced ${r?.shiftsProcessed ?? 0} timecards` +
+          (r?.unmappedMembers?.length ? ` (${r.unmappedMembers.length} unmapped)` : ''),
+        );
+      } else {
+        toast.error(data.error || 'Timecard sync failed');
+      }
+    } catch {
+      toast.error('Timecard sync failed');
+    } finally {
+      setLaborSyncing(false);
     }
   }
 
@@ -341,6 +404,55 @@ export function SquareConnectionFlow({ connection, siteHasLocation, sitePosConfi
               </p>
             )}
           </div>
+
+          {/* Timecard Sync Toggle */}
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg">
+            <div className="flex items-center gap-2.5">
+              <Users className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
+              <div>
+                <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
+                  Timecard Sync
+                </p>
+                <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                  Sync clock-in/out from Square to Teamly attendance
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleToggleLaborSync(!laborSyncEnabled)}
+              disabled={togglingLabor}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                laborSyncEnabled ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600'
+              } ${togglingLabor ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  laborSyncEnabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Labor Sync Button (when enabled) */}
+          {laborSyncEnabled && (
+            <button
+              onClick={handleLaborSync}
+              disabled={laborSyncing}
+              className="w-full px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex items-center justify-center gap-1.5"
+            >
+              {laborSyncing ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3.5 h-3.5" />
+              )}
+              {laborSyncing ? 'Syncing Timecards...' : 'Sync Timecards Now'}
+            </button>
+          )}
+
+          {/* Employee Mappings (when labor sync enabled) */}
+          {laborSyncEnabled && companyId && siteId && (
+            <SquareEmployeeMappings companyId={companyId} siteId={siteId} />
+          )}
 
           <div className="flex gap-2">
             <button

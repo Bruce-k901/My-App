@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, Shield, Plus } from '@/components/ui/icons';
+import { FileText, Shield, Fire, Plus } from '@/components/ui/icons';
 
 const TEMPLATES = [
   {
@@ -30,6 +30,19 @@ const TEMPLATES = [
     borderColor: 'border-amber-500/30',
     lightBorder: 'border-amber-200',
     link: '/dashboard/risk-assessments/coshh-template'
+  },
+  {
+    id: 'fire',
+    title: 'Fire Risk Assessment',
+    description: 'Regulatory Reform (Fire Safety) Order 2005 compliant assessment',
+    icon: Fire,
+    color: 'from-orange-500/20 to-red-500/20',
+    lightBg: 'bg-orange-50',
+    lightText: 'text-orange-900',
+    lightIcon: 'text-orange-600',
+    borderColor: 'border-orange-500/30',
+    lightBorder: 'border-orange-200',
+    link: '/dashboard/risk-assessments/fire-ra'
   }
 ];
 

@@ -18,6 +18,7 @@ import {
   BarChart3,
   TrendingUp,
   PieChart,
+  Activity,
   GitCompare,
   Coins,
   CreditCard,
@@ -194,6 +195,7 @@ const navItems: NavItem[] = [
     icon: BarChart3,
     children: [
       { label: 'Sales', href: '/dashboard/stockly/sales', icon: TrendingUp },
+      { label: 'Live Sales', href: '/dashboard/stockly/sales/live', icon: Activity },
       { label: 'Wastage', href: '/dashboard/reports/stockly/wastage', icon: Trash2 },
       { label: 'GP Analysis', href: '/dashboard/reports/stockly/gp', icon: PieChart },
       { label: 'Variance', href: '/dashboard/reports/stockly/variance', icon: GitCompare },

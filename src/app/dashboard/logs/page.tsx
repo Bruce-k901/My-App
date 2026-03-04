@@ -20,6 +20,13 @@ const logTabs = [
     icon: Calendar,
     description: "View clock-in and clock-out records",
   },
+  {
+    key: "blue-plaster",
+    label: "Blue Plaster Register",
+    href: "/dashboard/logs/blue-plaster",
+    icon: FileText,
+    description: "Track blue plaster usage for SALSA compliance",
+  },
   // Future tabs can be added here:
   // {
   //   key: "probe-calibrations",

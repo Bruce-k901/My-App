@@ -14,8 +14,13 @@ import {
   User,
   Loader2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Download,
+  Fire,
 } from '@/components/ui/icons';
+import { exportFireRAPdf } from '@/lib/fire-ra/export-pdf';
+import { getRiskLevel as getFireRiskLevel, TIER_INFO, FIRE_RA_SECTIONS } from '@/lib/fire-ra/constants';
+import { computeOverallRisk, computeItemRiskScore, computeOverallCompletion } from '@/lib/fire-ra/utils';
 
 const getRiskLevel = (score: number) => {
   if (score <= 3) return { level: 'Low', color: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/40' };
@@ -37,6 +42,7 @@ export default function RiskAssessmentViewPage() {
   const [siteName, setSiteName] = useState<string>('');
   const [ppeNames, setPPENames] = useState<string[]>([]);
   const [equipmentNames, setEquipmentNames] = useState<string[]>([]);
+  const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     if (raId && companyId) {
@@ -134,6 +140,15 @@ export default function RiskAssessmentViewPage() {
   const assessmentData = ra.assessment_data || {};
   const overdue = isOverdue(ra.review_date);
   const isCOSHH = ra.template_type === 'coshh';
+  const isFire = ra.template_type === 'fire';
+  const toggleSection = (num: number) => {
+    setExpandedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(num)) next.delete(num);
+      else next.add(num);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4 pb-8">
@@ -148,6 +163,9 @@ export default function RiskAssessmentViewPage() {
             <span className="text-xs text-theme-tertiary">{ra.ref_code}</span>
             {isCOSHH && (
               <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/40 rounded text-[10px] font-medium">COSHH</span>
+            )}
+            {isFire && (
+              <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/40 rounded text-[10px] font-medium">Fire RA</span>
             )}
           </div>
         </div>
@@ -374,6 +392,174 @@ export default function RiskAssessmentViewPage() {
           <DetailRow label="Risk Before Controls" value={String(assessmentData.riskAssessment.riskBeforeControls)} />
           <DetailRow label="Risk After Controls" value={String(assessmentData.riskAssessment.riskAfterControls)} />
           {assessmentData.riskAssessment.riskNotes && <DetailRow label="Notes" value={assessmentData.riskAssessment.riskNotes} />}
+        </Section>
+      )}
+
+      {/* Fire RA: Action Buttons */}
+      {isFire && (
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push(`/dashboard/risk-assessments/fire-ra?edit=${raId}`)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-module-fg hover:bg-module-fg/90 text-white rounded-xl text-sm font-medium transition-colors"
+          >
+            <FileText size={16} />
+            Edit Assessment
+          </button>
+          <button
+            onClick={() => exportFireRAPdf({ title: ra.title, refCode: ra.ref_code, assessmentData })}
+            className="flex items-center gap-2 px-4 py-2.5 border border-theme text-theme-primary hover:bg-theme-hover rounded-xl text-sm transition-colors"
+          >
+            <Download size={16} />
+            PDF
+          </button>
+        </div>
+      )}
+
+      {/* Fire RA: Complexity Screening */}
+      {isFire && assessmentData.screening && (
+        <Section title="Complexity Screening">
+          <DetailRow label="Tier" value={TIER_INFO[assessmentData.screening.tier]?.label || assessmentData.screening.tier} />
+          {assessmentData.screening.tierExplanation && (
+            <DetailRow label="Determination" value={assessmentData.screening.tierExplanation} />
+          )}
+          {assessmentData.screening.tier === 'specialist' && (
+            <div className="mt-2 p-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg">
+              <p className="text-xs text-red-700 dark:text-red-400">Professional fire risk assessment recommended for this premises.</p>
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* Fire RA: General Info */}
+      {isFire && assessmentData.generalInfo && (
+        <Section title="Premises & Assessor Details">
+          <DetailRow label="Premises" value={assessmentData.generalInfo.premisesName} />
+          <DetailRow label="Address" value={assessmentData.generalInfo.premisesAddress} />
+          <DetailRow label="Description" value={assessmentData.generalInfo.premisesDescription} />
+          <DetailRow label="Assessor" value={assessmentData.generalInfo.assessorName} />
+          <DetailRow label="Qualifications" value={assessmentData.generalInfo.assessorQualifications} />
+          <DetailRow label="Responsible Person" value={assessmentData.generalInfo.responsiblePersonName} />
+          <DetailRow label="Role" value={assessmentData.generalInfo.responsiblePersonRole} />
+        </Section>
+      )}
+
+      {/* Fire RA: Overall Risk */}
+      {isFire && assessmentData.sections && (() => {
+        const overall = computeOverallRisk(assessmentData.sections);
+        if (!overall.level) return null;
+        const completion = computeOverallCompletion(assessmentData.sections);
+        return (
+          <div className={`rounded-xl p-4 border ${
+            overall.level === 'High' ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30' :
+            overall.level === 'Medium' ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30' :
+            'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-theme-primary">Overall Risk</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                overall.level === 'High' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+                overall.level === 'Medium' ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400' :
+                'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+              }`}>{overall.level} (Score: {overall.score})</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-1.5">
+              <div
+                className="bg-module-fg h-1.5 rounded-full transition-all"
+                style={{ width: `${completion.percent}%` }}
+              />
+            </div>
+            <p className="text-xs text-theme-tertiary mt-1">{completion.completed}/{completion.total} items assessed ({completion.percent}%)</p>
+          </div>
+        );
+      })()}
+
+      {/* Fire RA: Assessment Sections */}
+      {isFire && assessmentData.sections?.filter((s: any) => s.isApplicable && s.items?.length > 0 && s.sectionNumber >= 2 && s.sectionNumber <= 11).map((section: any) => {
+        const expanded = expandedSections.has(section.sectionNumber);
+        const sectionDef = FIRE_RA_SECTIONS.find((d: any) => d.number === section.sectionNumber);
+        const itemsWithActions = section.items.filter((i: any) => i.actionRequired);
+        return (
+          <div key={section.sectionNumber} className="bg-theme-surface/50 border border-theme rounded-xl overflow-hidden">
+            <button
+              onClick={() => toggleSection(section.sectionNumber)}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-theme-primary">
+                    {section.sectionNumber}. {section.sectionName}
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-neutral-800 text-theme-tertiary rounded">
+                    {section.items.length} items
+                  </span>
+                  {itemsWithActions.length > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded">
+                      {itemsWithActions.length} action{itemsWithActions.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+                {sectionDef && <p className="text-xs text-theme-tertiary mt-0.5 truncate">{sectionDef.description}</p>}
+              </div>
+              {expanded ? <ChevronUp size={16} className="text-theme-tertiary" /> : <ChevronDown size={16} className="text-theme-tertiary" />}
+            </button>
+
+            {expanded && (
+              <div className="border-t border-theme divide-y divide-theme">
+                {section.items.map((item: any) => {
+                  const score = computeItemRiskScore(item);
+                  const risk = score > 0 ? getFireRiskLevel(score) : null;
+                  return (
+                    <div key={item.id} className="p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-theme-primary">{item.itemNumber} {item.itemName}</span>
+                        {risk && (
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${risk.color}`}>{risk.level} ({score})</span>
+                        )}
+                      </div>
+                      {item.finding && (
+                        <div>
+                          <span className="text-[10px] font-medium text-theme-tertiary uppercase">Finding</span>
+                          <p className="text-xs text-theme-primary mt-0.5">{item.finding}</p>
+                        </div>
+                      )}
+                      {item.existingControls && (
+                        <div>
+                          <span className="text-[10px] font-medium text-theme-tertiary uppercase">Existing Controls</span>
+                          <p className="text-xs text-theme-primary mt-0.5">{item.existingControls}</p>
+                        </div>
+                      )}
+                      {item.actionRequired && (
+                        <div>
+                          <span className="text-[10px] font-medium text-theme-tertiary uppercase">Action Required</span>
+                          <p className="text-xs text-theme-primary mt-0.5">{item.actionRequired}</p>
+                          <div className="flex gap-3 mt-1 text-[10px] text-theme-tertiary">
+                            {item.priority && <span>Priority: {item.priority}</span>}
+                            {item.targetDate && <span>Due: {item.targetDate}</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {section.sectionNotes && (
+                  <div className="p-3">
+                    <span className="text-[10px] font-medium text-theme-tertiary uppercase">Section Notes</span>
+                    <p className="text-xs text-theme-primary mt-0.5">{section.sectionNotes}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Fire RA: Sign-off */}
+      {isFire && assessmentData.signOff && (
+        <Section title="Sign-off & Declaration">
+          <DetailRow label="Assessor" value={assessmentData.signOff.assessorName} />
+          <DetailRow label="Assessor Date" value={assessmentData.signOff.assessorDate} />
+          <DetailRow label="Responsible Person" value={assessmentData.signOff.responsiblePersonName} />
+          <DetailRow label="Responsible Person Date" value={assessmentData.signOff.responsiblePersonDate} />
         </Section>
       )}
 

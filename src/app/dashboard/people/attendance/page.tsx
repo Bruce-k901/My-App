@@ -294,7 +294,14 @@ export default function AttendancePage() {
                         <p className="text-theme-tertiary text-xs">{row.position_title}</p>
                       </td>
                       <td className="px-2 sm:px-4 py-3 text-center">
-                        {getStatusBadge(row.status, row.is_late, row.is_on_break)}
+                        <span className="inline-flex items-center gap-1">
+                          {getStatusBadge(row.status, row.is_late, row.is_on_break)}
+                          {(row as Record<string, unknown>).source === 'pos_square' && (
+                            <span className="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded text-[10px] font-medium border border-purple-200 dark:border-purple-500/20">
+                              POS
+                            </span>
+                          )}
+                        </span>
                       </td>
                       <td className="px-2 sm:px-4 py-3 text-center text-theme-secondary text-sm">
                         {formatTime(row.clock_in)}

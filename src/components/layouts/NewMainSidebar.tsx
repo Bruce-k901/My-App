@@ -147,6 +147,7 @@ export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: 
       { label: "All Logs", href: "/dashboard/logs" },
       { label: "Temperature Logs", href: "/dashboard/logs/temperature" },
       { label: "Attendance Register", href: "/dashboard/logs/attendance" },
+      { label: "Blue Plaster Register", href: "/dashboard/logs/blue-plaster" },
     ],
   },
   {

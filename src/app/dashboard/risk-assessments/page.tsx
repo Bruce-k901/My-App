@@ -100,19 +100,26 @@ export default function RiskAssessmentsPage() {
   };
 
   const getRiskBadge = (assessment) => {
-    // Check if there are any high/very high risks in the assessment data
+    // Fire RA: use highest_risk_level directly
+    if (assessment.template_type === 'fire') {
+      const level = assessment.highest_risk_level;
+      if (level === 'High') return { text: 'High Risk', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/40' };
+      if (level === 'Medium') return { text: 'Medium Risk', color: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/40' };
+      return null;
+    }
+    // General/COSHH: check hazards in assessment data
     if (assessment.assessment_data?.hazards) {
       const highRisks = assessment.assessment_data.hazards.filter(h => {
         const scoreAfter = h.likelihoodAfter * h.severityAfter;
         return scoreAfter >= 10;
       });
-      
+
       if (highRisks.length > 0) {
         const veryHigh = highRisks.filter(h => {
           const score = h.likelihoodAfter * h.severityAfter;
           return score >= 16;
         });
-        
+
         if (veryHigh.length > 0) return { text: 'Very High Risk', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/40' };
         return { text: 'High Risk', color: 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/40' };
       }
@@ -253,6 +260,7 @@ export default function RiskAssessmentsPage() {
             <option value="all">All Types</option>
             <option value="general">General</option>
             <option value="coshh">COSHH</option>
+            <option value="fire">Fire RA</option>
           </select>
           </>
           )}
@@ -284,6 +292,9 @@ export default function RiskAssessmentsPage() {
                         <span className="px-2 py-1 bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded text-xs whitespace-nowrap">{assessment.ref_code}</span>
                         {assessment.template_type === 'coshh' && (
                           <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/40 rounded text-xs whitespace-nowrap">COSHH</span>
+                        )}
+                        {assessment.template_type === 'fire' && (
+                          <span className="px-2 py-1 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/40 rounded text-xs whitespace-nowrap">Fire RA</span>
                         )}
                         {assessment.status === 'Published' && (
                           <span className="px-2 py-1 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/40 rounded text-xs flex items-center gap-1 whitespace-nowrap">
@@ -319,7 +330,9 @@ export default function RiskAssessmentsPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const templatePath = assessment.template_type === 'coshh'
+                          const templatePath = assessment.template_type === 'fire'
+                            ? '/dashboard/risk-assessments/fire-ra'
+                            : assessment.template_type === 'coshh'
                             ? '/dashboard/risk-assessments/coshh-template'
                             : '/dashboard/risk-assessments/general-template';
                           router.push(`${templatePath}?edit=${assessment.id}`);

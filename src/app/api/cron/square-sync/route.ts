@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { syncSquareSales } from '@/lib/square/sync';
+import { syncSquareLabor } from '@/lib/square/labor';
 
 /**
  * GET /api/cron/square-sync
@@ -81,6 +82,38 @@ export async function GET(request: NextRequest) {
             siteId: site.id,
             error: msg,
           });
+        }
+      }
+
+      // Labor sync (if enabled)
+      const config = conn.config as Record<string, unknown> | null;
+      if (config?.enable_labor_sync === true) {
+        for (const site of sites) {
+          try {
+            const laborResult = await syncSquareLabor(
+              conn.company_id,
+              site.id,
+              dateFrom,
+              dateTo,
+            );
+
+            results.push({
+              companyId: conn.company_id,
+              siteId: site.id,
+              type: 'labor',
+              ...laborResult,
+            });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`[cron/square-sync] Labor sync failed for company ${conn.company_id} site ${site.id}:`, msg);
+
+            results.push({
+              companyId: conn.company_id,
+              siteId: site.id,
+              type: 'labor',
+              error: msg,
+            });
+          }
         }
       }
 

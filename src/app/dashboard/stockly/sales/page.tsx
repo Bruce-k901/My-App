@@ -20,7 +20,8 @@ import {
   DollarSign,
   Clock,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
+  Activity,
 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -504,6 +505,13 @@ export default function SalesManagementPage() {
             <Plus className="w-5 h-5" />
             Add Sale
           </button>
+          <Link
+            href="/dashboard/stockly/sales/live"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          >
+            <Activity className="w-5 h-5" />
+            Live Sales
+          </Link>
         </div>
       </div>
 

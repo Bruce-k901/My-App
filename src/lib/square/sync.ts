@@ -161,14 +161,46 @@ export async function syncSquareSales(
             : from;
 
           // Determine payment method from tenders
-          let paymentMethod = 'card';
           const tenders = order.tenders ?? [];
+          let paymentMethod = 'card';
           if (tenders.length === 1) {
             const tenderType = tenders[0].type;
-            paymentMethod = tenderType === 'CASH' ? 'cash' : 'card';
+            switch (tenderType) {
+              case 'CASH': paymentMethod = 'cash'; break;
+              case 'SQUARE_GIFT_CARD': paymentMethod = 'gift_card'; break;
+              case 'WALLET': paymentMethod = 'wallet'; break;
+              case 'OTHER': paymentMethod = 'other'; break;
+              default: paymentMethod = 'card'; break;
+            }
           } else if (tenders.length > 1) {
             paymentMethod = 'mixed';
           }
+
+          // Capture granular tender details
+          const paymentDetails = tenders.length > 0 ? tenders.map(t => ({
+            type: t.type || 'UNKNOWN',
+            amount: moneyToNumber(t.amountMoney),
+            card_brand: (t as Record<string, unknown>).cardDetails
+              ? ((t as Record<string, unknown>).cardDetails as Record<string, unknown>)?.card
+                ? (((t as Record<string, unknown>).cardDetails as Record<string, unknown>)?.card as Record<string, unknown>)?.cardBrand
+                : undefined
+              : undefined,
+            last_4: (t as Record<string, unknown>).cardDetails
+              ? ((t as Record<string, unknown>).cardDetails as Record<string, unknown>)?.card
+                ? (((t as Record<string, unknown>).cardDetails as Record<string, unknown>)?.card as Record<string, unknown>)?.last4
+                : undefined
+              : undefined,
+          })) : null;
+
+          // Capture individual discount details
+          const orderDiscounts = order.discounts ?? [];
+          const discountDetails = orderDiscounts.length > 0 ? orderDiscounts.map(d => ({
+            name: d.name || 'Discount',
+            type: d.type,
+            amount: moneyToNumber(d.appliedMoney || d.amountMoney),
+            percentage: d.percentage,
+            scope: d.scope,
+          })) : null;
 
           const grossRevenue = moneyToNumber(order.totalMoney);
           const discounts = moneyToNumber(order.totalDiscountMoney);
@@ -190,6 +222,8 @@ export async function syncSquareSales(
             total_amount: totalAmount,
             covers: 1,
             payment_method: paymentMethod,
+            payment_details: paymentDetails,
+            discount_details: discountDetails,
             status: 'completed',
           };
 
