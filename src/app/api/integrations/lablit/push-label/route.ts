@@ -1,0 +1,152 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getLablitConfig } from '@/lib/lablit/tokens';
+import { LablitClient } from '@/lib/lablit/client';
+import { LablitApiError } from '@/lib/lablit/errors';
+import {
+  mapProductionOutputToLabel,
+  mapStockBatchToLabel,
+  labelPayloadToLablitProduct,
+} from '@/lib/lablit/mapping';
+import type { ProductionBatch, ProductionBatchOutput, StockBatch } from '@/lib/types/stockly';
+
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { companyId, batchId, outputId, type } = body as {
+      companyId: string;
+      batchId: string;
+      outputId?: string;
+      type: 'production_output' | 'stock_batch';
+    };
+
+    if (!companyId || !batchId || !type) {
+      return NextResponse.json(
+        { error: 'companyId, batchId, and type are required' },
+        { status: 400 },
+      );
+    }
+
+    // Get Labl.it config
+    const config = await getLablitConfig(companyId);
+    if (!config) {
+      return NextResponse.json({ error: 'Labl.it not configured' }, { status: 404 });
+    }
+
+    // Fetch company/site names for label
+    const { data: company } = await supabase
+      .from('companies')
+      .select('name')
+      .eq('id', companyId)
+      .single();
+
+    let labelPayload;
+
+    if (type === 'production_output') {
+      // Fetch the production batch with outputs
+      const { data: batch, error: batchError } = await supabase
+        .from('production_batches')
+        .select(`
+          *,
+          recipe:recipes(id, name, allergens, may_contain_allergens)
+        `)
+        .eq('id', batchId)
+        .single();
+
+      if (batchError || !batch) {
+        return NextResponse.json({ error: 'Production batch not found' }, { status: 404 });
+      }
+
+      // Fetch the specific output (or all outputs)
+      const outputQuery = supabase
+        .from('production_batch_outputs')
+        .select('*, stock_item:stock_items(id, name)')
+        .eq('production_batch_id', batchId);
+
+      if (outputId) {
+        outputQuery.eq('id', outputId);
+      }
+
+      const { data: outputs, error: outputError } = await outputQuery;
+      if (outputError || !outputs?.length) {
+        return NextResponse.json({ error: 'No outputs found' }, { status: 404 });
+      }
+
+      // Map each output to a label payload
+      const payloads = outputs.map((output: ProductionBatchOutput) =>
+        mapProductionOutputToLabel(
+          output,
+          batch as ProductionBatch,
+          company?.name,
+        ),
+      );
+
+      // Convert to Labl.it products
+      const products = payloads.map(labelPayloadToLablitProduct);
+
+      // Try to push to Labl.it API
+      const client = new LablitClient(config.apiKey, config.deviceId, config.baseUrl);
+      try {
+        const result = await client.pushProducts(products);
+        return NextResponse.json({ success: true, result });
+      } catch (err) {
+        if (err instanceof LablitApiError && err.category === 'NOT_IMPLEMENTED') {
+          // Return the mapped data as a dry-run preview
+          return NextResponse.json({
+            success: true,
+            placeholder: true,
+            message: 'Label data mapped successfully. Labl.it API push will activate once API access is confirmed.',
+            labels: payloads,
+            products,
+          });
+        }
+        throw err;
+      }
+    } else {
+      // Stock batch label
+      const { data: stockBatch, error: sbError } = await supabase
+        .from('stock_batches')
+        .select('*, stock_item:stock_items(id, name)')
+        .eq('id', batchId)
+        .single();
+
+      if (sbError || !stockBatch) {
+        return NextResponse.json({ error: 'Stock batch not found' }, { status: 404 });
+      }
+
+      labelPayload = mapStockBatchToLabel(
+        stockBatch as StockBatch,
+        company?.name,
+      );
+
+      const product = labelPayloadToLablitProduct(labelPayload);
+
+      const client = new LablitClient(config.apiKey, config.deviceId, config.baseUrl);
+      try {
+        const result = await client.pushProduct(product);
+        return NextResponse.json({ success: true, result });
+      } catch (err) {
+        if (err instanceof LablitApiError && err.category === 'NOT_IMPLEMENTED') {
+          return NextResponse.json({
+            success: true,
+            placeholder: true,
+            message: 'Label data mapped successfully. Labl.it API push will activate once API access is confirmed.',
+            label: labelPayload,
+            product,
+          });
+        }
+        throw err;
+      }
+    }
+  } catch (err: unknown) {
+    console.error('[lablit/push-label] Error:', err);
+    const msg = err instanceof Error ? err.message : 'Failed to push label';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
