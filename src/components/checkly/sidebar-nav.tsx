@@ -185,6 +185,18 @@ const navItems: NavItem[] = [
     href: '/dashboard/logs/temperature',
     icon: Clock,
   },
+  {
+    type: 'link',
+    label: 'Attendance Register',
+    href: '/dashboard/logs/attendance',
+    icon: Calendar,
+  },
+  {
+    type: 'link',
+    label: 'Blue Plaster Register',
+    href: '/dashboard/logs/blue-plaster',
+    icon: FileText,
+  },
 ];
 
 export function ChecklyNavItem({ item }: { item: NavItem }) {
