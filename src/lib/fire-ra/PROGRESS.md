@@ -64,3 +64,23 @@
   - `src/app/dashboard/sops/ra-templates/page.tsx` — Added Fire RA template card (Fire icon, orange theme, links to /dashboard/risk-assessments/fire-ra)
 - **Deviations**: None
 - **Notes**: PDF exports from both the form page (sticky bar) and the view page (action buttons). View page sections are collapsible accordion-style for readability.
+
+## Phase F: Checklist Refactor (Premises-Specific Checklists)
+
+- **Status**: Complete
+- **Build**: Passes (`npx next build --webpack`)
+- **Files created**:
+  - `src/lib/fire-ra/checklist-options.ts` — Master checklist data for all 53 items x 8 premises types, with `getChecklistOptions()` and `createChecklistFieldData()` helpers
+  - `src/components/fire-ra/FireRAChecklistField.tsx` — Reusable checkbox list component (checked/unchecked grouping, custom item add, AI sparkle button, notes)
+- **Files modified**:
+  - `src/types/fire-ra.ts` — Added `ChecklistOption`, `ChecklistFieldData` interfaces; added optional `findingChecklist`, `existingControlsChecklist`, `actionRequiredChecklist` to `FireRAItem`; added `suggestedChecklist` to `FireRAAIAssistResponse`
+  - `src/lib/fire-ra/utils.ts` — Added `flattenChecklist()` helper
+  - `src/components/fire-ra/FireRAItemCard.tsx` — Replaced textareas with `FireRAChecklistField` components; lazy-init checklists on expand; dual-sync (checklist + flattened string); added `premisesType` prop
+  - `src/components/fire-ra/FireRASectionPanel.tsx` — Added `premisesType` prop, passes to each ItemCard
+  - `src/app/dashboard/risk-assessments/fire-ra/page.tsx` — Passes `premisesType` to SectionPanel; updated AI handler to merge `suggestedChecklist` items; added `flattenChecklist` import
+  - `src/lib/fire-ra/ai-prompts.ts` — Updated prompts to request JSON array format for checklist suggestions
+  - `src/app/api/assistant/fire-ra-assist/route.ts` — Parses AI response as JSON array, returns `suggestedChecklist` alongside text
+  - `src/app/dashboard/risk-assessments/view/[id]/page.tsx` — Renders checklist data as checked item lists with checkmarks, falls back to plain text
+  - `src/lib/fire-ra/export-pdf.ts` — Formats checklist data with checkmark symbols in PDF cells
+- **Backward compat**: Old saved assessments with string-only fields still work (checklist lazily initialized on edit, text preserved in notes field)
+- **Notes**: All 8 premises types have premises-specific options. AI now returns structured JSON arrays which merge as new checklist items.

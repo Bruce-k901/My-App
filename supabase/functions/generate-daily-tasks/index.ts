@@ -432,7 +432,7 @@ try {
       if (certTemplate) {
         const { data: allProfiles } = await supabase.from("profiles").select("id, full_name, site_id, company_id, home_site, food_safety_expiry_date, h_and_s_expiry_date, fire_marshal_expiry_date, first_aid_expiry_date, cossh_expiry_date, food_safety_level, h_and_s_level");
         for (const profile of allProfiles || []){
-          const siteId = profile.site_id || profile.home_site;
+          const siteId = profile.home_site || profile.site_id;
           if (!siteId || !profile.company_id) continue;
           const certificates = [
             {
@@ -536,7 +536,7 @@ try {
       // ✅ NEW: Check for certificates with NO expiry date (compliance gap)
       const { data: profilesNoExpiry } = await supabase.from("profiles").select("id, full_name, site_id, company_id, home_site, food_safety_level, h_and_s_level").not("company_id", "is", null);
       for (const profile of profilesNoExpiry || []){
-        const siteId = profile.site_id || profile.home_site;
+        const siteId = profile.home_site || profile.site_id;
         if (!siteId) continue;
         // Check Food Safety - has level but no expiry
         if (profile.food_safety_level) {
@@ -659,7 +659,7 @@ try {
         const profile = profileMap[record.profile_id];
         const course = courseMap[record.course_id];
         if (!profile || !course || !record.company_id) continue;
-        const siteId = profile.site_id || profile.home_site;
+        const siteId = profile.home_site || profile.site_id;
         if (!siteId) continue;
 
         const expiryDate = new Date(record.expiry_date);
