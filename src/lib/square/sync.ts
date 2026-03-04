@@ -30,6 +30,24 @@ function moneyToNumber(money?: SquareMoney | null): number {
   return Number(money.amount) / 100;
 }
 
+/**
+ * Recursively convert BigInt values to Number in an object so it can be
+ * safely JSON-serialised (e.g. for JSONB columns in Postgres).
+ */
+function sanitiseBigInts(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'bigint') return Number(obj);
+  if (Array.isArray(obj)) return obj.map(sanitiseBigInts);
+  if (typeof obj === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+      out[k] = sanitiseBigInts(v);
+    }
+    return out;
+  }
+  return obj;
+}
+
 // ---------------------------------------------------------------------------
 // Core sync function
 // ---------------------------------------------------------------------------
@@ -100,6 +118,24 @@ export async function syncSquareSales(
 
   const client = getSquareClient(accessToken);
   const affectedDates = new Set<string>();
+
+  // Pre-load category names from pos_menu_items so we can resolve
+  // catalogObjectId → category_name during line item processing.
+  const categoryLookup = new Map<string, string>();
+  {
+    const { data: menuItems } = await supabase
+      .from('pos_menu_items')
+      .select('catalog_variation_id, category_name')
+      .eq('company_id', companyId)
+      .eq('pos_provider', 'square')
+      .not('category_name', 'is', null);
+
+    for (const mi of menuItems ?? []) {
+      if (mi.catalog_variation_id && mi.category_name) {
+        categoryLookup.set(mi.catalog_variation_id, mi.category_name);
+      }
+    }
+  }
 
   try {
     // Fetch orders with cursor-based pagination
@@ -223,9 +259,9 @@ export async function syncSquareSales(
             ? ((fulfillments ?? [])[0].type as string) || null
             : null;
 
-          // Returns data
+          // Returns data (sanitise BigInts so JSONB insert doesn't fail)
           const returns = (order as Record<string, unknown>).returns as Array<Record<string, unknown>> | undefined;
-          const returnsData = (returns ?? []).length > 0 ? returns : null;
+          const returnsData = (returns ?? []).length > 0 ? sanitiseBigInts(returns) : null;
 
           // Order source (Square POS, Square Online, DoorDash, etc.)
           const orderSource = (order as Record<string, unknown>).source
@@ -270,9 +306,13 @@ export async function syncSquareSales(
           // Map line items with modifiers, variation, notes
           const lineItems = (order.lineItems ?? []).map((item) => {
             const mods = (item as Record<string, unknown>).modifiers as Array<Record<string, unknown>> | undefined;
+            // Resolve category from pos_menu_items lookup
+            const resolvedCategory = item.catalogObjectId
+              ? categoryLookup.get(item.catalogObjectId) || null
+              : null;
             return {
               item_name: item.name || 'Unknown Item',
-              category_name: item.catalogObjectId ? `square:${item.catalogObjectId}` : null,
+              category_name: resolvedCategory,
               catalog_object_id: item.catalogObjectId || null,
               quantity: Number(item.quantity || '1'),
               unit_price: moneyToNumber(item.basePriceMoney),
