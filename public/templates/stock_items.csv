@@ -1,0 +1,10 @@
+name,description,sku,category,base_unit,yield_percent,yield_notes,track_stock,par_level,reorder_qty,allergens,is_prep_item,is_purchasable,costing_method,current_cost
+Chicken Breast,"Free range, skinless",CHK-BRST-001,Meat,kg,85,"Trimmed and portioned",true,50,100,,false,true,weighted_avg,8.50
+Flour,"White bread flour",FLR-WHT-001,Dry Goods,kg,100,,true,25,50,"Gluten; Wheat",false,true,weighted_avg,2.50
+Tomatoes,"Fresh vine tomatoes",TOM-VINE-001,Fresh Produce,kg,100,,true,10,20,,false,true,weighted_avg,3.20
+Olive Oil,"Extra virgin",OIL-EV-001,Condiments,L,100,,true,5,10,,false,true,last_price,12.00
+Garlic,"Fresh bulbs",GRL-FRESH-001,Herbs & Spices,kg,100,,true,2,5,,false,true,weighted_avg,5.00
+Cheddar Cheese,"Mature, grated",CHS-CHED-001,Dairy,kg,100,,true,5,10,"Milk; Lactose",false,true,weighted_avg,7.80
+Salt,"Sea salt",SALT-SEA-001,Spices,kg,100,,true,10,20,,false,true,weighted_avg,1.50
+Bell Peppers,"Mixed colors",PEP-BELL-001,Fresh Produce,kg,100,,true,5,10,,false,true,weighted_avg,4.50
+

@@ -51,6 +51,7 @@ export function getTemplateFeatures(template: TaskTemplate | null | undefined): 
     return getDefaultFeatures();
   }
 
+  // Custom fields can coexist with standard features — no early return
   const evidenceTypes = template.evidence_types || [];
   const hasTemperature = evidenceTypes.includes('temperature');
   const hasPassFail = evidenceTypes.includes('pass_fail');
@@ -83,8 +84,8 @@ export function getTemplateFeatures(template: TaskTemplate | null | undefined): 
     requiresSOP: template.requires_sop || false,
     requiresRiskAssessment: template.requires_risk_assessment || false,
     
-    // Document upload: Enabled if requires_sop or requires_risk_assessment is true
-    documentUpload: (template.requires_sop || false) || (template.requires_risk_assessment || false),
+    // Document upload: Enabled if document_upload is in evidence_types
+    documentUpload: evidenceTypes.includes('document_upload'),
     raUpload: template.requires_risk_assessment || false,
     
     // Library dropdown: Not currently auto-detected (set manually if needed)
@@ -134,7 +135,10 @@ export function featuresToEvidenceTypes(features: Partial<TemplateFeatures>): st
     // Checklist uses text_note, but only if yes_no_checklist is not enabled
     evidenceTypes.push('text_note');
   }
-  
+  if (features.documentUpload) {
+    evidenceTypes.push('document_upload');
+  }
+
   return evidenceTypes;
 }
 

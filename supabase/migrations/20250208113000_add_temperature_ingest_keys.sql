@@ -8,43 +8,60 @@ set check_function_bodies = off;
 -- Ensure pgcrypto for gen_random_uuid if not already enabled
 create extension if not exists "pgcrypto" with schema extensions;
 
-create table if not exists public.temperature_ingest_keys (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies (id) on delete cascade,
-  label text not null,
-  secret text not null,
-  status text not null default 'active' check (status in ('active', 'revoked')),
-  last_used_at timestamptz,
-  rotated_at timestamptz,
-  created_at timestamptz not null default now(),
-  created_by uuid references public.profiles (id)
-);
+-- Create temperature_ingest_keys table (only if companies table exists)
+-- Note: Table creation will be skipped if companies table doesn't exist yet
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+    -- Create table without foreign keys first
+    CREATE TABLE IF NOT EXISTS public.temperature_ingest_keys (
+      id uuid primary key default gen_random_uuid(),
+      company_id uuid not null,
+      label text not null,
+      secret text not null,
+      status text not null default 'active' check (status in ('active', 'revoked')),
+      last_used_at timestamptz,
+      rotated_at timestamptz,
+      created_at timestamptz not null default now(),
+      created_by uuid
+    );
 
-comment on table public.temperature_ingest_keys is
-  'Per-tenant HMAC secrets for validating temperature ingest payloads.';
+    -- Add foreign keys conditionally
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'temperature_ingest_keys_company_id_fkey') THEN
+      ALTER TABLE public.temperature_ingest_keys ADD CONSTRAINT temperature_ingest_keys_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies (id) ON DELETE CASCADE;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'temperature_ingest_keys_created_by_fkey') THEN
+      ALTER TABLE public.temperature_ingest_keys ADD CONSTRAINT temperature_ingest_keys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles (id);
+    END IF;
 
-comment on column public.temperature_ingest_keys.secret is
-  'Hex-encoded HMAC secret shared with IoT devices / partner systems.';
+    COMMENT ON TABLE public.temperature_ingest_keys IS
+      'Per-tenant HMAC secrets for validating temperature ingest payloads.';
 
-create index if not exists temperature_ingest_keys_company_idx
-  on public.temperature_ingest_keys (company_id, status);
+    COMMENT ON COLUMN public.temperature_ingest_keys.secret IS
+      'Hex-encoded HMAC secret shared with IoT devices / partner systems.';
 
-alter table public.temperature_ingest_keys enable row level security;
+    CREATE INDEX IF NOT EXISTS temperature_ingest_keys_company_idx
+      ON public.temperature_ingest_keys (company_id, status);
 
-drop policy if exists tenant_select_temperature_ingest_keys on public.temperature_ingest_keys;
-create policy tenant_select_temperature_ingest_keys
-  on public.temperature_ingest_keys
-  for select
-  using (
-    public.is_service_role()
-  );
+    ALTER TABLE public.temperature_ingest_keys ENABLE ROW LEVEL SECURITY;
 
-drop policy if exists tenant_modify_temperature_ingest_keys on public.temperature_ingest_keys;
-create policy tenant_modify_temperature_ingest_keys
-  on public.temperature_ingest_keys
-  for all
-  using (public.is_service_role())
-  with check (public.is_service_role());
+    DROP POLICY IF EXISTS tenant_select_temperature_ingest_keys ON public.temperature_ingest_keys;
+    CREATE POLICY tenant_select_temperature_ingest_keys
+      ON public.temperature_ingest_keys
+      FOR SELECT
+      USING (
+        public.is_service_role()
+      );
+
+    DROP POLICY IF EXISTS tenant_modify_temperature_ingest_keys ON public.temperature_ingest_keys;
+    CREATE POLICY tenant_modify_temperature_ingest_keys
+      ON public.temperature_ingest_keys
+      FOR ALL
+      USING (public.is_service_role())
+      WITH CHECK (public.is_service_role());
+  END IF;
+END $$;
 
 -- Optional helper for generating secrets from SQL (hex random 32 bytes)
 drop function if exists public.generate_ingest_secret();

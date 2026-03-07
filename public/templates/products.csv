@@ -1,0 +1,5 @@
+name,description,sku,category,price,unit,is_active
+Product Name 1,Product description here,PROD-001,Category A,10.50,each,true
+Product Name 2,Another product description,PROD-002,Category B,15.00,each,true
+Product Name 3,Third product example,PROD-003,Category A,8.75,each,true
+

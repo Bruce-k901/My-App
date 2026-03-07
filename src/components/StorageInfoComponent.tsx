@@ -2,7 +2,7 @@
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
 import { useSOP } from "@/context/SOPContext"
-import { Package, FileText, Thermometer, CheckCircle, AlertTriangle, Clock, X } from "lucide-react"
+import { Package, FileText, Thermometer, CheckCircle, AlertTriangle, Clock, X } from '@/components/ui/icons'
 
 interface StorageRow {
   container: string;
@@ -188,7 +188,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
       data-type="storageInfo"
     >
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -200,7 +200,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
         </div>
         <button
           onClick={addRow}
-          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add Storage</span>
@@ -209,7 +209,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
 
       <div className="space-y-3">
         {rows.length === 0 && (
-          <div className="text-center text-gray-500 italic py-4">
+          <div className="text-center text-theme-tertiary italic py-4">
             No storage instructions added yet.
           </div>
         )}
@@ -226,14 +226,14 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
               {/* Container Type */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-400 flex items-center gap-1">
+                <label className="text-xs text-theme-tertiary flex items-center gap-1">
                   <Package size={12} />
                   Container
                 </label>
                 <select
                   value={row.container}
                   onChange={(e) => updateRow(index, "container", e.target.value)}
-                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                 >
                   <option value="">Select container</option>
                   {containerTypes.map(type => (
@@ -244,14 +244,14 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
 
               {/* Storage Type */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-400 flex items-center gap-1">
+                <label className="text-xs text-theme-tertiary flex items-center gap-1">
                   <FileText size={12} />
                   Storage Type
                 </label>
                 <select
                   value={row.storage_type}
                   onChange={(e) => handleStorageTypeChange(index, e.target.value)}
-                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                 >
                   {storageTypes.map(type => (
                     <option key={type} value={type}>{type}</option>
@@ -261,7 +261,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
 
               {/* Temperature Range */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-400 flex items-center gap-1">
+                <label className="text-xs text-theme-tertiary flex items-center gap-1">
                   <Thermometer size={12} />
                   Temp (°C)
                   {isCompliant(row) ? (
@@ -273,7 +273,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                 <div className="flex items-center gap-1">
                   {/* Min Temperature Input */}
                   {row.limit_type === "max" ? (
-                    <span className="text-gray-500 text-sm w-16 text-center">–</span>
+                    <span className="text-theme-tertiary text-sm w-16 text-center">–</span>
                   ) : (
                     <input
                       type="text"
@@ -287,7 +287,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                           updateRow(index, "temp_min", value === '' || value === '-' ? 0 : Number(value) || 0);
                         }
                       }}
-                      className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-white focus:outline-none ${
+                      className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-theme-primary focus:outline-none ${
                         !isRecommended(row) 
                           ? 'border-amber-400/50 bg-amber-500/10' 
                           : 'border-gray-600 focus:border-magenta-400'
@@ -297,11 +297,11 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                     />
                   )}
                   
-                  <span className="text-gray-400 text-sm">–</span>
+                  <span className="text-theme-tertiary text-sm">–</span>
                   
                   {/* Max Temperature Input */}
                   {row.limit_type === "min" ? (
-                    <span className="text-gray-500 text-sm w-16 text-center">–</span>
+                    <span className="text-theme-tertiary text-sm w-16 text-center">–</span>
                   ) : (
                     <input
                       type="text"
@@ -315,7 +315,7 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
                           updateRow(index, "temp_max", value === '' || value === '-' ? 0 : Number(value) || 0);
                         }
                       }}
-                      className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-white focus:outline-none ${
+                      className={`w-16 bg-transparent border border-gray-700 rounded-md text-right px-2 py-2 text-sm text-theme-primary focus:outline-none ${
                         !isRecommended(row) 
                           ? 'border-amber-400/50 bg-amber-500/10' 
                           : 'border-gray-600 focus:border-magenta-400'
@@ -329,26 +329,26 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
 
               {/* Shelf Life */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-400 flex items-center gap-1">
+                <label className="text-xs text-theme-tertiary flex items-center gap-1">
                   <Clock size={12} />
                   Shelf Life
                 </label>
                 <input
                   value={row.shelf_life}
                   onChange={(e) => updateRow(index, "shelf_life", e.target.value)}
-                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                  className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                   placeholder="4 days"
                 />
               </div>
 
               {/* Notes & Remove */}
               <div className="space-y-1">
-                <label className="text-xs text-gray-400">Notes / Guidance</label>
+                <label className="text-xs text-theme-tertiary">Notes / Guidance</label>
                 <div className="flex items-center gap-2">
                   <input
                     value={row.notes}
                     onChange={(e) => updateRow(index, "notes", e.target.value)}
-                    className="flex-1 bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="flex-1 bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     placeholder="Label with prep & expiry date"
                   />
                   <button
@@ -367,14 +367,14 @@ export default function StorageInfoComponent({ node, updateAttributes, selected,
 
       {/* Extra HACCP Notes */}
       <div className="mt-4 pt-3 border-t border-gray-700/40">
-        <label className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+        <label className="text-xs text-theme-tertiary flex items-center gap-1 mb-2">
           <FileText size={12} />
           Additional HACCP Notes
         </label>
         <textarea
           value={extraNotes}
           onChange={(e) => setExtraNotes(e.target.value)}
-          className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-white focus:border-magenta-400 focus:outline-none resize-none italic"
+          className="w-full bg-neutral-800 border border-gray-600 rounded-md px-3 py-2 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none resize-none italic"
           placeholder="Keep covered at all times. Discard any batch left out >30 min."
           rows={2}
         />

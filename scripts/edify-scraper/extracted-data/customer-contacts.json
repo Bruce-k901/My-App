@@ -1,0 +1,128 @@
+[
+  {
+    "site": "Gecko",
+    "siteId": "8f010fbf-a143-479f-b7fb-e9e084af0ed1",
+    "contactName": "Andrew Gecko",
+    "email": "andrew@geckocoffee.house",
+    "phone": null,
+    "role": "Employee",
+    "userId": "929dfa85-eccc-427c-9348-e0cf9e488e16"
+  },
+  {
+    "site": "Mandala Cafe",
+    "siteId": "6b8fde8b-42a3-4e5d-984e-3a77c504fc8d",
+    "contactName": "Ben  Mandala Cafe",
+    "email": "info@mandalacafe.co.uk",
+    "phone": null,
+    "role": "Employee",
+    "userId": "3a4bd3db-e19f-4f7b-95f3-50692de2156b"
+  },
+  {
+    "site": "Kleinskys",
+    "siteId": "379c8081-aeff-4978-a004-c325903271dd",
+    "contactName": "Eniko Hevesi",
+    "email": "eniko@bonedaddies.com",
+    "phone": "+4407340218897",
+    "role": "Employee",
+    "userId": "09157527-cfc2-4ba6-8724-3ae2155e5ba9"
+  },
+  {
+    "site": "Alchemy Bishopsgate",
+    "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+    "contactName": "Gareth Alchemy 2",
+    "email": "duomanager@alchemycoffee.co.uk",
+    "phone": null,
+    "role": "Employee",
+    "userId": "f519d568-e15f-4eaa-a455-8a5add33be99"
+  },
+  {
+    "site": "Naked Deptford",
+    "siteId": "35e7d835-0012-41a2-8e3f-58ec821be633",
+    "contactName": "Georgia Naked",
+    "email": "a@naked.care",
+    "phone": null,
+    "role": "Employee",
+    "userId": "c5263023-7f5b-497a-8037-043729ae5eaa"
+  },
+  {
+    "site": "Naked Greenwich",
+    "siteId": "5525e105-ffe1-4875-8e3d-017d9ad739ca",
+    "contactName": "Georgia Naked",
+    "email": "a@naked.care",
+    "phone": null,
+    "role": "Employee",
+    "userId": "c5263023-7f5b-497a-8037-043729ae5eaa"
+  },
+  {
+    "site": "Chaos",
+    "siteId": "fc42804d-cc3e-4043-b115-7e803ee3e134",
+    "contactName": "Guido Chaos",
+    "email": "guido@chaos.london",
+    "phone": null,
+    "role": "Employee",
+    "userId": "27400159-9fa1-4236-9aaa-d48a8782387b"
+  },
+  {
+    "site": "Kleinskys",
+    "siteId": "379c8081-aeff-4978-a004-c325903271dd",
+    "contactName": "Max Kleinskys",
+    "email": "max@bonedaddies.com",
+    "phone": null,
+    "role": "Employee",
+    "userId": "3983679a-3c27-43af-9e69-6024a19baaea"
+  },
+  {
+    "site": "Bean",
+    "siteId": "1b0551fe-dfee-451f-b600-fb8c6fb3dd59",
+    "contactName": "Niki Bean",
+    "email": "info@beanandfriends.co.uk",
+    "phone": null,
+    "role": "Employee",
+    "userId": "2785e895-5e10-41ab-8418-30303f90bbea"
+  },
+  {
+    "site": "Photo book",
+    "siteId": "d47df061-5208-4417-bd3d-00178c555c81",
+    "contactName": "Shubham Ghanatha",
+    "email": "photobookec2@gmail.com",
+    "phone": "+447884703603",
+    "role": "Employee",
+    "userId": "23fbc767-478e-4f78-81ac-4f2d586837ea"
+  },
+  {
+    "site": "De Beauvoir Deli",
+    "siteId": "93d4e234-bdbd-4d7d-828c-6045519b05af",
+    "contactName": "Sophie De Beauvoir Deli",
+    "email": "info@thedebeauvoirdeli.co.uk",
+    "phone": null,
+    "role": "Employee",
+    "userId": "162ab25f-f9ca-4973-91b2-e583bb2d2043"
+  },
+  {
+    "site": "High Grade",
+    "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+    "contactName": "Stevie  High grade",
+    "email": "manager@highgrade.coffee",
+    "phone": null,
+    "role": "Employee",
+    "userId": "16109777-48bd-409c-b3d3-4f0fa48a5879"
+  },
+  {
+    "site": "3rd Cuture",
+    "siteId": "ea6a8929-990f-41b6-931f-1ebd33103d0e",
+    "contactName": "Tilen 3rd Cuture",
+    "email": "hi@thirdculturedeli.com",
+    "phone": null,
+    "role": "Employee",
+    "userId": "ce68aaa0-dae8-47b0-9369-e8a3aebb159a"
+  },
+  {
+    "site": "Tram Store",
+    "siteId": "e15b32e0-4ed8-40cf-b91a-5eda7cdd15cc",
+    "contactName": "Tunc Tram Store",
+    "email": "tunc@tram-store.co.uk",
+    "phone": null,
+    "role": "Employee",
+    "userId": "57acf098-374a-4a7c-91b3-bb196034fa9f"
+  }
+]

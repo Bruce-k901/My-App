@@ -1,0 +1,1258 @@
+{
+  "data": [
+    {
+      "id": "acb50452-2c1e-4c61-a8aa-11365c160e65",
+      "name": "Allspice",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "11.490",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "ALLSPICE GROUND",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "d1c12442-58d1-4e80-af8b-643264e7e583",
+      "name": "Almond extract",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.660",
+      "packType": "Bottle",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "60.000",
+      "supplierProductCode": "ESSNMALMOND",
+      "taxRate": null,
+      "unitOfMeasure": "MILLILITRE",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "5222602c-863f-4e08-a6ce-7bd6efe5352d",
+      "name": "Apple Pectin",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "33.560",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "PECTINAPP",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "475d4e6d-650e-4e46-ac7b-a9ae3e3a845a",
+      "name": "Apple Slices, Frozen",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "3.410",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "APPLESLICED",
+      "taxRate": null,
+      "unitOfMeasure": "KILOGRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "23cd82f8-1989-42f7-9399-d798f50cde19",
+      "name": "Applewood Cheese",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.650",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "200.000",
+      "supplierProductCode": "CHEESEVEGANAPPSL",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "89097ed3-f058-4560-af7f-0a1f438dfe73",
+      "name": "Avocado Diced, Frozen",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "8.420",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "AVOCADODICED",
+      "taxRate": null,
+      "unitOfMeasure": "KILOGRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "47640992-7bb6-40e1-a193-4c9f3f51faa0",
+      "name": "Basil",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "1.890",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "BASELFR",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "0e348d9b-cf9a-48d2-b758-0f86da7f124a",
+      "name": "Canned peppers",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": null,
+      "packQuantity": "1.000",
+      "packCost": "8.690",
+      "packType": "Can",
+      "singleUnitType": "Can",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "2500.000",
+      "supplierProductCode": "PEPPERSROASTR",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "e8480d98-8b02-406f-a7c9-4968a087a129",
+      "name": "Coconut cream",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "1.700",
+      "packType": "Can",
+      "singleUnitType": "Can",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "400.000",
+      "supplierProductCode": "COCCREAM",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "1a40a05d-964a-4e31-9d25-b8a5ddc836f0",
+      "name": "Coconut Milk Rude Health",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": "Beverage",
+      "packQuantity": "1.000",
+      "packCost": "2.450",
+      "packType": "Bottle",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "MILKCOCONUTR",
+      "taxRate": null,
+      "unitOfMeasure": "LITRE",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "ee2523a4-e09e-4c3c-8b3b-3aa417e5aa2b",
+      "name": "Dijon Mustard",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Sauces",
+      "packQuantity": "1.000",
+      "packCost": "4.100",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "MUSTDIJ1",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "5b360406-0c6e-43a3-8dea-4c70dc5c3667",
+      "name": "Dried Sage",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "4.290",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "200.000",
+      "supplierProductCode": "Sage",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "cbb74508-8bb6-42da-ac51-e6b9ef9c1d68",
+      "name": "Dried Tyhme",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.500",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "200.000",
+      "supplierProductCode": "Tyhme",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "17cc008a-91bb-44e4-8ad5-ee5db63b395c",
+      "name": "Ffreeze dried Strawberries",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "11.250",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "STRAWBFDSLCD",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "db063a33-70ca-47bc-bca9-c6d72fabafb3",
+      "name": "Fine Salt",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "10.690",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "10000.000",
+      "supplierProductCode": "SALTSEA10",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "627cfe2d-5897-49e3-80f2-fabe2323fa71",
+      "name": "Flat Leaf Parsley",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "1.490",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "PARSLEYRET",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "119c891a-abea-47fe-b105-f0e5aedc9ec9",
+      "name": "Flax seeds",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.250",
+      "packType": "Kg",
+      "singleUnitType": "Kg",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "LINSEEDG",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "8dcdda8f-ea74-4d66-adf1-b50afb757730",
+      "name": "Frozen banana",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "27.400",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "10000.000",
+      "supplierProductCode": "BANANAFZ",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "c0fb6f49-a69e-4dcd-9965-c5afcc34bc0e",
+      "name": "Frozen blueberries",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "6.220",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "BLUEBERRFZ",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "b2279c6e-f9e5-4454-8c7a-e28fecc1aa23",
+      "name": "Frozen Lemon Zest",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "6.420",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "ZESTFZLEMON",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "f99b31e4-16aa-44b0-b4d4-bbeafc179e9a",
+      "name": "Frozen Orange zest",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "6.100",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "ZESTFZORANGE",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "b4538270-c8bc-4b55-973a-bb0f47df012d",
+      "name": "Frozen spinach",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "5.480",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "2500.000",
+      "supplierProductCode": "SPINACHFZ",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "18918daf-6dc8-445f-8c19-7ed47b7e9eb8",
+      "name": "Frozen Strawberrys",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Frozen",
+      "packQuantity": "1.000",
+      "packCost": "8.980",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "2500.000",
+      "supplierProductCode": "STRABFZ2",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "dfeb95d8-a5f7-4900-bcc5-9499e54c8014",
+      "name": "Garlic Powder",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "4.980",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "Garlicpow",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "99a73e00-e719-403b-bb06-f1183822dfe7",
+      "name": "Ginger",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "4.950",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "GINGERFR",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "1cf544c6-d671-4ec9-846a-ee0703a84beb",
+      "name": "Granular Citric Acid",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Dry",
+      "packQuantity": "1.000",
+      "packCost": "18.750",
+      "packType": "Kg",
+      "singleUnitType": "Kg",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "CITRICACIDPOWDER",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "81dbd484-7681-4594-a17b-b9a81db0f7d3",
+      "name": "Green Apples",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "2.090",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": true,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "APPLEFBRAM",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "e9c06886-5b06-4ad6-9537-e7e1f437afbd",
+      "name": "Ground ginger",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.900",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "GINGGROUND",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "a463eda7-34b5-4920-a7b3-3d0700154f52",
+      "name": "Lemon Juice, Fresh",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.890",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "LEMONF",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "31b2bed1-8766-4de6-bd3d-13c018ef3f0a",
+      "name": "Loose leaf earl gray tea",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "5.590",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "TEANEARLLOOSE",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "3d834be7-d38c-40f1-8050-b1697b56adf9",
+      "name": "Mango Cubes",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "4.690",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "MANGOCUBESFZ",
+      "taxRate": null,
+      "unitOfMeasure": "KILOGRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "4dd4aeac-8389-47af-b3bb-3494f57607bb",
+      "name": "Nutritonal Yeast",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Dry",
+      "packQuantity": "1.000",
+      "packCost": "22.980",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "650.000",
+      "supplierProductCode": "NUTRITIONAL750",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "ea374747-e8f7-4295-92de-f1b1e5b31206",
+      "name": "Oat Rude Health (occasional)",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Alternative milk",
+      "packQuantity": "6.000",
+      "packCost": "11.340",
+      "packType": "Case",
+      "singleUnitType": "Carton",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "MILKOATRUDE",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "3d345320-abcf-4558-8256-6390b7e1325d",
+      "name": "Onion Powder",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "3.900",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "Onionpow",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "9c526d25-56f0-4e8e-ab61-208f5461213b",
+      "name": "Orange Juice CPU",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Bakery",
+      "packQuantity": "1.000",
+      "packCost": "2.990",
+      "packType": "L",
+      "singleUnitType": "L",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "ORANGEF",
+      "taxRate": "20.000",
+      "unitOfMeasure": "MILLILITRE",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "93aa6f5b-5412-465e-a6bb-c290a7f92fe5",
+      "name": "Original Coconut Water - Vita Coco",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": null,
+      "packQuantity": "12.000",
+      "packCost": "12.990",
+      "packType": "Case",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "COCONUTWATER",
+      "taxRate": null,
+      "unitOfMeasure": "LITRE",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "cfe2eac1-d69c-4fbb-8c42-180992cc5a07",
+      "name": "Poppy seeds",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "4.980",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "POPPY",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "0409670a-5b00-4b25-87d1-1daa18378af7",
+      "name": "Psyllium Husk",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "17.980",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "PsylliumHusk500",
+      "taxRate": "20.000",
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "848130d9-ae62-48d1-8140-792911e75557",
+      "name": "Raspberry powder",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Dry",
+      "packQuantity": "1.000",
+      "packCost": "12.350",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "RASPBDRIED",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "1ae2ceff-22ad-42a2-8a6d-75d00fd0c7d1",
+      "name": "Red Wine Vinegar",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "1.890",
+      "packType": "Bottle",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "VINRW1",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "beea68df-ecfa-4983-945b-7d9b9d324d57",
+      "name": "Rose Petals",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "8.390",
+      "packType": "Pack",
+      "singleUnitType": "Pack",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "ROSEOETAL",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "31e0e531-a95a-49e9-bfe0-5d7d125560ea",
+      "name": "Sage",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Fruit & Veg",
+      "packQuantity": "1.000",
+      "packCost": "1.690",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "100.000",
+      "supplierProductCode": "SAGEFR",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "2edeef79-c76e-4695-9308-9c1a5b9d1780",
+      "name": "Shipton flour croissants",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": null,
+      "packQuantity": "1.000",
+      "packCost": "33.790",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "25000.000",
+      "supplierProductCode": "FLOUSHIPCROISSAN",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "ade00922-6102-4fbb-88a5-121e8a3e17fc",
+      "name": "Soy Sauce - Kikkoman",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "7.390",
+      "packType": "Bottle",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "1.000",
+      "supplierProductCode": "SOYSAUCEKIK1",
+      "taxRate": "20.000",
+      "unitOfMeasure": "LITRE",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "ecef0938-b0d6-4ba2-bd0a-3f72cf8c6787",
+      "name": "Strawberries,Frozen",
+      "status": "ACTIVE",
+      "productClass": null,
+      "productCategory": null,
+      "packQuantity": "1.000",
+      "packCost": "8.980",
+      "packType": "Bag",
+      "singleUnitType": "Bag",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "2.500",
+      "supplierProductCode": "STRAWBFZ2",
+      "taxRate": null,
+      "unitOfMeasure": "KILOGRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "2879c362-a4ef-4b8a-b1e1-978c89b8d25e",
+      "name": "Sun dried tomatoes",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "11.500",
+      "packType": "Kg",
+      "singleUnitType": "Kg",
+      "allowSplitPack": true,
+      "singleItemVolumeOrWeight": "1000.000",
+      "supplierProductCode": "SUNTOM1",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "55cfde2b-9dfb-4a98-89b5-b91ea33b3cd9",
+      "name": "tofu",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": null,
+      "packQuantity": "1.000",
+      "packCost": "3.380",
+      "packType": "Each",
+      "singleUnitType": "Each",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "450.000",
+      "supplierProductCode": "TOFUPLAIN",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "08f42009-1d81-4f23-b09a-cd7461ba0f91",
+      "name": "Tomarto Powder",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "15.950",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "TOMATOPOW500",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "4835d1d3-9873-4cea-a56e-51938daf101b",
+      "name": "Turmeric Ground",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "5.490",
+      "packType": "Box",
+      "singleUnitType": "Box",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "500.000",
+      "supplierProductCode": "Turmeric",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    },
+    {
+      "id": "b11eaddc-f0af-4f05-ba50-ea5e9c8adfa7",
+      "name": "Vanilla Extract",
+      "status": "ACTIVE",
+      "productClass": "Food",
+      "productCategory": "Food",
+      "packQuantity": "1.000",
+      "packCost": "9.790",
+      "packType": "Bottle",
+      "singleUnitType": "Bottle",
+      "allowSplitPack": false,
+      "singleItemVolumeOrWeight": "118.000",
+      "supplierProductCode": "ESSVANNM118",
+      "taxRate": null,
+      "unitOfMeasure": "GRAM",
+      "blockedSites": [],
+      "productSitePricings": [
+        {
+          "siteId": null,
+          "price": null
+        }
+      ],
+      "forceOrderingByPackQuantityMultiples": false,
+      "variants": []
+    }
+  ],
+  "page": 1,
+  "size": 50,
+  "total": 51,
+  "totalPages": 2
+}

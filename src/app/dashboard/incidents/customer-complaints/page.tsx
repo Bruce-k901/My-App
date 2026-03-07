@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye } from 'lucide-react';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { CustomerComplaintModal } from '@/components/incidents/CustomerComplaintModal';
+import { IncidentReportViewer } from '@/components/incidents/IncidentReportViewer';
+import { downloadIncidentReportPDF } from '@/lib/incident-report-pdf';
 import Select from '@/components/ui/Select';
 
 interface CustomerComplaint {
@@ -31,6 +33,8 @@ export default function CustomerComplaintsPage() {
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [isIncidentModalOpen, setIsIncidentModalOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<CustomerComplaint | null>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewingComplaint, setViewingComplaint] = useState<CustomerComplaint | null>(null);
 
   useEffect(() => {
     fetchComplaints();
@@ -178,70 +182,71 @@ export default function CustomerComplaintsPage() {
     switch (severity) {
       case 'critical':
       case 'fatality':
-        return 'bg-red-600/20 text-red-300 border-red-600/40';
+        return 'bg-red-50 dark:bg-red-600/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-600/40';
       case 'major':
       case 'high':
-        return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
+        return 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-500/40';
       case 'moderate':
       case 'medium':
-        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+        return 'bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-500/40';
       case 'minor':
       case 'low':
       case 'near_miss':
-        return 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+        return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/40';
       default:
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open':
-        return 'bg-red-500/20 text-red-300 border-red-500/40';
+        return 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/40';
       case 'investigating':
-        return 'bg-orange-500/20 text-orange-300 border-orange-500/40';
+        return 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-500/40';
       case 'resolved':
-        return 'bg-green-500/20 text-green-300 border-green-500/40';
+        return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/40';
       case 'closed':
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
       default:
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-yellow-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold text-theme-primary mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
               Customer Complaints
             </h1>
-            <p className="text-white/60">Track and manage customer complaints and feedback</p>
+            <p className="text-theme-secondary text-sm sm:text-base">Track and manage customer complaints and feedback</p>
           </div>
           <Button
             onClick={() => setIsIncidentModalOpen(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white flex-shrink-0 text-sm sm:text-base whitespace-nowrap"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Log Complaint
+            <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="sm:hidden">Log</span>
+            <span className="hidden sm:inline">Log Complaint</span>
           </Button>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-4 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
               <input
                 type="text"
                 placeholder="Search complaints..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500"
+ className="w-full pl-10 pr-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg"
               />
             </div>
 
@@ -285,13 +290,13 @@ export default function CustomerComplaintsPage() {
         {/* Complaints List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-white/60">Loading complaints...</p>
+            <p className="text-theme-secondary">Loading complaints...</p>
           </div>
         ) : filteredComplaints.length === 0 ? (
-          <div className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-12 text-center">
-            <AlertTriangle className="w-16 h-16 text-white/20 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No customer complaints found</h3>
-            <p className="text-white/60 mb-6">
+          <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
+            <AlertTriangle className="w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">No customer complaints found</h3>
+            <p className="text-theme-secondary mb-6">
               {searchTerm || statusFilter !== 'all' || severityFilter !== 'all'
                 ? 'Try adjusting your filters'
                 : 'No customer complaints have been logged yet'}
@@ -307,58 +312,67 @@ export default function CustomerComplaintsPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredComplaints.map((complaint) => (
               <div
                 key={complaint.id}
-                className="bg-white/[0.03] border border-white/[0.1] rounded-lg p-6 hover:bg-white/[0.05] transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-4 sm:p-6 hover:bg-theme-hover transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-2">{complaint.title}</h3>
-                    <p className="text-white/70 text-sm mb-3">{complaint.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-white/50">
-                      <span>Reported by: {complaint.reported_by}</span>
-                      <span>•</span>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-theme-primary mb-1 sm:mb-2 truncate">{complaint.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-2 sm:mb-3 line-clamp-2">{complaint.description}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-theme-secondary/50">
+                      <span className="truncate max-w-[150px]">By: {complaint.reported_by}</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(complaint.reported_date || complaint.reported_at).toLocaleDateString()}</span>
                       {complaint.site_name && (
                         <>
-                          <span>•</span>
-                          <span>{complaint.site_name}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="truncate max-w-[120px]">{complaint.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(complaint.severity)}`}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getSeverityColor(complaint.severity)}`}>
                       {complaint.severity.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getStatusColor(complaint.status)}`}>
                       {complaint.status.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                <div className="flex items-center gap-2 pt-3 sm:pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
-                      setSelectedComplaint(complaint);
-                      toast.info('View complaint report feature coming soon');
+                      setViewingComplaint(complaint);
+                      setIsViewerOpen(true);
                     }}
                     variant="outline"
                     size="sm"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Report
+                    <Eye className="w-4 h-4 mr-1 sm:mr-2" />
+                    View
                   </Button>
                   <Button
-                    onClick={() => {
-                      toast.info('Download report feature coming soon');
+                    onClick={async () => {
+                      try {
+                        await downloadIncidentReportPDF(complaint);
+                        toast.success('Report download started');
+                      } catch (error: any) {
+                        console.error('Error downloading report:', error);
+                        toast.error(error.message || 'Failed to download report');
+                      }
                     }}
                     variant="outline"
                     size="sm"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Download</span>
+                    <span className="sm:hidden">PDF</span>
                   </Button>
                 </div>
               </div>
@@ -378,6 +392,25 @@ export default function CustomerComplaintsPage() {
           // Refresh complaints list
           fetchComplaints();
           toast.success('Customer complaint logged and follow-up tasks generated');
+        }}
+      />
+
+      {/* Incident Report Viewer */}
+      <IncidentReportViewer
+        incident={viewingComplaint}
+        isOpen={isViewerOpen}
+        onClose={() => {
+          setIsViewerOpen(false);
+          setViewingComplaint(null);
+        }}
+        onDownload={async (incident) => {
+          try {
+            await downloadIncidentReportPDF(incident);
+            toast.success('Report download started');
+          } catch (error: any) {
+            console.error('Error downloading report:', error);
+            toast.error(error.message || 'Failed to download report');
+          }
         }}
       />
     </div>

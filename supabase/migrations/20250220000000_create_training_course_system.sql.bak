@@ -1,0 +1,514 @@
+-- =====================================================
+-- TRAINING COURSE SYSTEM - NEW TABLES
+-- Creates course_assignments, course_progress, course_questions,
+-- course_question_options, and course_charges tables
+-- =====================================================
+-- Note: This migration will be skipped if required tables don't exist yet
+
+DO $$
+BEGIN
+  -- Only proceed if required tables exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'training_courses')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'training_records') THEN
+
+    -- =====================================================
+    -- COURSE ASSIGNMENTS TABLE
+    -- Track who is assigned to which courses
+    -- =====================================================
+    CREATE TABLE IF NOT EXISTS course_assignments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID NOT NULL,
+      profile_id UUID NOT NULL,
+      course_id UUID NOT NULL,
+      
+      -- Assignment details
+      status TEXT NOT NULL DEFAULT 'invited',
+      -- Values: 'invited', 'confirmed', 'in_progress', 'completed', 'expired'
+      CHECK (status IN ('invited', 'confirmed', 'in_progress', 'completed', 'expired')),
+      
+      assigned_by UUID,
+      assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      
+      -- Confirmation
+      confirmed_at TIMESTAMPTZ,
+      confirmation_name TEXT,
+      confirmation_site_id UUID,
+      
+      -- Deadline/reminder
+      deadline_date DATE,
+      reminder_sent BOOLEAN DEFAULT FALSE,
+      
+      -- Attempts tracking
+      attempts INTEGER DEFAULT 0,
+      
+      -- Link to resulting training record when completed
+      training_record_id UUID,
+      
+      -- Messaging conversation reference
+      msgly_conversation_id UUID,
+      
+      -- Calendar task reference (notification ID)
+      calendar_task_id UUID,
+      
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Foreign key constraints
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_company_id_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_company_id_fkey 
+      FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_profile_id_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_profile_id_fkey 
+      FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_course_id_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_course_id_fkey 
+      FOREIGN KEY (course_id) REFERENCES training_courses(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_assigned_by_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_assigned_by_fkey 
+      FOREIGN KEY (assigned_by) REFERENCES profiles(id) ON DELETE SET NULL;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_confirmation_site_id_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_confirmation_site_id_fkey 
+      FOREIGN KEY (confirmation_site_id) REFERENCES sites(id) ON DELETE SET NULL;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_assignments' 
+      AND constraint_name = 'course_assignments_training_record_id_fkey'
+    ) THEN
+      ALTER TABLE course_assignments 
+      ADD CONSTRAINT course_assignments_training_record_id_fkey 
+      FOREIGN KEY (training_record_id) REFERENCES training_records(id) ON DELETE SET NULL;
+    END IF;
+
+    -- Unique constraint: Allow re-assignment after expiry
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_indexes 
+      WHERE schemaname = 'public' 
+      AND tablename = 'course_assignments' 
+      AND indexname = 'idx_unique_active_assignment'
+    ) THEN
+      CREATE UNIQUE INDEX idx_unique_active_assignment 
+      ON course_assignments(profile_id, course_id)
+      WHERE status IN ('invited', 'confirmed', 'in_progress');
+    END IF;
+
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS idx_course_assignments_profile ON course_assignments(profile_id);
+    CREATE INDEX IF NOT EXISTS idx_course_assignments_course ON course_assignments(course_id);
+    CREATE INDEX IF NOT EXISTS idx_course_assignments_status ON course_assignments(status);
+    CREATE INDEX IF NOT EXISTS idx_course_assignments_company ON course_assignments(company_id);
+    CREATE INDEX IF NOT EXISTS idx_course_assignments_deadline ON course_assignments(deadline_date) WHERE deadline_date IS NOT NULL;
+
+    -- =====================================================
+    -- COURSE PROGRESS TABLE
+    -- Track module/lesson/page completion
+    -- =====================================================
+    CREATE TABLE IF NOT EXISTS course_progress (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID NOT NULL,
+      profile_id UUID NOT NULL,
+      course_id UUID NOT NULL,
+      assignment_id UUID,
+      
+      -- Progress tracking
+      module_id TEXT NOT NULL,
+      lesson_id TEXT,
+      page_id TEXT,
+      
+      -- Status
+      status TEXT NOT NULL DEFAULT 'not_started',
+      CHECK (status IN ('not_started', 'in_progress', 'completed')),
+      
+      started_at TIMESTAMPTZ,
+      completed_at TIMESTAMPTZ,
+      
+      -- Quiz scores for module quizzes (not final assessment)
+      quiz_score INTEGER,
+      quiz_passed BOOLEAN,
+      
+      -- Time tracking
+      time_spent_seconds INTEGER DEFAULT 0,
+      
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Foreign key constraints
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_progress' 
+      AND constraint_name = 'course_progress_company_id_fkey'
+    ) THEN
+      ALTER TABLE course_progress 
+      ADD CONSTRAINT course_progress_company_id_fkey 
+      FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_progress' 
+      AND constraint_name = 'course_progress_profile_id_fkey'
+    ) THEN
+      ALTER TABLE course_progress 
+      ADD CONSTRAINT course_progress_profile_id_fkey 
+      FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_progress' 
+      AND constraint_name = 'course_progress_course_id_fkey'
+    ) THEN
+      ALTER TABLE course_progress 
+      ADD CONSTRAINT course_progress_course_id_fkey 
+      FOREIGN KEY (course_id) REFERENCES training_courses(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_progress' 
+      AND constraint_name = 'course_progress_assignment_id_fkey'
+    ) THEN
+      ALTER TABLE course_progress 
+      ADD CONSTRAINT course_progress_assignment_id_fkey 
+      FOREIGN KEY (assignment_id) REFERENCES course_assignments(id) ON DELETE CASCADE;
+    END IF;
+
+    -- Unique constraint for progress tracking
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_indexes 
+      WHERE schemaname = 'public' 
+      AND tablename = 'course_progress' 
+      AND indexname = 'idx_unique_course_progress'
+    ) THEN
+      CREATE UNIQUE INDEX idx_unique_course_progress 
+      ON course_progress(profile_id, course_id, module_id, COALESCE(lesson_id, ''), COALESCE(page_id, ''));
+    END IF;
+
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS idx_course_progress_profile ON course_progress(profile_id);
+    CREATE INDEX IF NOT EXISTS idx_course_progress_course ON course_progress(course_id);
+    CREATE INDEX IF NOT EXISTS idx_course_progress_assignment ON course_progress(assignment_id);
+    CREATE INDEX IF NOT EXISTS idx_course_progress_status ON course_progress(status);
+
+    -- =====================================================
+    -- COURSE QUESTIONS TABLE
+    -- Question bank for assessments
+    -- =====================================================
+    CREATE TABLE IF NOT EXISTS course_questions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID,
+      course_id UUID NOT NULL,
+      
+      -- Question details
+      module_id TEXT,
+      question_text TEXT NOT NULL,
+      question_type TEXT NOT NULL DEFAULT 'multiple_choice',
+      CHECK (question_type IN ('multiple_choice', 'true_false', 'multi_select')),
+      explanation TEXT,
+      
+      -- Metadata
+      difficulty TEXT DEFAULT 'medium',
+      CHECK (difficulty IN ('easy', 'medium', 'hard')),
+      points INTEGER DEFAULT 1,
+      is_active BOOLEAN DEFAULT TRUE,
+      sort_order INTEGER DEFAULT 0,
+      
+      -- For company customization
+      is_system_default BOOLEAN DEFAULT FALSE,
+      
+      created_by UUID,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Foreign key constraints
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_questions' 
+      AND constraint_name = 'course_questions_company_id_fkey'
+    ) THEN
+      ALTER TABLE course_questions 
+      ADD CONSTRAINT course_questions_company_id_fkey 
+      FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_questions' 
+      AND constraint_name = 'course_questions_course_id_fkey'
+    ) THEN
+      ALTER TABLE course_questions 
+      ADD CONSTRAINT course_questions_course_id_fkey 
+      FOREIGN KEY (course_id) REFERENCES training_courses(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_questions' 
+      AND constraint_name = 'course_questions_created_by_fkey'
+    ) THEN
+      ALTER TABLE course_questions 
+      ADD CONSTRAINT course_questions_created_by_fkey 
+      FOREIGN KEY (created_by) REFERENCES profiles(id) ON DELETE SET NULL;
+    END IF;
+
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS idx_course_questions_course ON course_questions(course_id);
+    CREATE INDEX IF NOT EXISTS idx_course_questions_module ON course_questions(course_id, module_id);
+    CREATE INDEX IF NOT EXISTS idx_course_questions_company ON course_questions(company_id) WHERE company_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_course_questions_active ON course_questions(course_id, is_active) WHERE is_active = true;
+
+    -- =====================================================
+    -- COURSE QUESTION OPTIONS TABLE
+    -- Answer options for questions
+    -- =====================================================
+    CREATE TABLE IF NOT EXISTS course_question_options (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      question_id UUID NOT NULL,
+      
+      option_text TEXT NOT NULL,
+      is_correct BOOLEAN NOT NULL DEFAULT FALSE,
+      sort_order INTEGER DEFAULT 0,
+      
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Foreign key constraint
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_question_options' 
+      AND constraint_name = 'course_question_options_question_id_fkey'
+    ) THEN
+      ALTER TABLE course_question_options 
+      ADD CONSTRAINT course_question_options_question_id_fkey 
+      FOREIGN KEY (question_id) REFERENCES course_questions(id) ON DELETE CASCADE;
+    END IF;
+
+    -- Index
+    CREATE INDEX IF NOT EXISTS idx_question_options_question ON course_question_options(question_id);
+
+    -- =====================================================
+    -- COURSE CHARGES TABLE
+    -- Billing records for course completions
+    -- =====================================================
+    CREATE TABLE IF NOT EXISTS course_charges (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID NOT NULL,
+      site_id UUID,
+      profile_id UUID NOT NULL,
+      course_id UUID NOT NULL,
+      training_record_id UUID,
+      
+      -- Charge details
+      amount_pence INTEGER NOT NULL DEFAULT 500,
+      currency TEXT NOT NULL DEFAULT 'GBP',
+      
+      -- Candidate details at time of completion (for invoice)
+      candidate_name TEXT NOT NULL,
+      course_name TEXT NOT NULL,
+      completion_date DATE NOT NULL,
+      
+      -- Billing status
+      status TEXT NOT NULL DEFAULT 'pending',
+      CHECK (status IN ('pending', 'invoiced', 'paid')),
+      
+      invoice_id UUID,
+      invoiced_at TIMESTAMPTZ,
+      
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Foreign key constraints
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_charges' 
+      AND constraint_name = 'course_charges_company_id_fkey'
+    ) THEN
+      ALTER TABLE course_charges 
+      ADD CONSTRAINT course_charges_company_id_fkey 
+      FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_schema = 'public' 
+        AND table_name = 'course_charges' 
+        AND constraint_name = 'course_charges_site_id_fkey'
+      ) THEN
+        ALTER TABLE course_charges 
+        ADD CONSTRAINT course_charges_site_id_fkey 
+        FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE SET NULL;
+      END IF;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_charges' 
+      AND constraint_name = 'course_charges_profile_id_fkey'
+    ) THEN
+      ALTER TABLE course_charges 
+      ADD CONSTRAINT course_charges_profile_id_fkey 
+      FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_charges' 
+      AND constraint_name = 'course_charges_course_id_fkey'
+    ) THEN
+      ALTER TABLE course_charges 
+      ADD CONSTRAINT course_charges_course_id_fkey 
+      FOREIGN KEY (course_id) REFERENCES training_courses(id) ON DELETE CASCADE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.table_constraints 
+      WHERE table_schema = 'public' 
+      AND table_name = 'course_charges' 
+      AND constraint_name = 'course_charges_training_record_id_fkey'
+    ) THEN
+      ALTER TABLE course_charges 
+      ADD CONSTRAINT course_charges_training_record_id_fkey 
+      FOREIGN KEY (training_record_id) REFERENCES training_records(id) ON DELETE SET NULL;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'invoices') THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_schema = 'public' 
+        AND table_name = 'course_charges' 
+        AND constraint_name = 'course_charges_invoice_id_fkey'
+      ) THEN
+        ALTER TABLE course_charges 
+        ADD CONSTRAINT course_charges_invoice_id_fkey 
+        FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE SET NULL;
+      END IF;
+    END IF;
+
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS idx_course_charges_company ON course_charges(company_id);
+    CREATE INDEX IF NOT EXISTS idx_course_charges_status ON course_charges(status);
+    CREATE INDEX IF NOT EXISTS idx_course_charges_invoice ON course_charges(invoice_id) WHERE invoice_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_course_charges_training_record ON course_charges(training_record_id) WHERE training_record_id IS NOT NULL;
+
+    -- Update timestamps trigger functions
+    CREATE OR REPLACE FUNCTION update_course_assignment_updated_at()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION update_course_progress_updated_at()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION update_course_question_updated_at()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION update_course_charge_updated_at()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    -- Create triggers for updated_at
+    DROP TRIGGER IF EXISTS trigger_course_assignment_updated_at ON course_assignments;
+    CREATE TRIGGER trigger_course_assignment_updated_at
+      BEFORE UPDATE ON course_assignments
+      FOR EACH ROW
+      EXECUTE FUNCTION update_course_assignment_updated_at();
+
+    DROP TRIGGER IF EXISTS trigger_course_progress_updated_at ON course_progress;
+    CREATE TRIGGER trigger_course_progress_updated_at
+      BEFORE UPDATE ON course_progress
+      FOR EACH ROW
+      EXECUTE FUNCTION update_course_progress_updated_at();
+
+    DROP TRIGGER IF EXISTS trigger_course_question_updated_at ON course_questions;
+    CREATE TRIGGER trigger_course_question_updated_at
+      BEFORE UPDATE ON course_questions
+      FOR EACH ROW
+      EXECUTE FUNCTION update_course_question_updated_at();
+
+    DROP TRIGGER IF EXISTS trigger_course_charge_updated_at ON course_charges;
+    CREATE TRIGGER trigger_course_charge_updated_at
+      BEFORE UPDATE ON course_charges
+      FOR EACH ROW
+      EXECUTE FUNCTION update_course_charge_updated_at();
+
+    RAISE NOTICE 'Created training course system tables: course_assignments, course_progress, course_questions, course_question_options, course_charges';
+
+  ELSE
+    RAISE NOTICE '⚠️ Required tables (companies, profiles, training_courses, training_records) do not exist yet - skipping training course system table creation';
+  END IF;
+END $$;

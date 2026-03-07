@@ -1,0 +1,110 @@
+{
+  "id": "d513f119-7784-4531-be23-e5ba3e7eada7",
+  "name": "PAC dough",
+  "description": "Dough used for PAC",
+  "workflowBaseHour": 5,
+  "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+  "createdAt": "2025-08-27T22:26:21.059Z",
+  "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+  "updatedAt": "2025-08-27T22:26:21.059Z",
+  "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+  "deletedAt": null,
+  "steps": [
+    {
+      "id": "ddf01b59-e55b-46b4-a900-88ed9606d6c5",
+      "name": "Weight wet ingredients",
+      "description": "Weight water, milk, butter, fermented dough and leave in the fridge ",
+      "hourOffset": 60,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "e221b7e5-74e5-4fdb-811d-aa95fb648338",
+      "name": "Weight dry ingredients",
+      "description": "Weight flour, salt, sugar, yeast",
+      "hourOffset": 45,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "e95ffab3-6305-4e76-b086-491c0b871795",
+      "name": "Mix all the ingredients",
+      "description": "After senior baker checks, mix the dough ",
+      "hourOffset": 44,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "99c1be8a-3235-4b53-835a-33d4747e4e95",
+      "name": "Proof the dough",
+      "description": "Proof the dough inside proofer then ball it into 1.02kg ",
+      "hourOffset": 41,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "5e7f4ceb-344b-4e98-8b42-2df0a8c1f5a2",
+      "name": "Laminate the dough",
+      "description": "Laminate the dough and let it rest in freezer ",
+      "hourOffset": 17,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "47968dc6-3fec-48dd-bc38-b03fee675cea",
+      "name": "Shape PAC",
+      "description": "Shape them and place them in proofer overnight",
+      "hourOffset": 15,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "b2ed07b1-9c3e-4a02-8cde-d5d12efc24a7",
+      "name": "Bake",
+      "description": "Bake them",
+      "hourOffset": 2,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "70d86e3d-8838-40b3-8f53-de9dc7027327",
+      "name": "Decorate and bake",
+      "description": "Decorate and prep them for pick up",
+      "hourOffset": 1,
+      "workflowId": "d513f119-7784-4531-be23-e5ba3e7eada7",
+      "createdAt": "2025-08-27T22:31:37.257Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:31:37.257Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    }
+  ]
+}

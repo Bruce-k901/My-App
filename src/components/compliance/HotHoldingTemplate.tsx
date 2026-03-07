@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { Thermometer, Edit2, X } from "lucide-react";
+import { Thermometer, Edit2, X } from '@/components/ui/icons';
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -26,7 +27,7 @@ interface HotHoldingTemplateProps {
 }
 
 export function HotHoldingTemplate({ editTemplateId, onSave }: HotHoldingTemplateProps = {}) {
-  const { profile } = useAppContext();
+  const { profile, selectedSiteId, siteId } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [equipmentRows, setEquipmentRows] = useState<EquipmentRow[]>([
@@ -69,7 +70,14 @@ export function HotHoldingTemplate({ editTemplateId, onSave }: HotHoldingTemplat
       };
       initialize();
     }
-  }, [profile?.company_id, profile?.site_id, editTemplateId]);
+  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  
+  // Reload assets when selectedSiteId changes (from header site selector)
+  useEffect(() => {
+    if (profile?.company_id) {
+      loadAssets();
+    }
+  }, [selectedSiteId]);
 
   // Generate default instructions when equipment is selected (for new templates only, on first load)
   useEffect(() => {
@@ -97,7 +105,7 @@ ${validEquipment.map(eq => {
         setInstructions(defaultInstructions);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [equipmentRows, assets, editingTemplateId]);
 
   const loadAssets = async () => {
@@ -113,9 +121,10 @@ ${validEquipment.map(eq => {
       .eq("archived", false)
       .order("name");
 
-    // If user has a site_id, filter by site
-    if (profile.site_id) {
-      query = query.eq("site_id", profile.site_id);
+    // Use selectedSiteId from header if available, otherwise fall back to siteId
+    const effectiveSiteId = selectedSiteId || siteId || profile?.site_id;
+    if (effectiveSiteId) {
+      query = query.eq("site_id", effectiveSiteId);
     }
 
     const { data, error } = await query;
@@ -1038,26 +1047,26 @@ ${validEquipment.map(eq => {
                   Critical
                 </span>
               </div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-theme-tertiary text-sm mb-3">
                 Record during service to ensure compliance. Minimum temperature is 63°C. Critical threshold: 60°C.
               </p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                 <div>
-                  <span className="text-slate-500">Regulation:</span>
-                  <p className="text-slate-200 font-medium">Food Safety Act</p>
+                  <span className="text-theme-tertiary">Regulation:</span>
+                  <p className="text-theme-primary font-medium">Food Safety Act</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Frequency:</span>
-                  <p className="text-slate-200 font-medium">Daily</p>
+                  <span className="text-theme-tertiary">Frequency:</span>
+                  <p className="text-theme-primary font-medium">Daily</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Minimum Temp:</span>
-                  <p className="text-slate-200 font-medium">63°C</p>
+                  <span className="text-theme-tertiary">Minimum Temp:</span>
+                  <p className="text-theme-primary font-medium">63°C</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Category:</span>
-                  <p className="text-slate-200 font-medium">Food Safety</p>
+                  <span className="text-theme-tertiary">Category:</span>
+                  <p className="text-theme-primary font-medium">Food Safety</p>
                 </div>
               </div>
             </div>
@@ -1077,7 +1086,7 @@ ${validEquipment.map(eq => {
 
       {/* Expanded Edit Mode */}
       {isExpanded && (
-        <div className="border-t border-neutral-800 p-6 bg-[#0f1220]">
+        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-white dark:bg-[#0f1220]">
           <div className="space-y-6">
               {/* Equipment Selection */}
               <div>
@@ -1097,13 +1106,13 @@ ${validEquipment.map(eq => {
                   {equipmentRows.map((row, index) => (
                     <div
                       key={row.id}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-neutral-800 bg-[#141823]"
+                      className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-neutral-800 bg-[#141823]"
                     >
                       {/* Equipment Dropdown */}
                       <select
                         value={row.assetId}
                         onChange={(e) => updateEquipmentRow(row.id, 'assetId', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary"
                       >
                         <option value="">Select hot holding unit...</option>
                         {assets.length === 0 ? (
@@ -1123,7 +1132,7 @@ ${validEquipment.map(eq => {
                         placeholder="Nickname (e.g., Bain Marie 1, Hot Hold)"
                         value={row.nickname}
                         onChange={(e) => updateEquipmentRow(row.id, 'nickname', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                       />
 
                       {/* Delete Button */}
@@ -1161,7 +1170,7 @@ ${validEquipment.map(eq => {
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary"
               >
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -1201,7 +1210,7 @@ ${validEquipment.map(eq => {
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
                           ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+ : "border-gray-200 bg-[#141823] text-theme-tertiary hover:border-theme"
                       }`}
                     >
                       {day.label}
@@ -1233,7 +1242,7 @@ ${validEquipment.map(eq => {
                         }}
                         className="w-4 h-4 text-magenta-500"
                       />
-                      <label htmlFor="monthly_date" className="text-sm text-slate-200">
+                      <label htmlFor="monthly_date" className="text-sm text-theme-primary">
                         Specific Day of Month
                       </label>
                     </div>
@@ -1245,7 +1254,7 @@ ${validEquipment.map(eq => {
                         value={monthlyDay || ''}
                         onChange={(e) => setMonthlyDay(parseInt(e.target.value) || null)}
                         placeholder="Day (1-31)"
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary ml-7"
                       />
                     )}
                     
@@ -1261,7 +1270,7 @@ ${validEquipment.map(eq => {
                         }}
                         className="w-4 h-4 text-magenta-500"
                       />
-                      <label htmlFor="monthly_last_weekday" className="text-sm text-slate-200">
+                      <label htmlFor="monthly_last_weekday" className="text-sm text-theme-primary">
                         Last Weekday of Month
                       </label>
                     </div>
@@ -1269,7 +1278,7 @@ ${validEquipment.map(eq => {
                       <select
                         value={monthlyLastWeekday || 'friday'}
                         onChange={(e) => setMonthlyLastWeekday(e.target.value)}
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary ml-7"
                       >
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
@@ -1303,9 +1312,9 @@ ${validEquipment.map(eq => {
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary"
                 />
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   Tasks will be automatically scheduled for this date {frequency === 'annually' ? 'each year' : frequency === 'biannual' ? 'every 6 months' : 'each quarter'}
                 </p>
                 
@@ -1339,7 +1348,7 @@ ${validEquipment.map(eq => {
                     className={`px-4 py-3 rounded-lg border text-center transition-all ${
                       selectedDayParts.includes(part.id)
                         ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                        : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+ : "border-gray-200 bg-[#141823] text-theme-tertiary hover:border-theme"
                     }`}
                   >
                     <div className="text-sm font-medium">{part.label}</div>
@@ -1356,14 +1365,13 @@ ${validEquipment.map(eq => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {selectedDayParts.map((dayPart, index) => (
                   <div key={dayPart}>
-                    <label className="block text-xs text-slate-400 mb-1 capitalize">
+                    <label className="block text-xs text-theme-tertiary mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
-                    <input
-                      type="time"
+                    <TimePicker
                       value={times[index] || "12:00"}
-                      onChange={(e) => updateTime(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                      onChange={(value) => updateTime(index, value)}
+                      className="w-full"
                     />
                   </div>
                 ))}
@@ -1380,15 +1388,15 @@ ${validEquipment.map(eq => {
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Enter step-by-step instructions for completing this task. Include equipment to check, procedures, and corrective actions..."
                 rows={10}
-                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
+                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-magenta-500 transition-colors resize-y"
               />
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-theme-tertiary mt-2">
                 These instructions will be displayed to staff when completing the task. Include clear steps, equipment details, and what to do if readings are out of range.
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-neutral-800">
               {editingTemplateId ? (
                 // When editing existing template, show Update button
                 <button
@@ -1404,14 +1412,14 @@ ${validEquipment.map(eq => {
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                   >
                     Save as Draft
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveAndDeploy}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                   >
                     Save & Deploy
                   </button>

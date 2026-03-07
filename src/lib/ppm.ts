@@ -44,7 +44,7 @@ export async function updatePPMSchedule(ppm_id: string, service_date: string) {
   nextService.setMonth(nextService.getMonth() + 6)
 
   const { error } = await supabase
-    .from("ppm_schedule")
+    .from("ppm_schedules")
     .update({
       last_service_date: service_date,
       next_service_date: nextService.toISOString().split("T")[0],

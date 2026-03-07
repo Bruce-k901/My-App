@@ -63,6 +63,7 @@ export function usePPMCalendarData(currentDate: Date) {
       const { data: ppmSchedules, error: ppmError } = await supabase
         .from('ppm_schedules')
         .select('id, asset_id, next_due_date, frequency, task_type, description')
+        .eq('company_id', companyId)
         .gte('next_due_date', startDate)
         .lte('next_due_date', endDate)
 

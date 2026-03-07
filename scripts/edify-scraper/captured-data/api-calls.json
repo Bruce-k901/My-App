@@ -1,0 +1,260 @@
+[
+  {
+    "url": "https://app.edifysystems.io/",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:30:56.971Z"
+  },
+  {
+    "url": "https://www.clarity.ms/tag/g1racxapyh",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:30:57.239Z"
+  },
+  {
+    "url": "https://auth.app.edifysystems.io/authorize?client_id=wEGXU2uDPgcFlPVHn5pyf5jRF6xPjyl6&scope=openid+profile+email&redirect_uri=https%3A%2F%2Fapp.edifysystems.io&audience=https%3A%2F%2Fproduction-api.edifysystems.io&response_type=code&response_mode=query&state=NGQ2ZUFYal9USUlfYTVqQVhLM3JFUTRHTmdaNTZqbkhVdGlCampXSnQuOA%3D%3D&nonce=cHROLjE4THZpYVpZN2sxajNEWVNwQ2hSZnNNZFc5bXVyNzdnS2RMX0FVTQ%3D%3D&code_challenge=Xnwlzq49U2cMeyL7xCPeqBCErxWKfbQa7Ae7pNXzcww&code_challenge_method=S256&auth0Client=eyJuYW1lIjoiYXV0aDAtcmVhY3QiLCJ2ZXJzaW9uIjoiMi4xNS4wIn0%3D",
+    "method": "GET",
+    "status": 302,
+    "timestamp": "2026-03-04T22:30:57.478Z"
+  },
+  {
+    "url": "https://auth.app.edifysystems.io/u/login?state=hKFo2SB0VmJIeXQwMVAxM1c1R0RDMkM5dHljV2podkMxaGw3c6Fur3VuaXZlcnNhbC1sb2dpbqN0aWTZIGV0YjFkN3ZnNy00NGxKa2k2ekE5VUJab0VyS3BDbEN3o2NpZNkgd0VHWFUydURQZ2NGbFBWSG41cHlmNWpSRjZ4UGp5bDY",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:30:57.586Z"
+  },
+  {
+    "url": "https://eu.i.posthog.com/flags/?v=2&config=true&ip=0&_=1772663457249&ver=1.257.2&compression=base64",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:30:57.357Z"
+  },
+  {
+    "url": "https://auth.app.edifysystems.io/u/login?state=hKFo2SB0VmJIeXQwMVAxM1c1R0RDMkM5dHljV2podkMxaGw3c6Fur3VuaXZlcnNhbC1sb2dpbqN0aWTZIGV0YjFkN3ZnNy00NGxKa2k2ekE5VUJab0VyS3BDbEN3o2NpZNkgd0VHWFUydURQZ2NGbFBWSG41cHlmNWpSRjZ4UGp5bDY",
+    "method": "POST",
+    "status": 302,
+    "timestamp": "2026-03-04T22:31:14.915Z"
+  },
+  {
+    "url": "https://auth.app.edifysystems.io/authorize/resume?state=etb1d7vg7-44lJki6zA9UBZoErKpClCw",
+    "method": "GET",
+    "status": 302,
+    "timestamp": "2026-03-04T22:31:15.045Z"
+  },
+  {
+    "url": "https://app.edifysystems.io/?code=-zrJblqGUU56GJR8DS_AtmTb9glSLfz2KUM3zvNR_PwwG&state=NGQ2ZUFYal9USUlfYTVqQVhLM3JFUTRHTmdaNTZqbkhVdGlCampXSnQuOA%3D%3D",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.054Z"
+  },
+  {
+    "url": "https://www.clarity.ms/tag/g1racxapyh",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.164Z"
+  },
+  {
+    "url": "https://eu.i.posthog.com/flags/?v=2&config=true&ip=0&_=1772663475141&ver=1.257.2&compression=base64",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.191Z",
+    "bodyFile": "response_0001.json",
+    "bodyPreview": "{\"errorsWhileComputingFlags\":false,\"flags\":{},\"requestId\":\"7bc3496e-4454-4d55-95cf-c161842c3a66\",\"evaluatedAt\":1772663474103,\"heatmaps\":false,\"conversations\":false,\"surveys\":false,\"elementsChainAsStri"
+  },
+  {
+    "url": "https://auth.app.edifysystems.io/oauth/token",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.343Z",
+    "bodyFile": "response_0002.json",
+    "bodyPreview": "{\"access_token\":\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdBZ09DNkRxUFN3LXU5ZkR0b0JlciJ9.eyJpc3MiOiJodHRwczovL2F1dGguYXBwLmVkaWZ5c3lzdGVtcy5pby8iLCJzdWIiOiJhdXRoMHw2ZjQzMjBhNi0zYmE5LTRjZmQtYTJkYS"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/auth/session-tokens",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.480Z",
+    "bodyFile": "response_0003.json",
+    "bodyPreview": "{\"accessToken\":\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZjQzMjBhNi0zYmE5LTRjZmQtYTJkYS0yNWU1MWI4NjRmMmUiLCJlbWFpbCI6ImJydWNlQGUtYS1nLmNvIiwicm9sZUlkIjoiYWZlYmY5ZGQtODUzZC00NGVkLTgyYjktMDAyYTN"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:15.648Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:15.648Z"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/auth/session-tokens",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.712Z",
+    "bodyFile": "response_0004.json",
+    "bodyPreview": "{\"accessToken\":\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZjQzMjBhNi0zYmE5LTRjZmQtYTJkYS0yNWU1MWI4NjRmMmUiLCJlbWFpbCI6ImJydWNlQGUtYS1nLmNvIiwicm9sZUlkIjoiYWZlYmY5ZGQtODUzZC00NGVkLTgyYjktMDAyYTN"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/users/me",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.713Z",
+    "bodyFile": "response_0005.json",
+    "bodyPreview": "{\"id\":\"6f4320a6-3ba9-4cfd-a2da-25e51b864f2e\",\"email\":\"bruce@e-a-g.co\",\"status\":\"ACTIVE\",\"firstName\":\"Bruce\",\"lastName\":\"Test\",\"contactPhone\":\"+447891710002\",\"additionalResources\":[],\"createdAt\":\"2026-"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b/sites/slim",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.792Z",
+    "bodyFile": "response_0006.json",
+    "bodyPreview": "[{\"id\":\"ea6a8929-990f-41b6-931f-1ebd33103d0e\",\"name\":\"3rd Cuture\",\"status\":\"ACTIVE\",\"isCPU\":false,\"timezone\":\"Europe/London\"},{\"id\":\"95f690d5-8108-4097-9b86-f2eb613e7ce0\",\"name\":\"Alchemy Bishopsgate\","
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.795Z",
+    "bodyFile": "response_0007.json",
+    "bodyPreview": "{\"id\":\"c87184ab-e6c3-4cdb-ab10-37c995fdf55b\",\"name\":\"Okja\",\"status\":\"ACTIVE\",\"contactName\":null,\"contactEmail\":null,\"jobTitle\":null,\"isDemo\":false,\"accountsEmails\":null,\"invoiceEmails\":null,\"statement"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b/cpu-sites/slim",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.796Z",
+    "bodyFile": "response_0008.json",
+    "bodyPreview": "[{\"id\":\"64ce33d7-8681-4a9f-808b-2fa9f325b73c\",\"name\":\"Okja - Kitchen CPU\",\"status\":\"ACTIVE\",\"isCPU\":true,\"timezone\":\"Europe/London\"}]"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:15.886Z"
+  },
+  {
+    "url": "https://eu.i.posthog.com/flags/?v=2&config=true&ip=0&_=1772663475773&ver=1.257.2&compression=base64",
+    "method": "POST",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.863Z",
+    "bodyFile": "response_0009.json",
+    "bodyPreview": "{\"errorsWhileComputingFlags\":false,\"flags\":{},\"requestId\":\"defe11d5-a999-469e-90d2-30b5e392db32\",\"evaluatedAt\":1772663474745,\"supportedCompression\":[\"gzip\",\"gzip-js\"],\"autocaptureExceptions\":false,\"si"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/dashboards/c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.868Z",
+    "bodyFile": "response_0010.json",
+    "bodyPreview": "[{\"id\":\"8b6feb8f-da6e-4ada-a953-1252630d6030\",\"name\":\"CPU Invoices\",\"title\":\"CPU Invoices\"},{\"id\":\"1545c225-684e-41fe-8484-2459a5755b96\",\"name\":\"Delivery Notes (New)\",\"title\":\"Delivery Notes (New)\"},{"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b/forecast",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.881Z",
+    "bodyFile": "response_0011.json",
+    "bodyPreview": "{\"canForecast\":false}"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:15.908Z"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/sites/64ce33d7-8681-4a9f-808b-2fa9f325b73c/stock-take",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.933Z",
+    "bodyFile": "response_0012.json",
+    "bodyPreview": "{\"id\":\"d8016dff-e43f-48de-9bef-a58b843f75b5\",\"siteId\":\"64ce33d7-8681-4a9f-808b-2fa9f325b73c\",\"status\":\"OPEN\",\"createdAt\":\"2026-03-01T10:06:35.024Z\",\"createdBy\":\"a9f43cda-9f63-4cc4-8900-f94987ea314c\",\""
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/suppliers/categories",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.957Z",
+    "bodyFile": "response_0013.json",
+    "bodyPreview": "[{\"id\":\"25f03228-3ce8-4450-88de-38ea08df8e1a\",\"name\":\"Alcohol\"},{\"id\":\"48a0d6c9-0a77-414e-8353-3bcb5da48ac4\",\"name\":\"Bakery\"},{\"id\":\"59d8c7a2-6c0a-4419-a755-6bb3260968f3\",\"name\":\"Beverage\"},{\"id\":\"c26"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b/suppliers?orderBy=name&orderDirection=ASC&page=1&size=50&name=&&sites=64ce33d7-8681-4a9f-808b-2fa9f325b73c&statuses=ACTIVE",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:15.984Z",
+    "bodyFile": "response_0014.json",
+    "bodyPreview": "{\"data\":[{\"id\":\"dac12b3e-bf0e-4314-8c20-4e25be8ffe94\",\"name\":\"Albion\",\"status\":\"ACTIVE\",\"categories\":[],\"sitesCount\":2,\"sites\":[\"64ce33d7-8681-4a9f-808b-2fa9f325b73c\",\"9699173d-f5b7-4c3b-9dc7-0cb8e9a5"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:16.261Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:17.325Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:19.349Z"
+  },
+  {
+    "url": "https://production-api.edifysystems.io/v1/companies/c87184ab-e6c3-4cdb-ab10-37c995fdf55b/users?orderBy=name&orderDirection=ASC&page=1&size=50&name=&sites=",
+    "method": "GET",
+    "status": 200,
+    "timestamp": "2026-03-04T22:31:21.429Z",
+    "bodyFile": "response_0015.json",
+    "bodyPreview": "{\"data\":[{\"id\":\"929dfa85-eccc-427c-9348-e0cf9e488e16\",\"name\":\"Andrew Gecko\",\"email\":\"andrew@geckocoffee.house\",\"sub\":null,\"contactPhone\":null,\"roleName\":\"Employee\",\"roleId\":\"2bf68ff7-7335-4b6c-8877-e6"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:21.466Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:21.814Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:27.837Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:30.047Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:33.072Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:37.320Z"
+  },
+  {
+    "url": "https://n.clarity.ms/collect",
+    "method": "POST",
+    "status": 204,
+    "timestamp": "2026-03-04T22:31:44.542Z"
+  }
+]

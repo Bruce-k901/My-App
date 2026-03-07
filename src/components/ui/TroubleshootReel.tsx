@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 
 // 🔒 LOCKED: TroubleshootReel interface - DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
 // The onComplete callback MUST receive the answers Map to capture actual Yes/No responses
@@ -12,197 +11,112 @@ interface TroubleshootReelProps {
   onStepChange?: (stepIndex: number) => void;
 }
 
-interface QuestionAnswer {
-  questionIndex: number;
-  answer: 'yes' | 'no' | null;
-}
-
-export default function TroubleshootReel({ 
-  items, 
-  onComplete, 
-  onStepChange 
+export default function TroubleshootReel({
+  items,
+  onComplete,
+  onStepChange
 }: TroubleshootReelProps) {
-  const [answers, setAnswers] = useState<Map<number, 'yes' | 'no'>>(new Map());
+  // Default all answers to 'yes'
+  const [answers, setAnswers] = useState<Map<number, 'yes' | 'no'>>(() => {
+    const initial = new Map<number, 'yes' | 'no'>();
+    items.forEach((_, i) => initial.set(i, 'yes'));
+    return initial;
+  });
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasFiredComplete = useRef(false);
 
-  // Check if all steps are completed (all questions answered)
+  // All questions are answered from the start (defaulted to yes)
   const allCompleted = answers.size === items.length;
 
-  // Handle answer selection
-  const handleAnswerSelect = (questionIndex: number, answer: 'yes' | 'no') => {
+  // 🔒 LOCKED: Fire onComplete on mount since all are pre-answered
+  useEffect(() => {
+    if (allCompleted && !hasFiredComplete.current) {
+      hasFiredComplete.current = true;
+      onComplete(new Map(answers));
+    }
+  }, []);
+
+  // Handle toggle
+  const handleToggle = (questionIndex: number) => {
     setAnswers(prev => {
       const newAnswers = new Map(prev);
-      newAnswers.set(questionIndex, answer);
+      const current = newAnswers.get(questionIndex);
+      newAnswers.set(questionIndex, current === 'yes' ? 'no' : 'yes');
       return newAnswers;
     });
-    
+
     // 🔒 LOCKED: Pass answers back via onComplete callback
-    // This is critical for callout system to capture actual Yes/No responses
-    // DO NOT MODIFY without updating CALLOUT_SYSTEM_LOCKED.md
     const newAnswers = new Map(answers);
-    newAnswers.set(questionIndex, answer);
-    if (newAnswers.size === items.length) {
-      setTimeout(() => {
-        onComplete(newAnswers); // 🔒 CRITICAL: Must pass answers map, not just completion status
-      }, 500);
-    }
+    const current = newAnswers.get(questionIndex);
+    newAnswers.set(questionIndex, current === 'yes' ? 'no' : 'yes');
+    onComplete(newAnswers);
   };
-
-
-
 
   return (
     <div className="w-full">
       {/* Questions Container */}
-      <div 
+      <div
         ref={containerRef}
-        className="h-[300px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
+        className="max-h-[300px] w-full rounded-xl border border-black/10 dark:border-white/10 overflow-y-auto overscroll-contain"
       >
-        {/* Header inside scrollable container */}
-        <div className="flex items-center justify-between p-3 border-b border-neutral-700/50 sticky top-0 bg-neutral-800 z-10">
-          <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
-          <div className="flex gap-8 w-20 -ml-6">
-            <div className="text-sm font-medium text-neutral-400 w-6 text-center">Yes</div>
-            <div className="text-sm font-medium text-neutral-400 w-6 text-center">No</div>
-          </div>
-        </div>
-        
-        <div className="p-3 space-y-2">
+        <div className="p-2 space-y-1.5">
           {items.map((item, index) => {
-            const currentAnswer = answers.get(index);
-            const isAnswered = currentAnswer !== undefined;
-            
+            const currentAnswer = answers.get(index) ?? 'yes';
+            const isYes = currentAnswer === 'yes';
+
             return (
-              <motion.div
+              <div
                 key={`${index}-${item}`}
-                className={`flex items-center justify-between p-2 rounded-md transition-all duration-300 ${
-                  isAnswered 
-                    ? 'bg-green-500/10 border border-green-500/30' 
-                    : 'bg-neutral-800/30 border border-neutral-700/50'
-                }`}
-                initial={false}
-                animate={{
-                  opacity: isAnswered ? 1 : 0.7,
-                  scale: isAnswered ? 1.02 : 1,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 32
-                }}
+                className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06]"
               >
-                <span className={`text-sm font-medium transition-colors flex-1 ${
-                  isAnswered ? 'text-green-400' : 'text-neutral-300'
-                }`}>
+                <span className="text-sm text-theme-secondary flex-1 pr-2">
                   {item}
                 </span>
-                
-                {/* Yes/No Tick Boxes */}
-                <div className="flex gap-8 w-20">
-                              {/* Yes Button */}
-                              <motion.button
-                                onClick={() => handleAnswerSelect(index, 'yes')}
-                                className={`relative w-8 h-8 rounded border-2 transition-all duration-200 flex items-center justify-center ${
-                                  currentAnswer === 'yes'
-                                    ? 'bg-green-500 border-green-500' 
-                                    : 'border-neutral-500 hover:border-green-400'
-                                }`}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+
+                {/* Toggle Slider */}
+                <button
+                  onClick={() => handleToggle(index)}
+                  className="flex-shrink-0 relative flex items-center"
+                  aria-label={`${item}: ${isYes ? 'Yes' : 'No'}`}
+                >
+                  <div className={`relative w-[72px] h-8 rounded-full transition-colors duration-200 ${
+                    isYes
+                      ? 'bg-green-500/20 dark:bg-green-500/20'
+                      : 'bg-red-500/20 dark:bg-red-500/20'
+                  }`}>
+                    {/* Labels */}
+                    <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wide transition-opacity duration-200 ${
+                      isYes ? 'opacity-0' : 'opacity-100 text-red-400'
+                    }`}>
+                      No
+                    </span>
+                    <span className={`absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wide transition-opacity duration-200 ${
+                      isYes ? 'opacity-100 text-green-400' : 'opacity-0'
+                    }`}>
+                      Yes
+                    </span>
+
+                    {/* Thumb */}
                     <motion.div
-                      animate={currentAnswer === 'yes' ? {
-                        scale: [1, 1.2, 1],
-                        opacity: [0, 1, 1]
-                      } : {
-                        opacity: 0
-                      }}
-                      transition={{ duration: 0.25 }}
-                                  className="w-5 h-5"
-                    >
-                      <Image
-                        src="/assets/tick_icon.png"
-                        alt="Yes"
-                        width={16}
-                        height={16}
-                        className="w-full h-full"
-                      />
-                    </motion.div>
-                  </motion.button>
-                  
-                              {/* No Button */}
-                              <motion.button
-                                onClick={() => handleAnswerSelect(index, 'no')}
-                                className={`relative w-8 h-8 rounded border-2 transition-all duration-200 flex items-center justify-center ${
-                                  currentAnswer === 'no'
-                                    ? 'bg-red-500 border-red-500' 
-                                    : 'border-neutral-500 hover:border-red-400'
-                                }`}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <motion.div
-                      animate={currentAnswer === 'no' ? {
-                        scale: [1, 1.2, 1],
-                        opacity: [0, 1, 1]
-                      } : {
-                        opacity: 0
-                      }}
-                      transition={{ duration: 0.25 }}
-                                  className="w-5 h-5"
-                    >
-                      <Image
-                        src="/assets/tick_icon.png"
-                        alt="No"
-                        width={16}
-                        height={16}
-                        className="w-full h-full"
-                      />
-                    </motion.div>
-                  </motion.button>
-                </div>
-              </motion.div>
+                      className={`absolute top-1 w-6 h-6 rounded-full shadow-sm ${
+                        isYes
+                          ? 'bg-green-500'
+                          : 'bg-red-500'
+                      }`}
+                      animate={{ left: isYes ? 4 : 40 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  </div>
+                </button>
+              </div>
             );
           })}
         </div>
-        
-        {/* Completion Flash Overlay */}
-        <AnimatePresence>
-          {allCompleted && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 flex items-center justify-center bg-green-400/10 rounded-md"
-            >
-              <motion.div
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0, 1, 0]
-                }}
-                transition={{ duration: 0.4 }}
-                className="w-12 h-12"
-              >
-                <Image
-                  src="/assets/tick_icon.png"
-                  alt="Check"
-                  width={48}
-                  height={48}
-                  className="w-full h-full"
-                />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
-      
+
       {/* Caption */}
-      <p className="text-xs text-neutral-400 text-center mt-2">
-        {allCompleted 
-          ? "All troubleshooting questions answered!" 
-          : "Answer all questions to enable submission"
-        }
+      <p className="text-xs text-theme-tertiary text-center mt-2">
+        Toggle any answer to No if applicable
       </p>
     </div>
   );

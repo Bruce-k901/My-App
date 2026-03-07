@@ -1,0 +1,18 @@
+{
+  "sites": [
+    {
+      "id": "9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59",
+      "name": "Okja Kiosk",
+      "posSystemId": "a752eca9-a833-41d0-9538-6066fe641a2d",
+      "externalDbPosId": "0e74d6c2-78ec-11f0-a348-ffe9f1857d8c",
+      "timezone": "Europe/London"
+    },
+    {
+      "id": "64ce33d7-8681-4a9f-808b-2fa9f325b73c",
+      "name": "Okja - Kitchen CPU",
+      "posSystemId": "677f39d0-a85d-4509-bfcb-3389a3f0ebb3",
+      "externalDbPosId": "0e708ec8-78ec-11f0-bed0-cf7e2e2053e9",
+      "timezone": "Europe/London"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "ea6a8929-990f-41b6-931f-1ebd33103d0e",
+    "name": "3rd Cuture",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+    "name": "Alchemy Bishopsgate",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "1b0551fe-dfee-451f-b600-fb8c6fb3dd59",
+    "name": "Bean",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "fc42804d-cc3e-4043-b115-7e803ee3e134",
+    "name": "Chaos",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "93d4e234-bdbd-4d7d-828c-6045519b05af",
+    "name": "De Beauvoir Deli",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "8f010fbf-a143-479f-b7fb-e9e084af0ed1",
+    "name": "Gecko",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+    "name": "High Grade",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "379c8081-aeff-4978-a004-c325903271dd",
+    "name": "Kleinskys",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "6b8fde8b-42a3-4e5d-984e-3a77c504fc8d",
+    "name": "Mandala Cafe",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "35e7d835-0012-41a2-8e3f-58ec821be633",
+    "name": "Naked Deptford",
+    "status": "SUSPENDED",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "5525e105-ffe1-4875-8e3d-017d9ad739ca",
+    "name": "Naked Greenwich",
+    "status": "SUSPENDED",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59",
+    "name": "Okja Kiosk",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "64ce33d7-8681-4a9f-808b-2fa9f325b73c",
+    "name": "Okja - Kitchen CPU",
+    "status": "ACTIVE",
+    "isCPU": true,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "6f79e750-83ca-4e2e-8b01-b3ecc0df50c2",
+    "name": "Origin Charlotte St.",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "5c3ef04e-ecc8-4eb0-8504-eae15fe13e67",
+    "name": "Origin Entrace Hall",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "3f1f62d6-03a3-4156-8a18-bf5067db9157",
+    "name": "Origin Euston road",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "83ef30f0-a428-476e-9368-bfe71a0aa62d",
+    "name": "Origin Scoresby street",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "d47df061-5208-4417-bd3d-00178c555c81",
+    "name": "Photo book",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+    "name": "Plant Shack 1",
+    "status": "SUSPENDED",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "e15b32e0-4ed8-40cf-b91a-5eda7cdd15cc",
+    "name": "Tram Store",
+    "status": "ACTIVE",
+    "isCPU": false,
+    "timezone": "Europe/London"
+  }
+]

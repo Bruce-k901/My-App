@@ -1,0 +1,62 @@
+[
+  {
+    "id": "25f03228-3ce8-4450-88de-38ea08df8e1a",
+    "name": "Alcohol"
+  },
+  {
+    "id": "48a0d6c9-0a77-414e-8353-3bcb5da48ac4",
+    "name": "Bakery"
+  },
+  {
+    "id": "59d8c7a2-6c0a-4419-a755-6bb3260968f3",
+    "name": "Beverage"
+  },
+  {
+    "id": "c26a82ad-df0f-4684-aa1b-60117e8ebbdd",
+    "name": "Chilled"
+  },
+  {
+    "id": "537073cb-1ecc-4df1-8ad0-229116a51292",
+    "name": "Cleaning"
+  },
+  {
+    "id": "5705d412-5d74-48cb-9f9f-9827d0a7106d",
+    "name": "Coffee"
+  },
+  {
+    "id": "fbed3013-ed6f-429a-b77d-7e0fb7ed867f",
+    "name": "Dairy"
+  },
+  {
+    "id": "2ed36c60-11fb-4805-ba34-3d5d863645c7",
+    "name": "Dry"
+  },
+  {
+    "id": "948973f0-eb10-491c-b4f5-89795f382045",
+    "name": "Frozen"
+  },
+  {
+    "id": "891ec176-802f-4dd8-ae27-d9d5fba3eb58",
+    "name": "Fruit & Veg"
+  },
+  {
+    "id": "35baf409-4c45-4d14-8dd3-f97a9cc8f3cb",
+    "name": "Meat"
+  },
+  {
+    "id": "cca39068-0ee7-4dc2-844b-f1791382b5f5",
+    "name": "Packaging"
+  },
+  {
+    "id": "f4f387e9-9fb1-49cd-926c-cc71598a31cd",
+    "name": "Pastry"
+  },
+  {
+    "id": "435fde59-710f-43e9-b21f-73accfccd6f3",
+    "name": "Retail"
+  },
+  {
+    "id": "e2ea5e18-e67f-4356-abce-be2da354401c",
+    "name": "Seafood"
+  }
+]

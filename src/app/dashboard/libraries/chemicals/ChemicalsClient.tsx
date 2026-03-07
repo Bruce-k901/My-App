@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle, ChevronDown, ChevronRight } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -204,7 +204,14 @@ export default function ChemicalsClient() {
       pack_size: item.pack_size || '',
       storage_requirements: item.storage_requirements || '',
       linked_risks: item.linked_risks || [],
-      notes: item.notes || ''
+      notes: item.notes || '',
+      // Stockly fields
+      track_stock: item.track_stock ?? false,
+      current_stock: item.current_stock ?? '',
+      par_level: item.par_level ?? '',
+      reorder_point: item.reorder_point ?? '',
+      reorder_qty: item.reorder_qty ?? '',
+      sku: item.sku || ''
     });
     // Ensure row is expanded while editing
     setExpandedRows(prev => new Set(prev).add(item.id));
@@ -219,10 +226,61 @@ export default function ChemicalsClient() {
     if (!rowDraft) return;
     try {
       setLoading(true);
+      const unitCostRaw = rowDraft.unit_cost;
+      const unitCostVal = unitCostRaw === '' || unitCostRaw === null || unitCostRaw === undefined
+        ? null
+        : parseFloat(String(unitCostRaw));
+      if (unitCostVal !== null && Number.isNaN(unitCostVal)) { console.error('Validation error: Unit cost must be a number'); return; }
+
+      const currentStockRaw = rowDraft.current_stock;
+      const currentStockVal = currentStockRaw === '' || currentStockRaw === null || currentStockRaw === undefined
+        ? 0
+        : parseFloat(String(currentStockRaw));
+      const parLevelRaw = rowDraft.par_level;
+      const parLevelVal = parLevelRaw === '' || parLevelRaw === null || parLevelRaw === undefined
+        ? null
+        : parseFloat(String(parLevelRaw));
+      const reorderPointRaw = rowDraft.reorder_point;
+      const reorderPointVal = reorderPointRaw === '' || reorderPointRaw === null || reorderPointRaw === undefined
+        ? null
+        : parseFloat(String(reorderPointRaw));
+      const reorderQtyRaw = rowDraft.reorder_qty;
+      const reorderQtyVal = reorderQtyRaw === '' || reorderQtyRaw === null || reorderQtyRaw === undefined
+        ? null
+        : parseFloat(String(reorderQtyRaw));
+
+      const hazardSymbolsVal = Array.isArray(rowDraft.hazard_symbols)
+        ? rowDraft.hazard_symbols.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+      const requiredPPEVal = Array.isArray(rowDraft.required_ppe)
+        ? rowDraft.required_ppe.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+      const linkedRisksVal = Array.isArray(rowDraft.linked_risks)
+        ? rowDraft.linked_risks.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
+        : [];
+
       const payload: any = {
-        ...rowDraft,
-        company_id: companyId,
-        unit_cost: rowDraft.unit_cost === '' ? null : parseFloat(rowDraft.unit_cost)
+        product_name: rowDraft.product_name?.trim() || null,
+        manufacturer: rowDraft.manufacturer?.trim() || null,
+        use_case: rowDraft.use_case?.trim() || null,
+        hazard_symbols: hazardSymbolsVal,
+        dilution_ratio: rowDraft.dilution_ratio?.trim() || null,
+        contact_time: rowDraft.contact_time?.trim() || null,
+        required_ppe: requiredPPEVal,
+        supplier: rowDraft.supplier?.trim() || null,
+        unit_cost: unitCostVal,
+        pack_size: rowDraft.pack_size?.trim() || null,
+        storage_requirements: rowDraft.storage_requirements?.trim() || null,
+        linked_risks: linkedRisksVal,
+        notes: rowDraft.notes?.trim() || null,
+        // Stockly fields
+        track_stock: rowDraft.track_stock ?? false,
+        current_stock: currentStockVal,
+        par_level: parLevelVal,
+        reorder_point: reorderPointVal,
+        reorder_qty: reorderQtyVal,
+        sku: rowDraft.sku?.trim() || null,
+        company_id: companyId
       };
       if (newRowIds.has(id)) {
         // Insert new
@@ -299,6 +357,12 @@ export default function ChemicalsClient() {
     'linked_risks',
     'first_aid_instructions',
     'environmental_info',
+    'track_stock',
+    'current_stock',
+    'par_level',
+    'reorder_point',
+    'reorder_qty',
+    'sku',
     'notes'
   ];
 
@@ -408,6 +472,18 @@ export default function ChemicalsClient() {
         const productName = rowsRow[headerIndex['product_name']] ?? '';
         if (!productName || !productName.trim()) continue; // skip empty rows
         const unitCostRaw = rowsRow[headerIndex['unit_cost']];
+        const unitCostVal = unitCostRaw && unitCostRaw.trim() !== '' ? Number(unitCostRaw) : null;
+        const trackStockRaw = rowsRow[headerIndex['track_stock']];
+        const trackStockVal = trackStockRaw && (trackStockRaw.trim().toLowerCase() === 'true' || trackStockRaw.trim() === '1');
+        const currentStockRaw = rowsRow[headerIndex['current_stock']];
+        const currentStockVal = currentStockRaw && currentStockRaw.trim() !== '' ? Number(currentStockRaw) : 0;
+        const parLevelRaw = rowsRow[headerIndex['par_level']];
+        const parLevelVal = parLevelRaw && parLevelRaw.trim() !== '' ? Number(parLevelRaw) : null;
+        const reorderPointRaw = rowsRow[headerIndex['reorder_point']];
+        const reorderPointVal = reorderPointRaw && reorderPointRaw.trim() !== '' ? Number(reorderPointRaw) : null;
+        const reorderQtyRaw = rowsRow[headerIndex['reorder_qty']];
+        const reorderQtyVal = reorderQtyRaw && reorderQtyRaw.trim() !== '' ? Number(reorderQtyRaw) : null;
+        
         prepared.push({
           company_id: companyId,
           product_name: productName.trim(),
@@ -419,12 +495,18 @@ export default function ChemicalsClient() {
           required_ppe: normaliseArrayCell(rowsRow[headerIndex['required_ppe']]).length ? normaliseArrayCell(rowsRow[headerIndex['required_ppe']]) : null,
           coshh_sheet_url: rowsRow[headerIndex['coshh_sheet_url']] ?? null,
           supplier: rowsRow[headerIndex['supplier']] ?? null,
-          unit_cost: unitCostRaw && unitCostRaw.trim() !== '' ? Number(unitCostRaw) : null,
+          unit_cost: unitCostVal,
           pack_size: rowsRow[headerIndex['pack_size']] ?? null,
           storage_requirements: rowsRow[headerIndex['storage_requirements']] ?? null,
           linked_risks: normaliseArrayCell(rowsRow[headerIndex['linked_risks']]).length ? normaliseArrayCell(rowsRow[headerIndex['linked_risks']]) : null,
           first_aid_instructions: rowsRow[headerIndex['first_aid_instructions']] ?? null,
           environmental_info: rowsRow[headerIndex['environmental_info']] ?? null,
+          track_stock: trackStockVal,
+          current_stock: currentStockVal,
+          par_level: parLevelVal,
+          reorder_point: reorderPointVal,
+          reorder_qty: reorderQtyVal,
+          sku: rowsRow[headerIndex['sku']]?.trim() || null,
           notes: rowsRow[headerIndex['notes']] ?? null,
         });
       }
@@ -463,19 +545,19 @@ export default function ChemicalsClient() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-red-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-module-fg rounded-full"></div>
             <div>
-              <h1 className="text-lg font-semibold text-white">Chemicals Library</h1>
-              <p className="text-sm text-neutral-400">Manage cleaning chemicals and COSHH data</p>
+              <h1 className="text-lg font-semibold text-theme-primary">Chemicals Library</h1>
+              <p className="text-sm text-theme-tertiary">Manage cleaning chemicals and COSHH data</p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleUploadClick} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleUploadClick} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary flex items-center gap-2">
             <Upload size={16} />
             Upload CSV
           </button>
-          <button onClick={handleDownloadCSV} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleDownloadCSV} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary flex items-center gap-2">
             <Download size={16} />
             Download CSV
           </button>
@@ -529,7 +611,7 @@ export default function ChemicalsClient() {
               setNewRowIds(prev => new Set(prev).add(tempId));
             }}
             aria-label="Add Chemical"
-            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition"
+            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition"
           >
             <Plus size={18} />
             <span className="sr-only">Add Chemical</span>
@@ -538,24 +620,24 @@ export default function ChemicalsClient() {
       </div>
 
       <div className="flex-1 relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search chemicals..."
-          className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+          className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-theme-primary placeholder-neutral-400"
         />
       </div>
 
       {loading ? (
-        <div className="text-neutral-400 text-center py-8">Loading chemicals...</div>
+        <div className="text-theme-tertiary text-center py-8">Loading chemicals...</div>
       ) : filteredItems.length === 0 ? (
-        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-          <p className="text-neutral-400">No chemicals found.</p>
+        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-theme">
+          <p className="text-theme-tertiary">No chemicals found.</p>
         </div>
       ) : (
-        <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+        <div className="bg-neutral-800/50 rounded-xl border border-theme overflow-hidden">
           <table className="w-full">
             <thead className="bg-neutral-900">
               <tr>
@@ -570,31 +652,36 @@ export default function ChemicalsClient() {
                 const expanded = expandedRows.has(item.id);
                 return (
                   <React.Fragment key={item.id}>
-                    <tr className="border-t border-neutral-700 hover:bg-neutral-800/50">
+                    <tr className="border-t border-theme hover:bg-neutral-800/50">
                       <td className="px-2 py-3 align-top">
                         <button
                           aria-label={expanded ? 'Collapse' : 'Expand'}
                           onClick={() => toggleRow(item.id)}
-                          className="p-1 rounded hover:bg-neutral-800 text-neutral-300"
+                          className="p-1 rounded hover:bg-neutral-800 text-theme-tertiary"
                         >
                           {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-white">
+                      <td className="px-4 py-3 text-theme-primary">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.product_name ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, product_name: e.target.value }))}
                           />
                         ) : (
-                          item.product_name
+                          <div className="flex items-center gap-2">
+                            <span>{item.product_name}</span>
+                            {item.supplier && (
+                              <span className="text-theme-tertiary text-sm">• {item.supplier}</span>
+                            )}
+                          </div>
                         )}
                       </td>
-                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-tertiary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.manufacturer ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, manufacturer: e.target.value }))}
                           />
@@ -602,10 +689,10 @@ export default function ChemicalsClient() {
                           item.manufacturer || '-'
                         )}
                       </td>
-                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-tertiary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.pack_size ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))}
                           />
@@ -618,43 +705,43 @@ export default function ChemicalsClient() {
                       <tr className="border-t border-neutral-800/60">
                         <td colSpan={4} className="px-4 py-4 bg-neutral-900/40">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Use Case</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Use Case</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.use_case ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, use_case: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.use_case || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.use_case || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Hazards</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Hazards</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.hazard_symbols || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, hazard_symbols: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white flex items-center gap-2">
+                                <div className="text-sm text-theme-primary flex items-center gap-2">
                                   {item.hazard_symbols && item.hazard_symbols.length > 0 ? (
                                     <>
                                       <AlertTriangle size={14} className="text-red-400" />
                                       <span>{item.hazard_symbols.join(', ')}</span>
                                     </>
                                   ) : (
-                                    <span className="text-neutral-400">None</span>
+                                    <span className="text-theme-tertiary">None</span>
                                   )}
                                 </div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">COSHH Sheet</div>
-                              <div className="text-sm text-white flex items-center gap-2">
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">COSHH Sheet</div>
+                              <div className="text-sm text-theme-primary flex items-center gap-2">
                                 {item.hasCOSHHSheet ? (
                                   <>
                                     <CheckCircle size={16} className="text-green-400" />
@@ -668,104 +755,172 @@ export default function ChemicalsClient() {
                                 )}
                               </div>
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Contact Time</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Contact Time</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.contact_time ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, contact_time: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.contact_time || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.contact_time || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Dilution</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Dilution</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.dilution_ratio ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, dilution_ratio: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.dilution_ratio || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.dilution_ratio || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Required PPE</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Required PPE</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.required_ppe || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, required_ppe: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{(item.required_ppe || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary">{(item.required_ppe || []).join(', ') || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Supplier</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Supplier</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.supplier ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.supplier || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.supplier || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Unit Cost</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Unit Cost</div>
                               {editingRowId === item.id ? (
                                 <input
                                   type="number"
                                   step="0.01"
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.unit_cost ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Storage</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Storage</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.storage_requirements ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, storage_requirements: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.storage_requirements || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.storage_requirements || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Linked Risks</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Linked Risks</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.linked_risks || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, linked_risks: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{(item.linked_risks || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary">{(item.linked_risks || []).join(', ') || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-neutral-400">Notes</div>
+                            
+                            {/* Stockly Fields Section */}
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-theme-tertiary mb-2 uppercase">Stock Management</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div className="flex items-center gap-2">
+                                  {editingRowId === item.id ? (
+                                    <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-magenta-500 focus:ring-magenta-500" />
+                                  ) : (
+                                    <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-neutral-600 bg-neutral-800" />
+                                  )}
+                                  <label className="text-xs text-theme-tertiary">Track Stock</label>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">SKU</div>
+                              {editingRowId === item.id ? (
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.sku || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Current Stock</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.current_stock != null ? item.current_stock : '0'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Par Level</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.par_level != null ? item.par_level : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Reorder Point</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Reorder Qty</div>
+                              {editingRowId === item.id ? (
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                              )}
+                            </div>
+                            {item.low_stock_alert && (
+                              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                                <div className="text-xs text-red-400 font-semibold">⚠️ Low Stock Alert</div>
+                              </div>
+                            )}
+                            {item.stock_value != null && item.stock_value > 0 && (
+                              <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                                <div className="text-xs text-theme-tertiary">Stock Value</div>
+                                <div className="text-sm text-theme-primary">£{item.stock_value.toFixed(2)}</div>
+                              </div>
+                            )}
+                            
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary">Notes</div>
                               {editingRowId === item.id ? (
                                 <textarea
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white min-h-[80px]"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary min-h-[80px]"
                                   value={rowDraft?.notes ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white whitespace-pre-wrap">{item.notes || '-'}</div>
+                                <div className="text-sm text-theme-primary whitespace-pre-wrap">{item.notes || '-'}</div>
                               )}
                             </div>
                           </div>
@@ -774,7 +929,7 @@ export default function ChemicalsClient() {
                               <>
                                 <button
                                   onClick={() => saveRowEdit(item.id)}
-                                  className="px-3 py-2 rounded-lg border border-magenta-500/60 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition flex items-center gap-2"
+                                  className="px-3 py-2 rounded-lg border border-magenta-500/60 text-theme-primary bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition flex items-center gap-2"
                                 >
                                   <Save size={16} className="text-magenta-400" />
                                   <span>Save</span>
@@ -797,8 +952,8 @@ export default function ChemicalsClient() {
                                   } else {
                                     cancelRowEdit();
                                   }
-                                }} className="px-3 py-2 rounded-lg border border-neutral-600 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 transition flex items-center gap-2">
-                                  <X size={16} className="text-neutral-300" />
+                                }} className="px-3 py-2 rounded-lg border border-neutral-600 text-theme-primary bg-white/5 backdrop-blur-sm hover:bg-white/10 transition flex items-center gap-2">
+                                  <X size={16} className="text-theme-tertiary" />
                                   <span>Cancel</span>
                                 </button>
                               </>
@@ -807,7 +962,7 @@ export default function ChemicalsClient() {
                                 <button
                                   aria-label="Edit Chemical"
                                   onClick={() => handleEdit(item)}
-                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition"
+                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition"
                                 >
                                   <Edit size={16} />
                                   <span className="sr-only">Edit</span>
@@ -815,7 +970,7 @@ export default function ChemicalsClient() {
                                 <button
                                   aria-label="Delete Chemical"
                                   onClick={() => handleDelete(item.id)}
-                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-500/60 text-red-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-red-400 hover:shadow-[0_0_14px_rgba(239,68,68,0.55)] transition"
+                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-500/60 text-red-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-red-400 hover:shadow-module-glow transition"
                                 >
                                   <Trash2 size={16} />
                                   <span className="sr-only">Delete</span>
@@ -836,9 +991,9 @@ export default function ChemicalsClient() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-neutral-900 rounded-xl border border-neutral-700 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-neutral-900 rounded-xl border border-theme p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {editingItem ? 'Edit Chemical' : 'Add Chemical'}
               </h2>
               <button
@@ -847,7 +1002,7 @@ export default function ChemicalsClient() {
                   setEditingItem(null);
                   resetForm();
                 }}
-                className="text-neutral-400 hover:text-white"
+                className="text-theme-tertiary hover:text-white"
               >
                 <X size={20} />
               </button>

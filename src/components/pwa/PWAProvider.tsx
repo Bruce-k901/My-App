@@ -1,15 +1,30 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { registerServiceWorker } from '@/lib/pwa';
 import { InstallPrompt } from './InstallPrompt';
+import { UpdateToast } from './UpdateToast';
 
 export function PWAProvider() {
-  useEffect(() => {
-    // Register service worker on mount
-    registerServiceWorker();
-  }, []);
+  const pathname = usePathname();
 
-  return <InstallPrompt />;
+  useEffect(() => {
+    // Register main app service worker for all routes (including admin)
+    // The main service worker handles both main app and admin routes
+    registerServiceWorker();
+  }, []); // Empty deps - only register once
+
+  // Don't show install prompt on admin routes, but always show update toast
+  if (pathname?.startsWith('/admin')) {
+    return <UpdateToast />;
+  }
+
+  return (
+    <>
+      <InstallPrompt />
+      <UpdateToast />
+    </>
+  );
 }
 

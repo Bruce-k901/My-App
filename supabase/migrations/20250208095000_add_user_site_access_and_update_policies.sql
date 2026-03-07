@@ -7,118 +7,152 @@ set check_function_bodies = off;
 
 -------------------------------------------------------------------------------
 -- User/site access junction
+-- Note: Table creation will be skipped if required tables don't exist yet
 -------------------------------------------------------------------------------
 
-create table if not exists public.user_site_access (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies (id) on delete cascade,
-  site_id uuid not null references public.sites (id) on delete cascade,
-  auth_user_id uuid not null references auth.users (id) on delete cascade,
-  profile_id uuid references public.profiles (id),
-  role text default 'member',
-  created_at timestamptz not null default now(),
-  created_by uuid references auth.users (id),
-  unique (auth_user_id, site_id)
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+    -- Create table without foreign keys first
+    CREATE TABLE IF NOT EXISTS public.user_site_access (
+      id uuid primary key default gen_random_uuid(),
+      company_id uuid not null,
+      site_id uuid not null,
+      auth_user_id uuid not null references auth.users (id) on delete cascade,
+      profile_id uuid,
+      role text default 'member',
+      created_at timestamptz not null default now(),
+      created_by uuid references auth.users (id),
+      unique (auth_user_id, site_id)
+    );
 
-comment on table public.user_site_access is 'Junction table granting users access to specific sites within a tenant.';
-comment on column public.user_site_access.role is 'Optional role/label for the membership (e.g. member, manager).';
+    -- Add foreign keys conditionally
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_site_access_company_id_fkey') THEN
+      ALTER TABLE public.user_site_access ADD CONSTRAINT user_site_access_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies (id) ON DELETE CASCADE;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_site_access_site_id_fkey') THEN
+      ALTER TABLE public.user_site_access ADD CONSTRAINT user_site_access_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites (id) ON DELETE CASCADE;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_site_access_profile_id_fkey') THEN
+      ALTER TABLE public.user_site_access ADD CONSTRAINT user_site_access_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles (id);
+    END IF;
 
-create index if not exists user_site_access_auth_user_idx
-  on public.user_site_access (auth_user_id);
+    COMMENT ON TABLE public.user_site_access IS 'Junction table granting users access to specific sites within a tenant.';
+    COMMENT ON COLUMN public.user_site_access.role IS 'Optional role/label for the membership (e.g. member, manager).';
 
-create index if not exists user_site_access_site_idx
-  on public.user_site_access (site_id);
+    CREATE INDEX IF NOT EXISTS user_site_access_auth_user_idx ON public.user_site_access (auth_user_id);
+    CREATE INDEX IF NOT EXISTS user_site_access_site_idx ON public.user_site_access (site_id);
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Backfill from existing sources (site memberships, profiles)
+-- Note: Backfill will be skipped if source tables don't exist yet
 -------------------------------------------------------------------------------
 
-insert into public.user_site_access (
-  company_id,
-  site_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  s.company_id,
-  sm.site_id,
-  sm.auth_user_id,
-  coalesce(p.id, p2.id) as profile_id,
-  'member'
-from public.site_memberships sm
-join public.sites s on s.id = sm.site_id
-left join public.profiles p on p.auth_user_id = sm.auth_user_id
-left join public.profiles p2 on p2.id = sm.auth_user_id
-join auth.users au on au.id = sm.auth_user_id
-where sm.auth_user_id is not null
-on conflict (auth_user_id, site_id) do nothing;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_site_access')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_memberships')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+    INSERT INTO public.user_site_access (
+      company_id,
+      site_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      s.company_id,
+      sm.site_id,
+      sm.auth_user_id,
+      COALESCE(p.id, p2.id) as profile_id,
+      'member'
+    FROM public.site_memberships sm
+    JOIN public.sites s ON s.id = sm.site_id
+    LEFT JOIN public.profiles p ON p.auth_user_id = sm.auth_user_id
+    LEFT JOIN public.profiles p2 ON p2.id = sm.auth_user_id
+    JOIN auth.users au ON au.id = sm.auth_user_id
+    WHERE sm.auth_user_id IS NOT NULL
+    ON CONFLICT (auth_user_id, site_id) DO NOTHING;
+  END IF;
 
-insert into public.user_site_access (
-  company_id,
-  site_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  s.company_id,
-  sm.site_id,
-  coalesce(p.auth_user_id, p.id) as auth_user_id,
-  p.id,
-  'member'
-from public.site_members sm
-join public.sites s on s.id = sm.site_id
-join public.profiles p on p.id = sm.user_id
-join auth.users au on au.id = coalesce(p.auth_user_id, p.id)
-where coalesce(p.auth_user_id, p.id) is not null
-on conflict (auth_user_id, site_id) do nothing;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_site_access')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_members')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+    INSERT INTO public.user_site_access (
+      company_id,
+      site_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      s.company_id,
+      sm.site_id,
+      COALESCE(p.auth_user_id, p.id) as auth_user_id,
+      p.id,
+      'member'
+    FROM public.site_members sm
+    JOIN public.sites s ON s.id = sm.site_id
+    JOIN public.profiles p ON p.id = sm.user_id
+    JOIN auth.users au ON au.id = COALESCE(p.auth_user_id, p.id)
+    WHERE COALESCE(p.auth_user_id, p.id) IS NOT NULL
+    ON CONFLICT (auth_user_id, site_id) DO NOTHING;
+  END IF;
 
-insert into public.user_site_access (
-  company_id,
-  site_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  s.company_id,
-  s.id as site_id,
-  coalesce(p.auth_user_id, p.id) as auth_user_id,
-  p.id,
-  case
-    when lower(coalesce(p.app_role::text, '')) in ('owner', 'admin', 'area_manager', 'general_manager')
-      then 'manager'
-    else 'member'
-  end as role
-from public.profiles p
-join public.sites s on s.id = coalesce(p.site_id, p.home_site)
-join auth.users au on au.id = coalesce(p.auth_user_id, p.id)
-where coalesce(p.site_id, p.home_site) is not null
-  and coalesce(p.auth_user_id, p.id) is not null
-on conflict (auth_user_id, site_id) do nothing;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_site_access')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+    INSERT INTO public.user_site_access (
+      company_id,
+      site_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      s.company_id,
+      s.id as site_id,
+      COALESCE(p.auth_user_id, p.id) as auth_user_id,
+      p.id,
+      CASE
+        WHEN lower(COALESCE(p.app_role::text, '')) IN ('owner', 'admin', 'area_manager', 'general_manager')
+          THEN 'manager'
+        ELSE 'member'
+      END as role
+    FROM public.profiles p
+    JOIN public.sites s ON s.id = COALESCE(p.site_id, p.home_site)
+    JOIN auth.users au ON au.id = COALESCE(p.auth_user_id, p.id)
+    WHERE COALESCE(p.site_id, p.home_site) IS NOT NULL
+      AND COALESCE(p.auth_user_id, p.id) IS NOT NULL
+    ON CONFLICT (auth_user_id, site_id) DO NOTHING;
 
-insert into public.user_site_access (
-  company_id,
-  site_id,
-  auth_user_id,
-  profile_id,
-  role
-)
-select distinct
-  s.company_id,
-  s.id as site_id,
-  coalesce(p.auth_user_id, p.id) as auth_user_id,
-  p.id,
-  'manager'
-from public.profiles p
-join public.sites s on s.company_id = p.company_id
-join auth.users au on au.id = coalesce(p.auth_user_id, p.id)
-where p.company_id is not null
-  and coalesce(p.auth_user_id, p.id) is not null
-  and lower(coalesce(p.app_role::text, '')) in ('owner', 'admin', 'area_manager')
-on conflict (auth_user_id, site_id) do nothing;
+    INSERT INTO public.user_site_access (
+      company_id,
+      site_id,
+      auth_user_id,
+      profile_id,
+      role
+    )
+    SELECT DISTINCT
+      s.company_id,
+      s.id as site_id,
+      COALESCE(p.auth_user_id, p.id) as auth_user_id,
+      p.id,
+      'manager'
+    FROM public.profiles p
+    JOIN public.sites s ON s.company_id = p.company_id
+    JOIN auth.users au ON au.id = COALESCE(p.auth_user_id, p.id)
+    WHERE p.company_id IS NOT NULL
+      AND COALESCE(p.auth_user_id, p.id) IS NOT NULL
+      AND lower(COALESCE(p.app_role::text, '')) IN ('owner', 'admin', 'area_manager')
+    ON CONFLICT (auth_user_id, site_id) DO NOTHING;
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Helper function for site access checks
@@ -163,277 +197,324 @@ comment on function public.has_site_access(uuid)
 
 -------------------------------------------------------------------------------
 -- RLS for user_site_access
+-- Note: RLS setup will be skipped if table doesn't exist yet
 -------------------------------------------------------------------------------
 
-alter table public.user_site_access enable row level security;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_site_access') THEN
+    ALTER TABLE public.user_site_access ENABLE ROW LEVEL SECURITY;
 
-drop policy if exists tenant_select_user_site_access on public.user_site_access;
-create policy tenant_select_user_site_access
-  on public.user_site_access
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and (
-        auth.uid() = auth_user_id
-        or exists (
-          select 1
-          from public.profiles p
-          where matches_current_tenant(p.company_id)
-            and (
-              p.id = auth.uid()
-              or p.auth_user_id = auth.uid()
+    DROP POLICY IF EXISTS tenant_select_user_site_access ON public.user_site_access;
+    CREATE POLICY tenant_select_user_site_access
+      ON public.user_site_access
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND (
+            auth.uid() = auth_user_id
+            OR EXISTS (
+              SELECT 1
+              FROM public.profiles p
+              WHERE matches_current_tenant(p.company_id)
+                AND (
+                  p.id = auth.uid()
+                  OR p.auth_user_id = auth.uid()
+                )
+                AND lower(COALESCE(p.app_role::text, '')) IN ('owner', 'admin', 'area_manager', 'general_manager')
             )
-            and lower(coalesce(p.app_role::text, '')) in ('owner', 'admin', 'area_manager', 'general_manager')
+          )
         )
-      )
-    )
-  );
+      );
 
-drop policy if exists tenant_modify_user_site_access on public.user_site_access;
-create policy tenant_modify_user_site_access
-  on public.user_site_access
-  for all
-  using (
-    public.is_service_role()
-  )
-  with check (
-    public.is_service_role()
-  );
+    DROP POLICY IF EXISTS tenant_modify_user_site_access ON public.user_site_access;
+    CREATE POLICY tenant_modify_user_site_access
+      ON public.user_site_access
+      FOR ALL
+      USING (
+        public.is_service_role()
+      )
+      WITH CHECK (
+        public.is_service_role()
+      );
+  END IF;
+END $$;
 
 -------------------------------------------------------------------------------
 -- Refresh policies to use has_site_access helper
+-- Note: Policy updates will be skipped if tables don't exist yet
 -------------------------------------------------------------------------------
 
 -- Sites ----------------------------------------------------------------------
-drop policy if exists tenant_select_sites on public.sites;
-create policy tenant_select_sites
-  on public.sites
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(id)
-    )
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites') THEN
+    DROP POLICY IF EXISTS tenant_select_sites ON public.sites;
+    CREATE POLICY tenant_select_sites
+      ON public.sites
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(id)
+        )
+      );
 
-drop policy if exists tenant_modify_sites on public.sites;
-create policy tenant_modify_sites
-  on public.sites
-  for all
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(id)
-    )
-  );
+    DROP POLICY IF EXISTS tenant_modify_sites ON public.sites;
+    CREATE POLICY tenant_modify_sites
+      ON public.sites
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(id)
+        )
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Site profiles --------------------------------------------------------------
-drop policy if exists tenant_select_site_profiles on public.site_profiles;
-create policy tenant_select_site_profiles
-  on public.site_profiles
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_profiles') THEN
+    DROP POLICY IF EXISTS tenant_select_site_profiles ON public.site_profiles;
+    CREATE POLICY tenant_select_site_profiles
+      ON public.site_profiles
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      );
 
-drop policy if exists tenant_modify_site_profiles on public.site_profiles;
-create policy tenant_modify_site_profiles
-  on public.site_profiles
-  for all
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  );
+    DROP POLICY IF EXISTS tenant_modify_site_profiles ON public.site_profiles;
+    CREATE POLICY tenant_modify_site_profiles
+      ON public.site_profiles
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Site memberships (auth_user junction) --------------------------------------
-drop policy if exists tenant_select_site_memberships on public.site_memberships;
-create policy tenant_select_site_memberships
-  on public.site_memberships
-  for select
-  using (
-    public.is_service_role()
-    or public.has_site_access(site_memberships.site_id)
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_memberships') THEN
+    DROP POLICY IF EXISTS tenant_select_site_memberships ON public.site_memberships;
+    CREATE POLICY tenant_select_site_memberships
+      ON public.site_memberships
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(site_memberships.site_id)
+      );
 
-drop policy if exists tenant_modify_site_memberships on public.site_memberships;
-create policy tenant_modify_site_memberships
-  on public.site_memberships
-  for all
-  using (
-    public.is_service_role()
-    or public.has_site_access(site_memberships.site_id)
-  )
-  with check (
-    public.is_service_role()
-    or public.has_site_access(site_memberships.site_id)
-  );
+    DROP POLICY IF EXISTS tenant_modify_site_memberships ON public.site_memberships;
+    CREATE POLICY tenant_modify_site_memberships
+      ON public.site_memberships
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(site_memberships.site_id)
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR public.has_site_access(site_memberships.site_id)
+      );
+  END IF;
+END $$;
 
 -- Site members (profile junction) -------------------------------------------
-drop policy if exists tenant_select_site_members on public.site_members;
-create policy tenant_select_site_members
-  on public.site_members
-  for select
-  using (
-    public.is_service_role()
-    or public.has_site_access(site_members.site_id)
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'site_members') THEN
+    DROP POLICY IF EXISTS tenant_select_site_members ON public.site_members;
+    CREATE POLICY tenant_select_site_members
+      ON public.site_members
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(site_members.site_id)
+      );
 
-drop policy if exists tenant_modify_site_members on public.site_members;
-create policy tenant_modify_site_members
-  on public.site_members
-  for all
-  using (
-    public.is_service_role()
-    or public.has_site_access(site_members.site_id)
-  )
-  with check (
-    public.is_service_role()
-    or public.has_site_access(site_members.site_id)
-  );
+    DROP POLICY IF EXISTS tenant_modify_site_members ON public.site_members;
+    CREATE POLICY tenant_modify_site_members
+      ON public.site_members
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(site_members.site_id)
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR public.has_site_access(site_members.site_id)
+      );
+  END IF;
+END $$;
 
 -- Tasks ----------------------------------------------------------------------
-drop policy if exists tenant_select_tasks on public.tasks;
-create policy tenant_select_tasks
-  on public.tasks
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and (
-        site_id is null
-        or public.has_site_access(site_id)
-      )
-    )
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'tasks') THEN
+    DROP POLICY IF EXISTS tenant_select_tasks ON public.tasks;
+    CREATE POLICY tenant_select_tasks
+      ON public.tasks
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND (
+            site_id IS NULL
+            OR public.has_site_access(site_id)
+          )
+        )
+      );
 
-drop policy if exists tenant_modify_tasks on public.tasks;
-create policy tenant_modify_tasks
-  on public.tasks
-  for all
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and (
-        site_id is null
-        or public.has_site_access(site_id)
+    DROP POLICY IF EXISTS tenant_modify_tasks ON public.tasks;
+    CREATE POLICY tenant_modify_tasks
+      ON public.tasks
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND (
+            site_id IS NULL
+            OR public.has_site_access(site_id)
+          )
+        )
       )
-    )
-  )
-  with check (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and (
-        site_id is null
-        or public.has_site_access(site_id)
-      )
-    )
-  );
+      WITH CHECK (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND (
+            site_id IS NULL
+            OR public.has_site_access(site_id)
+          )
+        )
+      );
+  END IF;
+END $$;
 
 -- Temperature logs -----------------------------------------------------------
-drop policy if exists tenant_select_temperature_logs on public.temperature_logs;
-create policy tenant_select_temperature_logs
-  on public.temperature_logs
-  for select
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'temperature_logs') THEN
+    DROP POLICY IF EXISTS tenant_select_temperature_logs ON public.temperature_logs;
+    CREATE POLICY tenant_select_temperature_logs
+      ON public.temperature_logs
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      );
 
-drop policy if exists tenant_modify_temperature_logs on public.temperature_logs;
-create policy tenant_modify_temperature_logs
-  on public.temperature_logs
-  for all
-  using (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  )
-  with check (
-    public.is_service_role()
-    or (
-      matches_current_tenant(company_id)
-      and public.has_site_access(site_id)
-    )
-  );
+    DROP POLICY IF EXISTS tenant_modify_temperature_logs ON public.temperature_logs;
+    CREATE POLICY tenant_modify_temperature_logs
+      ON public.temperature_logs
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR (
+          matches_current_tenant(company_id)
+          AND public.has_site_access(site_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- Incidents ------------------------------------------------------------------
-drop policy if exists tenant_select_incidents on public.incidents;
-create policy tenant_select_incidents
-  on public.incidents
-  for select
-  using (
-    public.is_service_role()
-    or public.has_site_access(incidents.site_id)
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'incidents') THEN
+    DROP POLICY IF EXISTS tenant_select_incidents ON public.incidents;
+    CREATE POLICY tenant_select_incidents
+      ON public.incidents
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(incidents.site_id)
+      );
 
-drop policy if exists tenant_modify_incidents on public.incidents;
-create policy tenant_modify_incidents
-  on public.incidents
-  for all
-  using (
-    public.is_service_role()
-    or public.has_site_access(incidents.site_id)
-  )
-  with check (
-    public.is_service_role()
-    or public.has_site_access(incidents.site_id)
-  );
+    DROP POLICY IF EXISTS tenant_modify_incidents ON public.incidents;
+    CREATE POLICY tenant_modify_incidents
+      ON public.incidents
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(incidents.site_id)
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR public.has_site_access(incidents.site_id)
+      );
+  END IF;
+END $$;
 
 -- Licences -------------------------------------------------------------------
-drop policy if exists tenant_select_licences on public.licences;
-create policy tenant_select_licences
-  on public.licences
-  for select
-  using (
-    public.is_service_role()
-    or public.has_site_access(licences.site_id)
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'licences') THEN
+    DROP POLICY IF EXISTS tenant_select_licences ON public.licences;
+    CREATE POLICY tenant_select_licences
+      ON public.licences
+      FOR SELECT
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(licences.site_id)
+      );
 
-drop policy if exists tenant_modify_licences on public.licences;
-create policy tenant_modify_licences
-  on public.licences
-  for all
-  using (
-    public.is_service_role()
-    or public.has_site_access(licences.site_id)
-  )
-  with check (
-    public.is_service_role()
-    or public.has_site_access(licences.site_id)
-  );
+    DROP POLICY IF EXISTS tenant_modify_licences ON public.licences;
+    CREATE POLICY tenant_modify_licences
+      ON public.licences
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR public.has_site_access(licences.site_id)
+      )
+      WITH CHECK (
+        public.is_service_role()
+        OR public.has_site_access(licences.site_id)
+      );
+  END IF;
+END $$;
 
 -- Temperature breach actions -------------------------------------------------
 do $policy$

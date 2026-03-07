@@ -90,7 +90,7 @@ export class SessionManager {
   private async handleUserSession(session: Session) {
     try {
       const profile = await this.fetchUserProfile(session.user.id);
-      
+
       this.updateState({
         user: session.user,
         session,
@@ -202,7 +202,8 @@ export class SessionManager {
   }
 
   public hasAnyRole(roles: string[]): boolean {
-    return roles.includes(this.authState.profile?.app_role || '');
+    const userRole = (this.authState.profile?.app_role || '').toLowerCase();
+    return roles.map(r => r.toLowerCase()).includes(userRole);
   }
 
   public getCompanyId(): string | null {

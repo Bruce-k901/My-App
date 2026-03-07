@@ -7,6 +7,7 @@ import SiteFormNew from "@/components/sites/SiteFormNew";
 import SiteToolbar from "@/components/sites/SiteToolbar";
 import SiteCard from "@/components/sites/SiteCard";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import BackToSetup from "@/components/dashboard/BackToSetup";
 
 interface Site {
   id: string;
@@ -30,7 +31,10 @@ export default function OrganizationSitesPage() {
   // === ALL HOOKS MUST BE CALLED UNCONDITIONALLY ===
   
   // 1. Context hooks
-  const { loading: ctxLoading, profile } = useAppContext();
+  const { loading: ctxLoading, profile, company, companyId } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId || profile?.company_id;
   
   // 2. State hooks
   const [sites, setSites] = useState<Site[]>([]);
@@ -43,15 +47,15 @@ export default function OrganizationSitesPage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchGMList = useCallback(async () => {
-    if (!profile?.company_id) return;
+    if (!effectiveCompanyId) return;
 
     try {
       // Fetch all GMs for the company from profiles table
       const { data: gmsData, error: gmsError } = await supabase
         .from("profiles")
         .select("id, full_name, email, phone_number")
-        .eq("company_id", profile.company_id)
-        .eq("app_role", "Manager")
+        .eq("company_id", effectiveCompanyId)
+        .in("app_role", ["Manager", "Admin", "Owner", "General Manager"])
         .order("full_name");
 
       if (gmsError) {
@@ -71,14 +75,21 @@ export default function OrganizationSitesPage() {
     } catch (err: any) {
       console.error("Error in fetchGMList:", err);
     }
-  }, [profile?.company_id]);
+  }, [effectiveCompanyId]);
 
   const fetchSites = useCallback(async () => {
-    if (!profile?.company_id) return;
+    if (!effectiveCompanyId) {
+      console.warn('⚠️ Cannot fetch sites: no company_id available');
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
     try {
+      console.log('📡 Fetching sites for company:', effectiveCompanyId);
+      
       // First, fetch sites with planned closures (no GM profile join)
       const { data: sitesData, error: sitesError } = await supabase
         .from("sites")
@@ -104,11 +115,17 @@ export default function OrganizationSitesPage() {
             notes
           )
         `)
-        .eq("company_id", profile.company_id)
+        .eq("company_id", effectiveCompanyId)
         .order("created_at", { ascending: false });
 
       if (sitesError) {
-        console.error("Error fetching sites:", sitesError);
+        console.error("❌ Error fetching sites:", sitesError);
+        console.error("Error details:", {
+          message: sitesError.message,
+          code: sitesError.code,
+          details: sitesError.details,
+          hint: sitesError.hint
+        });
         const errorMessage = sitesError.message || sitesError.code || "Failed to load sites";
         setError(`Failed to load sites: ${errorMessage}`);
         setSites([]);
@@ -116,29 +133,40 @@ export default function OrganizationSitesPage() {
         return;
       }
       
+      console.log('✅ Sites fetched:', sitesData?.length || 0, sitesData);
+      
       // Ensure we have data
       if (!sitesData) {
-        console.warn("No sites data returned");
+        console.warn("⚠️ No sites data returned (null)");
         setSites([]);
         setLoading(false);
         return;
       }
+      
+      if (sitesData.length === 0) {
+        console.warn("⚠️ Sites query returned empty array");
+        console.log("🔍 Checking if sites exist in database...");
+        // Test query without company_id filter to check RLS
+        const { data: testSites, error: testError } = await supabase
+          .from("sites")
+          .select("id, name, company_id")
+          .limit(5);
+        console.log("🔍 Test query (no filter):", testSites?.length || 0, testError);
+      }
 
-      // Then fetch GM data separately from gm_index
+      // Then fetch GM data separately from profiles
       const gmIds = sitesData?.map(s => s.gm_user_id).filter(Boolean) || [];
       let gmMap = new Map();
 
       if (gmIds.length > 0) {
         const { data: gmsData, error: gmsError } = await supabase
-          .from("gm_index")
-          .select("id, full_name, email, phone")
+          .from("profiles")
+          .select("id, full_name, email, phone_number")
+          .eq("company_id", effectiveCompanyId)
           .in("id", gmIds);
 
         if (!gmsError && gmsData) {
-          console.log("GM data fetched from gm_index:", gmsData);
-          gmMap = new Map(gmsData.map(g => [g.id, g]));
-        } else {
-          console.log("No GM data found or error:", gmsError);
+          gmMap = new Map(gmsData.map(g => [g.id, { id: g.id, full_name: g.full_name, email: g.email, phone: g.phone_number }]));
         }
       }
 
@@ -161,7 +189,7 @@ export default function OrganizationSitesPage() {
       setSites([]);
       setLoading(false);
     }
-  }, [profile?.company_id]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
     fetchSites();
@@ -169,16 +197,16 @@ export default function OrganizationSitesPage() {
   }, [fetchSites, fetchGMList]);
 
   useEffect(() => {
-    if (!ctxLoading && !profile?.company_id) {
+    if (!ctxLoading && !companyId) {
       setLoading(false);
       setError("No company context detected. Please sign in or complete setup.");
     }
-  }, [ctxLoading, profile?.company_id]);
+  }, [ctxLoading, companyId]);
 
   // Early returns ONLY AFTER all hooks
   if (ctxLoading) {
     console.log('Context loading:', ctxLoading, 'Profile:', profile);
-    return <div className="text-slate-400">Loading context...</div>;
+ return <div className="text-gray-500 dark:text-theme-tertiary">Loading context...</div>;
   }
 
   const handleSaved = async () => {
@@ -202,6 +230,10 @@ export default function OrganizationSitesPage() {
   });
 
   return (
+    <>
+    <div className="max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-3">
+      <BackToSetup />
+    </div>
     <EntityPageLayout
       title="Sites"
       onSearch={setSearchTerm}
@@ -210,7 +242,7 @@ export default function OrganizationSitesPage() {
         <SiteToolbar 
           inline 
           sites={sites} 
-          companyId={profile?.company_id || ""} 
+          companyId={effectiveCompanyId || ""} 
           onRefresh={fetchSites} 
           showBack={false}
           onAddSite={() => setFormOpen(true)}
@@ -218,18 +250,18 @@ export default function OrganizationSitesPage() {
       }
     >
       {error && (
-        <div className="rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="rounded-xl bg-red-50 dark:bg-white/[0.06] border border-red-200 dark:border-white/[0.1] px-4 py-3">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {ctxLoading || loading ? (
-        <div className="text-slate-400">Loading sites…</div>
+ <div className="text-gray-500 dark:text-theme-tertiary">Loading sites…</div>
       ) : filteredSites.length === 0 ? (
         searchTerm ? (
-          <p className="text-gray-400">No sites found matching "{searchTerm}".</p>
+          <p className="text-theme-tertiary">No sites found matching "{searchTerm}".</p>
         ) : (
-          <p className="text-gray-400">No sites yet. Add one to get started.</p>
+          <p className="text-theme-tertiary">No sites yet. Add one to get started.</p>
         )
       ) : (
         <div className="space-y-3 md:space-y-4">
@@ -249,7 +281,7 @@ export default function OrganizationSitesPage() {
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
           initial={editing || null}
-          companyId={profile?.company_id || ""}
+          companyId={effectiveCompanyId || ""}
           gmList={gmList}
         />
       )}
@@ -264,10 +296,11 @@ export default function OrganizationSitesPage() {
             fetchSites();
             fetchGMList();
           }}
-          companyId={profile?.company_id || ""}
+          companyId={effectiveCompanyId || ""}
           gmList={gmList}
         />
       )}
     </EntityPageLayout>
+    </>
   );
 }

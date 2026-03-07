@@ -1,0 +1,1926 @@
+{
+  "id": "uk-l2-fire-safety",
+  "title": "Fire Safety Level 2 (UK)",
+  "shortDescription": "Fire prevention, evacuation procedures, and extinguisher use for the workplace.",
+  "description": "Comprehensive fire safety course covering the fire triangle, classes of fire, prevention strategies, detection systems, fire doors and compartmentation, evacuation procedures, extinguisher types and colour codes, kitchen-specific fire risks, deep-fat fryer safety, fire risk assessment, and fire warden duties. Aligned to the Regulatory Reform (Fire Safety) Order 2005.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-fire",
+  "category": "workplace-safety",
+  "level": "Level 2",
+  "estimatedMinutes": 210,
+  "icon": "Flame",
+  "tags": [
+    "fire safety",
+    "evacuation",
+    "fire extinguisher",
+    "fire triangle",
+    "kitchen fire",
+    "compliance",
+    "fire warden",
+    "RRO 2005",
+    "fire doors"
+  ],
+  "learningOutcomes": [
+    "Explain the fire triangle and the six classes of fire (A, B, C, D, E, F)",
+    "Identify fire hazards in workplace and kitchen environments and apply prevention measures",
+    "Select and use the correct type of fire extinguisher using the PASS technique",
+    "Describe fire detection systems, alarm types, and the role of fire doors in compartmentation",
+    "Follow safe evacuation procedures, assembly point protocols, and Personal Emergency Evacuation Plans",
+    "Understand the legal duties of the Responsible Person under the Regulatory Reform (Fire Safety) Order 2005",
+    "Carry out or contribute to a five-step fire risk assessment"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction to Fire Safety",
+      "description": "Why fire safety training matters, UK fire statistics, and the legal framework.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Fire Safety Level 2 (UK)\n\nFire is one of the most destructive workplace hazards. Every year in the UK, fire and rescue services attend over **150,000 fires**, and workplace fires cause deaths, life-changing injuries, and hundreds of millions of pounds in damage.\n\nIn the hospitality and food-service sector the risks are even higher: open flames, hot oil, gas appliances, extraction ductwork loaded with grease, and buildings full of customers who do not know the layout.\n\n### What you will learn\n- **The fire triangle** and the six classes of fire (A-F).\n- **Prevention** -- Identifying and eliminating fire hazards before they ignite.\n- **Detection and alarms** -- Smoke detectors, heat detectors, call points, and alarm systems.\n- **Fire doors and compartmentation** -- How buildings are designed to contain fire.\n- **Evacuation** -- Safe escape routes, assembly points, PEEPs, and fire warden duties.\n- **Extinguishers** -- Types, colour codes, and which to use on which class of fire.\n- **Kitchen-specific risks** -- Deep-fat fryer fires, extraction cleaning, and gas safety.\n- **Fire risk assessment** -- The five-step process and your role in it.\n\nUse **Next** to move through the course.",
+              "keyTakeaway": "Fire kills -- your training could save your life and the lives of colleagues and customers."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Legal Framework",
+          "slides": [
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "The Regulatory Reform (Fire Safety) Order 2005",
+              "content": "## The Main Law\n\nThe **Regulatory Reform (Fire Safety) Order 2005** (RRO 2005) is the primary fire safety legislation in England and Wales. Scotland has the **Fire (Scotland) Act 2005** and the **Fire Safety (Scotland) Regulations 2006**; Northern Ireland has the **Fire and Rescue Services (Northern Ireland) Order 2006**. The principles are broadly the same.\n\n### Who does it apply to?\nThe RRO applies to virtually all non-domestic premises: offices, shops, restaurants, hotels, factories, schools, and any workplace where people are employed.\n\n### The Responsible Person\nThe law places duties on the **Responsible Person** -- usually the employer, building owner, or occupier. In a restaurant, this is typically the business owner or the premises licence holder.\n\n### Key duties of the Responsible Person\n- Carry out a **fire risk assessment** and keep it under regular review.\n- Put in place **general fire precautions** to reduce risk.\n- Provide and maintain **fire detection and warning systems**.\n- Ensure adequate **means of escape** are available and maintained.\n- Provide **fire safety training** to all employees on induction and at regular intervals.\n- Appoint one or more **competent persons** to assist with fire safety.\n- Prepare a **fire emergency plan** and communicate it to all staff.\n\n### Penalties\nFailure to comply can result in **unlimited fines** and up to **2 years in prison**. Following the Grenfell Tower tragedy, the Fire Safety Act 2021 and Building Safety Act 2022 strengthened enforcement further. Enforcing authorities can now issue **prohibition notices** closing premises immediately if there is serious risk to life.",
+              "keyTakeaway": "The Responsible Person must ensure fire safety -- but every employee has a legal duty to cooperate and not interfere with fire safety measures."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Employee Duties and Other Legislation",
+              "content": "## Your Duties as an Employee\n\nUnder the RRO 2005, employees must:\n- **Cooperate** with the employer on fire safety matters.\n- **Not interfere** with or misuse fire safety equipment (extinguishers, alarms, fire doors).\n- **Report** any fire hazards, defective equipment, or concerns to a manager.\n- **Follow** the fire emergency plan and attend fire safety training.\n\n### The Health and Safety at Work Act 1974\nThis overarching legislation also requires employers to ensure, so far as is reasonably practicable, the health and safety of employees. Fire safety is a core part of this duty.\n\n### Management of Health and Safety at Work Regulations 1999\nThese regulations require employers to carry out risk assessments (including fire), appoint competent persons, and provide training and information.\n\n### The Fire Safety Act 2021\nThis Act clarified that the RRO applies to the **external walls** and **entrance doors** of multi-occupied residential buildings. It closed a gap exposed by the Grenfell Tower fire.\n\n### Practical impact for hospitality\n- All staff must receive **fire safety induction training** on their first day.\n- **Refresher training** must be delivered at least annually.\n- Records of training must be kept as evidence of compliance.",
+              "keyTakeaway": "Every employee has a personal legal duty to cooperate with fire safety measures and report hazards."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Fire Risk Assessment -- The Five Steps",
+              "content": "## The Foundation of Fire Safety\n\nA fire risk assessment is a legal requirement under the RRO 2005. It must be carried out by a **competent person** and reviewed regularly.\n\n### Step 1: Identify Fire Hazards\nLook for sources of **ignition** (heaters, hobs, fryers, faulty wiring), **fuel** (paper, grease, textiles, chemicals), and **oxygen** (air, ventilation systems, oxidising chemicals).\n\n### Step 2: Identify People at Risk\n- Staff, customers, visitors, contractors.\n- **Vulnerable persons**: people with disabilities, mobility issues, hearing or visual impairments, young workers, pregnant workers, lone workers, and night-shift staff.\n\n### Step 3: Evaluate, Remove, or Reduce the Risks\nCan the hazard be eliminated? If not, reduce it to the lowest practicable level. For example: replace a chip pan with a thermostatically controlled fryer; install automatic fire suppression over cooking ranges.\n\n### Step 4: Record Your Findings, Plan, and Train\nIf you employ 5 or more people, findings **must** be recorded in writing. Document hazards, actions taken, responsible persons, and target dates. Communicate the emergency plan to all staff.\n\n### Step 5: Review Regularly\nReview after any fire or near-miss, after changes to layout, equipment, or staffing, after building alterations, and at least **annually** as good practice.",
+              "keyTakeaway": "A fire risk assessment is not a one-off exercise -- it must be a living document, reviewed and updated regularly."
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The New Starter",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is your first day at a new restaurant. The manager says he will cover fire safety training 'when things are less busy -- maybe next week'. What should you do?",
+                    "options": [
+                      {
+                        "label": "Accept it -- the manager knows best and it is only a week.",
+                        "nextNodeId": "accept"
+                      },
+                      {
+                        "label": "Politely ask for the key information now: fire exits, alarm, assembly point, and extinguisher locations.",
+                        "nextNodeId": "ask_now"
+                      },
+                      {
+                        "label": "Refuse to start work until full training is completed.",
+                        "nextNodeId": "refuse"
+                      }
+                    ]
+                  },
+                  "accept": {
+                    "text": "You start your shift without knowing where the fire exits are. During the evening, the extraction system fills the kitchen with smoke. You don't know which way to go. You waste precious seconds looking for an exit.",
+                    "options": [
+                      {
+                        "label": "What should I have done differently?",
+                        "nextNodeId": "accept_reflect"
+                      }
+                    ]
+                  },
+                  "accept_reflect": {
+                    "text": "Under the RRO 2005, fire safety induction must be given on the first day. At an absolute minimum, you need to know: the nearest two fire exits, the assembly point, where the alarm call points are, and where extinguishers are located. Never assume 'next week' is acceptable.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "ask_now": {
+                    "text": "The manager shows you the two nearest fire exits, the assembly point in the car park, and the break-glass call point by the kitchen door. It takes 5 minutes. You now feel confident you could evacuate safely.",
+                    "options": [
+                      { "label": "Was this the right approach?", "nextNodeId": "ask_confirm" }
+                    ]
+                  },
+                  "ask_confirm": {
+                    "text": "Correct. While a full fire safety induction should be more detailed, getting the critical information immediately is the right balance. You can cooperate with more thorough training later in the week, but you must know escape routes from day one.",
+                    "options": []
+                  },
+                  "refuse": {
+                    "text": "While your concern is valid, refusing to work entirely is disproportionate. The law requires the employer to provide induction training, but the practical approach is to request the essential information now (exits, alarm, assembly point) and then follow up with full training as soon as possible.",
+                    "options": [
+                      { "label": "What is the better approach?", "nextNodeId": "refuse_redirect" }
+                    ]
+                  },
+                  "refuse_redirect": {
+                    "text": "The best approach is to politely insist on the key safety briefing immediately -- it only takes a few minutes. You can then agree to a fuller training session within the week. This protects you without being unreasonable.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Expired Fire Risk Assessment",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a shift supervisor. While filing paperwork, you notice the fire risk assessment was last reviewed 3 years ago. Since then, the kitchen has been refurbished with new fryers and a gas-fired pizza oven has been installed. What do you do?",
+                    "options": [
+                      {
+                        "label": "It is not your job -- the owner handles fire safety.",
+                        "nextNodeId": "ignore"
+                      },
+                      {
+                        "label": "Make a note to mention it to the manager when you next see them.",
+                        "nextNodeId": "partial"
+                      },
+                      {
+                        "label": "Report it to the manager immediately and put it in writing.",
+                        "nextNodeId": "correct"
+                      }
+                    ]
+                  },
+                  "ignore": {
+                    "text": "Under the RRO 2005, employees have a duty to cooperate with fire safety. If you know the risk assessment is out of date and new hazards have been introduced, staying silent could put lives at risk and could also make you personally liable.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "ignore_redirect" }]
+                  },
+                  "ignore_redirect": {
+                    "text": "You should report the concern to your manager immediately. The fire risk assessment must be reviewed whenever there are significant changes to the premises, layout, or equipment. New fryers and a gas oven are significant changes.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "partial": {
+                    "text": "Mentioning it casually is better than nothing, but it is not sufficient. A 3-year gap with major equipment changes is a serious compliance issue. The risk needs to be escalated promptly and documented.",
+                    "options": [
+                      { "label": "How should I escalate it?", "nextNodeId": "partial_redirect" }
+                    ]
+                  },
+                  "partial_redirect": {
+                    "text": "Report it in writing -- an email or a written note to the manager and/or the Responsible Person. This creates a record that you raised the concern. If anything were to happen, that record protects you and demonstrates due diligence.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Excellent. Reporting it immediately and in writing is the correct approach. The fire risk assessment must be reviewed after significant changes to the premises. A new gas oven and fryers introduce new ignition sources, fuel sources, and potentially new gas supply risks. The Responsible Person needs to arrange a competent review as a matter of urgency.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "The Fire Triangle and Classes of Fire",
+      "description": "Understanding what fires need to start and grow, and the six classes of fire.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "The Fire Triangle",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Heat, Fuel, and Oxygen",
+              "content": "## The Fire Triangle: Heat + Fuel + Oxygen = Fire\n\nA fire needs all three elements of the **fire triangle** to start and continue burning. Remove any one element and the fire goes out. This principle underpins all fire prevention and firefighting.\n\n### Heat (Ignition Sources)\n- **Naked flames**: gas hobs, matches, lighters, candles.\n- **Hot surfaces**: hobs, deep-fat fryers, ovens, toasters, grill salamanders.\n- **Electrical faults**: overloaded sockets, frayed cables, arcing, short circuits.\n- **Friction**: machinery with worn bearings, rotating equipment.\n- **Chemical reactions**: self-heating materials, oxidising agents.\n- **Sunlight**: concentrated through glass onto combustible materials.\n\n### Fuel (Combustible Materials)\n- **Solids**: paper, cardboard, wood, textiles, uniforms, menus, furniture.\n- **Liquids**: cooking oil, grease, cleaning solvents, spirits and alcohol, aerosol cans.\n- **Gases**: natural gas (methane), LPG (propane/butane), hydrogen.\n- **Grease deposits**: inside extraction ductwork, behind equipment, on walls.\n\n### Oxygen\n- **Ambient air** contains approximately 21% oxygen -- enough to sustain most fires.\n- **Ventilation systems**: extraction fans, open windows, and doors increase oxygen supply.\n- **Oxidising chemicals**: some cleaning products and chemicals release oxygen when heated.",
+              "keyTakeaway": "Remove heat, fuel, or oxygen and the fire cannot survive. Every fire prevention measure targets at least one of these three elements."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "How Fires Spread",
+              "content": "## Four Methods of Fire Spread\n\nUnderstanding how fire spreads helps you understand why buildings are designed with fire-resistant barriers, why fire doors matter, and why early detection is critical.\n\n### Conduction\nHeat travels through **solid materials**. A metal pipe or steel beam can conduct heat through a wall, igniting materials on the other side. In a kitchen, heat from a hob can travel through a metal worktop and ignite items stored below.\n\n### Convection\nHot gases **rise** and collect at ceiling level, spreading fire upward through stairwells, lift shafts, ceiling voids, and extraction ducts. Convection is the **most dangerous** method of spread in buildings because hot gases travel fast and can ignite materials far from the original fire.\n\n### Radiation\nHeat **radiates** outward from a fire in all directions, like heat from a radiator. Nearby combustible materials can be heated to their ignition point without any direct contact. Radiated heat can ignite materials several metres away from a large fire.\n\n### Direct Flame Contact\nFlames physically touch other combustible materials and ignite them. This is the simplest form of spread -- for example, a tea towel draped over a gas ring.\n\n### Speed of Fire Growth\nA fire can **double in size every 30 to 60 seconds**. A small waste-bin fire can engulf a room in under 3 minutes. A room at full involvement can reach temperatures of **1,000 degrees C** at ceiling level. Early detection and rapid response save lives.",
+              "keyTakeaway": "Convection is the most dangerous method of fire spread in buildings -- hot gases rise fast and can spread fire through ceiling voids and stairwells."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "The Six Classes of Fire",
+              "content": "## Know Your Fire Classes\n\nFires are classified by the type of fuel involved. Choosing the wrong extinguisher for the class of fire can be ineffective or even **dangerous** (e.g., water on a fat fire).\n\n### Class A -- Solids\nPaper, wood, textiles, cardboard, plastics. These are the most common fires and are found in every workplace.\n\n### Class B -- Flammable Liquids\nPetrol, diesel, solvents, paints, spirits, and alcohol (but **not** cooking oils). These fires spread rapidly because the liquid can flow.\n\n### Class C -- Flammable Gases\nNatural gas (methane), LPG (propane, butane), hydrogen, acetylene. Gas fires should ideally only be tackled by shutting off the gas supply.\n\n### Class D -- Metals\nMagnesium, aluminium powder, sodium, potassium. Rare in hospitality but found in some industrial kitchens. Specialist dry powder extinguishers are needed.\n\n### Electrical Fires\nFires involving live electrical equipment. Not given a class letter in the UK (sometimes referred to informally as 'Class E'). The priority is to isolate the electrical supply, then treat as the underlying class.\n\n### Class F -- Cooking Oils and Fats\nDeep-fat fryers, woks, frying pans with oil. These fires burn at extremely high temperatures (over 340 degrees C) and require a **wet chemical** extinguisher. **Never use water** -- it causes a violent steam explosion.",
+              "keyTakeaway": "Class F (cooking oil and fat fires) is the most common class in commercial kitchens -- only wet chemical extinguishers or fire blankets should be used."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Storeroom Hazard",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You enter the dry storeroom and notice the following: cardboard boxes are stacked against a wall-mounted convection heater, a multi-plug extension lead has 6 appliances plugged into it, and cleaning chemical aerosols are stored on the shelf above the heater. What is your priority?",
+                    "options": [
+                      {
+                        "label": "Move the cardboard boxes away from the heater first.",
+                        "nextNodeId": "boxes_first"
+                      },
+                      {
+                        "label": "Move the aerosol cans away from the heater first -- they could explode.",
+                        "nextNodeId": "aerosols_first"
+                      },
+                      {
+                        "label": "Unplug the overloaded extension lead first -- electrical faults cause the most fires.",
+                        "nextNodeId": "electrical_first"
+                      }
+                    ]
+                  },
+                  "boxes_first": {
+                    "text": "Moving the boxes is important -- they are fuel near an ignition source. However, the aerosol cans pose a more immediate and severe danger. Pressurised cans above a heat source can explode violently, spreading fire and causing serious injury.",
+                    "options": [
+                      { "label": "What should I prioritise?", "nextNodeId": "boxes_redirect" }
+                    ]
+                  },
+                  "boxes_redirect": {
+                    "text": "The aerosol cans should be moved first because of the explosion risk. Then address the overloaded extension lead and the cardboard boxes. In reality, all three hazards need to be dealt with and reported -- but if you must triage, the explosion risk comes first.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "aerosols_first": {
+                    "text": "Correct. Pressurised aerosol cans stored above a heat source pose the most immediate danger -- they can explode violently, turning into projectiles and spreading burning contents. After removing the aerosols, you should also unplug the overloaded extension lead and move the cardboard away from the heater.",
+                    "options": [
+                      { "label": "What should I do next?", "nextNodeId": "aerosols_next" }
+                    ]
+                  },
+                  "aerosols_next": {
+                    "text": "After removing the immediate hazards, report all three issues to your manager: the aerosol storage location, the overloaded socket, and the combustible materials near the heater. Each of these is a fire hazard that should be recorded on the fire risk assessment. Good housekeeping prevents fires.",
+                    "options": []
+                  },
+                  "electrical_first": {
+                    "text": "Overloaded sockets are indeed a significant fire hazard, and electrical faults are one of the leading causes of workplace fires. However, the aerosol cans above the heater pose a more immediate danger -- pressurised containers near heat can explode without warning.",
+                    "options": [
+                      {
+                        "label": "What should I have prioritised?",
+                        "nextNodeId": "electrical_redirect"
+                      }
+                    ]
+                  },
+                  "electrical_redirect": {
+                    "text": "Move the aerosol cans first (explosion risk), then deal with the overloaded extension lead and the cardboard boxes. All three hazards must be reported. In a fire risk assessment, this storeroom would be flagged as having multiple hazards requiring urgent action.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Gas Smell in the Kitchen",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During the morning prep shift, you notice a faint smell of gas near the six-burner range. The kitchen is busy with three other chefs working. What do you do?",
+                    "options": [
+                      {
+                        "label": "Open a window to ventilate and carry on -- it is probably just a pilot light.",
+                        "nextNodeId": "ignore"
+                      },
+                      {
+                        "label": "Turn off the gas supply at the isolation valve, do not operate any switches, ventilate, and report it.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Use your phone torch to look for the gas leak behind the range.",
+                        "nextNodeId": "phone"
+                      }
+                    ]
+                  },
+                  "ignore": {
+                    "text": "A gas smell should never be ignored. Even a small leak can build up to an explosive concentration. Natural gas (methane) is explosive when it reaches 5-15% concentration in air. Continuing to work with open flames near a gas leak is extremely dangerous.",
+                    "options": [
+                      { "label": "What is the correct procedure?", "nextNodeId": "ignore_redirect" }
+                    ]
+                  },
+                  "ignore_redirect": {
+                    "text": "The correct procedure is: (1) Do NOT operate any electrical switches, lights, or equipment -- a spark could ignite the gas. (2) Turn off the gas supply at the emergency isolation valve. (3) Open windows and doors to ventilate. (4) Move people away from the area. (5) Report to the manager immediately. (6) Call the Gas Emergency Service on 0800 111 999 if the source cannot be identified.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Excellent response. You correctly identified the three critical actions: shut off the gas, avoid creating sparks (do not operate switches), and ventilate the area. Gas leaks are a Class C fire hazard and can cause explosions.",
+                    "options": [{ "label": "What happens next?", "nextNodeId": "correct_next" }]
+                  },
+                  "correct_next": {
+                    "text": "The manager should call a Gas Safe registered engineer to inspect the range before it is used again. The incident should be recorded on the fire risk assessment. If the leak cannot be identified and stopped, call the Gas Emergency Service on 0800 111 999. Never attempt to repair gas equipment yourself.",
+                    "options": []
+                  },
+                  "phone": {
+                    "text": "DANGEROUS. Using your phone near a gas leak risks creating a spark. Mobile phones, while low-risk, should not be used in an area where gas has accumulated. More importantly, looking behind the range with any light source near a potential leak is reckless. Phones and electrical devices can create ignition sources.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "phone_redirect" }
+                    ]
+                  },
+                  "phone_redirect": {
+                    "text": "Do not use any electrical device near a suspected gas leak. Turn off the gas at the isolation valve, ventilate the area by opening windows and doors, move everyone away, and report to the manager. Never try to find a gas leak yourself -- leave it to a Gas Safe registered engineer.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Fire Prevention",
+      "description": "Practical measures to prevent fires starting in the workplace and kitchen.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "General Workplace Prevention",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Reducing the Risk of Fire",
+              "content": "## Prevention Is Better Than Cure\n\nMost workplace fires are **preventable**. Prevention focuses on separating the three elements of the fire triangle: keeping ignition sources away from fuel, and controlling oxygen supply.\n\n### Electrical Safety\n- Do **not** overload sockets or use multi-plug adapters (use fused extension leads only where necessary).\n- Report frayed cables, damaged plugs, scorch marks, and faulty equipment immediately.\n- Ensure **PAT testing** (Portable Appliance Testing) is carried out on schedule.\n- Switch off non-essential equipment at the end of each shift.\n- Never run cables under carpets or through doorways where they can be damaged.\n\n### Housekeeping -- The Most Effective Prevention\n- Keep corridors, stairwells, and fire exits **clear at all times**. Obstructed escape routes kill.\n- Store waste and recycling **away from buildings** in secure, lidded containers.\n- Clean grease from extraction hoods, filters, and ductwork on schedule.\n- Keep fire doors closed -- **never** propped open unless fitted with automatic hold-open devices linked to the fire alarm.\n- Dispose of oily rags in metal, lidded bins -- they can self-ignite.\n\n### Smoking\n- Smoking only in **designated areas** away from buildings and combustible materials.\n- Use proper metal ashtrays or sand-filled receptacles.\n- Never discard cigarettes into bins, flower beds, or near gas cylinders.",
+              "keyTakeaway": "Good housekeeping is the single most effective fire prevention measure -- it removes fuel and keeps escape routes clear."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Arson Prevention",
+              "content": "## Deliberate Fire-Setting\n\nArson is the **single largest cause** of fires in commercial premises in the UK. It accounts for around 45% of all non-residential fires.\n\n### Why hospitality premises are targeted\n- Bins and waste stored outside are easy to ignite.\n- Deliveries left unattended at rear entrances provide fuel.\n- Late-night premises may have intoxicated individuals nearby.\n- Revenge attacks by disgruntled former employees or customers.\n\n### Prevention measures\n- **Lock** all external doors and windows when premises are unoccupied.\n- **Secure bins** in a locked compound or fenced area, away from buildings.\n- **Remove** combustible materials (pallets, cardboard, packaging) from external areas before closing.\n- **Install CCTV** covering entrances, rear areas, and waste storage.\n- **Fit letterbox guards** to prevent flammable materials being pushed through.\n- Report any **suspicious behaviour** to the police.\n- Consider **security lighting** for car parks and rear entrances.\n\n### Insurance implications\nMany commercial fire insurance policies require specific arson prevention measures. Failure to implement them could invalidate your cover.",
+              "keyTakeaway": "Arson is the leading cause of commercial fires in the UK -- securing waste, locking premises, and CCTV are essential defences."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Kitchen-Specific Fire Prevention",
+              "content": "## Why Kitchens Are High Risk\n\nCommercial kitchens combine **multiple ignition sources** (gas hobs, fryers, grills, ovens) with **abundant fuel** (cooking oil, grease, paper, textiles) and **enhanced oxygen supply** (extraction systems pulling air through the kitchen). They are the highest-risk area in any hospitality business.\n\n### Deep-Fat Fryer Safety\n- **Never overfill** -- oil expands when heated and can overflow onto flames.\n- **Thermostat control** -- modern fryers have thermostatic cut-outs; never override them.\n- **Temperature** -- cooking oil auto-ignites at approximately 340 degrees C. Keep oil well below this temperature.\n- **Clean regularly** -- carbonised food debris lowers the flash point of oil.\n- **Change oil** on schedule -- degraded oil has a lower flash point.\n- **Never move a pan of hot oil** -- spillage onto skin or flames is catastrophic.\n\n### Extraction and Ventilation\n- Grease builds up in extraction canopy hoods, filters, and ductwork.\n- **Clean filters** weekly (or more frequently in high-volume kitchens).\n- **Deep clean ductwork** at least every 6-12 months (as specified by your insurer).\n- Grease-laden ductwork is a **fire highway** -- once ignited, fire travels rapidly through the duct system.\n\n### Other Kitchen Controls\n- Keep a **fire blanket** within 2 metres of cooking appliances.\n- Ensure a **wet chemical extinguisher** (yellow band) is sited in the kitchen.\n- **Never leave cooking unattended** -- especially frying and grilling.\n- **Gas safety** -- check connections, report any smell of gas, know the location of the gas isolation valve.\n- **Empty bins regularly** -- overflowing waste is fuel waiting for a spark.\n- Keep **tea towels, oven gloves, and cloths** away from hobs and open flames.",
+              "keyTakeaway": "Deep-fat fryers and grease-laden extraction systems are the two biggest fire risks in a commercial kitchen."
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Propped Fire Door",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The kitchen is extremely hot during a busy Saturday night service. A colleague has wedged the fire door open with a wooden doorstop to let cooler air in from the corridor. The head chef says it is fine because 'we always do it in summer'. What do you do?",
+                    "options": [
+                      {
+                        "label": "Leave it -- the head chef has more experience and it is very hot.",
+                        "nextNodeId": "leave_it"
+                      },
+                      {
+                        "label": "Close the fire door and suggest using portable fans or the air conditioning instead.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Remove the doorstop but leave the door ajar so it is not fully propped open.",
+                        "nextNodeId": "ajar"
+                      }
+                    ]
+                  },
+                  "leave_it": {
+                    "text": "The head chef's experience does not override fire safety law. Fire doors are required to be kept closed under the RRO 2005. In a real fire, that propped-open door would allow flames and toxic smoke to spread from the kitchen into the corridor -- the very route customers and staff would use to escape.",
+                    "options": [
+                      { "label": "What could happen?", "nextNodeId": "leave_consequence" }
+                    ]
+                  },
+                  "leave_consequence": {
+                    "text": "In 2023, a UK restaurant was fined over 40,000 GBP after an EHO found fire doors routinely propped open. In a worst-case scenario, a fire that should have been contained in the kitchen spreads through the propped door, filling the dining room with toxic smoke. Smoke inhalation is the leading cause of fire deaths.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. Fire doors must remain closed unless they are fitted with automatic hold-open devices connected to the fire alarm system (which release the door when the alarm activates). Using portable fans or air conditioning is the right alternative. If the kitchen is too hot to work in safely, that is a separate health and safety issue that should be raised with management.",
+                    "options": []
+                  },
+                  "ajar": {
+                    "text": "A fire door that is ajar is not providing fire protection. Fire doors are designed to hold back fire and smoke for a rated period (typically 30 or 60 minutes) -- but only when they are fully closed and latched. An ajar door offers almost no resistance to smoke spread.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "ajar_redirect" }
+                    ]
+                  },
+                  "ajar_redirect": {
+                    "text": "Close the fire door fully. If the kitchen needs ventilation, use the extraction system at a higher setting, portable fans, or air conditioning. The door must be closed and latched to provide its rated fire and smoke resistance.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: End-of-Night Closing",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are closing the restaurant at midnight. The kitchen is clean but you notice: the deep-fat fryer is still switched on (temperature showing 160 degrees C), several cardboard boxes from a late delivery are stacked by the back door, and the rear fire exit is padlocked shut. What do you address first?",
+                    "options": [
+                      {
+                        "label": "Turn off the fryer -- it should not be left on overnight.",
+                        "nextNodeId": "fryer"
+                      },
+                      {
+                        "label": "Unlock the rear fire exit -- it is illegal to lock fire exits while people are in the building.",
+                        "nextNodeId": "exit"
+                      },
+                      {
+                        "label": "Move the cardboard boxes -- they are a fire hazard near the building.",
+                        "nextNodeId": "boxes"
+                      }
+                    ]
+                  },
+                  "fryer": {
+                    "text": "Turning off the fryer is important -- unattended fryers are a significant fire risk. However, the padlocked fire exit is the most critical issue. While you are still in the building, that locked exit could cost you your life if a fire starts. Always address means of escape first.",
+                    "options": [
+                      { "label": "What should I prioritise?", "nextNodeId": "fryer_redirect" }
+                    ]
+                  },
+                  "fryer_redirect": {
+                    "text": "Unlock the fire exit first (your immediate safety), then turn off the fryer, then move the cardboard. A padlocked fire exit is one of the most serious offences under the RRO 2005 -- it has directly caused deaths in workplace fires.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "exit": {
+                    "text": "Correct. A padlocked fire exit is one of the most dangerous situations you can encounter. Under the RRO 2005, fire exits must be available for use at all times when people are in the building. Padlocking a fire exit is a criminal offence that has directly caused fire deaths in the UK. After unlocking the exit, turn off the fryer and move the cardboard.",
+                    "options": [{ "label": "Should I report this?", "nextNodeId": "exit_report" }]
+                  },
+                  "exit_report": {
+                    "text": "Absolutely. Report the padlocked exit to the manager in writing. This is a serious offence. If management routinely padlocks fire exits, you should consider reporting it to the local fire and rescue service. Padlocked exits have been a factor in multiple fatal fires in the UK.",
+                    "options": []
+                  },
+                  "boxes": {
+                    "text": "Moving the cardboard is good practice -- combustible materials near the building increase arson risk and provide fuel. However, the padlocked fire exit is the most critical issue because it directly threatens your life while you are still in the building.",
+                    "options": [
+                      { "label": "What should be my priority?", "nextNodeId": "boxes_redirect" }
+                    ]
+                  },
+                  "boxes_redirect": {
+                    "text": "Always address means of escape first. Unlock the fire exit (your immediate safety), then turn off the fryer (unattended ignition source), then move the cardboard (fuel source). Report the padlocked exit as a serious safety concern.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Fire Detection, Alarms, and Fire Doors",
+      "description": "Fire detection systems, alarm types, and the critical role of fire doors and compartmentation.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Detection and Alarm Systems",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Types of Fire Detector",
+              "content": "## Automatic Detection\n\nFire detection systems provide early warning, giving occupants time to evacuate and the fire service time to respond. Different types of detector are suited to different environments.\n\n### Smoke Detectors\n- **Optical (photoelectric)** -- Detect visible smoke particles using a light beam and sensor. Best for **slow-burning, smouldering fires** (e.g., overheating wiring, cigarettes on upholstery). Most common in corridors, bedrooms, and offices.\n- **Ionisation** -- Detect invisible combustion products from fast-burning, flaming fires. Very sensitive but prone to false alarms from cooking fumes and steam. Rarely used in kitchens.\n\n### Heat Detectors\n- **Fixed temperature** -- Activate when the air temperature reaches a set threshold (commonly 57 degrees C or 90 degrees C).\n- **Rate-of-rise** -- Activate when the temperature rises rapidly (e.g., more than 8 degrees C per minute), even if the fixed threshold has not been reached.\n- **Best for kitchens** -- Heat detectors are used in cooking areas because they are not triggered by normal cooking fumes and steam.\n\n### Multi-Sensor Detectors\nCombine optical smoke and heat detection in a single unit. They use algorithms to distinguish between real fires and nuisance sources (cooking, steam). Increasingly used in modern hotel rooms and restaurants.\n\n### Flame Detectors\nDetect the ultraviolet or infrared radiation emitted by flames. Used in high-risk industrial areas. Less common in hospitality.",
+              "keyTakeaway": "Heat detectors are used in kitchens because smoke detectors would cause constant false alarms from cooking."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Manual Call Points and Alarm Systems",
+              "content": "## Raising the Alarm\n\n### Break Glass Call Points (Manual Call Points)\n- Located at **every floor exit** and on **escape routes**, typically near final exit doors.\n- Press the glass firmly with your thumb -- modern units use a flexible plastic element, not actual glass.\n- Activates the alarm throughout the building.\n- Should be tested **weekly** (a different call point each week in rotation).\n\n### Types of Alarm System\n- **Conventional** -- Divides the building into zones. The alarm panel shows which zone has been activated but not which specific detector.\n- **Addressable** -- Each detector has a unique address. The panel shows the exact location of the activation. More common in larger or newer buildings.\n- **Wireless** -- Addressable detectors linked by radio signal. Used in listed buildings or where cabling is impractical.\n\n### Alarm Sounders\n- **Bells** -- Traditional, still used in many premises.\n- **Sirens/horns** -- Louder, used in noisy environments.\n- **Voice evacuation systems** -- Pre-recorded or live messages giving clear instructions. Used in large venues, hotels, and shopping centres. Reduces panic and guides evacuation.\n\n### Weekly Testing\nThe alarm system must be tested **weekly**, rotating through different call points. The test should be at a consistent day and time so staff recognise the test signal. Records of all tests must be kept in the fire log book.",
+              "keyTakeaway": "Break glass call points must be tested weekly on rotation, and all tests must be recorded in the fire log book."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Fire Doors and Compartmentation",
+              "content": "## The Unsung Heroes of Fire Safety\n\nFire doors and compartmentation are **passive fire protection** measures built into the structure of a building. They do not need to be activated -- they work automatically by containing fire and smoke within compartments.\n\n### What is Compartmentation?\nBuildings are divided into **fire compartments** -- sections separated by fire-resistant walls, floors, and doors. The purpose is to contain a fire within the compartment of origin, preventing it from spreading to other parts of the building. This buys time for evacuation and firefighting.\n\n### Fire Doors\n- Rated for **30 minutes (FD30)** or **60 minutes (FD60)** of fire resistance.\n- Must be fitted with **intumescent strips** -- these expand in heat to seal the gap between the door and frame, blocking flames.\n- Must have **cold smoke seals** -- flexible strips that block the passage of cold smoke (which spreads ahead of the fire).\n- Must be fitted with a **self-closing device** -- the door must close fully into the frame under its own power.\n- Must **never** be propped open unless fitted with an **automatic hold-open device** connected to the fire alarm. When the alarm sounds, the device releases the door and it closes automatically.\n\n### Your Responsibilities\n- **Never** prop fire doors open with wedges, bins, or doorstops.\n- Report any fire door that does not close properly, has damaged seals, or has gaps around the frame.\n- Do not hang items over fire doors or obstruct their swing.\n- Check that self-closing mechanisms are working -- the door should close fully from any angle.",
+              "keyTakeaway": "A single propped-open fire door can allow fire and deadly smoke to spread throughout an entire building in minutes."
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Faulty Alarm",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The fire alarm sounds during busy lunch service. Last week, there were three false alarms caused by steam from the dishwasher. Several staff members say 'ignore it, it's just another false alarm' and continue working. What do you do?",
+                    "options": [
+                      {
+                        "label": "Agree -- it is almost certainly another false alarm and you are in the middle of service.",
+                        "nextNodeId": "ignore"
+                      },
+                      {
+                        "label": "Treat it as a real alarm -- stop service, begin evacuation procedures.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Send one person to check the alarm panel while everyone else continues working.",
+                        "nextNodeId": "partial"
+                      }
+                    ]
+                  },
+                  "ignore": {
+                    "text": "This is called 'alarm fatigue' and it is extremely dangerous. When people become desensitised to alarms because of frequent false activations, they delay evacuation during a real fire. In the 1981 Stardust nightclub fire in Dublin, 48 people died partly because staff initially dismissed the alarm. Every alarm must be treated as real.",
+                    "options": [
+                      { "label": "What is the correct response?", "nextNodeId": "ignore_redirect" }
+                    ]
+                  },
+                  "ignore_redirect": {
+                    "text": "Every alarm activation must be treated as a real fire until confirmed otherwise. Begin evacuation, then investigate. The underlying problem -- repeated false alarms -- must be reported so the detection system can be reviewed. A detector relocated or replaced with a heat detector could solve the dishwasher steam issue.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. Every alarm must be treated as real. The evacuation procedure should be followed: stop service, guide customers to exits, close doors behind you, proceed to the assembly point, and await the all-clear from the fire warden or fire service. The repeated false alarms should be reported to management so the detection system can be reviewed and corrected.",
+                    "options": [
+                      {
+                        "label": "How should the false alarm problem be fixed?",
+                        "nextNodeId": "correct_fix"
+                      }
+                    ]
+                  },
+                  "correct_fix": {
+                    "text": "The detector near the dishwasher may need to be changed from a smoke detector to a heat detector, or a multi-sensor detector that can distinguish steam from smoke. Alternatively, the dishwasher extraction may need improving. Frequent false alarms undermine the entire fire safety system and must be resolved urgently.",
+                    "options": []
+                  },
+                  "partial": {
+                    "text": "Sending someone to check the panel is a common response, but it is not correct procedure. While one person investigates, everyone else is still in the building, not evacuating. If it is a real fire, the seconds spent waiting for confirmation could be fatal. The investigation happens after evacuation, not instead of it.",
+                    "options": [
+                      {
+                        "label": "What is the correct procedure?",
+                        "nextNodeId": "partial_redirect"
+                      }
+                    ]
+                  },
+                  "partial_redirect": {
+                    "text": "Evacuate first, investigate second. The fire warden or designated person can check the alarm panel and the affected zone, but only after the building is being evacuated. In a well-managed premises with trained fire wardens, evacuation and investigation can happen simultaneously -- but no one should remain in the building on the assumption that it is a false alarm.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Damaged Fire Door",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "While walking through the corridor to the staff changing room, you notice that the fire door between the kitchen corridor and the dining area has a large gap at the bottom (about 10mm), the intumescent strip is peeling away on one side, and the self-closer does not pull the door fully shut -- it stops about 5cm from the frame. What do you do?",
+                    "options": [
+                      {
+                        "label": "Manually push it shut and carry on -- it is close enough to closed.",
+                        "nextNodeId": "manual"
+                      },
+                      {
+                        "label": "Report it immediately to your manager as a defective fire door requiring urgent repair.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Stick some tape over the gap as a temporary fix and report it later.",
+                        "nextNodeId": "tape"
+                      }
+                    ]
+                  },
+                  "manual": {
+                    "text": "Pushing it shut once does not fix the problem. The self-closer mechanism is broken, so the door will fail to close after every use. In a fire, no one will be there to push it shut. A fire door that does not self-close is not providing fire protection.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "manual_redirect" }]
+                  },
+                  "manual_redirect": {
+                    "text": "Report the defect immediately. The self-closer, the intumescent strip, and the gap all need professional repair. Until repaired, this door is not providing its rated fire resistance. In a fire, smoke and flames could pass through the gaps within seconds.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. This fire door has three defects: a broken self-closer, a damaged intumescent strip, and an excessive gap. Each one individually would compromise its fire resistance. Together, this door is essentially failing. Report it immediately, in writing, and note the location. The Responsible Person must arrange repair by a competent fire door installer.",
+                    "options": [
+                      { "label": "Why are these defects so serious?", "nextNodeId": "correct_why" }
+                    ]
+                  },
+                  "correct_why": {
+                    "text": "The intumescent strip expands in heat to seal the gap between door and frame -- without it, flames pass through. The cold smoke seal blocks smoke -- the gap means deadly smoke spreads freely. The self-closer ensures the door is always shut -- without it, the door stays open after anyone walks through. Fire can breach a defective fire door in under 2 minutes instead of the rated 30 or 60 minutes.",
+                    "options": []
+                  },
+                  "tape": {
+                    "text": "Tape is not a fire-rated material and will provide zero protection in a fire. It will melt or burn away in seconds. Temporary fixes to fire doors do not exist -- they either work correctly or they do not. The door needs professional repair.",
+                    "options": [
+                      { "label": "What is the correct action?", "nextNodeId": "tape_redirect" }
+                    ]
+                  },
+                  "tape_redirect": {
+                    "text": "Report the defect immediately to your manager in writing. Fire doors must be maintained by competent persons using the correct fire-rated components. There is no acceptable temporary fix for a defective fire door.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Evacuation Procedures and Fire Wardens",
+      "description": "Safe evacuation, assembly points, PEEPs, and the role of fire wardens.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Evacuation Procedures",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "When the Alarm Sounds",
+              "content": "## Immediate Actions\n\nWhen the fire alarm sounds, every second counts. Smoke can fill a corridor in under 60 seconds, reducing visibility to zero and making the air toxic.\n\n### The Evacuation Procedure\n1. **Stop** what you are doing immediately. Turn off gas and electrical appliances if it is safe and quick to do so.\n2. **Leave** by the **nearest safe exit**. If your primary route is blocked by smoke or fire, use your **alternative route**.\n3. **Close doors** behind you as you leave -- this slows fire and smoke spread.\n4. **Do not stop** to collect personal belongings, cash, or stock.\n5. **Do not use lifts** -- use stairs only. Lifts can fail, open onto the fire floor, or fill with smoke.\n6. **Go directly** to the **assembly point** and remain there.\n7. **Report** to the fire warden or person taking the roll call.\n8. **Do not re-enter** the building until the fire service or Responsible Person confirms it is safe.\n\n### Key Rules\n- **Know your nearest TWO escape routes** -- your primary route may be blocked.\n- **Know the location of the assembly point** -- it should be far enough from the building to be safe, but close enough to be practical.\n- In hospitality, **guide customers** to exits calmly and clearly. Most customers will not know the layout.\n- If you encounter smoke, **stay low** -- cleaner air is near the floor.",
+              "keyTakeaway": "Know your nearest two escape routes and the assembly point location before an emergency happens -- in a real fire, there is no time to search."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Fire Wardens and Marshals",
+              "content": "## The Fire Warden Role\n\nFire wardens (also called fire marshals) are **appointed employees** who have additional fire safety responsibilities. Under the RRO 2005, the Responsible Person must ensure there are enough trained wardens to manage an evacuation.\n\n### Fire Warden Duties\n- **Before a fire**: Know the fire emergency plan, know their designated zone, check escape routes are clear, check fire doors are working, report defects.\n- **During an alarm**: Put on high-visibility vest (if provided), sweep their zone to ensure everyone has left, check toilets, storerooms, and other areas where people may be trapped or unaware, close doors and windows where safe to do so, assist anyone who needs help evacuating.\n- **At the assembly point**: Report zone status to the senior fire warden or incident controller (e.g., 'Zone 2 clear' or 'Zone 2 not cleared -- could not access the store room').\n- **After the all-clear**: Assist with re-entry procedures and complete any incident reports.\n\n### How Many Fire Wardens?\nThere is no fixed legal number, but as a guide: **one warden per floor** as a minimum, with additional wardens for large or complex areas. There must be enough wardens to cover all shifts, including nights, weekends, and holidays.\n\n### Training\nFire wardens must receive **additional training** beyond standard employee fire safety training. This should include practical evacuation drills, use of extinguishers, and communication procedures.",
+              "keyTakeaway": "Fire wardens must sweep their zone to confirm it is clear -- they are the last people to leave during an evacuation."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "PEEPs, Fire Drills, and Fire Action Notices",
+              "content": "## Personal Emergency Evacuation Plans (PEEPs)\n\nA PEEP is a personalised plan for anyone who may have difficulty evacuating without assistance. This includes people with:\n- **Mobility impairments** -- wheelchair users, people with crutches or walking aids.\n- **Visual impairments** -- may not see fire exit signs or smoke.\n- **Hearing impairments** -- may not hear the alarm (vibrating pagers or flashing beacons may be needed).\n- **Cognitive impairments** -- may not understand or react to the alarm.\n- **Temporary conditions** -- broken legs, pregnancy, post-surgery recovery.\n\nThe PEEP should detail the assistance needed, the designated helper(s), the escape route, and any equipment required (e.g., evacuation chair).\n\n## Fire Drills\n- Must be carried out at least **every 6 months** (best practice is quarterly).\n- Should include **all staff** and be conducted at different times and on different days.\n- Evacuation time should be **recorded and reviewed** -- the target is typically under 3 minutes for the building to be cleared.\n- **Debrief** after every drill: what went well, what needs improvement?\n- Records of all drills must be kept in the **fire log book**.\n\n## Fire Action Notices\nFire action notices must be displayed **prominently** at every call point, in every room, and on escape routes. They should state:\n- What to do if you discover a fire.\n- What to do when you hear the alarm.\n- The location of the assembly point.\n- A reminder not to use lifts and not to re-enter the building.",
+              "keyTakeaway": "Fire drills must happen at least every 6 months, and PEEPs must be in place for anyone who needs assistance evacuating."
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Evacuation During Service",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The fire alarm sounds during a busy Friday evening with 80 covers in the dining room. Customers look confused. Several start reaching for their coats and bags. One customer says she needs to settle her bill first. You are the designated fire warden for the dining room. What do you do?",
+                    "options": [
+                      {
+                        "label": "Ask everyone to remain seated while you check if it is a false alarm.",
+                        "nextNodeId": "wait"
+                      },
+                      {
+                        "label": "Calmly but firmly announce 'Please leave now by the nearest exit' and begin guiding people out, leaving belongings behind.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Let the customer pay her bill quickly -- it will only take a moment -- then start the evacuation.",
+                        "nextNodeId": "bill"
+                      }
+                    ]
+                  },
+                  "wait": {
+                    "text": "Keeping 80 customers seated during an alarm is dangerous. If it is a real fire, you have potentially delayed the evacuation of the entire dining room. Remember: every alarm is treated as real until confirmed otherwise. Your job as fire warden is to evacuate, not investigate.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "wait_redirect" }
+                    ]
+                  },
+                  "wait_redirect": {
+                    "text": "Begin evacuation immediately. Stand at a visible point, use a clear and calm voice, and direct customers to the nearest exits. Guide them to the assembly point. Sweep the dining room, check toilets, and report to the senior warden.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. As fire warden, your priority is to evacuate the dining room quickly and calmly. Stand where you can be seen and heard. Use clear, direct language: 'Please leave the building now using this exit.' Guide people out and prevent them from going back for belongings. After everyone is out, sweep the room and toilets, then report to the assembly point.",
+                    "options": [
+                      {
+                        "label": "What about the customer who wants to pay?",
+                        "nextNodeId": "correct_bill"
+                      }
+                    ]
+                  },
+                  "correct_bill": {
+                    "text": "The bill can wait. Explain firmly but politely: 'We need to evacuate for your safety. Please leave now and we will sort the bill afterwards.' No payment is worth risking someone's life. If a customer refuses to leave, note their location and report it to the fire service -- do not physically force them, but do not let their refusal delay the evacuation of others.",
+                    "options": []
+                  },
+                  "bill": {
+                    "text": "Processing a payment during an alarm activation is unacceptable. Even if it 'only takes a moment', you are delaying your own evacuation and the evacuation of anyone waiting for you. In a real fire, that moment could be the difference between escape and being trapped by smoke.",
+                    "options": [
+                      { "label": "What is the correct priority?", "nextNodeId": "bill_redirect" }
+                    ]
+                  },
+                  "bill_redirect": {
+                    "text": "Evacuation is always the priority. No transaction, no belonging, no task is worth a life. Begin evacuation immediately when the alarm sounds. Financial matters are resolved after the all-clear.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Wheelchair User",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The alarm sounds. You are sweeping the first floor office area and find a wheelchair user who says there is no lift access during a fire and she cannot use the stairs. Her PEEP says she should wait in the designated refuge area on the landing, but you cannot find the refuge sign. What do you do?",
+                    "options": [
+                      {
+                        "label": "Try to carry her down the stairs in her wheelchair.",
+                        "nextNodeId": "carry"
+                      },
+                      {
+                        "label": "Take her to the fire-protected stairwell landing, inform the fire warden and the fire service of her location, and stay with her if safe to do so.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Leave her in the office and tell the fire service where she is when you get outside.",
+                        "nextNodeId": "leave"
+                      }
+                    ]
+                  },
+                  "carry": {
+                    "text": "Carrying a wheelchair user down stairs without proper training and equipment is extremely dangerous for both of you. The wheelchair could tip, you could fall, or you could drop the person. Evacuation chairs exist for this purpose and require trained operators. An improvised carry on a staircase is a last resort only.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "carry_redirect" }]
+                  },
+                  "carry_redirect": {
+                    "text": "Move her to the fire-protected stairwell landing (the refuge point). Fire-rated stairwells are designed to provide protection for a considerable period. Use the communication system (if available) to alert the fire service. If there is an evacuation chair and you are trained, you can use it. Otherwise, inform the fire service of her exact location -- they have the equipment and training for stairwell evacuations.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. Fire-protected stairwells and designated refuge areas are designed to provide a safe waiting point. The stairwell landing should offer fire resistance for at least 30 to 60 minutes. Your key actions are: (1) move her to the refuge point, (2) ensure the fire warden and fire service know her exact location, (3) stay with her if it is safe to do so, or designate someone to stay.",
+                    "options": [
+                      {
+                        "label": "What about the missing refuge sign?",
+                        "nextNodeId": "correct_sign"
+                      }
+                    ]
+                  },
+                  "correct_sign": {
+                    "text": "The missing refuge sign should be reported after the incident. Refuge points must be clearly signed so that people can find them in an emergency. However, the fire-protected stairwell landing is still the correct location even without the sign. After the incident, ensure the sign is replaced and the PEEP is reviewed to confirm it reflects the current building layout.",
+                    "options": []
+                  },
+                  "leave": {
+                    "text": "Leaving a vulnerable person alone in an office during a fire alarm is not acceptable if there is a safer option available. The office may not be fire-rated and could fill with smoke. Your duty is to move her to the nearest refuge point (the fire-protected stairwell landing) where she has greater protection.",
+                    "options": [
+                      { "label": "Where should she wait?", "nextNodeId": "leave_redirect" }
+                    ]
+                  },
+                  "leave_redirect": {
+                    "text": "Take her to the fire-protected stairwell landing -- this is the designated refuge point. It has fire-rated walls and doors, providing significantly more protection than an office. Inform the fire warden and fire service of her exact location.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Fire Extinguishers",
+      "description": "Types, colour codes, classes of fire, and the PASS technique.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Extinguisher Types and Colour Codes",
+          "slides": [
+            {
+              "id": "m6-s1",
+              "type": "text-graphic-split",
+              "title": "The UK Colour Code System",
+              "content": "## Know Your Extinguishers\n\nAll UK fire extinguishers have a **red body** (signal red, BS EN 3) with a **colour band** on the upper section indicating the extinguishing agent. Since 1997, the colour band system replaced the old system of fully-coloured extinguishers.\n\n### Water (Red band -- all red body, no contrasting band)\n- **Use on**: Class A fires (solids: paper, wood, textiles, cardboard).\n- **How it works**: Cools the burning material below its ignition temperature, removing heat from the fire triangle.\n- **Never use on**: Electrical fires (water conducts electricity -- risk of electrocution), Class B liquids (can spread the fire), Class F cooking oils (causes violent steam explosion), Class D metals.\n- **Range**: Approximately 3-4 metres.\n\n### Foam / AFFF (Cream band)\n- **Use on**: Class A (solids) and Class B (flammable liquids such as petrol, solvents, spirits).\n- **How it works**: Forms a film over the burning liquid, cutting off oxygen. Also cools the fire.\n- **Never use on**: Class F cooking oil/fat fires, Class D metals. Use with caution on electrical fires (some foam extinguishers are di-electrically tested for incidental electrical contact, but this is not standard).\n- **Range**: Approximately 3-4 metres.\n\n### CO2 / Carbon Dioxide (Black band)\n- **Use on**: Electrical fires and Class B flammable liquids.\n- **How it works**: Displaces oxygen around the fire and does not leave residue (ideal for electrical equipment, server rooms, kitchens with sensitive equipment).\n- **Caution**: CO2 does **not** cool effectively -- there is a significant **re-ignition risk**. The horn gets extremely cold during discharge -- **never hold the horn** (risk of cold burns). Ineffective outdoors in windy conditions.\n- **Never use on**: Class F cooking oil fires, Class A solids (does not cool), confined spaces (displaces breathable air).\n- **Range**: Approximately 1-2 metres.",
+              "keyTakeaway": "Every extinguisher is red with a colour band -- learn the bands and which classes of fire they cover."
+            },
+            {
+              "id": "m6-s2",
+              "type": "text-graphic-split",
+              "title": "Dry Powder, Wet Chemical, and Fire Blankets",
+              "content": "## Completing the Set\n\n### Dry Powder (Blue band)\n- **Use on**: Class A, B, and C (including gas fires) and electrical fires. The most versatile extinguisher.\n- **How it works**: Smothers the fire by interrupting the chemical chain reaction.\n- **Caution**: Creates a dense cloud that **severely reduces visibility** and can cause breathing difficulties. **Not recommended for enclosed spaces.** Does not cool -- re-ignition risk. Leaves a messy residue that can damage electronics.\n- **Best for**: Outdoor areas, vehicle fires, gas cylinder fires.\n- **Range**: Approximately 2-4 metres.\n\n### Wet Chemical (Yellow band)\n- **Use on**: **Class F** cooking oil and fat fires. Also effective on Class A solids.\n- **How it works**: Discharged as a fine mist, it reacts with the hot oil to form a **soap-like seal** (saponification) over the surface. This seals the oil, cuts off oxygen, and cools the oil below its auto-ignition temperature.\n- **The ONLY extinguisher** recommended for deep-fat fryer fires and commercial cooking oil fires.\n- **Application**: Apply gently in slow circular motions -- do not blast directly into the oil as this can splash burning fat.\n- **Range**: Approximately 1-2 metres.\n\n### Fire Blankets\n- Made of **fibreglass** or fire-resistant material.\n- Used to smother small fires (e.g., a pan fire on a hob) and to wrap around a person whose clothing is on fire.\n- Must be located **within 2 metres** of cooking appliances in commercial kitchens.\n- Single-use in most cases -- once used on a fire, replace immediately.\n- **Technique**: Pull the blanket from its case, hold it in front of you as a shield, place it gently over the fire (do not throw it), and leave it in place for at least 30 minutes to ensure the fire is fully extinguished.",
+              "keyTakeaway": "Wet chemical (yellow band) is the ONLY extinguisher for deep-fat fryer fires -- it creates a soap-like seal through saponification."
+            },
+            {
+              "id": "m6-s3",
+              "type": "text-graphic-split",
+              "title": "The PASS Technique and Safety Rules",
+              "content": "## How to Use an Extinguisher Safely\n\n### The PASS Technique\n- **P** -- **Pull** the safety pin (or remove the tamper tag and squeeze the release mechanism).\n- **A** -- **Aim** the nozzle or hose at the **base of the fire** (not at the flames -- the base is where the fuel is burning).\n- **S** -- **Squeeze** the operating handle to discharge the extinguishing agent.\n- **S** -- **Sweep** from side to side across the base of the fire, working from the near edge towards the far edge.\n\n### Before You Attempt to Fight a Fire -- The Safety Checklist\n1. **Has the alarm been raised?** Never fight a fire without first ensuring the alarm has been activated and the fire service called.\n2. **Is the fire small and contained?** Only attempt to fight fires that are no larger than a small waste bin. If it is bigger -- evacuate.\n3. **Do you have the correct extinguisher?** Using the wrong type can make things worse (e.g., water on electrical or fat fires).\n4. **Is your escape route clear behind you?** Always keep your back to the exit so you can retreat if the fire grows.\n5. **Are you trained and confident?** If you have any doubt, leave immediately.\n\n### The Golden Rule\n**If in doubt -- get out.** Your life is worth more than any property, stock, or equipment. A fire that takes hold can produce **temperatures of over 600 degrees C** and **toxic gases** (carbon monoxide, hydrogen cyanide) in under 3 minutes.\n\n### After Using an Extinguisher\n- Even if the fire appears out, it may re-ignite. Do not assume it is safe.\n- Wait for the fire service to confirm the fire is fully extinguished.\n- Report the used extinguisher so it can be replaced or recharged immediately.",
+              "keyTakeaway": "If in doubt, get out. Never fight a fire that is larger than a small waste bin, and always ensure your escape route is clear behind you."
+            },
+            {
+              "id": "m6-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Deep-Fat Fryer Fire",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During evening service, oil in the deep-fat fryer suddenly catches fire. Flames are rising about 30cm above the fryer. A new kitchen porter grabs the nearest extinguisher -- it has a red body with NO colour band (a water extinguisher). He is about to aim it at the fryer. What do you do?",
+                    "options": [
+                      {
+                        "label": "Shout 'STOP!' and physically prevent him from using the water extinguisher on the oil fire.",
+                        "nextNodeId": "stop"
+                      },
+                      {
+                        "label": "Let him use it -- any extinguisher is better than no extinguisher.",
+                        "nextNodeId": "let_use"
+                      },
+                      {
+                        "label": "Tell him to wait while you go and find the correct extinguisher in the corridor.",
+                        "nextNodeId": "wait"
+                      }
+                    ]
+                  },
+                  "stop": {
+                    "text": "Correct first action -- you must stop him. Water on a fat fire causes a **violent steam explosion** called a boilover. The water instantly vapourises, expanding to 1,700 times its volume, sending a fireball of burning oil into the air. This can cause fatal burns and spread the fire catastrophically.",
+                    "options": [{ "label": "What should we do next?", "nextNodeId": "stop_next" }]
+                  },
+                  "stop_next": {
+                    "text": "After stopping the water extinguisher: (1) If the flames are still small (30cm), use the wet chemical extinguisher (yellow band) that should be located in the kitchen, applying gently in circular motions. Or place a fire blanket over the fryer if one is within reach. (2) If the fire has grown, evacuate immediately and close the kitchen door behind you. (3) Ensure the alarm has been raised and the fire service called. Never try to move the fryer.",
+                    "options": []
+                  },
+                  "let_use": {
+                    "text": "EXTREMELY DANGEROUS. Water on burning oil causes a devastating steam explosion. The water sinks below the oil surface, instantly vapourises, and launches burning oil into the air as a fireball. This is one of the most dangerous mistakes in fire safety and has caused multiple deaths and severe burns in UK kitchens. You must stop him immediately.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "let_use_redirect" }]
+                  },
+                  "let_use_redirect": {
+                    "text": "Shout 'STOP' and prevent the use of water. Then use the wet chemical extinguisher (yellow band) or fire blanket. If neither is available or the fire has grown beyond the fryer, evacuate immediately. The correct extinguisher should always be positioned in the kitchen near the fryer.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "wait": {
+                    "text": "While finding the correct extinguisher is important, leaving the kitchen porter standing next to a burning fryer with a water extinguisher in his hand is dangerous. He may panic and use it while you are gone. Your first action must be to stop him from using the water extinguisher.",
+                    "options": [
+                      { "label": "What should I do first?", "nextNodeId": "wait_redirect" }
+                    ]
+                  },
+                  "wait_redirect": {
+                    "text": "Stop the kitchen porter from using water first. Then locate the wet chemical extinguisher -- it should be in the kitchen, not the corridor. If the kitchen does not have a wet chemical extinguisher, that is a serious compliance failure. Use a fire blanket as an alternative. If nothing suitable is available, evacuate immediately.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m6-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Electrical Fire",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You smell burning plastic and see smoke coming from behind the bar where a tangle of extension leads powers the fridges, till system, and glass washer. You can see a small flame at one of the plug sockets. The fire is small -- about the size of a mug. What do you do?",
+                    "options": [
+                      {
+                        "label": "Grab the foam extinguisher (cream band) from the wall and spray the socket.",
+                        "nextNodeId": "foam"
+                      },
+                      {
+                        "label": "Isolate the electricity at the consumer unit or socket, then use the CO2 extinguisher (black band).",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Throw a wet bar towel over the socket to smother the flame.",
+                        "nextNodeId": "towel"
+                      }
+                    ]
+                  },
+                  "foam": {
+                    "text": "Standard foam extinguishers should not be used on live electrical equipment -- the water content can conduct electricity and you could receive a severe electric shock. Some specialist di-electric foam extinguishers exist, but unless you are certain the extinguisher is rated for electrical use, do not use foam on live electrics.",
+                    "options": [{ "label": "What should I use?", "nextNodeId": "foam_redirect" }]
+                  },
+                  "foam_redirect": {
+                    "text": "Isolate the electricity first if possible (turn off at the consumer unit, trip the RCD, or unplug). Then use a CO2 extinguisher (black band) which is safe on electrical fires and leaves no residue. If you cannot isolate the electricity, the CO2 extinguisher can still be used on live equipment.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Excellent. Isolating the electrical supply first is the ideal approach -- it removes the ongoing ignition source and makes the fire safer to tackle. The CO2 extinguisher is the correct choice for electrical fires: it displaces oxygen, does not conduct electricity, and leaves no residue that could damage equipment.",
+                    "options": [
+                      { "label": "Any precautions with CO2?", "nextNodeId": "correct_cautions" }
+                    ]
+                  },
+                  "correct_cautions": {
+                    "text": "Yes: (1) Never hold the horn -- it gets extremely cold during discharge and can cause cold burns. Hold only the handle. (2) CO2 does not cool effectively, so there is a re-ignition risk -- stay and watch for several minutes. (3) In an enclosed space, CO2 displaces oxygen -- ensure ventilation. (4) After the fire is out, have an electrician inspect the wiring before the equipment is used again.",
+                    "options": []
+                  },
+                  "towel": {
+                    "text": "Throwing a wet cloth onto live electrical equipment is extremely dangerous. Water conducts electricity and you could receive a fatal electric shock. Even if the cloth smothers the flame temporarily, the electrical fault remains and the fire will likely re-ignite once the cloth burns through.",
+                    "options": [
+                      { "label": "What is the safe approach?", "nextNodeId": "towel_redirect" }
+                    ]
+                  },
+                  "towel_redirect": {
+                    "text": "Never use water or wet materials on electrical fires. Isolate the electricity first, then use a CO2 extinguisher (black band). The bar should have a CO2 extinguisher positioned nearby specifically for electrical fire risks.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m7",
+      "title": "Responding to Fire Emergencies",
+      "description": "What to do when you discover a fire, emergency procedures, and working with the fire service.",
+      "lessons": [
+        {
+          "id": "m7-l1",
+          "title": "Discovering a Fire",
+          "slides": [
+            {
+              "id": "m7-s1",
+              "type": "text-graphic-split",
+              "title": "What to Do When You Discover a Fire",
+              "content": "## The Fire Action Sequence\n\nIf you discover a fire, follow this sequence:\n\n### 1. RAISE THE ALARM\nActivate the nearest break glass call point. Shout 'FIRE!' to alert anyone in the immediate area. Do this **before** anything else -- even before trying to fight the fire.\n\n### 2. CALL 999\nCall 999 (or have someone call while you activate the alarm). Give clear information: the address of the premises, the location of the fire within the building, what is burning, and whether anyone is trapped.\n\n### 3. ASSESS -- FIGHT OR EVACUATE?\nMake a rapid assessment:\n- Is the fire **small and contained** (no bigger than a waste bin)?\n- Do you have the **correct extinguisher** within reach?\n- Is your **escape route clear** behind you?\n- Are you **trained and confident**?\n\nIf YES to all four: you may attempt to extinguish the fire using the PASS technique.\nIf NO to any: **evacuate immediately**.\n\n### 4. EVACUATE\nIf you cannot fight the fire, or if your attempt is unsuccessful:\n- Leave by the nearest safe exit.\n- Close doors behind you.\n- Go to the assembly point.\n- Report to the fire warden.\n\n### What NOT to Do\n- Do not go back in for belongings.\n- Do not use lifts.\n- Do not open doors that are hot to the touch (use the back of your hand to check).\n- Do not attempt to fight a fire involving gas cylinders -- evacuate and call 999.",
+              "keyTakeaway": "Always raise the alarm FIRST -- before fighting the fire, before calling 999, before anything else."
+            },
+            {
+              "id": "m7-s2",
+              "type": "text-graphic-split",
+              "title": "Working with the Fire Service",
+              "content": "## When the Fire Service Arrives\n\nThe fire and rescue service are the professionals. When they arrive, your role shifts to **support and information**.\n\n### What the fire service needs from you\n- **Location of the fire** -- which floor, which room, what is burning.\n- **Missing persons** -- is anyone unaccounted for? Where were they last seen?\n- **Hazards** -- gas cylinders, chemical stores, electrical installations, structural issues.\n- **Building layout** -- where are the fire hydrants, riser inlets, sprinkler controls?\n- **Key access** -- master keys, access codes, lift controls.\n\n### The Incident Commander\nThe senior fire officer takes control of the incident. Follow their instructions. Do not re-enter the building until they give the all-clear.\n\n### After the Fire\n- **Preserve the scene** -- the fire service and/or police may need to investigate the cause.\n- **Complete incident reports** while memories are fresh.\n- **Review the fire risk assessment** -- what went wrong, what worked, what needs to change?\n- **Debrief staff** -- discuss the incident, acknowledge concerns, and update training if needed.\n- **Notify your insurer** as soon as possible.\n- **Consider welfare** -- fire incidents can be traumatic. Support affected staff.\n\n### Recording and Reporting\nAll fires, false alarms, and near-misses should be recorded in the **fire log book**. Significant fires may need to be reported under **RIDDOR** (Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013) if they result in injury or death.",
+              "keyTakeaway": "When the fire service arrives, provide them with information about the fire location, missing persons, and any hazards in the building."
+            },
+            {
+              "id": "m7-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Fire in the Store Room",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You open the dry store room and see a fire burning in the corner where cardboard boxes are stacked near an electrical socket. The fire is about the size of a large bin bag and growing. Smoke is starting to fill the room. You are alone in the corridor. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Run to the kitchen to get a fire extinguisher and come back to fight it.",
+                        "nextNodeId": "get_extinguisher"
+                      },
+                      {
+                        "label": "Close the store room door, activate the nearest break glass call point, and evacuate.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Try to pull the burning boxes away from the wall to stop the fire spreading.",
+                        "nextNodeId": "pull_boxes"
+                      }
+                    ]
+                  },
+                  "get_extinguisher": {
+                    "text": "The fire is already the size of a large bin bag and growing. This is beyond the 'small waste bin' threshold for extinguisher use. By the time you run to the kitchen and return, the fire could have doubled in size multiple times. With smoke already filling the room, the risk of being overcome by fumes is high.",
+                    "options": [
+                      { "label": "What should I do?", "nextNodeId": "get_extinguisher_redirect" }
+                    ]
+                  },
+                  "get_extinguisher_redirect": {
+                    "text": "Close the store room door to contain the fire and smoke, activate the nearest break glass call point, and evacuate. The closed door buys valuable time by starving the fire of oxygen and preventing smoke from filling the corridor -- your escape route.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Excellent. This is the correct sequence. Closing the door is critical -- it contains the fire and smoke within the room, slowing the spread and keeping the corridor clear for evacuation. Activating the alarm ensures everyone in the building is alerted. Evacuating is the right choice because the fire is too large to fight safely with a portable extinguisher.",
+                    "options": [{ "label": "What happens next?", "nextNodeId": "correct_next" }]
+                  },
+                  "correct_next": {
+                    "text": "Go to the assembly point, report the fire's location and size to the fire warden, and call 999 if not already done. Tell the fire service: fire in the ground floor dry store, burning cardboard near an electrical socket, smoke building, room door closed, no persons trapped in the room. This information helps them plan their response.",
+                    "options": []
+                  },
+                  "pull_boxes": {
+                    "text": "DANGEROUS. Pulling burning materials with your bare hands risks severe burns. Moving the boxes could also spread the fire by scattering burning material. With smoke filling the room, you also risk smoke inhalation -- the leading cause of fire deaths. Smoke can contain carbon monoxide, hydrogen cyanide, and other toxic gases that can incapacitate you in seconds.",
+                    "options": [
+                      { "label": "What should I do instead?", "nextNodeId": "pull_redirect" }
+                    ]
+                  },
+                  "pull_redirect": {
+                    "text": "Do not touch the fire. Close the door, activate the alarm, and evacuate. Your life is more important than the contents of a store room. Let the fire service deal with the fire -- they have breathing apparatus, protective clothing, and the training to handle it safely.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m7-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Smoke in the Stairwell",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are on the second floor of a hotel during a fire alarm. You open the stairwell door and thick smoke is filling the staircase below you. The smoke is warm and you can hear crackling. You have three guests behind you. What do you do?",
+                    "options": [
+                      {
+                        "label": "Hold your breath and run down through the smoke -- it is only one floor.",
+                        "nextNodeId": "run_through"
+                      },
+                      {
+                        "label": "Close the stairwell door, go back, and find the alternative escape route.",
+                        "nextNodeId": "correct"
+                      },
+                      {
+                        "label": "Get everyone to crawl under the smoke down the stairs -- smoke rises so the air is clearer at floor level.",
+                        "nextNodeId": "crawl"
+                      }
+                    ]
+                  },
+                  "run_through": {
+                    "text": "Running through thick smoke is one of the most dangerous things you can do in a fire. You cannot see where you are going, the smoke may be hot enough to burn your airways, and the toxic gases (carbon monoxide, hydrogen cyanide) can cause you to collapse within a few breaths. Just two or three breaths of hot, toxic smoke can be fatal.",
+                    "options": [{ "label": "What should I do?", "nextNodeId": "run_redirect" }]
+                  },
+                  "run_redirect": {
+                    "text": "Close the stairwell door immediately to prevent smoke entering your floor. Go back and find the alternative escape route. Every floor should have at least two escape routes. If both routes are blocked, go to a room with a window, close the door, place wet towels at the base, open the window, and call 999 to report your location.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  },
+                  "correct": {
+                    "text": "Correct. Closing the stairwell door prevents smoke from entering your floor. You now need to find the alternative escape route -- every floor should have at least two independent escape routes. Lead the guests calmly but quickly to the alternative staircase or escape route.",
+                    "options": [
+                      {
+                        "label": "What if the alternative route is also blocked?",
+                        "nextNodeId": "correct_blocked"
+                      }
+                    ]
+                  },
+                  "correct_blocked": {
+                    "text": "If both escape routes are blocked, go to a room with a window (ideally facing the street where the fire service can see you). Close the door, seal gaps with wet towels or bedding, open the window for fresh air, and call 999 to tell them your exact location. Wave something visible from the window. The fire service will prioritise your rescue.",
+                    "options": []
+                  },
+                  "crawl": {
+                    "text": "While it is true that smoke rises and air is clearer at floor level, this only applies in the very early stages of a fire in a room. In a stairwell filled with thick, warm smoke, the entire space is contaminated. Crawling down smoke-filled stairs is extremely dangerous -- you cannot see, the stairs may be slippery with condensation, and you could fall. The smoke is already too thick to enter safely.",
+                    "options": [{ "label": "What should we do?", "nextNodeId": "crawl_redirect" }]
+                  },
+                  "crawl_redirect": {
+                    "text": "Close the stairwell door and use the alternative escape route. Do not enter a stairwell that is visibly filled with smoke. The stairwell is designed to be a protected route -- if it is smoke-logged, it means the fire has compromised the stairwell's protection and it is no longer safe.",
+                    "options": [{ "label": "Try again", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m8",
+      "title": "Final Assessment",
+      "description": "Test your fire safety knowledge with a comprehensive assessment.",
+      "lessons": [
+        {
+          "id": "m8-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m8-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What are the three elements of the fire triangle?",
+        "options": [
+          "Fuel, oxygen, and heat",
+          "Smoke, flames, and water",
+          "Detection, alarm, and evacuation",
+          "Fuel, water, and electricity"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q2",
+        "text": "Which method of fire spread is the most dangerous in buildings?",
+        "options": ["Conduction", "Convection", "Radiation", "Direct flame contact"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "What colour band does a CO2 fire extinguisher have?",
+        "options": ["Red", "Blue", "Black", "Yellow"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q4",
+        "text": "Which extinguisher type should be used on a deep-fat fryer fire?",
+        "options": [
+          "Water (red band)",
+          "Foam (cream band)",
+          "Dry powder (blue band)",
+          "Wet chemical (yellow band)"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q5",
+        "text": "What does the 'P' in the PASS technique stand for?",
+        "options": ["Push the handle", "Pull the pin", "Point at the flames", "Pump the handle"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "What is the main fire safety law in England and Wales?",
+        "options": [
+          "Health and Safety at Work Act 1974",
+          "Regulatory Reform (Fire Safety) Order 2005",
+          "Fire Services Act 1947",
+          "The Building Regulations 2010"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "Who is the 'Responsible Person' under fire safety law?",
+        "options": [
+          "The local fire and rescue service",
+          "Usually the employer or building owner",
+          "The most senior employee on shift",
+          "The Health and Safety Executive"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "What should you do FIRST when you discover a fire?",
+        "options": ["Try to extinguish it", "Raise the alarm", "Call 999", "Evacuate the building"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "Why should fire doors never be propped open?",
+        "options": [
+          "They let in cold air and increase heating costs",
+          "They allow fire and deadly smoke to spread through the building",
+          "They make corridors look untidy",
+          "They cause the alarm to sound"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "How often should fire drills be carried out?",
+        "options": [
+          "Once a year",
+          "At least every 6 months",
+          "Only when the fire service visits",
+          "Every 2 years"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "Which type of detector is best suited for use in commercial kitchens?",
+        "options": [
+          "Ionisation smoke detector",
+          "Heat detector",
+          "Optical smoke detector",
+          "Flame detector"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "What should you NEVER use on a live electrical fire?",
+        "options": [
+          "CO2 extinguisher",
+          "Water extinguisher",
+          "Dry powder extinguisher",
+          "Fire blanket"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "Where should you aim a fire extinguisher?",
+        "options": [
+          "At the top of the flames",
+          "At the base of the fire",
+          "At the nearest wall to deflect the agent",
+          "Above the fire to let the agent fall down"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "What is the leading cause of fires in commercial kitchens?",
+        "options": ["Electrical faults", "Grease and fat build-up", "Arson", "Gas leaks"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "During an evacuation, should you use the lift?",
+        "options": [
+          "Yes, it is faster than the stairs",
+          "No, never use lifts during a fire",
+          "Only if you are on a high floor",
+          "Only if you have mobility issues"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "How many escape routes should you know from your workplace?",
+        "options": [
+          "One is sufficient",
+          "At least two",
+          "Only the main entrance",
+          "All routes are the fire warden's responsibility"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "What is a fire warden's primary role during an evacuation?",
+        "options": [
+          "Fight the fire with extinguishers",
+          "Ensure their zone is clear and report status at the assembly point",
+          "Call the fire service",
+          "Lock all the doors"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Foam extinguishers are NOT suitable for which type of fire?",
+        "options": [
+          "Paper fires (Class A)",
+          "Wood fires (Class A)",
+          "Flammable liquid fires (Class B)",
+          "Cooking oil and fat fires (Class F)"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q19",
+        "text": "How quickly can a fire double in size?",
+        "options": [
+          "Every 5 minutes",
+          "Every 30 to 60 seconds",
+          "Every 10 minutes",
+          "Every 2 to 3 minutes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "What should you do if your primary escape route is blocked by fire?",
+        "options": [
+          "Run through it quickly while holding your breath",
+          "Use your alternative escape route",
+          "Wait at the fire door for the fire service",
+          "Break a window and jump"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "Why should dry powder extinguishers be used with caution in enclosed spaces?",
+        "options": [
+          "They are extremely cold",
+          "The powder cloud reduces visibility and can be inhaled",
+          "They are too powerful for small fires",
+          "They leave a residue that is toxic"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "How should waste and recycling be stored to reduce fire risk?",
+        "options": [
+          "Near the back door for easy collection",
+          "Away from buildings in a secure, lidded area",
+          "Inside the building until collection day",
+          "In cardboard boxes to keep things tidy"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "What is the purpose of a break glass call point?",
+        "options": [
+          "To break a window and escape",
+          "To manually activate the fire alarm",
+          "To release fire doors automatically",
+          "To activate the sprinkler system"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "What type of fire is classified as Class F?",
+        "options": [
+          "Flammable gas fires",
+          "Cooking oil and fat fires",
+          "Electrical fires",
+          "Metal fires"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "When should a fire risk assessment be reviewed?",
+        "options": [
+          "Only after a fire has occurred",
+          "Regularly, and after any significant changes to the premises",
+          "Every 5 years as required by law",
+          "Only when the fire service requests it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "What is the maximum penalty for serious fire safety breaches under the RRO 2005?",
+        "options": [
+          "A written warning from the fire service",
+          "Unlimited fines and up to 2 years imprisonment",
+          "A fixed penalty of 5,000 GBP",
+          "A fine of up to 20,000 GBP"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "What does PAT testing check?",
+        "options": [
+          "Fire alarm battery levels",
+          "The safety of portable electrical equipment",
+          "Smoke detector sensitivity",
+          "Emergency lighting brightness"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "How does fire spread by conduction?",
+        "options": [
+          "Through rising hot gases in ceiling voids",
+          "Through solid materials transferring heat",
+          "Through electromagnetic radiation waves",
+          "Through direct flame contact with combustibles"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "After evacuating, what should you do?",
+        "options": [
+          "Go back in to check on colleagues",
+          "Go directly to the assembly point and remain there",
+          "Leave the premises and go home",
+          "Wait by the main entrance for the fire service"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "Under what conditions should you attempt to fight a fire?",
+        "options": [
+          "The fire is small, you are trained, you have the correct extinguisher, and your escape route is clear",
+          "Whenever you have access to a fire extinguisher",
+          "Only if the fire warden gives you permission",
+          "Only if the fire service has not yet arrived"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q31",
+        "text": "What is the auto-ignition temperature of cooking oil?",
+        "options": [
+          "Approximately 100 degrees C",
+          "Approximately 200 degrees C",
+          "Approximately 340 degrees C",
+          "Approximately 500 degrees C"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q32",
+        "text": "What is 'compartmentation' in fire safety?",
+        "options": [
+          "Storing flammable materials in separate compartments",
+          "Dividing a building into fire-resistant sections to contain fire spread",
+          "Installing fire extinguishers in every compartment",
+          "Separating staff into evacuation groups"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "What rating does FD30 refer to on a fire door?",
+        "options": [
+          "The door can withstand 30 newtons of force",
+          "The door provides 30 minutes of fire resistance",
+          "The door is 30mm thick",
+          "The door was manufactured in 2030"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "What is the purpose of an intumescent strip on a fire door?",
+        "options": [
+          "To help the door close quietly",
+          "To expand in heat and seal the gap between door and frame",
+          "To improve the door's insulation for energy efficiency",
+          "To make the door easier to open in an emergency"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "How often should the fire alarm system be tested?",
+        "options": ["Monthly", "Weekly", "Daily", "Every 6 months"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q36",
+        "text": "What is a PEEP?",
+        "options": [
+          "A Personal Emergency Evacuation Plan for people who need assistance",
+          "A Premises Emergency Escape Procedure",
+          "A Portable Electronic Emergency Phone",
+          "A Pre-Emergency Evacuation Protocol"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q37",
+        "text": "What is the single largest cause of fires in UK commercial premises?",
+        "options": ["Electrical faults", "Cooking accidents", "Arson", "Gas leaks"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q38",
+        "text": "What should you do if you smell gas in the kitchen?",
+        "options": [
+          "Open a window and carry on working",
+          "Turn off the gas at the isolation valve, do not operate switches, ventilate, and report it",
+          "Light a match to find the source of the leak",
+          "Spray water around the area to disperse the gas"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "What chemical process does a wet chemical extinguisher use to seal burning oil?",
+        "options": ["Oxidation", "Saponification", "Carbonisation", "Evaporation"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "How should a fire blanket be applied to a pan fire?",
+        "options": [
+          "Throw it from a distance",
+          "Hold it as a shield, place it gently over the fire, and leave for 30 minutes",
+          "Wrap it around the pan and move the pan outside",
+          "Drop it on the fire and immediately remove it to check"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "What is the danger zone temperature for a heat detector in a kitchen?",
+        "options": [
+          "30 degrees C",
+          "57 degrees C or 90 degrees C depending on the model",
+          "100 degrees C",
+          "200 degrees C"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "Why should you never hold the horn of a CO2 extinguisher during use?",
+        "options": [
+          "It may break off",
+          "It becomes extremely cold and can cause cold burns",
+          "It reduces the extinguisher's effectiveness",
+          "It is not sterile"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "What is the minimum recommended frequency for deep cleaning kitchen extraction ductwork?",
+        "options": ["Every week", "Every month", "Every 6 to 12 months", "Every 3 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "Which Act clarified that fire safety law applies to external walls and entrance doors of residential buildings?",
+        "options": [
+          "Health and Safety at Work Act 1974",
+          "Building Safety Act 2022",
+          "Fire Safety Act 2021",
+          "Regulatory Reform (Fire Safety) Order 2005"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q45",
+        "text": "What is 'alarm fatigue'?",
+        "options": [
+          "When alarm batteries run out",
+          "When people become desensitised to alarms due to frequent false activations",
+          "When the alarm volume decreases over time",
+          "When alarms are tested too often"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "In the fire action sequence, what comes AFTER raising the alarm?",
+        "options": ["Fight the fire", "Call 999", "Collect your belongings", "Close all windows"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "What is a Class C fire?",
+        "options": [
+          "A fire involving solids",
+          "A fire involving flammable liquids",
+          "A fire involving flammable gases",
+          "A fire involving cooking oils"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q48",
+        "text": "What is the purpose of a cold smoke seal on a fire door?",
+        "options": [
+          "To keep the room cool",
+          "To block the passage of cold smoke that travels ahead of the fire",
+          "To reduce draughts for energy efficiency",
+          "To improve sound insulation"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "Which of the following is a legal duty of all employees under the RRO 2005?",
+        "options": [
+          "Carry out the fire risk assessment",
+          "Purchase fire extinguishers",
+          "Not interfere with or misuse fire safety equipment",
+          "Appoint fire wardens"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q50",
+        "text": "How should oily rags be disposed of to prevent fire?",
+        "options": [
+          "In a standard plastic bin",
+          "In a metal, lidded bin",
+          "In a cardboard box",
+          "Left to dry on a radiator"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "What type of fire alarm system shows the exact location of an activated detector?",
+        "options": ["Conventional", "Addressable", "Wireless", "Manual"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "What is a Class D fire?",
+        "options": [
+          "A fire involving paper",
+          "A fire involving flammable liquids",
+          "A fire involving metals",
+          "A fire involving cooking oils"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q53",
+        "text": "If both escape routes are blocked during a fire, what should you do?",
+        "options": [
+          "Jump from the nearest window",
+          "Try to run through the smoke",
+          "Go to a room with a window, close the door, seal gaps, and call 999",
+          "Hide under a desk and wait"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q54",
+        "text": "What is the approximate percentage of oxygen in ambient air?",
+        "options": ["10%", "15%", "21%", "30%"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q55",
+        "text": "How should you check if a door is safe to open during a fire?",
+        "options": [
+          "Open it quickly and look",
+          "Use the back of your hand to feel for heat",
+          "Kick it open from a distance",
+          "Listen at the door handle"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "What is the primary advantage of a voice evacuation system over bells or sirens?",
+        "options": [
+          "It is louder",
+          "It provides clear instructions that reduce panic and guide evacuation",
+          "It is cheaper to install",
+          "It does not need testing"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "Which extinguisher leaves no residue and is ideal for protecting electrical equipment?",
+        "options": ["Water", "Foam", "CO2 (carbon dioxide)", "Dry powder"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q58",
+        "text": "What happens when water is applied to a burning deep-fat fryer?",
+        "options": [
+          "The fire is extinguished quickly",
+          "The water evaporates harmlessly",
+          "A violent steam explosion sends burning oil into the air",
+          "The oil cools down gradually"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q59",
+        "text": "How many people must be employed before fire risk assessment findings must be recorded in writing?",
+        "options": ["1 or more", "5 or more", "10 or more", "25 or more"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "What is the role of a fire blanket?",
+        "options": [
+          "To protect furniture from fire damage",
+          "To smother small fires and wrap around people whose clothing is on fire",
+          "To block fire exits during a drill",
+          "To insulate hot cooking equipment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "Where should fire blankets be located in a commercial kitchen?",
+        "options": [
+          "In the manager's office",
+          "Within 2 metres of cooking appliances",
+          "At the main entrance",
+          "In the staff changing room"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "What does a rate-of-rise heat detector measure?",
+        "options": [
+          "The current air temperature",
+          "How quickly the temperature is increasing",
+          "The humidity level",
+          "The oxygen concentration"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q63",
+        "text": "Under the RRO 2005, what must the Responsible Person prepare and communicate to all staff?",
+        "options": [
+          "A profit and loss statement",
+          "A fire emergency plan",
+          "An insurance policy",
+          "A building survey"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "What is the recommended target time for clearing a building during a fire drill?",
+        "options": ["Under 1 minute", "Under 3 minutes", "Under 10 minutes", "Under 30 minutes"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "What class of fire involves flammable liquids such as petrol and solvents?",
+        "options": ["Class A", "Class B", "Class C", "Class F"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "Why is convection the most dangerous method of fire spread in buildings?",
+        "options": [
+          "It is the hottest type of heat transfer",
+          "Hot gases rise rapidly through stairwells, lift shafts, and ceiling voids",
+          "It produces the most smoke",
+          "It is the fastest form of conduction"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "What should fire wardens do at the assembly point?",
+        "options": [
+          "Call the fire service",
+          "Fight the fire from outside",
+          "Report their zone status (clear or not cleared)",
+          "Re-enter the building to search for missing persons"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q68",
+        "text": "Which legislation requires employers to carry out risk assessments and appoint competent persons?",
+        "options": [
+          "The Environmental Protection Act 1990",
+          "Management of Health and Safety at Work Regulations 1999",
+          "The Licensing Act 2003",
+          "The Equality Act 2010"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "What is the correct action if a fire door self-closer is not working?",
+        "options": [
+          "Prop the door open with a wedge as a temporary measure",
+          "Report it immediately for urgent repair",
+          "Remove the self-closer to prevent further damage",
+          "Tape the door shut"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "An optical smoke detector is best at detecting which type of fire?",
+        "options": [
+          "Fast-burning, flaming fires",
+          "Slow-burning, smouldering fires",
+          "Gas fires",
+          "Metal fires"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "What is the Gas Emergency Service number in the UK?",
+        "options": ["999", "111", "0800 111 999", "0800 999 111"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q72",
+        "text": "How far should an assembly point be from the building?",
+        "options": [
+          "Directly outside the main entrance",
+          "Far enough to be safe from the fire but close enough to be practical",
+          "At least 1 kilometre away",
+          "In the car park regardless of distance"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q73",
+        "text": "What should be recorded in the fire log book?",
+        "options": [
+          "Staff holiday requests",
+          "Fire alarm tests, drills, incidents, equipment checks, and training records",
+          "Customer complaints",
+          "Daily sales figures"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "A fire extinguisher with a blue colour band contains which agent?",
+        "options": ["Water", "Foam", "CO2", "Dry powder"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q75",
+        "text": "Which of the following is an automatic hold-open device for fire doors?",
+        "options": [
+          "A wooden wedge",
+          "A bin placed against the door",
+          "An electromagnetic device linked to the fire alarm that releases when the alarm sounds",
+          "A hook on the wall"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q76",
+        "text": "What is the leading cause of death in fires?",
+        "options": ["Burns", "Smoke inhalation", "Structural collapse", "Falling debris"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "How should you evacuate if you encounter smoke in a corridor?",
+        "options": [
+          "Run through it as fast as possible",
+          "Stay low where the air is clearer and find an alternative route if the smoke is thick",
+          "Stand up tall to see over the smoke",
+          "Open all doors to clear the smoke"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q78",
+        "text": "What does RIDDOR stand for?",
+        "options": [
+          "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
+          "Regulation of Industrial Disasters, Dangers and Occupational Risks",
+          "Required Information on Dangerous Devices, Operations and Risks",
+          "Review of Incidents, Deaths, Damages and Operational Reports"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q79",
+        "text": "When should fire safety induction training be given to new employees?",
+        "options": [
+          "Within the first month",
+          "On their first day",
+          "After their probation period",
+          "Only if they work in the kitchen"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "What is the purpose of emergency lighting?",
+        "options": [
+          "To save electricity during power cuts",
+          "To illuminate escape routes when normal lighting fails during an emergency",
+          "To make the building look more attractive",
+          "To guide the fire service to the building"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "Which of the following is a Class A fire?",
+        "options": [
+          "A petrol spill that has ignited",
+          "A pile of cardboard boxes burning",
+          "A gas ring left on",
+          "A deep-fat fryer fire"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q82",
+        "text": "What should you do if a customer refuses to evacuate during a fire alarm?",
+        "options": [
+          "Physically force them to leave",
+          "Note their location and inform the fire service, but continue evacuating others",
+          "Ignore them and leave",
+          "Stay with them until they agree to leave"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q83",
+        "text": "How does a wet chemical extinguisher cool burning oil?",
+        "options": [
+          "By spraying cold water onto the oil",
+          "By forming a soap-like seal that cools the oil below its auto-ignition temperature",
+          "By freezing the oil solid",
+          "By absorbing the heat into the extinguisher body"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q84",
+        "text": "What is the main risk of using a dry powder extinguisher indoors?",
+        "options": [
+          "It damages the flooring",
+          "It creates a powder cloud that reduces visibility and can cause breathing difficulties",
+          "It is too heavy to carry indoors",
+          "It leaves a permanent stain"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q85",
+        "text": "Fire doors fitted with hold-open devices must close automatically when:",
+        "options": [
+          "Someone pushes them",
+          "The building manager presses a button",
+          "The fire alarm sounds",
+          "The fire service arrives"
+        ],
+        "correctAnswer": 2
+      }
+    ]
+  }
+}

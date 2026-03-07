@@ -1,0 +1,1798 @@
+{
+  "id": "uk-l2-food-safety",
+  "title": "Food Safety Level 2 (UK)",
+  "shortDescription": "Essential UK food safety law, hazards, and safe practices for food handlers.",
+  "description": "Self-study, mobile-friendly flow with interactive content aligned to UK hygiene law.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-food-safety",
+  "category": "food-hygiene",
+  "level": "Level 2",
+  "estimatedMinutes": 240,
+  "icon": "UtensilsCrossed",
+  "tags": ["food safety", "food hygiene", "EHO", "compliance", "HACCP", "temperature control"],
+  "learningOutcomes": [
+    "Understand UK food safety legislation and your legal duties",
+    "Identify biological, chemical, and physical food hazards",
+    "Apply correct temperature controls and storage methods",
+    "Demonstrate proper personal hygiene and cleaning practices"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction and Legal Duties",
+      "description": "Why food safety law matters, who is responsible, and the consequences of getting it wrong.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "The Law and Your Duties",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Why Food Safety Law Matters",
+              "content": "## The Cost of Getting It Wrong\n\nEvery year, the Food Standards Agency estimates that around **2.4 million cases** of foodborne illness occur in the UK. Behind that statistic are real people: a child hospitalised with E. coli, an elderly resident made seriously ill by Listeria, or a customer with a severe allergic reaction. For food businesses, the consequences are equally serious: **criminal prosecution**, unlimited fines, imprisonment, and permanent reputational damage.\n\n### Why Legislation Exists\n\nUK food safety law exists to protect public health. It places clear duties on everyone involved in the food chain, from the farmer and manufacturer through to the kitchen porter and front-of-house server. The law is not optional guidance; it is a criminal offence to sell food that is unsafe or not of the nature, substance, or quality demanded by the purchaser.\n\n### Your Role in the System\n\nWhether you prepare, cook, serve, store, or clean, you are a critical link in the food safety chain. The law expects you to:\n\n- **Understand the hazards** relevant to your work\n- **Follow safe methods** consistently, not just when you think someone is watching\n- **Record what you do** so there is evidence of compliance\n- **Report problems** immediately rather than hoping they go away\n\nThis course will give you the knowledge to meet those expectations confidently.",
+              "keyTakeaway": "UK food safety law is criminal law; everyone handling food has a personal legal duty to keep it safe."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "The Food Safety Act 1990",
+              "content": "## The Foundation of UK Food Law\n\nThe **Food Safety Act 1990** is the principal piece of legislation governing food safety in England, Wales, and Scotland. It applies to every stage of the food supply chain and creates criminal offences for selling food that fails to meet safety standards.\n\n### Key Offences Under the Act\n\nThe Act makes it an offence to:\n\n- **Sell food that is injurious to health** (Section 7) -- for example, serving food contaminated with harmful bacteria because of poor temperature control\n- **Sell food not of the nature, substance, or quality demanded** (Section 14) -- for example, selling a beef pie that actually contains horsemeat, or serving a dish containing undeclared allergens\n- **Give false or misleading descriptions** (Section 15) -- for example, labelling a product as \"organic\" when it is not, or claiming a dish is \"nut-free\" without checking\n\n### Penalties\n\nConviction can result in **unlimited fines** and up to **two years' imprisonment**. Directors and managers can be personally prosecuted if they consented to, or were negligent about, the offence.\n\n### Who Enforces It?\n\nLocal authorities enforce the Act through **Environmental Health Officers (EHOs)** and **Trading Standards Officers**. The **Food Standards Agency (FSA)** sets policy and provides guidance at a national level.\n\n### The Due Diligence Defence\n\nSection 21 provides a defence if you can prove you took **all reasonable precautions and exercised all due diligence** to avoid committing the offence. This is why accurate record-keeping is so important.",
+              "keyTakeaway": "The Food Safety Act 1990 creates criminal offences for selling unsafe food, with penalties of unlimited fines and up to two years in prison."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Food Hygiene Regulations and EC 852/2004",
+              "content": "## The Regulations That Tell You How\n\nWhile the Food Safety Act 1990 sets out what you must not do, the **Food Safety and Hygiene (England) Regulations 2013** (and equivalent regulations in Wales, Scotland, and Northern Ireland) tell you how to achieve compliance. These regulations implement **EC Regulation 852/2004** on the hygiene of foodstuffs, which was retained in UK law after Brexit.\n\n### What the Regulations Require\n\nFood business operators must:\n\n- **Register their premises** with the local authority at least 28 days before opening\n- **Implement a food safety management system** based on HACCP principles (Hazard Analysis and Critical Control Points)\n- **Ensure food handlers receive appropriate training** and supervision proportionate to their work\n- **Maintain premises, equipment, and facilities** to a standard that prevents contamination\n- **Keep adequate records** of suppliers, temperatures, cleaning, and corrective actions\n\n### EC 852/2004: The Hygiene Framework\n\nThis regulation sets out general hygiene requirements in its annexes, covering:\n\n- **Annex I**: Primary production (farms and growers)\n- **Annex II**: General hygiene for all food businesses, including layout, ventilation, lighting, waste, water supply, personal hygiene, and training\n\n### Practical Impact\n\nIn practice, these regulations mean every food business must have documented procedures, trained staff, and verifiable records. An EHO will expect to see evidence that the system works, not just that paperwork exists.",
+              "keyTakeaway": "The Food Hygiene Regulations require every food business to register, implement HACCP-based procedures, train staff, and maintain verifiable records."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Roles and Responsibilities",
+              "content": "## Everyone Has a Part to Play\n\nFood safety is not the sole responsibility of the manager or the head chef. The law places duties on individuals at every level, and understanding who does what prevents gaps in the safety system.\n\n### Food Handlers\n\nA food handler is anyone who touches food or surfaces that come into contact with food. This includes chefs, kitchen porters, waiting staff, delivery drivers, and anyone involved in storage or preparation. Food handlers must:\n\n- **Follow the safe methods** documented by the business, every time, without shortcuts\n- **Report illness** -- particularly vomiting, diarrhoea, infected skin lesions, or ear/eye/nose discharge -- before starting work\n- **Maintain personal hygiene** including effective handwashing, clean protective clothing, and covering wounds with blue waterproof plasters\n- **Complete records accurately** such as temperature logs, cleaning schedules, and delivery checks\n\n### Managers and Supervisors\n\nManagers must ensure that safe systems exist, staff are properly trained and supervised, monitoring happens consistently, and corrective actions are taken and documented when things go wrong. Under the Act, managers can be **personally liable** for offences committed with their consent or negligence.\n\n### Environmental Health Officers (EHOs)\n\nEHOs are authorised officers of the local authority. They have the legal power to **enter premises at any reasonable time** without an appointment, **inspect** food, equipment, processes, and records, **take samples and photographs**, and take **enforcement action** ranging from informal advice to prosecution.",
+              "keyTakeaway": "Food handlers must follow safe methods and report illness; managers are personally liable for ensuring systems work; EHOs can inspect without notice."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "Due Diligence and the Food Hygiene Rating Scheme",
+              "content": "## Proving You Did the Right Thing\n\nDue diligence is not just a legal defence; it is the daily practice of documenting that you took all reasonable steps to keep food safe. Without records, your word alone will not satisfy an inspector or a court.\n\n### Building a Due Diligence System\n\nEffective due diligence requires four elements:\n\n- **Written procedures** that describe what to do and how to do it (for example, your HACCP-based food safety management system)\n- **Monitoring records** that prove procedures were followed (temperature logs, cleaning schedules, delivery check sheets)\n- **Corrective action records** that show what you did when something went wrong (for example, food discarded because it was above 8°C on delivery)\n- **Training records** that demonstrate staff understood and were competent to carry out their duties\n\n### The Food Hygiene Rating Scheme (FHRS)\n\nThe FHRS gives food businesses a rating from **0 (urgent improvement necessary)** to **5 (very good)** based on three criteria:\n\n1. **Hygienic food handling** -- preparation, cooking, reheating, cooling, and storage\n2. **Condition of structure** -- cleanliness, layout, lighting, ventilation, and facilities\n3. **Management of food safety** -- HACCP system, training records, due diligence evidence\n\nRatings are published online and displayed at the premises. In Wales, display is **mandatory**; in England, it is voluntary but strongly encouraged. A poor rating damages customer confidence and can trigger more frequent inspections.\n\n### Key Point\n\nA rating of 5 requires not just clean premises, but a well-managed, documented system that staff consistently follow.",
+              "keyTakeaway": "Due diligence means documented proof that you followed safe procedures; the FHRS rates businesses 0-5 based on hygiene, structure, and management."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Scenarios: Legal Duties",
+          "slides": [
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unannounced Inspection",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is 11:30 am on a busy Tuesday. You are a supervisor in a pub kitchen when a woman in a dark jacket arrives at the pass and shows you an ID badge. She identifies herself as an Environmental Health Officer and says she is here to carry out a routine food hygiene inspection. The head chef is on a day off and the manager is at a meeting offsite. What do you do?",
+                    "options": [
+                      {
+                        "label": "Tell her she needs to make an appointment and come back when the manager is here.",
+                        "nextNodeId": "refuse_entry"
+                      },
+                      {
+                        "label": "Welcome her in, verify her ID, and give her access to the kitchen and records.",
+                        "nextNodeId": "allow_entry"
+                      },
+                      {
+                        "label": "Call the manager and ask the EHO to wait in the car park until they arrive.",
+                        "nextNodeId": "delay_entry"
+                      }
+                    ]
+                  },
+                  "refuse_entry": {
+                    "text": "The EHO informs you that under the Food Safety Act 1990, she has the legal right to enter at any reasonable time without prior notice. Refusing entry is an offence that could result in prosecution. She asks you again to allow her access. What do you do now?",
+                    "options": [
+                      {
+                        "label": "Continue to refuse and physically block the doorway.",
+                        "nextNodeId": "wrong_end_obstruction"
+                      },
+                      {
+                        "label": "Apologise, explain you did not know the rules, and allow her in immediately.",
+                        "nextNodeId": "allow_entry_late"
+                      }
+                    ]
+                  },
+                  "delay_entry": {
+                    "text": "The EHO explains that while you are welcome to inform your manager, she cannot be required to wait. She has a statutory right of entry and needs to see the kitchen as it operates normally, not after a clean-up. She politely asks to begin. What do you do?",
+                    "options": [
+                      {
+                        "label": "Ask a colleague to quickly tidy the kitchen while you stall the EHO with paperwork.",
+                        "nextNodeId": "wrong_end_stall"
+                      },
+                      {
+                        "label": "Accept the situation, let her in, and phone the manager to let them know.",
+                        "nextNodeId": "allow_entry"
+                      }
+                    ]
+                  },
+                  "allow_entry": {
+                    "text": "Good decision. You verify the EHO's identification, escort her into the kitchen, and offer to show her where records are kept. She begins by observing food handling practices and checking the temperature of the fridge. She then asks to see your food safety management system documentation, temperature logs for the past month, and cleaning schedules. Are these records available?",
+                    "options": [
+                      {
+                        "label": "Yes -- you know where the file is and the records are up to date.",
+                        "nextNodeId": "records_available"
+                      },
+                      {
+                        "label": "You are not sure where the paperwork is kept because the manager usually handles it.",
+                        "nextNodeId": "records_missing"
+                      }
+                    ]
+                  },
+                  "allow_entry_late": {
+                    "text": "The EHO accepts your apology and notes it was an honest mistake, but reminds you that all staff should know the law on inspections. She proceeds into the kitchen and asks to see your food safety records. Are they available?",
+                    "options": [
+                      {
+                        "label": "Yes -- you locate the file and present up-to-date records.",
+                        "nextNodeId": "records_available"
+                      },
+                      {
+                        "label": "You cannot find them -- the manager keeps them in a locked office.",
+                        "nextNodeId": "records_missing"
+                      }
+                    ]
+                  },
+                  "records_available": {
+                    "text": "Excellent. The EHO reviews the temperature logs, cleaning schedules, and HACCP documentation. Everything is signed, dated, and current. She compliments the team on maintaining good records and notes only minor advisory points. The inspection concludes positively.",
+                    "options": []
+                  },
+                  "records_missing": {
+                    "text": "The EHO records that food safety documentation could not be produced during the inspection. This is a significant concern because due diligence depends on accessible, current records. She issues a written warning and schedules a revisit within 14 days. The manager will need to ensure all records are accessible to any member of staff at any time.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "wrong_end_obstruction": {
+                    "text": "Obstructing an Environmental Health Officer is a criminal offence under Section 33 of the Food Safety Act 1990. You could face personal prosecution, a fine, and your employer could face additional enforcement action. An EHO has a statutory right to enter food premises at any reasonable time without notice.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "wrong_end_stall": {
+                    "text": "Attempting to alter conditions before an inspection is discovered is viewed very seriously. The EHO notices colleagues rushing to clean and rearrange. She records this as evidence of poor day-to-day compliance. The business receives a low FHRS rating and faces a formal improvement notice. Inspections are meant to assess normal operating conditions.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Due Diligence Test",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a food handler at a busy sandwich shop. On Monday morning, you open the walk-in fridge and notice the digital display reads 11°C. Normally it should be between 1°C and 5°C. The fridge contains sliced cooked meats, prepared salads, dairy products, and fresh sandwiches made the previous evening for the breakfast rush. The shop opens in 30 minutes. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Quickly serve the sandwiches before they get any warmer -- customers are expecting them.",
+                        "nextNodeId": "serve_unsafe"
+                      },
+                      {
+                        "label": "Record the temperature on the log sheet, then tell your manager or supervisor immediately.",
+                        "nextNodeId": "report_correct"
+                      },
+                      {
+                        "label": "Turn the fridge thermostat down to its lowest setting and check again in an hour.",
+                        "nextNodeId": "adjust_only"
+                      }
+                    ]
+                  },
+                  "serve_unsafe": {
+                    "text": "This is a serious food safety failure. The food has been stored above 8°C for an unknown period. High-risk foods like cooked meats and dairy could already have dangerous levels of bacterial growth. Serving this food could cause food poisoning and would breach the Food Safety Act 1990. If a customer became ill, the business would have no due diligence defence.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "adjust_only": {
+                    "text": "Adjusting the thermostat addresses the fridge, but you have not dealt with the food inside. The food has been above 8°C for an unknown duration. Simply cooling it back down does not reverse any bacterial growth that may have occurred. You still need to assess the food and report the situation. What do you do now?",
+                    "options": [
+                      {
+                        "label": "Record the temperature and report to your manager immediately.",
+                        "nextNodeId": "report_late"
+                      },
+                      {
+                        "label": "Assume it will be fine once the fridge cools down and carry on as normal.",
+                        "nextNodeId": "ignore_risk"
+                      }
+                    ]
+                  },
+                  "report_correct": {
+                    "text": "Well done for recording the evidence and reporting immediately. Your manager arrives and confirms the high temperature. Now a decision needs to be made about the food in the fridge. What should happen next?",
+                    "options": [
+                      {
+                        "label": "Probe-check individual items: discard anything above 8°C that has been there overnight, and use items still below 5°C within the hour.",
+                        "nextNodeId": "assess_food"
+                      },
+                      {
+                        "label": "Discard everything in the fridge to be safe.",
+                        "nextNodeId": "discard_all"
+                      },
+                      {
+                        "label": "Smell and taste the food to check if it seems okay.",
+                        "nextNodeId": "taste_test"
+                      }
+                    ]
+                  },
+                  "report_late": {
+                    "text": "Better late than never. Your manager is concerned that you adjusted the fridge first, but appreciates the report. They ask you to probe-check the food. What do you recommend?",
+                    "options": [
+                      {
+                        "label": "Any high-risk food above 8°C that has been in there overnight must be discarded. Items still at safe temperatures can be used quickly.",
+                        "nextNodeId": "assess_food"
+                      },
+                      {
+                        "label": "Everything should be fine now that the fridge is cooling down.",
+                        "nextNodeId": "ignore_risk"
+                      }
+                    ]
+                  },
+                  "assess_food": {
+                    "text": "Correct approach. You probe-check each item and record the results. Cooked meats and prepared sandwiches are at 10°C and are discarded. Unopened dairy cartons are at 6°C and will be used within the next hour for service. You record all disposals and the corrective action on the temperature log, including the time, temperatures, and your signature. The fridge engineer is called. This documented response is exactly what due diligence looks like.",
+                    "options": []
+                  },
+                  "discard_all": {
+                    "text": "While discarding everything is the safest option and is not wrong, it results in significant food waste and cost. In practice, a risk-based approach is better: probe-check individual items, discard anything above 8°C that has been compromised for an unknown time, and use items still within safe limits quickly. Either way, everything must be documented for due diligence.",
+                    "options": []
+                  },
+                  "taste_test": {
+                    "text": "Never taste food to check if it is safe. Harmful bacteria cannot be detected by smell, taste, or appearance. Food can look and smell perfectly fine while containing dangerous levels of pathogens like Salmonella or Listeria. The only reliable method is temperature measurement with a calibrated probe thermometer.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "ignore_risk": {
+                    "text": "This is a dangerous assumption. Cooling food back down does not kill bacteria that have already multiplied. If the food was above 8°C overnight, high-risk items could contain dangerous levels of pathogens. Serving this food could cause serious illness. Without proper assessment and documentation, the business also has no due diligence defence if someone becomes ill.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Food Hazards and Contamination",
+      "description": "Biological, chemical, and physical hazards and how cross-contamination occurs.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Understanding Food Hazards",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Biological Hazards: Bacteria",
+              "content": "## The Invisible Threat\n\nBiological hazards are the most common cause of foodborne illness in the UK. Bacteria are single-celled organisms that are invisible to the naked eye. Under the right conditions, a single bacterium can multiply to over **16 million in just 8 hours** through a process called binary fission, where each cell divides into two every 10 to 20 minutes.\n\n### The Key Pathogens You Must Know\n\n- **Salmonella** -- Found in raw poultry, eggs, and meat. Causes severe diarrhoea, vomiting, and fever 12-72 hours after consumption. Killed by thorough cooking to 75°C core temperature.\n- **Campylobacter** -- The most common cause of food poisoning in the UK. Primarily associated with raw and undercooked chicken. Even a small number of bacteria can cause illness.\n- **E. coli O157** -- Found in undercooked minced beef, unpasteurised milk, and contaminated salad vegetables. Can cause serious kidney damage (HUS), especially in young children.\n- **Listeria monocytogenes** -- Unusual because it can grow at fridge temperatures (0-5°C). Found in soft cheeses, pate, and pre-packed salads. Particularly dangerous for pregnant women, the elderly, and immunocompromised individuals.\n\n### Why Bacteria Are Dangerous\n\nSome bacteria cause illness through **infection** (multiplying inside the body), while others produce **toxins** in the food before it is eaten. Toxin-producing bacteria are particularly dangerous because reheating food does not destroy the toxin even though it kills the bacteria.",
+              "keyTakeaway": "Bacteria multiply rapidly in the right conditions; key UK pathogens include Salmonella, Campylobacter, E. coli O157, and Listeria, each with different risks and sources."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "More Bacterial Hazards and Viruses",
+              "content": "## Toxin-Producing Bacteria\n\nSome of the most dangerous food poisoning organisms work by producing toxins that survive cooking:\n\n- **Clostridium perfringens** -- Commonly associated with bulk-cooked meat and poultry that is cooled too slowly. The bacteria form heat-resistant spores that survive cooking, then germinate and multiply as the food cools through the danger zone. Symptoms include severe abdominal cramps and diarrhoea 8-22 hours after eating.\n- **Staphylococcus aureus** -- Carried on the skin, in the nose, and in infected wounds of around 30% of healthy people. Transferred to food by handling, sneezing, or coughing. The toxin it produces is **heat-stable**, meaning reheating will not make the food safe. Symptoms appear rapidly, within 1-6 hours.\n- **Bacillus cereus** -- Associated with cooked rice, pasta, and starchy foods left at room temperature. Produces two types of toxin: one causing vomiting (1-5 hours) and one causing diarrhoea (8-16 hours). Spores survive cooking and germinate when food is held in the danger zone.\n\n### Viral Hazards\n\n- **Norovirus** -- The most common cause of gastroenteritis in the UK. Spread person-to-person and via contaminated food and surfaces. Extremely infectious; as few as 10-100 viral particles can cause illness. Does not multiply in food but is transferred by infected food handlers. Symptoms include projectile vomiting and diarrhoea, usually lasting 12-60 hours.\n- **Hepatitis A** -- Spread through contaminated food and water, particularly shellfish and salads. Can cause serious liver disease.\n\n### Key Difference\n\nViruses do not multiply in food (unlike bacteria), but they are often more infectious because fewer particles are needed to cause illness.",
+              "keyTakeaway": "Toxin-producing bacteria like C. perfringens and S. aureus are dangerous because their toxins survive reheating; Norovirus is the UK's most common cause of gastroenteritis."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "FAT TOM: Conditions for Bacterial Growth",
+              "content": "## What Bacteria Need to Thrive\n\nThe acronym **FAT TOM** summarises the six conditions that affect bacterial growth. Understanding these conditions helps you control hazards in your kitchen.\n\n### F -- Food\nBacteria prefer foods that are high in protein and moisture: meat, poultry, fish, dairy, eggs, cooked rice, and cooked pasta. These are called **high-risk foods** because they support rapid bacterial growth.\n\n### A -- Acidity\nMost bacteria thrive in neutral to slightly acidic conditions (pH 4.6 to 7.5). Very acidic foods like pickles and vinegar inhibit growth, which is why pickling has been used as a preservation method for centuries.\n\n### T -- Temperature\nThe **danger zone** is between **8°C and 63°C** (some sources use 5°C). Within this range, bacteria multiply most rapidly between 20°C and 50°C. Body temperature (37°C) is the optimum for many pathogens.\n\n### T -- Time\nGiven the right conditions, bacteria can double every 10-20 minutes. After just 4 hours in the danger zone, food may contain dangerous levels of bacteria or toxins. This is why the **4-hour rule** exists: high-risk food that has been in the danger zone for more than 4 hours must be discarded.\n\n### O -- Oxygen\nMost food poisoning bacteria are **facultative anaerobes**, meaning they can grow with or without oxygen. Some, like Clostridium, thrive specifically in **low-oxygen** environments such as vacuum packs and the centre of large joints of meat.\n\n### M -- Moisture\nBacteria need water to grow. Dry foods like biscuits, flour, and dried pasta are low-risk because they lack available moisture. Once water is added (for example, cooking pasta or rice), the food becomes high-risk.",
+              "keyTakeaway": "FAT TOM (Food, Acidity, Temperature, Time, Oxygen, Moisture) describes the six conditions bacteria need; controlling any of these limits bacterial growth."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Chemical and Physical Hazards",
+              "content": "## Chemical Hazards\n\nChemical contamination occurs when harmful substances enter food. Sources include:\n\n- **Cleaning chemicals** -- Detergents, sanitisers, and degreasers can contaminate food if stored incorrectly, used near uncovered food, or transferred into unlabelled containers\n- **Pesticides** -- Residues on fruit and vegetables. Wash all fresh produce thoroughly before use\n- **Naturally occurring toxins** -- Solanine in green potatoes, toxins in wild mushrooms, and red kidney beans (which must be boiled vigorously for at least 10 minutes)\n- **Allergens** -- The 14 major allergens defined by UK law include cereals containing gluten, crustaceans, eggs, fish, peanuts, soybeans, milk, nuts, celery, mustard, sesame, sulphur dioxide, lupin, and molluscs\n- **Heavy metals** -- Lead, mercury, and cadmium from environmental pollution or equipment\n\n## Physical Hazards\n\nPhysical contamination occurs when foreign objects enter food:\n\n- **Glass** from broken light covers or bottles\n- **Metal** from worn equipment, staples, or wire\n- **Plastic** from packaging or broken containers\n- **Hair** from handlers not wearing head coverings\n- **Pests** -- insects, droppings, or feathers\n- **Bone fragments** from poor butchery\n- **Plasters** that are not the correct blue, detectable type\n\n### Prevention\n\nControl measures include COSHH-compliant chemical storage, regular equipment maintenance, good personal hygiene, effective pest control, and careful handling of packaging materials.",
+              "keyTakeaway": "Chemical hazards include cleaning products, allergens, and pesticides; physical hazards include glass, metal, and hair; both are prevented through proper storage, maintenance, and hygiene."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Cross-Contamination",
+              "content": "## How Hazards Spread\n\nCross-contamination is the transfer of harmful bacteria, chemicals, or physical contaminants from one food, surface, or person to another. It is one of the **most common causes** of foodborne illness in the UK and is almost always preventable.\n\n### Types of Cross-Contamination\n\n**Direct cross-contamination** occurs when raw food touches or drips onto ready-to-eat food, such as raw chicken stored above cooked ham in the fridge.\n\n**Indirect cross-contamination** occurs via an intermediate surface, object, or person, such as using the same chopping board for raw chicken and then salad without cleaning and sanitising it.\n\n### Preventing Cross-Contamination\n\nThe key controls are **separation** and **sanitation**:\n\n- **Colour-coded equipment**: Red boards for raw meat, blue for raw fish, green for salad and fruit, yellow for cooked meat, brown for vegetables, white for bakery and dairy\n- **Separate storage**: Raw foods below ready-to-eat foods in the fridge, ideally in separate fridges\n- **Handwashing**: Between handling raw and ready-to-eat food, and at every critical point\n- **Disposable items**: Single-use gloves changed between tasks, disposable or colour-coded cloths sanitised regularly\n- **Workflow design**: Where possible, separate raw and cooked preparation areas physically\n\n### The Biggest Risk\n\nThe greatest cross-contamination risk is from **raw poultry to ready-to-eat food**. Raw chicken carries Campylobacter and Salmonella on its surface. Even tiny traces transferred to salad or bread can cause serious illness.",
+              "keyTakeaway": "Cross-contamination transfers hazards from raw to ready-to-eat food via direct contact or shared equipment; colour-coded boards, handwashing, and separation are the key controls."
+            },
+            {
+              "id": "m2-s6",
+              "type": "text-graphic-split",
+              "title": "High-Risk Foods and Vulnerable Groups",
+              "content": "## Which Foods Are Most Dangerous?\n\nHigh-risk foods are those that provide ideal conditions for bacterial growth. They are typically **high in protein and moisture**, **ready to eat** without further cooking, and require **refrigeration** to stay safe. Examples include:\n\n- Cooked meat and poultry (sliced ham, roast chicken, pies)\n- Dairy products (soft cheeses, cream, custard, milk)\n- Cooked rice and pasta\n- Shellfish and seafood\n- Eggs and egg products (mayonnaise, mousses)\n- Prepared salads and sandwiches\n- Gravies, stocks, and sauces\n\n### Low-Risk Foods\n\nFoods that do not support bacterial growth well include dried foods (biscuits, crackers, flour), foods preserved in sugar (jam, honey), foods preserved in acid (pickles, vinegar), foods preserved in salt (cured meats when kept dry), and canned foods (while sealed).\n\n### Vulnerable Groups\n\nSome people are at **much higher risk** of serious illness or death from food poisoning:\n\n- **Elderly people** -- Weakened immune systems and less stomach acid to kill bacteria\n- **Young children and babies** -- Immature immune systems and lower body weight means smaller doses cause illness\n- **Pregnant women** -- Listeria can cross the placenta and cause miscarriage, stillbirth, or serious illness in the newborn\n- **Immunocompromised individuals** -- People with HIV/AIDS, cancer patients on chemotherapy, organ transplant recipients on anti-rejection drugs\n\n### Extra Care Required\n\nIf you work in a setting that serves vulnerable groups (care homes, hospitals, nurseries, schools), the consequences of poor food safety are far more severe. Extra vigilance with temperature control, cross-contamination prevention, and allergen management is essential.",
+              "keyTakeaway": "High-risk foods are high in protein, moisture, and ready-to-eat; vulnerable groups including the elderly, young children, and pregnant women face the greatest danger from food poisoning."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Scenarios: Hazards and Contamination",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Chicken Prep Dilemma",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are working in a hotel kitchen preparing lunch service. You have just finished jointing six raw chickens on the red chopping board. Raw chicken juices are visible on the board, your gloves, and the knife. The sous chef calls over and asks you to quickly slice some tomatoes and cucumber for a salad garnish that needs to go out immediately. The green chopping board is on the other side of the kitchen. What do you do?",
+                    "options": [
+                      {
+                        "label": "Flip the red board over to the clean side and slice the salad vegetables quickly.",
+                        "nextNodeId": "flip_board"
+                      },
+                      {
+                        "label": "Remove your gloves, wash your hands thoroughly, collect the green board, wash and sanitise your knife, then prepare the salad.",
+                        "nextNodeId": "correct_process"
+                      },
+                      {
+                        "label": "Rinse the red board under the tap and wipe it with a cloth before cutting the salad.",
+                        "nextNodeId": "rinse_board"
+                      }
+                    ]
+                  },
+                  "flip_board": {
+                    "text": "This is extremely dangerous. Flipping the board does not remove the risk. Raw chicken juices will have soaked into both sides of the board during use, and bacteria like Campylobacter and Salmonella from the surface will transfer to the underside through handling. The salad will be directly contaminated. What happens next?",
+                    "options": [
+                      {
+                        "label": "You realise the mistake and stop before cutting.",
+                        "nextNodeId": "stop_and_correct"
+                      },
+                      {
+                        "label": "You did not think about it and have already cut the tomatoes.",
+                        "nextNodeId": "wrong_end_served"
+                      }
+                    ]
+                  },
+                  "rinse_board": {
+                    "text": "Rinsing under water alone does not remove bacteria. Campylobacter and Salmonella form biofilms on surfaces that require detergent and sanitiser to remove. A quick rinse gives a false sense of security. Additionally, you should never use a red board for salad vegetables regardless of how well it is cleaned -- colour coding exists to prevent exactly this kind of mistake. What do you do now?",
+                    "options": [
+                      {
+                        "label": "Recognise the error, fetch the green board, and start the proper cleaning and handwashing process.",
+                        "nextNodeId": "correct_process"
+                      },
+                      {
+                        "label": "Carry on -- it looks clean enough after the rinse.",
+                        "nextNodeId": "wrong_end_served"
+                      }
+                    ]
+                  },
+                  "correct_process": {
+                    "text": "Good. You remove and dispose of your gloves, wash your hands thoroughly with soap and warm water for 20 seconds, collect the clean green chopping board, and wash and sanitise your knife using the two-stage method. Now you are ready to prepare the salad garnish. The sous chef asks why it took a few extra minutes. How do you respond?",
+                    "options": [
+                      {
+                        "label": "Explain that you needed to prevent cross-contamination from the raw chicken and that it would be a food safety risk to rush.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Say nothing and hope they do not ask again.",
+                        "nextNodeId": "correct_end_quiet"
+                      }
+                    ]
+                  },
+                  "stop_and_correct": {
+                    "text": "Good catch. You stop before cutting, discard the flipped board to the wash-up area, remove your gloves, wash your hands, and fetch the green board. Although you caught the error, this near-miss should be mentioned to the supervisor so the team can learn from it.",
+                    "options": []
+                  },
+                  "correct_end": {
+                    "text": "Excellent. You prevented cross-contamination and communicated clearly about food safety. The sous chef agrees that safety must come before speed. A few minutes' delay is always better than a customer contracting Campylobacter or Salmonella from contaminated salad. This is exactly how a competent food handler should respond.",
+                    "options": []
+                  },
+                  "correct_end_quiet": {
+                    "text": "You did the right thing by following proper procedure, but communication matters too. Letting your colleagues know why you followed the process helps build a food safety culture in the kitchen. Next time, explain briefly -- it reinforces good practice for everyone.",
+                    "options": []
+                  },
+                  "wrong_end_served": {
+                    "text": "The contaminated salad is served to guests. Within 48 hours, three hotel guests develop severe Campylobacter food poisoning with bloody diarrhoea, abdominal cramps, and fever lasting over a week. An investigation traces the outbreak to cross-contamination from raw chicken to salad. The hotel faces prosecution, compensation claims, and devastating publicity. This was entirely preventable with proper separation, handwashing, and colour-coded equipment.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unlabelled Container",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You arrive for the evening shift at a restaurant. While restocking the dry store, you find a clear plastic container with no label on the shelf next to the cooking oils. It contains a clear, slightly viscous liquid that you do not recognise. It could be vegetable oil, white vinegar, or possibly a cleaning chemical that was decanted from a larger container. What do you do?",
+                    "options": [
+                      {
+                        "label": "Smell the liquid to try to identify it.",
+                        "nextNodeId": "smell_it"
+                      },
+                      {
+                        "label": "Set the container aside, do not use it, and report it to your supervisor immediately.",
+                        "nextNodeId": "report_correct"
+                      },
+                      {
+                        "label": "Assume it is probably oil since it is in the dry store and use it for cooking.",
+                        "nextNodeId": "use_it"
+                      }
+                    ]
+                  },
+                  "smell_it": {
+                    "text": "Smelling an unknown substance is dangerous. Some cleaning chemicals produce harmful fumes, and even sniffing concentrated solutions can cause irritation to your airways. COSHH regulations warn against unnecessary exposure to chemical substances. Additionally, some chemicals are odourless and could be mistaken for food ingredients. What do you do now?",
+                    "options": [
+                      {
+                        "label": "Put the container down and report it to the supervisor.",
+                        "nextNodeId": "report_correct"
+                      },
+                      {
+                        "label": "It smells like oil, so you use it for cooking.",
+                        "nextNodeId": "use_it"
+                      }
+                    ]
+                  },
+                  "use_it": {
+                    "text": "This is a critical food safety failure. The liquid turns out to be a concentrated descaling solution that was left in an unlabelled food container by a maintenance worker. Food prepared with it makes two customers seriously ill with chemical burns to the mouth and throat. The restaurant faces prosecution for chemical contamination and failure to comply with COSHH regulations. Unlabelled substances must NEVER be used.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "report_correct": {
+                    "text": "Good decision. You set the container aside in a safe location away from food and inform your supervisor. The supervisor investigates and discovers it is a descaling solution that was decanted by a maintenance contractor earlier in the day. What should happen next?",
+                    "options": [
+                      {
+                        "label": "Label the container clearly with the chemical name and hazard information, and move it to the locked chemical store.",
+                        "nextNodeId": "label_and_store"
+                      },
+                      {
+                        "label": "Pour it down the drain to get rid of the risk.",
+                        "nextNodeId": "pour_away"
+                      },
+                      {
+                        "label": "Put it back on the shelf now that you know what it is.",
+                        "nextNodeId": "put_back"
+                      }
+                    ]
+                  },
+                  "label_and_store": {
+                    "text": "Correct. Under COSHH regulations, all chemical substances must be clearly labelled, stored in appropriate containers, and kept in a designated locked storage area away from food. The supervisor also speaks to the maintenance contractor about the rules. You complete an incident report documenting what was found, where, and the corrective action taken. This is proper due diligence.",
+                    "options": []
+                  },
+                  "pour_away": {
+                    "text": "While removing the chemical from the food area is well-intentioned, pouring unknown chemicals down the drain may violate environmental regulations and could damage plumbing. The correct action is to return the chemical to its original labelled container or properly label the current container and store it in the locked chemical cupboard. An incident report should also be completed.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "put_back": {
+                    "text": "Absolutely not. A chemical substance must never be stored in the food preparation or storage area, regardless of whether you now know what it is. COSHH regulations require chemicals to be stored separately from food, in labelled containers, in a designated locked area. Leaving it on the dry store shelf risks someone else mistaking it for a food ingredient.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Temperature, Storage, and Personal Hygiene",
+      "description": "Safe temperatures, proper storage methods, and personal hygiene practices that prevent contamination.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Temperature Control and Storage",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "The Danger Zone: 8-63°C",
+              "content": "## Understanding Temperature Control\n\nTemperature control is the **single most important tool** for preventing bacterial growth in food. The danger zone, between **8°C and 63°C**, is the temperature range where bacteria multiply most rapidly. Within this range, conditions around body temperature (37°C) are optimal for most pathogens, with doubling times as short as 10 minutes.\n\n### Critical Temperatures You Must Know\n\n| Control Point | Temperature | Why It Matters |\n|---|---|---|\n| Fridge storage | **0°C to 5°C** | Slows bacterial growth significantly (does not stop it) |\n| Freezer storage | **-18°C or below** | Stops bacterial growth completely (does not kill bacteria) |\n| Cooking core temp | **75°C for 30 seconds** | Kills most vegetative bacteria at the thickest part |\n| Hot holding | **63°C or above** | Keeps food above the danger zone during service |\n| Reheating | **75°C core** (82°C in Scotland) | Ensures bacteria that grew during cooling are killed |\n| Cooling target | **Below 8°C within 90 minutes** | Minimises time in the danger zone |\n\n### The 4-Hour Rule\n\nIf high-risk food has been in the danger zone for a **cumulative total of more than 4 hours**, it must be discarded. Time in the danger zone is cumulative -- it adds up across delivery, preparation, cooking, cooling, and service.\n\n### Why Freezing Does Not Kill Bacteria\n\nFreezing puts bacteria into a dormant state. When food thaws, bacteria resume multiplying. This is why thawed food must be treated as fresh and used promptly, and why food should never be refrozen once thawed unless it has been cooked first.",
+              "keyTakeaway": "The danger zone is 8-63°C; cook to 75°C core, hold hot at 63°C+, store cold at 0-5°C, cool within 90 minutes, and discard food in the danger zone for more than 4 hours."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Cooking, Cooling, and Reheating",
+              "content": "## Getting the Temperatures Right\n\n### Cooking\n\nFood must reach a **core temperature of at least 75°C** and maintain it for **30 seconds** to ensure harmful bacteria are destroyed. The core temperature is measured at the **thickest part** of the food, where it takes longest to heat through. Use a calibrated probe thermometer inserted into the centre of the item.\n\nFor some foods, visual checks can supplement probe readings:\n- Poultry juices should run clear with no pink meat visible\n- Burgers and sausages must be cooked all the way through (no pink centre)\n- However, visual checks alone are **never sufficient** -- always probe\n\n### Cooling\n\nCooked food that will be stored for later use must be cooled as quickly as possible. The target is to bring the temperature **below 8°C within 90 minutes**. Effective cooling methods include:\n\n- Dividing large batches into smaller, shallow containers\n- Using a blast chiller if available\n- Placing containers in cold water baths with ice\n- Stirring liquids (soups, sauces) to release heat\n- Never placing hot food directly into the fridge, as this raises the fridge temperature and puts other food at risk\n\n### Reheating\n\nReheated food must reach a core temperature of **75°C** (or **82°C in Scotland**). Food should only be reheated **once**. If it is not consumed after reheating, it must be discarded. Reheating must be done rapidly -- the aim is to pass through the danger zone as quickly as possible.\n\n### Probe Thermometer Hygiene\n\nClean and disinfect the probe **between each use** with antibacterial probe wipes. A contaminated probe can transfer bacteria from one food item to another.",
+              "keyTakeaway": "Cook to 75°C core for 30 seconds, cool below 8°C within 90 minutes, reheat to 75°C (82°C in Scotland) only once, and clean the probe between every use."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Storage: Fridges, Freezers, and Dry Stores",
+              "content": "## Keeping Food Safe Through Proper Storage\n\n### Fridge Storage (0-5°C)\n\nCorrect fridge storage prevents cross-contamination and slows bacterial growth. The golden rules are:\n\n- **Raw food below, ready-to-eat above**: Raw meat, poultry, and fish must always be stored on the **lowest shelves**, covered and in drip-proof containers. Ready-to-eat food goes on higher shelves so raw juices can never drip onto it.\n- **Temperature monitoring**: Check and record fridge temperatures **at least twice daily** (start and end of service). If the temperature is above 8°C, investigate immediately.\n- **Do not overload**: Overloading reduces air circulation and causes warm spots. Leave space between items.\n- **Cover and label**: All food must be covered, labelled with contents, and dated with the preparation date and use-by date.\n\n### Freezer Storage (-18°C or below)\n\n- Check temperatures daily and record them\n- Rotate stock using **FIFO (First In, First Out)**\n- Never refreeze food that has fully thawed (unless cooked first)\n- Ensure food is properly wrapped to prevent freezer burn\n- Label with date of freezing and contents\n\n### Dry Store\n\n- Keep cool, dry, well-ventilated, and clean\n- Store food off the floor on shelving (minimum 15cm above floor level)\n- Rotate stock using FIFO\n- Check for pest activity regularly\n- Keep opened packages in sealed containers\n\n### FIFO in Practice\n\nFirst In, First Out means using the oldest stock first. When new deliveries arrive, place them **behind** existing stock. Check use-by dates and discard anything that has expired. Never serve food past its use-by date -- it is a criminal offence.",
+              "keyTakeaway": "Store raw below ready-to-eat in the fridge at 0-5°C, check temperatures twice daily, use FIFO rotation, and never serve food past its use-by date."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Use-By Dates, Best-Before Dates, and Deliveries",
+              "content": "## Understanding Date Labels\n\n### Use-By Dates: A Legal Safety Limit\n\nA **use-by date** is a safety deadline. It is the date after which the food may be unsafe to eat, even if it looks, smells, and tastes fine. Selling or serving food past its use-by date is a **criminal offence** under the Food Safety and Hygiene Regulations.\n\n- Use-by dates are found on perishable, high-risk foods: fresh meat, fish, dairy, prepared salads, sandwiches\n- They are only valid if the food has been stored according to the manufacturer's instructions (usually refrigerated)\n- Once a product is opened, follow the \"once opened, use within\" instruction, even if the use-by date has not passed\n\n### Best-Before Dates: A Quality Guide\n\nA **best-before date** (BBE) indicates quality rather than safety. Food may still be safe to eat after this date, but the flavour, texture, or appearance may have deteriorated. Best-before dates are found on longer-life products such as canned goods, dried foods, and frozen items.\n\n### Checking Deliveries\n\nEvery delivery must be checked on arrival for:\n\n- **Temperature**: Chilled food must arrive at **5°C or below**; frozen food at **-18°C or below**. Use a probe thermometer to verify. Reject deliveries above these temperatures.\n- **Packaging integrity**: Reject any damaged, torn, or dented packaging (especially cans, which could allow bacterial entry)\n- **Date codes**: Reject any items past their use-by date or with insufficient shelf life\n- **Condition**: Check for signs of pest damage, cross-contamination, or poor hygiene on the delivery vehicle\n- **Documentation**: Match delivery notes to your order and to the goods received\n\nRecord all delivery checks and any rejections. This is a key part of your due diligence system.",
+              "keyTakeaway": "Use-by dates are legal safety limits and serving food past them is a criminal offence; best-before dates indicate quality; always temperature-check deliveries on arrival."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Personal Hygiene for Food Handlers",
+              "content": "## You Are the Biggest Risk\n\nPeople are one of the most common sources of food contamination. Your skin, hair, nose, mouth, and hands carry bacteria that can transfer to food. Effective personal hygiene is your first line of defence.\n\n### Handwashing: The 20-Second Rule\n\nHands must be washed thoroughly with **warm water and liquid soap for at least 20 seconds**, then rinsed and dried with a **single-use disposable paper towel** (not a tea towel or cloth towel, which harbour bacteria).\n\n**When to wash your hands:**\n- Before handling any food\n- After touching raw meat, poultry, fish, or eggs\n- After using the toilet\n- After handling waste or touching bins\n- After cleaning or using chemicals\n- After touching your face, hair, nose, or mouth\n- After coughing, sneezing, or blowing your nose\n- After smoking or vaping\n- After handling money\n- After returning from a break\n- After touching door handles, phones, or other common surfaces\n\n### Protective Clothing\n\n- Wear **clean** protective clothing (chef whites, apron) that is changed daily or when soiled\n- Hair must be **fully covered** with a hat or hairnet\n- **Remove jewellery** except a plain wedding band (rings trap bacteria, and stones can fall into food)\n- Do not wear watches, bracelets, or earrings\n- **No nail varnish or false nails** -- they can chip into food and harbour bacteria\n\n### Wounds and Plasters\n\n- All cuts, spots, boils, and sores must be completely covered with a **blue waterproof plaster** (blue because there are no naturally blue foods, making the plaster highly visible if it falls into food)\n- Some businesses also require a disposable glove over the plaster\n- If you have an infected wound, report to your manager -- you may need to be moved away from food handling",
+              "keyTakeaway": "Wash hands for at least 20 seconds with soap and warm water at every critical point; wear clean protective clothing, cover wounds with blue plasters, and remove jewellery."
+            },
+            {
+              "id": "m3-s6",
+              "type": "text-graphic-split",
+              "title": "Illness Reporting and Fitness to Work",
+              "content": "## When You Must Not Handle Food\n\nFood handlers who are ill can contaminate food and cause outbreaks affecting many people. The law requires you to report certain symptoms to your manager **before** you start work.\n\n### Reportable Symptoms\n\nYou must report and stay away from food handling if you have:\n\n- **Vomiting** or **diarrhoea** -- you must not return to food handling until **48 hours after symptoms stop** (the \"48-hour rule\"). This is because you can still shed large numbers of bacteria or viruses for at least 48 hours after you feel better.\n- **Infected skin lesions** -- boils, septic cuts, or infected wounds on hands, arms, face, or neck\n- **Discharge from the ear, eye, or nose** -- these can contain Staphylococcus aureus\n- **Jaundice** -- could indicate Hepatitis A infection\n- **Sore throat with fever** -- could indicate Streptococcal infection\n\n### After Foreign Travel\n\nIf you develop diarrhoea or vomiting within two weeks of returning from abroad, inform your manager. You may need a stool sample test before returning to food work, especially if you visited a country with known outbreaks.\n\n### Household Contacts\n\nIf someone in your household has vomiting, diarrhoea, or a confirmed food poisoning diagnosis, you should report this even if you feel well. Your manager may require you to have extra hygiene precautions or a period of exclusion depending on the pathogen involved.\n\n### Manager's Responsibility\n\nManagers must create an environment where staff feel comfortable reporting illness without fear of being penalised. A culture of concealment leads to outbreaks. The business may need to obtain medical clearance before allowing a food handler to return after certain infections (e.g., E. coli O157, typhoid).",
+              "keyTakeaway": "Report vomiting, diarrhoea, infected wounds, and discharge before starting work; do not return to food handling until 48 hours after symptoms stop."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Scenarios: Temperature and Hygiene",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Cooling Crisis",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is 3:00 pm and you have just finished cooking a large batch of beef stew (approximately 20 litres) for tomorrow's lunch service. The stew is at 92°C. It needs to be cooled and refrigerated. The blast chiller is out of order and the engineer cannot come until tomorrow morning. What do you do?",
+                    "options": [
+                      {
+                        "label": "Place the full pot directly into the walk-in fridge to cool overnight.",
+                        "nextNodeId": "fridge_direct"
+                      },
+                      {
+                        "label": "Divide the stew into several shallow containers and use a cold water bath with ice to cool them rapidly.",
+                        "nextNodeId": "correct_cooling"
+                      },
+                      {
+                        "label": "Leave the pot on the counter with the lid off overnight and refrigerate it in the morning.",
+                        "nextNodeId": "leave_counter"
+                      }
+                    ]
+                  },
+                  "fridge_direct": {
+                    "text": "Placing a large pot of hot food directly into the fridge is problematic for two reasons. First, 20 litres of stew at 92°C will raise the fridge temperature significantly, potentially pushing all other food in the fridge into the danger zone. Second, the centre of a large deep pot will cool very slowly, remaining in the danger zone for many hours, allowing Clostridium perfringens spores (which survive cooking) to germinate and multiply. What do you do instead?",
+                    "options": [
+                      {
+                        "label": "Remove the pot from the fridge and divide the stew into shallow containers for faster cooling.",
+                        "nextNodeId": "correct_cooling"
+                      },
+                      {
+                        "label": "Leave it in the fridge anyway -- at least it is in a cold environment.",
+                        "nextNodeId": "wrong_end_fridge"
+                      }
+                    ]
+                  },
+                  "leave_counter": {
+                    "text": "Leaving hot food at room temperature overnight is extremely dangerous. The stew will pass through the danger zone (63°C down to 8°C) over many hours, giving Clostridium perfringens and other bacteria ample time to multiply to dangerous levels. C. perfringens can double every 10 minutes in ideal conditions. By morning, the stew could contain millions of bacteria and their toxins. The food must be discarded.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "correct_cooling": {
+                    "text": "Good decision. You divide the 20 litres into four shallow containers (no more than 5cm deep) to maximise the surface area for heat loss. You place them in a cold water bath with ice and stir regularly to release heat. After 45 minutes, you probe the stew. What temperature are you aiming for?",
+                    "options": [
+                      {
+                        "label": "Below 8°C within 90 minutes of starting the cooling process.",
+                        "nextNodeId": "correct_target"
+                      },
+                      {
+                        "label": "Below 20°C is fine -- it just needs to not be boiling hot.",
+                        "nextNodeId": "wrong_target"
+                      },
+                      {
+                        "label": "Room temperature is good enough before putting it in the fridge.",
+                        "nextNodeId": "wrong_target"
+                      }
+                    ]
+                  },
+                  "correct_target": {
+                    "text": "Correct. The stew reaches 7°C after 80 minutes of active cooling. You cover and label each container with the contents, date, and time, then place them in the walk-in fridge. You record the cooling process, temperatures, and times on the temperature log. Tomorrow, the stew must be reheated to at least 75°C core temperature before service and must not be reheated a second time. Excellent food safety practice.",
+                    "options": []
+                  },
+                  "wrong_target": {
+                    "text": "Room temperature (around 20°C) is still within the danger zone. Bacteria are actively multiplying at this temperature. The food safety target is to cool food to below 8°C within 90 minutes of starting the cooling process. Between 20°C and 50°C, bacteria multiply at their fastest rate. Every extra minute in this range increases the risk.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "wrong_end_fridge": {
+                    "text": "By leaving the large hot pot in the fridge, you have compromised the safety of all other food stored there. The fridge temperature rises to 14°C and stays elevated for hours. The centre of the stew pot is still at 35°C after 6 hours -- deep in the danger zone. The next morning, the stew contains dangerous levels of Clostridium perfringens. All food in the fridge must now be assessed, and much of it needs to be discarded. This is a costly and dangerous outcome.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Ill Colleague",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You arrive for the Saturday morning shift at a care home kitchen. Your colleague, Priya, is already at the prep bench. She looks pale and tired. When you ask if she is okay, she tells you she was vomiting during the night but feels a bit better now. She says she cannot call in sick because the kitchen is short-staffed and the residents need their meals. She has already started preparing sandwiches for the lunch trolley. What do you do?",
+                    "options": [
+                      {
+                        "label": "Tell Priya she should not be handling food and inform the manager or supervisor immediately.",
+                        "nextNodeId": "report_illness"
+                      },
+                      {
+                        "label": "Give Priya some anti-sickness tablets and suggest she washes her hands more often.",
+                        "nextNodeId": "medicate"
+                      },
+                      {
+                        "label": "Say nothing -- she knows her own body and the kitchen needs the help.",
+                        "nextNodeId": "ignore_illness"
+                      }
+                    ]
+                  },
+                  "report_illness": {
+                    "text": "Good decision. You explain to Priya that the law requires food handlers with vomiting or diarrhoea to stop handling food, and that working in a care home kitchen where residents are elderly and vulnerable makes this even more critical. You contact the duty manager. The manager agrees Priya must go home. However, the sandwiches Priya already prepared are on the counter. What should happen to them?",
+                    "options": [
+                      {
+                        "label": "Discard all the sandwiches Priya prepared -- they may be contaminated with Norovirus or bacteria from her hands.",
+                        "nextNodeId": "discard_food"
+                      },
+                      {
+                        "label": "Serve them anyway -- she was wearing gloves.",
+                        "nextNodeId": "serve_contaminated"
+                      },
+                      {
+                        "label": "Check if they look okay and smell fine, then serve them.",
+                        "nextNodeId": "serve_contaminated"
+                      }
+                    ]
+                  },
+                  "medicate": {
+                    "text": "Anti-sickness tablets do not stop a person from being infectious. Someone with vomiting caused by Norovirus can shed billions of viral particles, and as few as 10-100 particles can infect another person. Frequent handwashing helps but does not eliminate the risk, especially in a care home setting where residents are elderly and highly vulnerable to severe illness from Norovirus. What should you do?",
+                    "options": [
+                      {
+                        "label": "Tell the manager that Priya has been vomiting and should not be handling food.",
+                        "nextNodeId": "report_illness"
+                      },
+                      {
+                        "label": "Accept the situation -- the tablets should help.",
+                        "nextNodeId": "wrong_end_outbreak"
+                      }
+                    ]
+                  },
+                  "ignore_illness": {
+                    "text": "By saying nothing, you are allowing a potentially infectious person to handle food served to vulnerable elderly residents. Within 72 hours, eight residents develop severe vomiting and diarrhoea consistent with Norovirus. Two residents are hospitalised with dehydration. The care home faces investigation by the local authority and the Care Quality Commission. Both you and Priya could face disciplinary action -- Priya for not reporting her illness, and you for not raising the concern when you knew about it.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "discard_food": {
+                    "text": "Correct. Any food handled by a person with vomiting must be considered contaminated. Norovirus is extremely infectious and cannot be detected by appearance or smell. You discard the sandwiches, sanitise the preparation area thoroughly, and begin fresh preparation with clean equipment. The manager documents the incident, arranges cover for Priya, and records the food disposal as a corrective action. Priya must not return to food handling until 48 hours after her last symptoms.",
+                    "options": []
+                  },
+                  "serve_contaminated": {
+                    "text": "Gloves are not a barrier against viruses if the person's hands were contaminated before putting the gloves on, or if they touched their face during preparation. Norovirus cannot be seen, smelled, or tasted. Serving this food to elderly care home residents could cause a serious outbreak. In care homes, Norovirus can lead to hospitalisation and even death in frail residents. The food must be discarded.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "wrong_end_outbreak": {
+                    "text": "Within 48 hours, a Norovirus outbreak sweeps through the care home. Twelve residents and four staff members are affected. The home is closed to new admissions. Two elderly residents with existing health conditions are hospitalised. The outbreak investigation identifies Priya as the source. The care home faces enforcement action, and staff involved face disciplinary proceedings for failing to follow illness reporting procedures.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Cleaning and Due Diligence",
+      "description": "Cleaning methods, pest control, COSHH, EHO powers, record keeping, and the basics of HACCP.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Cleaning, Pest Control, and HACCP",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Two-Stage Cleaning and Sanitisation",
+              "content": "## Clean Is Not the Same as Safe\n\nA surface can look clean but still harbour dangerous levels of bacteria. That is why food contact surfaces require **two-stage cleaning**: first removing visible dirt, then killing invisible bacteria.\n\n### Stage 1: Cleaning (Removing Dirt)\n\nUse **hot water and detergent** to remove visible food debris, grease, and dirt. Detergent breaks down grease and lifts soil so it can be rinsed away. This removes the organic matter that protects bacteria and prevents sanitisers from working.\n\n### Stage 2: Sanitising (Killing Bacteria)\n\nAfter cleaning, apply a **food-safe sanitiser** to the surface. Follow the manufacturer's instructions for:\n- **Concentration** -- too weak and it will not work; too strong and it could contaminate food\n- **Contact time** -- the surface must remain wet with sanitiser for the specified time\n- **Temperature** -- some sanitisers work best at specific temperatures\n\n### The Six Stages of Effective Cleaning\n\n1. **Pre-clean**: Remove loose debris by scraping, sweeping, or wiping\n2. **Main clean**: Apply detergent and hot water, scrub to remove grease and dirt\n3. **Rinse**: Remove detergent residue with clean water\n4. **Sanitise**: Apply sanitiser at the correct dilution for the required contact time\n5. **Final rinse**: Rinse off sanitiser if required by the product instructions\n6. **Air dry**: Allow to dry naturally -- never use tea towels on food contact surfaces\n\n### Combined Products\n\nSanitising sprays that combine detergent and sanitiser are available for light cleaning. However, for heavily soiled surfaces, the two-stage approach is always more effective.",
+              "keyTakeaway": "Two-stage cleaning means removing visible dirt with detergent first, then killing bacteria with sanitiser; both stages are essential because a surface that looks clean can still harbour pathogens."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Cleaning Schedules and COSHH",
+              "content": "## Documented Cleaning Systems\n\n### Cleaning Schedules\n\nA cleaning schedule is a documented plan that ensures everything in the premises is cleaned regularly, correctly, and consistently. Every food business must have one. An effective cleaning schedule specifies:\n\n- **What** needs to be cleaned (each piece of equipment, surface, area, and fixture)\n- **Who** is responsible for cleaning it\n- **When** it must be cleaned (frequency: after each use, daily, weekly, monthly)\n- **How** it must be cleaned (method, chemicals, concentrations, contact times)\n- **Sign-off** space for the person who did the cleaning and the person who checked it\n\n### Why Schedules Matter\n\nWithout a schedule, cleaning is inconsistent and areas get missed. Common gaps include:\n- Behind and underneath equipment\n- Fridge door seals and shelf tracks\n- Can opener blades and slicer guards\n- Light fittings and ventilation grilles\n- Waste bin lids and handles\n\n### COSHH: Control of Substances Hazardous to Health\n\n**COSHH regulations** require employers to assess and control the risks from hazardous substances, including cleaning chemicals. In a food environment, COSHH means:\n\n- All chemicals must be stored in a **locked cupboard or designated area**, separate from food\n- Chemicals must be in their **original labelled containers** or correctly labelled if decanted\n- **Safety data sheets (SDS)** must be available for every chemical used\n- Staff must be **trained** on how to use chemicals safely, including dilution rates, protective equipment, and first aid measures\n- Chemicals must **never** be stored in food containers, and food must never be stored in chemical containers\n- Damaged or leaking containers must be dealt with immediately according to the SDS instructions",
+              "keyTakeaway": "Cleaning schedules must specify what, who, when, and how for every surface and piece of equipment; COSHH requires chemicals to be stored securely, labelled correctly, and used by trained staff."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Pest Control",
+              "content": "## Preventing and Detecting Pest Problems\n\nPests contaminate food with bacteria, droppings, urine, fur, and body parts. A single mouse can produce **up to 80 droppings per day** and contaminate far more food than it eats.\n\n### Common Pests in Food Premises\n\n- **Rodents**: Carry Salmonella, E. coli, and Weil's disease. Mice squeeze through gaps as small as 6mm\n- **Cockroaches**: Carry Salmonella on their bodies. Active at night in warm, dark, damp areas\n- **Flies**: Transfer bacteria from rubbish and drains. Houseflies regurgitate digestive juices onto food\n- **Stored-product insects**: Weevils, flour beetles, and moths infesting dry goods\n- **Birds**: Droppings carry Salmonella. Enter through open doors or broken windows\n\n### Signs of Pest Activity\n\nCheck for and report:\n- **Droppings** -- mouse droppings are small and dark; rat droppings are larger\n- **Gnaw marks** on packaging, cables, or woodwork\n- **Grease smear marks** along walls and skirting boards\n- **Nesting materials** -- shredded paper or fabric in hidden areas\n- **Live or dead pests**, larvae, or eggs\n- **Unusual smells** -- rodent urine has a distinctive ammonia-like odour\n- **Damaged stock** -- holes in packaging, webbing in dry goods\n\n### Prevention Measures\n\n- Seal gaps around pipes, doors, and windows\n- Fit fly screens on opening windows\n- Keep external areas clean and free of rubbish\n- Store food off the floor in sealed containers\n- Empty bins regularly and keep bin areas clean\n- Use a **professional pest control contractor** for regular inspections\n- Maintain a pest control log as part of your due diligence records",
+              "keyTakeaway": "Check daily for signs of pests including droppings, gnaw marks, and grease smears; prevent access by sealing gaps, storing food correctly, and maintaining a contract with a professional pest control company."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "EHO Powers and Enforcement",
+              "content": "## What Happens When Things Go Wrong\n\nEnvironmental Health Officers (EHOs) are the front line of food safety enforcement. Understanding their powers helps you appreciate why compliance matters every day.\n\n### Powers of Entry and Inspection\n\nEHOs have the legal power to:\n- **Enter food premises** at any reasonable time without prior notice\n- **Inspect and examine** food, equipment, processes, and records\n- **Take samples** of food, water, and surface swabs for laboratory testing\n- **Take photographs** as evidence\n- **Seize and detain** food they believe is unsafe\n- **Interview staff** about their training, knowledge, and practices\n\n### Enforcement Options\n\n1. **Informal action**: Written advice for minor issues\n2. **Hygiene Improvement Notice**: A legal notice requiring specific improvements within a set timeframe. Failure to comply is a criminal offence\n3. **Hygiene Emergency Prohibition Notice**: Issued when there is an **imminent risk to health**, this can close premises or ban processes. Must be confirmed by a court within 3 days\n4. **Prosecution**: For serious offences. Penalties include **unlimited fines** and up to **2 years' imprisonment**\n5. **Simple Caution**: An alternative to prosecution for less serious offences where the offender admits guilt\n\n### Personal Liability\n\nBoth the business and **individuals** can be prosecuted. A manager who knew about a problem and did nothing can be personally convicted.",
+              "keyTakeaway": "EHOs can enter without notice, inspect food and records, take samples, close premises, and prosecute; both businesses and individuals face unlimited fines and up to 2 years in prison."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Record Keeping, Traceability, and HACCP Basics",
+              "content": "## The Paper Trail That Protects You\n\n### Why Records Matter\n\nRecords prove your food safety system works. Without them, you have no due diligence defence.\n\n### Essential Records\n\nEvery food business should maintain:\n- **Temperature logs**: Fridge, freezer, cooking, cooling, and delivery temperatures\n- **Cleaning schedules**: Completed and signed off\n- **Delivery records**: Supplier details, temperatures, dates, and rejections\n- **Training records**: Who was trained, on what, when, and by whom\n- **Corrective action records**: What went wrong and what was done\n- **Pest control records**: Contractor reports and sighting records\n\n### Traceability\n\n**Traceability** means identifying where food came from (one step back) and where it went (one step forward). Under **EC Regulation 178/2002**, businesses must provide this information on demand. Keep supplier invoices, delivery notes, and batch codes to allow rapid identification and recall of contaminated products.\n\n### HACCP: The Framework for Food Safety Management\n\n**HACCP** (Hazard Analysis and Critical Control Points) is a systematic approach to controlling food safety hazards. UK law requires all food businesses to implement a system based on its **seven principles**:\n\n1. **Identify hazards** and assess severity and likelihood\n2. **Determine Critical Control Points** -- steps where control is essential\n3. **Set critical limits** (e.g., cooking to 75°C)\n4. **Monitor** each CCP (e.g., probe every batch)\n5. **Establish corrective actions** when limits are breached\n6. **Verify** the system works through reviews and audits\n7. **Document** procedures, monitoring, and corrective actions\n\nFor smaller businesses, the FSA provides **Safer Food, Better Business (SFBB)** packs that simplify HACCP into practical procedures.",
+              "keyTakeaway": "Keep temperature logs, cleaning records, delivery checks, training records, and corrective actions; HACCP is the legally required framework built on seven principles of hazard identification and control."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Scenarios: Cleaning and Compliance",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Pest Discovery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are opening the kitchen at 6:00 am for the breakfast shift at a hospital canteen. As you switch on the lights in the dry store, you notice small dark droppings scattered on the shelf next to open bags of flour and rice. There are also what appear to be gnaw marks on the corner of a cardboard box of cereal. The breakfast service starts in 90 minutes and these ingredients are needed. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Sweep up the droppings, check the food looks okay, and use it -- the breakfast service cannot be delayed.",
+                        "nextNodeId": "use_contaminated"
+                      },
+                      {
+                        "label": "Do not touch the affected food. Close the dry store, report to your supervisor immediately, and document what you found.",
+                        "nextNodeId": "report_correct"
+                      },
+                      {
+                        "label": "Throw away the open bags of flour and rice but use the cereal from the gnawed box since the inner bag might be intact.",
+                        "nextNodeId": "partial_action"
+                      }
+                    ]
+                  },
+                  "use_contaminated": {
+                    "text": "Mouse droppings indicate that rodents have been in direct contact with the food and surrounding surfaces. Rodent droppings and urine carry Salmonella, E. coli, and other dangerous pathogens. Using food from contaminated areas risks causing serious illness to hospital patients who may already be vulnerable. The droppings you can see represent only a fraction of the contamination -- rodent urine is invisible and spreads across surfaces as they move.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "partial_action": {
+                    "text": "Discarding the open bags is correct, but the gnawed cereal box should also be rejected. If rodents have gnawed through the outer packaging, they may have accessed the inner bag. Even if the inner bag appears intact, the exterior is contaminated with droppings and urine. Additionally, the entire dry store needs to be assessed, not just the obviously affected items. What should you do now?",
+                    "options": [
+                      {
+                        "label": "Discard all visibly affected stock, close the store, and report everything to your supervisor.",
+                        "nextNodeId": "report_correct"
+                      },
+                      {
+                        "label": "Just discard the cereal box as well and use other items that look unaffected.",
+                        "nextNodeId": "wrong_end_partial"
+                      }
+                    ]
+                  },
+                  "report_correct": {
+                    "text": "Good. Your supervisor arrives and assesses the situation. The dry store is closed and all exposed or damaged food is quarantined for disposal. The pest control contractor is called for an emergency visit. Now, what needs to happen about the breakfast service?",
+                    "options": [
+                      {
+                        "label": "Use sealed, unaffected stock from a different storage area. Adjust the menu if necessary and inform the catering manager.",
+                        "nextNodeId": "correct_service"
+                      },
+                      {
+                        "label": "Cancel breakfast entirely until the pest controller arrives.",
+                        "nextNodeId": "overreaction"
+                      },
+                      {
+                        "label": "Go ahead and use items from the contaminated dry store that are in sealed tins and jars.",
+                        "nextNodeId": "sealed_items"
+                      }
+                    ]
+                  },
+                  "correct_service": {
+                    "text": "Excellent decision. You adapt the menu using sealed, uncontaminated stock from alternative storage. The pest controller arrives, identifies mouse activity, and sets up a treatment plan. The dry store is deep-cleaned and sanitised before being restocked. An incident report is completed documenting the discovery, the actions taken, food disposed of, and the pest controller's findings. This record is essential due diligence evidence.",
+                    "options": []
+                  },
+                  "overreaction": {
+                    "text": "While your caution is understandable, cancelling the entire breakfast service at a hospital is a disproportionate response if there is uncontaminated stock available elsewhere. Patients need to be fed. The correct approach is to quarantine the affected area, use unaffected stock, and adapt the service while the pest issue is dealt with. Document everything for due diligence.",
+                    "options": []
+                  },
+                  "sealed_items": {
+                    "text": "Sealed tins and jars from within the contaminated area need careful assessment. While the contents may be unaffected, the exterior of each container could be contaminated with rodent urine and droppings. If you do use them, each item must be thoroughly cleaned and sanitised on the outside before opening. However, using stock from an uncontaminated area is simpler and safer if available.",
+                    "options": []
+                  },
+                  "wrong_end_partial": {
+                    "text": "By not reporting the full extent of the problem, you risk the pest issue going unaddressed. A few droppings visible to you likely means a much larger infestation hidden behind equipment and in wall cavities. Without professional pest control intervention, the problem will worsen. In a hospital setting, a pest-related food poisoning outbreak among vulnerable patients could have devastating consequences. Always report immediately and fully.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Record-Keeping Challenge",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are a kitchen supervisor at a busy restaurant. It is 10:30 pm and the Friday night service has just ended. Your team is exhausted after a very busy shift. The kitchen porter reminds you that the daily temperature log has not been completed -- no fridge or freezer temperatures were recorded today because the morning team forgot and the evening team was too busy. The temperature log book has a blank space for today's date. A colleague suggests backdating the records by writing in temperatures now. What do you do?",
+                    "options": [
+                      {
+                        "label": "Write in reasonable-sounding temperatures for the whole day. The fridges have been fine all shift.",
+                        "nextNodeId": "falsify_records"
+                      },
+                      {
+                        "label": "Record the actual current temperatures now, note that earlier readings were missed, and document a corrective action plan.",
+                        "nextNodeId": "honest_record"
+                      },
+                      {
+                        "label": "Leave the log blank for today and hope no one notices.",
+                        "nextNodeId": "leave_blank"
+                      }
+                    ]
+                  },
+                  "falsify_records": {
+                    "text": "Falsifying records is a serious offence. If an EHO discovers that records have been fabricated (which experienced inspectors can often detect from patterns and handwriting), it destroys the credibility of your entire due diligence system. The business could face prosecution for providing false information to enforcement authorities. Additionally, you have no way of knowing what the temperatures actually were earlier -- a fridge could have failed and recovered without anyone noticing. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Record current temperatures honestly and note the earlier gap.",
+                        "nextNodeId": "honest_record"
+                      },
+                      {
+                        "label": "Go ahead with the false records -- no one will know.",
+                        "nextNodeId": "wrong_end_falsify"
+                      }
+                    ]
+                  },
+                  "leave_blank": {
+                    "text": "Leaving the log blank is better than falsifying it, but it creates a gap in your due diligence that an EHO will question. A blank entry shows the monitoring system failed. However, a blank with an explanation is far better than fabricated data. What should you do to address the situation properly?",
+                    "options": [
+                      {
+                        "label": "Record current temperatures, add an explanatory note about the gap, and create a corrective action to prevent it happening again.",
+                        "nextNodeId": "honest_record"
+                      },
+                      {
+                        "label": "Just leave it blank. Missing one day is not a big deal.",
+                        "nextNodeId": "wrong_end_blank"
+                      }
+                    ]
+                  },
+                  "honest_record": {
+                    "text": "Good decision. You record the current temperatures (all within range), note on the log that earlier readings were missed during the shift, and write a brief explanation. Now, what corrective action should you put in place to prevent this happening again?",
+                    "options": [
+                      {
+                        "label": "Assign specific named individuals to each temperature check time slot and add a visible reminder board in the kitchen.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Send a text message to the team saying 'Don't forget temperature checks.'",
+                        "nextNodeId": "weak_action"
+                      },
+                      {
+                        "label": "Tell the morning team off and leave it at that.",
+                        "nextNodeId": "weak_action"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Excellent. You create a corrective action record stating: the gap identified, the current temperatures verified as safe, and the preventive measure (named responsibility for each check time). You brief both teams at the next shift handover. An EHO reviewing your records would see a team that identified a problem, acted honestly, and put a system in place to prevent recurrence. This is exactly what due diligence looks like -- not perfection, but honest, systematic management of food safety.",
+                    "options": []
+                  },
+                  "weak_action": {
+                    "text": "A vague reminder or a telling-off is unlikely to fix the underlying problem. The issue is systemic: there was no clear ownership of the temperature checks and no fail-safe to catch a missed reading. Effective corrective action requires a specific change to the system -- such as assigning named individuals to specific time slots, adding visible reminders, or incorporating temperature checks into the shift handover procedure. What would be more effective?",
+                    "options": [
+                      {
+                        "label": "Assign named individuals to each check and add temperature checks to the shift handover checklist.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "wrong_end_falsify": {
+                    "text": "Six weeks later, an EHO visits and reviews your temperature logs. She notices that Friday's entries are in different ink to the rest of the week and the handwriting is unusually uniform. She questions you and discovers the records were fabricated. The entire due diligence system is now compromised. The EHO issues a Hygiene Improvement Notice and reports the falsification. The business may face prosecution. Your professional reputation is seriously damaged. Honest gaps with corrective actions are always better than fabricated records.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "wrong_end_blank": {
+                    "text": "While one blank day may seem minor, it establishes a pattern of complacency. Without action, missed checks will become more frequent. If an EHO sees multiple gaps with no corrective action, it suggests the business does not take monitoring seriously. The problem could also mask a genuine equipment failure. A fridge that silently malfunctions on the one day nobody checks could put food safety at risk for the entire period until the next check.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Final Assessment",
+      "description": "Test your knowledge across all modules with a comprehensive assessment.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m5-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What is the main purpose of the Food Safety Act 1990?",
+        "options": [
+          "To regulate food advertising and marketing standards",
+          "To ensure food produced or sold is safe to eat and to create offences for selling unsafe food",
+          "To set the prices that food businesses can charge",
+          "To provide guidelines on restaurant interior design and layout"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "Which authority is primarily responsible for inspecting and enforcing food safety in local food businesses?",
+        "options": [
+          "The Food Standards Agency directly",
+          "Environmental Health Officers employed by local authorities",
+          "The Health and Safety Executive",
+          "Trading Standards Officers exclusively"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "Under Section 21 of the Food Safety Act 1990, what defence is available to a food business accused of an offence?",
+        "options": [
+          "That they did not know the law existed",
+          "That all reasonable precautions were taken and all due diligence was exercised",
+          "That the customer did not complain at the time",
+          "That no one was actually made ill by the food"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "What does EC Regulation 852/2004 require of all food businesses?",
+        "options": [
+          "That they employ at least one qualified chef",
+          "That they implement food safety management procedures based on HACCP principles",
+          "That they are inspected monthly by the FSA",
+          "That they only serve food that has been laboratory tested"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "A food handler discovers they have been serving food past its use-by date. What is the legal position?",
+        "options": [
+          "It is only illegal if a customer becomes ill",
+          "It is a criminal offence regardless of whether anyone becomes ill",
+          "It is acceptable if the food still looks and smells fine",
+          "It is only an issue for pre-packaged food, not restaurant dishes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "What maximum penalty can be imposed for food safety offences under the Food Safety Act 1990?",
+        "options": [
+          "A fixed penalty notice of £500",
+          "An unlimited fine and up to 2 years' imprisonment",
+          "A fine of up to £5,000 only",
+          "Community service and a written warning"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "The Food Hygiene Rating Scheme (FHRS) rates businesses on a scale of:",
+        "options": [
+          "1 to 10 based on customer reviews",
+          "A to E based on cleanliness only",
+          "0 to 5 based on hygiene, structure, and management",
+          "Pass or Fail based on a single inspection"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q8",
+        "text": "Who can be personally prosecuted under the Food Safety Act 1990?",
+        "options": [
+          "Only the business owner",
+          "Only the person who directly caused the contamination",
+          "Both the business and individual managers or directors who consented to or were negligent about the offence",
+          "Only the Environmental Health Officer who failed to prevent the problem"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q9",
+        "text": "How far in advance must a new food business register with the local authority?",
+        "options": [
+          "7 days before opening",
+          "At least 28 days before opening",
+          "On the day of opening",
+          "Registration is optional for small businesses"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "Which of the following is true about due diligence records?",
+        "options": [
+          "They only need to be kept if the business has more than 10 employees",
+          "They must be accessible to any member of staff during an inspection",
+          "They should be kept in the manager's locked office where only they can access them",
+          "They are only needed for businesses with a FHRS rating below 3"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "What is the most common cause of food poisoning in the UK?",
+        "options": [
+          "Chemical contamination from cleaning products",
+          "Campylobacter, primarily from raw and undercooked poultry",
+          "Physical contamination from broken glass",
+          "Allergic reactions to food additives"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "Which bacterium is unusual because it can grow at refrigerator temperatures (0-5°C)?",
+        "options": [
+          "Salmonella enteritidis",
+          "Clostridium perfringens",
+          "Listeria monocytogenes",
+          "Staphylococcus aureus"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q13",
+        "text": "Staphylococcus aureus food poisoning is particularly dangerous because:",
+        "options": [
+          "The bacteria are resistant to all antibiotics",
+          "The toxin it produces is heat-stable and survives reheating",
+          "It can only be contracted from animal sources",
+          "It takes several weeks for symptoms to appear"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "Clostridium perfringens is most commonly associated with:",
+        "options": [
+          "Fresh salad vegetables and fruit",
+          "Cooked meat and poultry that has been cooled too slowly",
+          "Pasteurised dairy products",
+          "Properly canned and sealed foods"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "How does Norovirus differ from bacterial food poisoning organisms?",
+        "options": [
+          "Norovirus only affects children",
+          "Norovirus does not multiply in food but is spread by infected people and contaminated surfaces",
+          "Norovirus is killed by freezing food below -18°C",
+          "Norovirus causes milder symptoms than bacteria"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "E. coli O157 can cause which serious complication, especially in young children?",
+        "options": [
+          "Chronic fatigue syndrome",
+          "Haemolytic Uraemic Syndrome (HUS), which can cause kidney failure",
+          "Temporary blindness",
+          "Mild skin rashes that resolve within 24 hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "What does the acronym FAT TOM stand for?",
+        "options": [
+          "Food, Acidity, Temperature, Time, Oxygen, Moisture",
+          "Freezing, Allergens, Testing, Traceability, Observation, Management",
+          "Food, Air, Testing, Time, Organisation, Monitoring",
+          "Freshness, Acidity, Temperature, Toxins, Odour, Mould"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q18",
+        "text": "Bacillus cereus is most commonly associated with which food?",
+        "options": [
+          "Raw shellfish and oysters",
+          "Cooked rice and pasta left at room temperature",
+          "Fresh fruit and vegetables",
+          "Cured meats and salami"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "What is cross-contamination?",
+        "options": [
+          "Cooking two different types of food in the same pan",
+          "The transfer of harmful bacteria, chemicals, or physical contaminants from one food, surface, or person to another",
+          "Mixing different brands of the same ingredient together",
+          "Serving food from two different suppliers on the same plate"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Which represents the greatest cross-contamination risk in a kitchen?",
+        "options": [
+          "Storing dry pasta next to canned goods",
+          "Transferring bacteria from raw poultry to ready-to-eat food via shared boards, hands, or cloths",
+          "Using the same frying oil for chips and onion rings",
+          "Placing bread next to fruit in the dry store"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "According to the colour-coding system, which chopping board colour should be used for raw meat?",
+        "options": ["Green", "Blue", "Red", "Yellow"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q22",
+        "text": "Which of the following is classified as a high-risk food?",
+        "options": [
+          "Dry biscuits in a sealed packet",
+          "Cooked sliced ham stored in the fridge",
+          "Uncooked dried pasta in the cupboard",
+          "A sealed tin of baked beans"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "Why are pregnant women considered a vulnerable group for food poisoning?",
+        "options": [
+          "They eat more food than normal",
+          "Listeria can cross the placenta and cause miscarriage, stillbirth, or serious illness in the newborn",
+          "They are more likely to eat raw meat",
+          "Pregnancy makes all food taste different, masking spoilage"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "Which of the following is an example of chemical contamination in food?",
+        "options": [
+          "A hair found in a sandwich",
+          "Salmonella bacteria on raw chicken",
+          "Cleaning fluid accidentally sprayed onto uncovered food",
+          "A piece of broken glass in a salad"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q25",
+        "text": "How many major allergens are defined by UK food law?",
+        "options": ["8 allergens", "10 allergens", "14 allergens", "20 allergens"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q26",
+        "text": "Which of the following is a physical food hazard?",
+        "options": [
+          "Pesticide residue on lettuce",
+          "Salmonella in raw eggs",
+          "A metal staple found in a bread roll",
+          "Detergent residue on a plate"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q27",
+        "text": "What is the 'danger zone' temperature range for bacterial growth?",
+        "options": [
+          "Below 0°C to above 100°C",
+          "Between 8°C and 63°C",
+          "Between 20°C and 37°C only",
+          "Between -18°C and 0°C"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "What core temperature must food reach to be considered safely cooked?",
+        "options": [
+          "55°C for 2 minutes",
+          "63°C for 10 minutes",
+          "75°C for at least 30 seconds",
+          "100°C for 5 seconds"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q29",
+        "text": "At what temperature should a commercial fridge operate?",
+        "options": [
+          "Between 0°C and 5°C",
+          "Between 5°C and 10°C",
+          "Between 8°C and 12°C",
+          "At exactly -1°C"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q30",
+        "text": "What is the minimum hot-holding temperature for food on display during service?",
+        "options": ["Above 50°C", "Above 55°C", "Above 63°C", "Above 75°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q31",
+        "text": "Cooked food that will be stored must be cooled to below 8°C within what timeframe?",
+        "options": ["30 minutes", "90 minutes", "4 hours", "6 hours"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "What temperature should frozen food be stored at?",
+        "options": ["0°C or below", "-10°C or below", "-18°C or below", "-25°C or below"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q33",
+        "text": "When reheating food in England, what core temperature must it reach?",
+        "options": ["63°C", "70°C", "75°C", "82°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q34",
+        "text": "What happens to bacteria when food is frozen?",
+        "options": [
+          "They are killed by the cold temperature",
+          "They become dormant but resume multiplying when the food thaws",
+          "They are permanently weakened and cannot cause illness",
+          "They multiply more slowly but do not stop completely"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "What is the maximum cumulative time high-risk food can spend in the danger zone before it must be discarded?",
+        "options": ["1 hour", "2 hours", "4 hours", "8 hours"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q36",
+        "text": "What is the correct method for thawing frozen food safely?",
+        "options": [
+          "Leave it on the kitchen counter at room temperature overnight",
+          "Thaw it in the fridge on a drip tray, covered, allowing adequate time",
+          "Run it under hot water from the tap until thawed",
+          "Place it on a radiator to speed up the thawing process"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q37",
+        "text": "How should raw meat be stored in a fridge?",
+        "options": [
+          "On the top shelf for easy access",
+          "On the bottom shelf, covered and in a drip-proof container, below ready-to-eat food",
+          "Wherever there is available space, as long as it is covered",
+          "Next to dairy products on the middle shelf"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "What does FIFO stand for in stock management?",
+        "options": [
+          "First Inspected, First Offered",
+          "Frozen Items Filed Orderly",
+          "First In, First Out",
+          "Food Inspection and Freshness Order"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q39",
+        "text": "What is the difference between a use-by date and a best-before date?",
+        "options": [
+          "There is no practical difference between them",
+          "Use-by relates to food safety and is a legal limit; best-before relates to quality",
+          "Best-before is more important for safety than use-by",
+          "Use-by applies only to frozen food; best-before applies to chilled food"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "A chilled delivery arrives at 9°C. What should you do?",
+        "options": [
+          "Accept it and put it straight in the fridge to cool down",
+          "Reject the delivery and document the rejection",
+          "Accept it but use it within 1 hour",
+          "Check with the driver if the van was cold enough"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "Why should a probe thermometer be cleaned between each use?",
+        "options": [
+          "To keep the display screen visible and readable",
+          "To prevent transferring bacteria from one food item to another",
+          "To maintain the battery life of the thermometer",
+          "To comply with equipment warranty requirements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "Why should you not place hot food directly into the fridge?",
+        "options": [
+          "It damages the fridge motor permanently",
+          "It raises the fridge temperature, putting all other food in the fridge at risk",
+          "It causes condensation that makes the food soggy",
+          "It is perfectly acceptable to place hot food in the fridge"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "How long should hand washing take as a minimum?",
+        "options": [
+          "5 seconds with cold water",
+          "10 seconds with soap",
+          "20 seconds with warm water and soap",
+          "2 minutes with antibacterial gel only"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "When must a food handler wash their hands?",
+        "options": [
+          "Only at the start and end of each shift",
+          "Before handling food, after touching raw food, after using the toilet, after handling waste, and after breaks",
+          "Only when hands are visibly dirty or stained",
+          "Once per hour during a busy service period"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q45",
+        "text": "How should hands be dried after washing?",
+        "options": [
+          "On a shared cotton towel hanging near the sink",
+          "Using a clean section of your apron",
+          "With single-use disposable paper towels",
+          "By waving them in the air until dry"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q46",
+        "text": "Why are blue waterproof plasters used in the food industry?",
+        "options": [
+          "They are cheaper than other colours",
+          "They are more waterproof than other colours",
+          "Blue is easily visible if the plaster falls into food, as there are no naturally blue foods",
+          "They contain antiseptic that prevents bacterial growth"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q47",
+        "text": "A food handler should not wear which of the following during food preparation?",
+        "options": [
+          "Clean chef whites changed daily",
+          "A clean apron over protective clothing",
+          "A wristwatch, bracelets, and rings with stones",
+          "A hat or hairnet covering all hair"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q48",
+        "text": "A food handler has been vomiting during the night. When can they return to food handling?",
+        "options": [
+          "As soon as they feel well enough to work",
+          "After 24 hours without symptoms",
+          "After 48 hours without symptoms",
+          "After 72 hours without symptoms"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q49",
+        "text": "Which of the following symptoms must be reported to a manager before starting work?",
+        "options": [
+          "A mild headache and tiredness",
+          "Vomiting, diarrhoea, infected skin lesions, or discharge from ears, eyes, or nose",
+          "A slight cough with no fever",
+          "Muscle aches from exercise the previous day"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "Why is false nail varnish prohibited for food handlers?",
+        "options": [
+          "It makes handwashing less effective and pieces can chip into food",
+          "It contains chemicals that are absorbed through the skin into food",
+          "It prevents food handlers from feeling the temperature of food",
+          "It is only prohibited for aesthetic reasons by most employers"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q51",
+        "text": "A colleague in your household has been diagnosed with Salmonella. What should you do?",
+        "options": [
+          "There is no need to do anything unless you develop symptoms",
+          "Report it to your manager even if you feel well, as you may need to be excluded or tested",
+          "Wait 48 hours and then return to work as normal",
+          "Take antibiotics as a precaution and continue working"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "What is the purpose of wearing protective clothing in a food environment?",
+        "options": [
+          "To protect the food handler's own clothes from stains and splashes",
+          "To prevent contamination of food from the handler's outdoor clothing, skin, and hair",
+          "To identify staff roles through colour coding only",
+          "To comply with uniform policy for customer-facing appearance"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "What is the two-stage cleaning method?",
+        "options": [
+          "Sweep the floor and then mop it",
+          "Clean with detergent to remove dirt, then sanitise to kill bacteria",
+          "Wipe with a damp cloth and then dry with a tea towel",
+          "Spray with sanitiser and then rinse with cold water"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Why must detergent cleaning be done before sanitising?",
+        "options": [
+          "Detergent smells better than sanitiser alone",
+          "Organic matter and grease protect bacteria and prevent the sanitiser from working effectively",
+          "Sanitiser is too expensive to use on visibly dirty surfaces",
+          "Detergent kills bacteria first and sanitiser provides a fresh scent"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "A cleaning schedule should specify which of the following?",
+        "options": [
+          "What to clean, who is responsible, when to clean, how to clean, and a sign-off space",
+          "Only what to clean and when, with no need for sign-off",
+          "The brand names of cleaning products but not the method",
+          "A general instruction to keep everything clean at all times"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q56",
+        "text": "Under COSHH regulations, where must cleaning chemicals be stored?",
+        "options": [
+          "Under the kitchen sink for easy access during cleaning",
+          "In a locked cupboard or designated area separate from food storage",
+          "On the same shelves as food, provided they are clearly labelled",
+          "In the dry store alongside cooking ingredients"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "Which of the following is a sign of rodent activity in a food premises?",
+        "options": [
+          "Clean surfaces with no visible debris",
+          "Small dark droppings, gnaw marks on packaging, and grease smear marks along walls",
+          "Staff wearing clean protective clothing",
+          "A well-organised dry store with sealed containers"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "What should you do if you discover evidence of pest activity?",
+        "options": [
+          "Clean it up and continue working without telling anyone",
+          "Report it immediately to your supervisor and avoid using any potentially contaminated food",
+          "Set your own traps using household pest products",
+          "Wait until the next scheduled pest control visit to mention it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "How often should a professional pest control contractor visit food premises?",
+        "options": [
+          "Only when a problem is reported",
+          "Regularly as part of a scheduled contract, typically monthly or quarterly",
+          "Once a year during the annual deep clean",
+          "Never, if the premises appear clean and tidy"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "An EHO arrives at your premises for an unannounced inspection. Which of the following is correct?",
+        "options": [
+          "You can ask them to come back when the manager is available",
+          "They have a legal right to enter at any reasonable time without prior notice",
+          "They must give at least 24 hours' notice before inspecting",
+          "They can only inspect if they have a warrant from a magistrate"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "What is a Hygiene Improvement Notice?",
+        "options": [
+          "A friendly suggestion from the EHO with no legal force",
+          "A legal notice requiring specific improvements within a set timeframe, failure to comply is a criminal offence",
+          "A certificate awarded for achieving a FHRS rating of 5",
+          "An internal document used by food businesses for staff training"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "When can an EHO issue a Hygiene Emergency Prohibition Notice?",
+        "options": [
+          "Only after three previous warnings have been ignored",
+          "When there is an imminent risk to health requiring immediate action such as closure",
+          "Only when a customer has already become ill from the food",
+          "When the business has a FHRS rating of 3 or below"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q63",
+        "text": "What does HACCP stand for?",
+        "options": [
+          "Health And Cleaning Certification Process",
+          "Hazard Analysis and Critical Control Points",
+          "Hygiene Assessment and Catering Compliance Programme",
+          "Handling And Cooking Control Procedures"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "What is a Critical Control Point (CCP) in a HACCP system?",
+        "options": [
+          "A point where you can take a break during food preparation",
+          "A step in the process where control can prevent, eliminate, or reduce a food safety hazard to an acceptable level",
+          "The manager's office where records are stored",
+          "A designated area for receiving deliveries"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "How many principles does the HACCP system have?",
+        "options": ["3 principles", "5 principles", "7 principles", "12 principles"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q66",
+        "text": "What does 'traceability' mean in food safety?",
+        "options": [
+          "Being able to trace where staff have been during their shift",
+          "Being able to track food through all stages from supplier to customer (one step back, one step forward)",
+          "Knowing the calorie content of every dish on the menu",
+          "Being able to trace the origin of cleaning chemicals"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "Which records are essential for a food business's due diligence system?",
+        "options": [
+          "Only financial accounts and tax returns",
+          "Temperature logs, cleaning schedules, delivery records, training records, and corrective action records",
+          "Staff holiday requests and shift patterns only",
+          "Customer complaint forms and online reviews"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "What is the Safer Food, Better Business (SFBB) pack?",
+        "options": [
+          "A premium food safety consultancy service for large businesses",
+          "An FSA-provided system that simplifies HACCP principles into practical procedures for smaller businesses",
+          "A set of expensive laboratory testing equipment",
+          "A government grant scheme for food business improvements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "A supervisor discovers that the morning temperature checks were missed. What is the correct action?",
+        "options": [
+          "Backdate the log with estimated temperatures to fill the gap",
+          "Record current temperatures, note the gap with an explanation, and implement a corrective action to prevent recurrence",
+          "Leave the log blank and hope the EHO does not check that page",
+          "Complete the missing entries from memory at the end of the week"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "Why is falsifying food safety records a serious matter?",
+        "options": [
+          "It wastes paper and ink",
+          "It destroys the credibility of the entire due diligence system and can lead to prosecution for providing false information",
+          "It only matters if the EHO happens to check those specific records",
+          "It is only a concern for businesses with poor FHRS ratings"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "Which bacteria can produce spores that survive cooking?",
+        "options": [
+          "Salmonella and Campylobacter",
+          "Clostridium perfringens and Bacillus cereus",
+          "E. coli O157 and Listeria",
+          "Norovirus and Hepatitis A"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "How can Staphylococcus aureus be transferred to food?",
+        "options": [
+          "Through contaminated water supplies only",
+          "By food handlers touching food with infected cuts, or by sneezing and coughing near food",
+          "Only through contact with raw meat and poultry",
+          "Through airborne spores released from mouldy bread"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q73",
+        "text": "What percentage of the healthy population carries Staphylococcus aureus on their skin or in their nose?",
+        "options": ["About 5%", "About 15%", "About 30%", "About 60%"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q74",
+        "text": "Hepatitis A can be spread through which of the following?",
+        "options": [
+          "Airborne droplets from air conditioning systems",
+          "Contaminated food and water, particularly shellfish and salads",
+          "Direct skin contact with infected cooking equipment",
+          "Pasteurised dairy products stored correctly"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "What is the purpose of a probe thermometer?",
+        "options": [
+          "To measure the air temperature in the kitchen",
+          "To check the core temperature of food at its thickest point",
+          "To measure the water temperature for handwashing",
+          "To calibrate the fridge display panel"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "When checking a delivery of chilled food, what temperature should it be at or below?",
+        "options": ["8°C", "5°C", "10°C", "0°C"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "How should food be stored in a fridge to prevent cross-contamination?",
+        "options": [
+          "Raw food on the top shelves and ready-to-eat food on the bottom",
+          "Ready-to-eat food on upper shelves and raw meat on the lowest shelf in drip-proof containers",
+          "All food mixed together as long as it is covered",
+          "Raw and cooked food on the same shelf if there is limited space"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q78",
+        "text": "What should happen to food that has been reheated once and not consumed?",
+        "options": [
+          "Cool it and reheat it again for the next service",
+          "Discard it -- food should only be reheated once",
+          "Keep it at room temperature for staff meals",
+          "Return it to the fridge for use the following day"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "Which of the following is NOT one of the 14 major allergens?",
+        "options": ["Celery", "Chicken", "Sesame", "Lupin"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "Allergen information for food sold or served must be provided:",
+        "options": [
+          "Only if the customer specifically asks about allergens",
+          "For all 14 major allergens for every food item sold or served",
+          "Only for pre-packaged food with printed labels",
+          "Only for dishes that the chef believes contain allergens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "In Scotland, what core temperature must reheated food reach?",
+        "options": ["70°C", "75°C", "82°C", "100°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q82",
+        "text": "What is the green chopping board designated for in the standard colour-coding system?",
+        "options": ["Cooked meat", "Raw meat", "Salad and fruit", "Bakery and dairy products"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q83",
+        "text": "Which of the following best describes why effective cooling of cooked food is critical?",
+        "options": [
+          "Hot food damages fridge components if placed inside immediately",
+          "Slow cooling allows heat-resistant spores to germinate and bacteria to multiply through the danger zone",
+          "Rapid cooling changes the flavour and texture of food",
+          "Cooling is only important for food that will be frozen, not refrigerated"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q84",
+        "text": "What is the best way to divide a large batch of hot soup for rapid cooling?",
+        "options": [
+          "Leave it in the original large pot with the lid off in a cool room",
+          "Pour it into several shallow containers to increase the surface area for heat loss",
+          "Add ice cubes directly into the soup to lower the temperature",
+          "Place the large pot into the walk-in fridge immediately"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q85",
+        "text": "An EHO can take which of the following actions during an inspection?",
+        "options": [
+          "Only give verbal advice and recommendations",
+          "Inspect food, take samples, photograph conditions, seize unsafe food, and interview staff",
+          "Only inspect the dining area, not the kitchen",
+          "Only issue enforcement notices if accompanied by police"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

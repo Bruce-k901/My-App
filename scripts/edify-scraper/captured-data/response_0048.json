@@ -1,0 +1,458 @@
+{
+  "data": [
+    {
+      "id": "9404ef8f-fb24-419b-8653-369540d2a3b0",
+      "name": "Almond cookie",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "d377e837-2867-44c7-a830-9c7506081386",
+      "name": "Almond Frangipane",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "e368c7b4-a7f9-4fe6-bd40-e20331d9b9a6",
+      "name": "Almond Swirl",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "b06398db-f130-4b04-933f-6dd96ef43eed",
+      "name": "Apple Puree",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "43601341-6195-40e6-b198-7e42e432600e",
+      "name": "Brown Butter Cookie",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "f716c891-9c8b-4603-b70f-b3635f5c20ac",
+      "name": "Brownie",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "c4f7c159-c0f2-4a85-b514-3529533df623",
+      "name": "Choc Hazelnut Swirl",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "63387fef-7e0e-4fb6-8018-ade8c05e67a8",
+      "name": "Cinna swirl",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "0eefd08e-1170-4429-a57a-8eeed30dfa93",
+      "name": "Citrus Frosting",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "38cbee69-3015-4fd0-bd64-c6f1ad82184c",
+      "name": "Croissant",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "6241eff9-ed04-4a47-bdc8-422de28a645d",
+      "name": "Date Paste",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "352bbb1f-29a5-422b-aab1-4a3f3f1194b0",
+      "name": "Dough",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "3873fe10-9607-4100-8212-df9d54b6374a",
+      "name": "Earl grey filling",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "18fbee6b-3e9f-4419-a844-7f49d2f9f7d3",
+      "name": "Earl Grey Morning Bun",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "8922e1db-7707-40d8-8f9f-7d6e051eb66e",
+      "name": "Fermented dough",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "ca034edf-919a-44ca-ae6e-432303331cee",
+      "name": "Flourless choc & pecan cookie",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "bdfc27c6-06d7-4c62-914d-09b305dd5b6a",
+      "name": "gingerbread",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "52d9a78b-5c33-46b8-86a0-fbcf1fdc89a9",
+      "name": "Gingerbread syrup",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "64010db7-98d6-4894-9ebd-b1cd128810bf",
+      "name": "Golden spice mix",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "627b0429-a795-4b89-a99b-d1d4285d3bd3",
+      "name": "Hot Chocolate Mix",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "729cfa84-33b3-489d-a4ca-3d1f0c38d10b",
+      "name": "Lemon dust",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "81cff77a-055b-491c-a61a-dd0b26c2292b",
+      "name": "Lemon Glaze",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "a4cf8955-a0c8-4783-86a6-57a59004096c",
+      "name": "Lemon Poppy Swirl",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "5e834ff1-3bef-428c-a873-a4b58e42b79b",
+      "name": "Melted Cheese Topping",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "d14cce4a-e4fc-4fa2-82ea-d4db014f8c15",
+      "name": "Mince pie mix",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "dad15bae-e67a-4c21-a551-bb7419c7ed5c",
+      "name": "Mince pier syrup",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "32e83385-7a59-4edb-8dab-2dfef25f6a33",
+      "name": "mince pie swirl",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "d435a3d7-32fb-477a-95ed-66af9ab2ef4b",
+      "name": "Oat & Raisin Cookie",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "680e459b-7a2d-4d2e-a84f-a80f1b923ba9",
+      "name": "Okja Butter",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "7826ff0f-ad48-426a-981a-2a3efe878459",
+      "name": "Okja - Cashew Cream",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "a65d2b12-70be-468e-b87e-10cb33c1352d",
+      "name": "Okja Choc Hazelnut Spread",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "0e6d250e-ca82-4d3d-896d-d5078160cd50",
+      "name": "Okja Cream Cheese",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "159bfa41-3850-4f9e-a50c-a3df43d13c5e",
+      "name": "Okja Peanut Butter",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "affd7c35-cc97-4c76-acd0-77bffaa76c9b",
+      "name": "Okja Simple Syrup",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "5126e4a6-7da0-4ad7-8555-a600777bf66e",
+      "name": "Orange dust",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "63150106-9cac-4438-995e-2841c7119f2b",
+      "name": "Orange Syrup",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "2b753996-41e6-462f-b2d5-15c92381e04c",
+      "name": "Pan au Choc",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "2921019f-bca0-4ddc-b81c-9e222fa539f0",
+      "name": "Paprika&tomato dust",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "824e2456-418c-4cf6-8db0-56a4703b591e",
+      "name": "Parmesan",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "3b915b9d-8519-4eff-acd2-56e29081bdd0",
+      "name": "Parsley powder",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "721f904e-4cf9-41fd-9be9-88ca5a587d85",
+      "name": "PB&J Swirl",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "3eee40aa-e222-4779-ba40-0bb479f3f442",
+      "name": "Peanut and date caramel",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "fbef86b4-380f-4d11-b2c2-89ba537ccfea",
+      "name": "Peanut Butter Cookie",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "bd5bb6af-90e1-41e7-96de-6a6220b8a45e",
+      "name": "Peanut Butter for Cookies",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "b7f2daa1-e0d8-4b0f-8a6d-55d999eb4d68",
+      "name": "Peanut butter glaze",
+      "status": "ARCHIVED",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "718bf4d1-3575-4f61-a422-e0d064936f9e",
+      "name": "Pistachio Frangipane",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "bdfe188b-eb64-4a64-8cdc-79344507c19a",
+      "name": "Pistachio Swirl",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": ["Production 1"],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "afc1be42-fd4f-477f-8573-9bb78a23b30a",
+      "name": "PR Cinnamon BOX",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "c3450100-f6eb-49d1-b634-4a0d5f583d45",
+      "name": "PR Croissant BOX",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    },
+    {
+      "id": "ff4796f2-48dc-4a16-af74-0f709b552242",
+      "name": "PR mix BOX",
+      "status": "ACTIVE",
+      "tags": [],
+      "productions": [],
+      "ranges": [],
+      "total": "69"
+    }
+  ],
+  "page": 1,
+  "size": 50,
+  "total": 69,
+  "totalPages": 2
+}

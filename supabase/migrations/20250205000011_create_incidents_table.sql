@@ -1,16 +1,21 @@
 -- ============================================================================
 -- Migration: 20250205000011_create_incidents_table.sql
 -- Description: Creates incidents table for storing incident reports
+-- Note: This migration will be skipped if companies table doesn't exist yet
 -- ============================================================================
 
--- Drop existing table if it exists (to avoid column conflicts)
-DROP TABLE IF EXISTS public.incidents CASCADE;
+-- Create incidents table (only if companies table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+    -- Drop existing table if it exists (to avoid column conflicts)
+    DROP TABLE IF EXISTS public.incidents CASCADE;
 
--- Create incidents table
-CREATE TABLE public.incidents (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
-  site_id UUID REFERENCES public.sites(id) ON DELETE SET NULL,
+    -- Create incidents table
+    CREATE TABLE public.incidents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+      site_id UUID REFERENCES public.sites(id) ON DELETE SET NULL,
   
   -- Incident Details
   title TEXT NOT NULL,
@@ -64,52 +69,71 @@ CREATE TABLE public.incidents (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
-  -- Foreign key to task if created from a task template
-  source_task_id UUID REFERENCES public.checklist_tasks(id) ON DELETE SET NULL,
-  source_template_id UUID REFERENCES public.task_templates(id) ON DELETE SET NULL
-);
+      -- Foreign key to task if created from a task template (only if tables exist)
+      source_task_id UUID,
+      source_template_id UUID
+    );
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_incidents_company ON public.incidents(company_id);
-CREATE INDEX IF NOT EXISTS idx_incidents_site ON public.incidents(site_id);
-CREATE INDEX IF NOT EXISTS idx_incidents_status ON public.incidents(status);
-CREATE INDEX IF NOT EXISTS idx_incidents_severity ON public.incidents(severity);
-CREATE INDEX IF NOT EXISTS idx_incidents_date ON public.incidents(incident_date DESC);
-CREATE INDEX IF NOT EXISTS idx_incidents_riddor ON public.incidents(riddor_reportable) WHERE riddor_reportable = TRUE;
+    -- Add foreign keys conditionally
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'checklist_tasks') THEN
+      ALTER TABLE public.incidents 
+      ADD CONSTRAINT incidents_source_task_id_fkey 
+      FOREIGN KEY (source_task_id) REFERENCES public.checklist_tasks(id) ON DELETE SET NULL;
+    END IF;
 
--- RLS Policies
-ALTER TABLE public.incidents ENABLE ROW LEVEL SECURITY;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+      ALTER TABLE public.incidents 
+      ADD CONSTRAINT incidents_source_template_id_fkey 
+      FOREIGN KEY (source_template_id) REFERENCES public.task_templates(id) ON DELETE SET NULL;
+    END IF;
 
--- Policy: Users can view incidents for their company
-CREATE POLICY "Users can view incidents for their company"
-  ON public.incidents FOR SELECT
-  USING (
-    company_id IN (
-      SELECT company_id FROM public.profiles WHERE id = auth.uid()
-    )
-  );
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS idx_incidents_company ON public.incidents(company_id);
+    CREATE INDEX IF NOT EXISTS idx_incidents_site ON public.incidents(site_id);
+    CREATE INDEX IF NOT EXISTS idx_incidents_status ON public.incidents(status);
+    CREATE INDEX IF NOT EXISTS idx_incidents_severity ON public.incidents(severity);
+    CREATE INDEX IF NOT EXISTS idx_incidents_date ON public.incidents(incident_date DESC);
+    CREATE INDEX IF NOT EXISTS idx_incidents_riddor ON public.incidents(riddor_reportable) WHERE riddor_reportable = TRUE;
 
--- Policy: Users can insert incidents for their company
-CREATE POLICY "Users can insert incidents for their company"
-  ON public.incidents FOR INSERT
-  WITH CHECK (
-    company_id IN (
-      SELECT company_id FROM public.profiles WHERE id = auth.uid()
-    )
-  );
+    -- RLS Policies (only if profiles table exists)
+    ALTER TABLE public.incidents ENABLE ROW LEVEL SECURITY;
 
--- Policy: Users can update incidents for their company
-CREATE POLICY "Users can update incidents for their company"
-  ON public.incidents FOR UPDATE
-  USING (
-    company_id IN (
-      SELECT company_id FROM public.profiles WHERE id = auth.uid()
-    )
-  );
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
+      -- Policy: Users can view incidents for their company
+      CREATE POLICY "Users can view incidents for their company"
+        ON public.incidents FOR SELECT
+        USING (
+          company_id IN (
+            SELECT company_id FROM public.profiles WHERE id = auth.uid()
+          )
+        );
 
--- Add comments
-COMMENT ON TABLE public.incidents IS 'Stores incident reports with RIDDOR assessment and follow-up task generation';
-COMMENT ON COLUMN public.incidents.casualties IS 'JSONB array of casualty information: {name, age, injury_type, severity, treatment_required}';
-COMMENT ON COLUMN public.incidents.witnesses IS 'JSONB array of witness information: {name, contact, statement}';
-COMMENT ON COLUMN public.incidents.follow_up_tasks IS 'JSONB array of task IDs created as follow-up actions from this incident';
+      -- Policy: Users can insert incidents for their company
+      CREATE POLICY "Users can insert incidents for their company"
+        ON public.incidents FOR INSERT
+        WITH CHECK (
+          company_id IN (
+            SELECT company_id FROM public.profiles WHERE id = auth.uid()
+          )
+        );
+
+      -- Policy: Users can update incidents for their company
+      CREATE POLICY "Users can update incidents for their company"
+        ON public.incidents FOR UPDATE
+        USING (
+          company_id IN (
+            SELECT company_id FROM public.profiles WHERE id = auth.uid()
+          )
+        );
+    END IF;
+
+    -- Add comments
+    COMMENT ON TABLE public.incidents IS 'Stores incident reports with RIDDOR assessment and follow-up task generation';
+    COMMENT ON COLUMN public.incidents.casualties IS 'JSONB array of casualty information: {name, age, injury_type, severity, treatment_required}';
+    COMMENT ON COLUMN public.incidents.witnesses IS 'JSONB array of witness information: {name, contact, statement}';
+    COMMENT ON COLUMN public.incidents.follow_up_tasks IS 'JSONB array of task IDs created as follow-up actions from this incident';
+  ELSE
+    RAISE NOTICE '⚠️ companies table does not exist yet - skipping incidents table creation';
+  END IF;
+END $$;
 

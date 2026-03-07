@@ -1,0 +1,2016 @@
+{
+  "id": "uk-l2-allergens",
+  "title": "Level 2 Allergen Awareness",
+  "shortDescription": "Know the 14 allergens, Natasha's Law, and how to prevent cross-contamination.",
+  "description": "Comprehensive training on the 14 major allergens, UK legal responsibilities including Natasha's Law and the Food Information Regulations 2014, cross-contamination prevention, PPDS labelling, customer communication, and emergency response to anaphylaxis.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-allergens",
+  "category": "food-hygiene",
+  "level": "Level 2",
+  "estimatedMinutes": 210,
+  "icon": "ShieldAlert",
+  "tags": [
+    "allergens",
+    "food allergy",
+    "Natasha's Law",
+    "PPDS",
+    "anaphylaxis",
+    "cross-contamination",
+    "14 allergens",
+    "food labelling",
+    "EU FIC"
+  ],
+  "learningOutcomes": [
+    "Identify all 14 major allergens and where they are commonly found in food and drink",
+    "Understand legal duties under the Food Information Regulations 2014, EU FIC 1169/2011, and Natasha's Law",
+    "Prevent allergen cross-contamination during storage, preparation, cooking, and service",
+    "Communicate allergen information accurately to customers and colleagues",
+    "Recognise the signs of anaphylaxis and respond correctly using emergency procedures including adrenaline auto-injectors"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction & The Law",
+      "description": "Understanding allergies, intolerances, and your legal duties under UK and retained EU food law.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Allergens",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Why Allergen Awareness Matters",
+              "content": "## A Growing Public Health Issue\n\nFood allergies affect around **2 million people** in the UK, and the numbers are rising. Hospital admissions for food-induced anaphylaxis have increased by over 70% in the last two decades.\n\n### The Human Cost\n- On average, **10 people die** from food-induced anaphylaxis in the UK every year.\n- Many more suffer severe reactions requiring emergency adrenaline and hospitalisation.\n- For allergy sufferers, **eating out is an act of trust**. They are placing their life in your hands every time they order a meal.\n\n### Your Role as a Food Handler\nYou are the **last line of defence** between an allergen and a customer. Whether you prepare food, cook it, or serve it, your knowledge and actions can literally save a life. This course will give you the knowledge to do that confidently.\n\n### What This Course Covers\n- The 14 major allergens you must declare by law.\n- UK legislation: Food Information Regulations 2014, Natasha's Law, and EU FIC 1169/2011.\n- Cross-contamination prevention in kitchens and service areas.\n- How to communicate allergen information to customers.\n- Recognising and responding to anaphylaxis.",
+              "mediaUrl": "/courses/allergens/intro_to_allergens.png",
+              "keyTakeaway": "Food allergies can be fatal. As a food handler, you are the last line of defence — your knowledge saves lives."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "What is a Food Allergy?",
+              "content": "## The Immune System Response\n\nA food allergy occurs when the body's **immune system** mistakenly identifies a food protein as a threat and launches an attack against it. This is fundamentally different from food poisoning or intolerance.\n\n### Key Facts About Food Allergies\n- **Speed of reaction**: Symptoms can appear within seconds to minutes of exposure. In severe cases, anaphylaxis can develop in under 60 seconds.\n- **Amount needed**: Even a **microscopic trace** — invisible to the naked eye — can trigger a life-threatening reaction. A smear of peanut butter on a knife, a dusting of flour, or a splash of milk is enough.\n- **No cure**: There is no cure for food allergies. Strict avoidance is the only prevention.\n- **Unpredictable severity**: A person who had a mild reaction previously can have a fatal reaction next time. You must never assume a stated allergy is \"not that serious\".\n\n### The Allergic Cascade\n1. **Exposure**: The person eats, touches, or inhales the allergen.\n2. **IgE antibodies**: The immune system releases antibodies.\n3. **Histamine release**: Chemicals flood the body causing swelling, rash, and inflammation.\n4. **Anaphylaxis** (worst case): Airways narrow, blood pressure drops, organs begin to fail.",
+              "mediaUrl": "/courses/allergens/what_are_allergens.png",
+              "keyTakeaway": "A food allergy is an immune system reaction — even a microscopic trace can trigger anaphylaxis within seconds."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Allergy vs Intolerance vs Coeliac Disease",
+              "content": "## Know the Difference — All Three Matter\n\nIt is essential to understand the differences between allergy, intolerance, and coeliac disease. All three require careful attention, but the risks and mechanisms differ.\n\n### Food Allergy\n- **System involved**: Immune system (IgE-mediated).\n- **Risk level**: **Life-threatening**. Can cause anaphylaxis.\n- **Speed**: Rapid onset (seconds to minutes).\n- **Amount**: Trace quantities can trigger a reaction.\n- **Examples**: Peanut allergy, tree nut allergy, shellfish allergy.\n\n### Food Intolerance\n- **System involved**: Digestive system.\n- **Risk level**: Unpleasant and debilitating, but **not usually life-threatening**.\n- **Speed**: Slower onset (hours).\n- **Amount**: Often dose-dependent — small amounts may be tolerated.\n- **Examples**: Lactose intolerance (cannot digest milk sugar), histamine intolerance.\n\n### Coeliac Disease\n- **System involved**: Autoimmune condition (the body attacks its own gut lining).\n- **Risk level**: Causes long-term damage to the small intestine; increases risk of osteoporosis, anaemia, and bowel cancer.\n- **Trigger**: Gluten (found in wheat, barley, rye, and sometimes oats).\n- **Action**: Must **strictly avoid all gluten**. Even 10mg can cause damage.\n\n**Important**: You must take all three seriously. Never dismiss an intolerance — the customer knows their body.",
+              "mediaUrl": "/courses/allergens/allergy_intollerance_coeliac.png",
+              "keyTakeaway": "Allergies are immune-mediated and can kill. Intolerances affect digestion. Coeliac disease is autoimmune. All three must be taken seriously."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Who is at Risk?",
+              "content": "## Understanding the Scale\n\nAllergies can affect anyone, but some groups are at higher risk.\n\n### Statistics\n- **Children**: 6-8% of children in the UK have a food allergy. Many outgrow milk and egg allergies, but nut and shellfish allergies tend to be lifelong.\n- **Adults**: Around 1-2% of adults have a diagnosed food allergy.\n- **Teenagers and young adults**: This group is at the **highest risk of fatal reactions** because they are more likely to take risks, eat away from home, and not carry their adrenaline auto-injector.\n\n### Hidden Allergies\nNot all customers will tell you about their allergy. Some feel embarrassed, some assume you already know, and some do not realise a dish contains their allergen. That is why **proactive allergen management** — clear menus, trained staff, visible signage — is so important.\n\n### Multiple Allergies\nIt is increasingly common for people to have **more than one allergy**. A customer allergic to eggs may also be allergic to milk. Always ask whether they have any **other** allergies, not just the one they mention first.",
+              "keyTakeaway": "Teenagers are at highest risk of fatal reactions. Not all customers will volunteer their allergy — proactive systems are essential."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "The Law",
+          "slides": [
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "Food Information Regulations 2014",
+              "content": "## The Legal Framework\n\nThe **Food Information Regulations 2014 (FIR)** implement the **EU Food Information for Consumers Regulation (EU FIC 1169/2011)** into UK law. These are the primary laws governing allergen information.\n\n### What the Law Requires\nFood businesses must provide **accurate allergen information** for all 14 major allergens for **every food item** they sell or provide.\n\n### Three Categories of Food\n\n**1. Pre-packed food** (e.g., supermarket products)\n- Must have a label with a full ingredients list.\n- The 14 allergens must be **emphasised** (bold, italic, underlined, or different colour).\n\n**2. Non-pre-packed food** (e.g., restaurant meals, takeaway, buffets)\n- Allergen information can be provided in writing (menu, chalkboard, folder) or **verbally**.\n- If provided verbally, there **must** be a visible sign directing customers to ask staff (e.g., \"Please speak to a member of staff about allergens\").\n- A written record (allergen matrix) **must** be available to back up verbal information.\n\n**3. PPDS — Pre-Packed for Direct Sale** (covered by Natasha's Law — see next slide).\n\n### The Golden Rule\n**Guessing is illegal.** If you do not know whether a dish contains an allergen, you must check. Providing incorrect information is a criminal offence.",
+              "mediaUrl": "/courses/allergens/food_information_regulation.png",
+              "keyTakeaway": "The Food Information Regulations 2014 require you to provide accurate allergen information for all food. Guessing is a criminal offence."
+            },
+            {
+              "id": "m1-s6",
+              "type": "text-graphic-split",
+              "title": "Natasha's Law (PPDS Labelling)",
+              "content": "## Pre-Packed for Direct Sale — October 2021\n\n**Natasha's Law** was introduced following the tragic death of **Natasha Ednan-Laperouse** in 2016. Natasha, aged 15, died from anaphylaxis after eating a Pret A Manger baguette that contained sesame, which was not labelled.\n\n### What is PPDS?\nFood that is:\n- **Packaged** at the **same premises** where it is sold.\n- **Packaged before** the customer selects or orders it.\n- Examples: a sandwich made in the morning and placed in a display fridge, a wrapped salad pot, a boxed cake slice.\n\n### Labelling Requirements for PPDS\nAll PPDS food **must** have a label showing:\n1. **The name of the food** (e.g., \"Chicken & Bacon Sandwich\").\n2. **A full ingredients list** in descending order of weight.\n3. **All 14 allergens emphasised** within the ingredients list (e.g., in **bold**, CAPITALS, or a different colour).\n\n### What is NOT PPDS?\n- Food made fresh to order (e.g., a sandwich made while the customer waits) — this is \"non-pre-packed\".\n- Food packed at a different site from where it is sold — this is \"pre-packed\" and needs full manufacturer labelling.\n\n### Common PPDS Examples in Hospitality\n- Pre-made sandwiches and wraps in a deli counter.\n- Boxed salads in a grab-and-go fridge.\n- Pre-portioned cakes or pastries wrapped in cling film.\n- Bottles of house-made dressing or sauce.",
+              "mediaUrl": "/courses/allergens/natashas_law.png",
+              "keyTakeaway": "Natasha's Law requires all PPDS food to carry a label with the food name, full ingredients list, and allergens emphasised."
+            },
+            {
+              "id": "m1-s7",
+              "type": "text-graphic-split",
+              "title": "Consequences of Getting It Wrong",
+              "content": "## Legal, Business, and Moral Consequences\n\nAllergen failures carry some of the most severe penalties in UK food law.\n\n### Legal Consequences\n- **Unlimited fines**: Courts can impose unlimited fines on businesses and individuals for breaching food safety regulations.\n- **Criminal prosecution**: Individuals (not just the business) can be prosecuted. This includes chefs, servers, and managers.\n- **Imprisonment**: Up to **2 years** for serious breaches under the Food Safety Act 1990.\n- **Corporate manslaughter**: In extreme cases where gross negligence leads to death.\n\n### Business Consequences\n- **Closure**: Environmental Health Officers (EHOs) can issue **Hygiene Emergency Prohibition Notices** to close a business immediately.\n- **Reputation**: A single allergen incident can destroy years of goodwill. Social media amplifies negative publicity.\n- **Insurance**: Claims and increased premiums.\n\n### Moral Consequences\n- A customer's death or serious injury on your conscience.\n- The knowledge that a simple check could have prevented it.\n\n### Real Cases\n- **Natasha Ednan-Laperouse (2016)**: Sesame in a Pret baguette. Fatal. Led to Natasha's Law.\n- **Owen Carey (2017)**: Buttermilk in a Byron Burger chicken. Fatal. Menu did not declare dairy.\n- **Megan Lee (2017)**: Peanuts in a takeaway. Fatal. Takeaway owner imprisoned for 6 years for manslaughter.\n- **Celia Marsh (2017)**: Milk protein in a \"dairy-free\" Pret wrap. Fatal.",
+              "mediaUrl": "/courses/allergens/consequences.png",
+              "keyTakeaway": "Allergen failures can lead to unlimited fines, imprisonment, business closure, and — most importantly — the death of a customer."
+            },
+            {
+              "id": "m1-s8",
+              "type": "text-graphic-split",
+              "title": "The Allergen Matrix",
+              "content": "## Your Essential Reference Tool\n\nAn **allergen matrix** (also called an allergen chart) is a grid that shows exactly which of the 14 allergens are present in each dish on your menu.\n\n### How It Works\n- **Rows**: Each menu item.\n- **Columns**: Each of the 14 allergens.\n- **Cells**: Ticked or highlighted where an allergen is present.\n\n### Legal Requirement\nWhile the format is not prescribed by law, you **must** have a system for recording and communicating allergen information. The allergen matrix is the industry-standard method.\n\n### Keeping It Accurate\n- Must be **updated** every time a recipe changes, a supplier changes, or a new dish is added.\n- Must be **accessible** to all staff (printed in kitchen, on a tablet, or in a folder).\n- Must be **checked** by staff before answering any allergen query — never rely on memory.\n\n### Who Maintains It?\nThe head chef or kitchen manager is usually responsible for creating and updating the matrix, but **every member of staff** must know where to find it and how to read it.",
+              "keyTakeaway": "The allergen matrix is your go-to reference. It must be accurate, up to date, and accessible to every member of staff."
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: A Little Bit Allergic",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer says they are 'a little bit allergic' to nuts. They ask if they can have the satay sauce if you scrape most of it off the chicken.",
+                    "options": [
+                      {
+                        "label": "Agree — if you remove most of the sauce, the trace amount should be fine for a mild allergy.",
+                        "nextNodeId": "wrong_scrape"
+                      },
+                      {
+                        "label": "Politely explain you cannot do that and offer a nut-free alternative.",
+                        "nextNodeId": "correct_offer"
+                      },
+                      {
+                        "label": "Ask the customer how serious their allergy really is before deciding.",
+                        "nextNodeId": "partial_ask"
+                      }
+                    ]
+                  },
+                  "wrong_scrape": {
+                    "text": "This is dangerous. Even a microscopic trace of nut protein remaining on the chicken can trigger a severe anaphylactic reaction. There is no such thing as 'a little bit allergic' — the immune system does not work on a sliding scale. You cannot scrape, rinse, or pick off an allergen. The dish must be remade from scratch or an alternative offered.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_ask": {
+                    "text": "While it seems reasonable to gather more information, asking a customer to self-assess their allergy severity is problematic. Many people underestimate their allergy, and a previous mild reaction does not guarantee the next one will be mild. The correct approach is to treat every stated allergy as potentially life-threatening. What should you do next?",
+                    "options": [
+                      {
+                        "label": "Tell them it should be fine since they said it's mild.",
+                        "nextNodeId": "wrong_dismiss"
+                      },
+                      {
+                        "label": "Treat it as serious regardless and offer a safe alternative.",
+                        "nextNodeId": "correct_treat_serious"
+                      },
+                      {
+                        "label": "Ask the chef to just use less satay sauce.",
+                        "nextNodeId": "wrong_less"
+                      }
+                    ]
+                  },
+                  "wrong_dismiss": {
+                    "text": "Incorrect. You must never dismiss an allergy based on the customer's self-assessment. Allergic reactions are unpredictable — a person who previously had mild symptoms can suffer fatal anaphylaxis from the same allergen. Always treat every allergy as life-threatening.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "partial_ask"
+                      }
+                    ]
+                  },
+                  "wrong_less": {
+                    "text": "Incorrect. Using less of an allergen does not make it safe. Even a tiny amount of nut protein triggers the immune response. The dish must be completely free of the allergen — not just 'reduced'.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "partial_ask"
+                      }
+                    ]
+                  },
+                  "correct_treat_serious": {
+                    "text": "Correct. Regardless of what the customer says about severity, you must treat every allergy as potentially fatal. Offer a completely nut-free dish prepared with clean equipment.",
+                    "options": []
+                  },
+                  "correct_offer": {
+                    "text": "Excellent. You have correctly identified that scraping sauce off does not remove the allergen. Offering an alternative dish is the safe and professional response. You should now inform the kitchen about the allergy so the replacement dish is prepared safely with clean equipment and no risk of cross-contamination.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unlabelled PPDS Sandwich",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You arrive for your shift at a cafe. The morning team has made 20 egg mayo sandwiches and placed them in the grab-and-go fridge, but none of them have ingredient labels. A customer is about to buy one. What do you do?",
+                    "options": [
+                      {
+                        "label": "Sell it and tell the customer verbally that it contains egg and wheat.",
+                        "nextNodeId": "partial_verbal"
+                      },
+                      {
+                        "label": "Remove all unlabelled sandwiches from sale and label them before selling.",
+                        "nextNodeId": "correct_remove"
+                      },
+                      {
+                        "label": "Stick a note on the fridge saying 'contains egg and wheat' — that covers it.",
+                        "nextNodeId": "wrong_note"
+                      }
+                    ]
+                  },
+                  "partial_verbal": {
+                    "text": "This is not sufficient. Under Natasha's Law, PPDS food must carry an individual label with the food name, full ingredients list, and allergens emphasised. Verbal information alone does not satisfy the legal requirement for PPDS. You have also only mentioned two allergens — what about the mayonnaise (which may contain mustard), the bread (which may contain soya, sesame seeds on the crust), or the butter (milk)? What should you do now?",
+                    "options": [
+                      {
+                        "label": "Add a proper label to each sandwich with full ingredients and emphasised allergens.",
+                        "nextNodeId": "correct_label_each"
+                      },
+                      {
+                        "label": "Just remove the sandwiches and throw them away.",
+                        "nextNodeId": "partial_waste"
+                      },
+                      {
+                        "label": "Put a sign by the fridge listing all possible allergens.",
+                        "nextNodeId": "wrong_sign"
+                      }
+                    ]
+                  },
+                  "wrong_note": {
+                    "text": "Incorrect. A general sign on the fridge does not comply with Natasha's Law. Each individual PPDS item must have its own label showing the food name, complete ingredients list, and all allergens emphasised. A fridge sign is appropriate for non-pre-packed food (like a buffet), not for PPDS.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "correct_remove": {
+                    "text": "Correct. You must remove unlabelled PPDS food from sale immediately. Each sandwich needs an individual label with the food name, full ingredients list (including all sub-ingredients like those in bread and mayonnaise), and the 14 allergens emphasised wherever they appear. Only once properly labelled can they be returned to sale. You should also brief the morning team to prevent this happening again.",
+                    "options": []
+                  },
+                  "correct_label_each": {
+                    "text": "Correct. Each sandwich needs its own label. Make sure you check the ingredients of every component — the bread, the mayonnaise, the butter — not just the obvious filling. All 14 allergens must be emphasised in the ingredients list.",
+                    "options": []
+                  },
+                  "partial_waste": {
+                    "text": "Removing them from sale is the right instinct for safety, but throwing them away is wasteful when they could be properly labelled and sold. The better approach is to label each one correctly and return them to sale. However, if you are unable to confirm the full ingredients, then disposal is the safer option.",
+                    "options": []
+                  },
+                  "wrong_sign": {
+                    "text": "Incorrect. A sign by the fridge does not meet Natasha's Law requirements for PPDS. Each item must carry its own individual label.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "partial_verbal"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "The 14 Major Allergens",
+      "description": "Detailed breakdown of the 14 allergens you must declare by law, where they hide, and how to identify them.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Allergens 1-7: Celery to Milk",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "1. Celery",
+              "content": "## Allergen 1: Celery\n\nCelery allergy is more common than many people realise, and celery is one of the most frequently \"hidden\" allergens in professional kitchens.\n\n### Forms of Celery\n- **Fresh**: Stalks, leaves, and the root vegetable **celeriac**.\n- **Dried**: Celery salt, celery seeds, celery powder.\n- **Processed**: Found as an ingredient in spice blends and seasonings.\n\n### Where It Hides\n- Stock cubes and bouillon powder.\n- Soups (especially cream of celery, minestrone, and French onion).\n- Ready-made sauces and gravies.\n- Marmite and similar yeast extracts.\n- Spice mixes (e.g., Cajun seasoning, curry powder blends).\n- Salad dressings (Waldorf salad).\n- Bloody Mary cocktail mix.\n\n### Kitchen Tip\nAlways check the labels on stock cubes, bouillon, and seasoning blends. Celery is one of the most commonly overlooked allergens when staff rely on memory rather than checking.",
+              "keyTakeaway": "Celery hides in stocks, soups, spice mixes, and Marmite. Always check seasoning labels — celery is frequently overlooked."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "2. Cereals Containing Gluten",
+              "content": "## Allergen 2: Cereals Containing Gluten\n\nGluten is a protein found in certain grains. It is one of the most widespread allergens in hospitality because wheat is used in so many products.\n\n### The Gluten-Containing Cereals\n- **Wheat**: The most common. Found in bread, pasta, cakes, pastry, batter, couscous, bulgur wheat, and **soy sauce** (fermented with wheat).\n- **Rye**: Found in rye bread, rye crackers, and some whiskeys.\n- **Barley**: Found in beer, lager, malt vinegar, malt extract, and barley-based soups.\n- **Oats**: Often cross-contaminated with wheat during milling. Only certified gluten-free oats are safe for coeliac customers.\n- **Spelt and Kamut**: Ancient wheat varieties — still contain gluten.\n\n### Naturally Gluten-Free Grains\nRice, corn (maize), quinoa, buckwheat (despite the name), millet, and potatoes are all naturally gluten-free.\n\n### Hidden Sources\n- Soy sauce (contains wheat — use tamari for gluten-free).\n- Batter and breadcrumbs on fried foods.\n- Gravy granules and stock cubes.\n- Communion wafers, some medications.\n- Icing sugar (may contain wheat starch as anti-caking agent).",
+              "keyTakeaway": "Wheat, rye, barley, and oats contain gluten. Soy sauce contains wheat. Rice, corn, and potatoes are naturally gluten-free."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "3. Crustaceans",
+              "content": "## Allergen 3: Crustaceans\n\nCrustacean allergy is one of the most common causes of food-induced anaphylaxis in adults.\n\n### What Are Crustaceans?\nCrustaceans are shellfish with a hard external skeleton and segmented bodies.\n- **Examples**: Prawns, shrimp, crab, lobster, crayfish, langoustine, scampi.\n- **NOT crustaceans**: Mussels, clams, oysters, squid (these are molluscs — allergen 8).\n\n### Where They Hide\n- Thai curry pastes (shrimp paste is a key ingredient).\n- Fish soups and bisques.\n- Paella and bouillabaisse.\n- Prawn crackers.\n- Some Asian dipping sauces.\n- Surimi (imitation crab — often made from fish but may contain crustacean extract).\n\n### Important Distinction\nCrustaceans and molluscs are listed as **separate allergens** under UK law. A customer allergic to crustaceans (prawns) may or may not be allergic to molluscs (mussels). Always ask and check.",
+              "keyTakeaway": "Crustaceans (prawns, crab, lobster) and molluscs (mussels, squid) are separate allergens. Thai curry paste often contains shrimp paste."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "4. Eggs",
+              "content": "## Allergen 4: Eggs\n\nEgg allergy is one of the most common childhood allergies. Many children outgrow it, but some remain allergic for life.\n\n### Forms of Egg\n- Fresh eggs (whole, yolk, white).\n- Dried egg powder.\n- Egg lecithin (emulsifier E322 — though this is more commonly soya lecithin, always check).\n- Albumin (egg white protein).\n\n### Where Eggs Hide\n- **Sauces**: Mayonnaise, hollandaise, bearnaise, Caesar dressing, tartare sauce.\n- **Baked goods**: Cakes, biscuits, pastries, meringue, macarons.\n- **Pasta**: Fresh pasta is almost always made with egg. Some dried pasta is egg-free — check the label.\n- **Coatings**: Egg wash on pastry, battered and breaded items.\n- **Desserts**: Mousse, creme brulee, ice cream, custard, marshmallows.\n- **Other**: Quiche, omelettes, scotch eggs, some noodles (egg noodles).\n\n### Kitchen Tip\nWhen glazing pastry or bread, use milk or oil as an egg-free alternative if needed. Always label which glaze was used.",
+              "keyTakeaway": "Eggs hide in mayonnaise, fresh pasta, battered foods, cakes, and desserts. Dried egg powder is easily overlooked in mixes."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "5. Fish",
+              "content": "## Allergen 5: Fish\n\nFish allergy covers all species of fin fish. It is distinct from crustacean and mollusc allergies.\n\n### Common Fish Allergens\nSalmon, cod, tuna, mackerel, haddock, plaice, sea bass, anchovies, sardines — all species are covered.\n\n### Where Fish Hides\n- **Worcestershire sauce**: Contains anchovies.\n- **Caesar salad dressing**: Traditional recipe uses anchovies.\n- **Thai and Vietnamese cooking**: Fish sauce (nam pla) is a staple.\n- **Stock cubes**: Some contain fish extract.\n- **Gentleman's Relish**: Anchovy paste.\n- **Pizza**: Anchovies as a topping, but also in some tomato sauces.\n- **Asian dishes**: Bonito flakes (dried tuna) in Japanese cooking.\n\n### Important Note\nA person allergic to one species of fish is often (but not always) allergic to others. Never assume that because a customer can eat cod, they can eat salmon. Always check specifically.",
+              "keyTakeaway": "Fish hides in Worcestershire sauce, Caesar dressing, Thai fish sauce, and some stock cubes. All fin fish species are covered."
+            },
+            {
+              "id": "m2-s6",
+              "type": "text-graphic-split",
+              "title": "6. Lupin",
+              "content": "## Allergen 6: Lupin\n\nLupin is probably the least well-known of the 14 allergens, but it is increasingly used in food manufacturing.\n\n### What is Lupin?\nLupin is a **flowering plant** in the legume family. Its seeds are ground to produce **lupin flour** and **lupin protein**, which are used as ingredients in baked goods.\n\n### Where Lupin Hides\n- Some speciality **breads and rolls** (particularly continental European recipes).\n- **Pastries and cakes** (lupin flour is gluten-free and high in protein).\n- **Pasta** (sometimes used as a wheat flour substitute).\n- Some **vegetarian and vegan products** (used as a soya alternative).\n- **Pickled lupin beans** (a snack in Mediterranean countries).\n\n### Cross-Reactivity\nLupin is in the **legume family**, along with peanuts, soya, and lentils. People with peanut allergy may also react to lupin. Always flag this risk.\n\n### Kitchen Tip\nCheck the ingredients label on any speciality flour, continental bread, or gluten-free product. Lupin flour is becoming more popular and may appear where you do not expect it.",
+              "keyTakeaway": "Lupin is a legume used in speciality breads, pastries, and some gluten-free products. People with peanut allergy may cross-react with lupin."
+            },
+            {
+              "id": "m2-s7",
+              "type": "text-graphic-split",
+              "title": "7. Milk",
+              "content": "## Allergen 7: Milk (Dairy)\n\nMilk allergy is an immune reaction to the proteins in cow's milk — primarily **casein** and **whey**. It is different from lactose intolerance.\n\n### Milk Allergy vs Lactose Intolerance\n- **Milk allergy**: Immune system reaction to milk **protein**. Can cause anaphylaxis. Lactose-free milk is **NOT safe** (it still contains casein and whey).\n- **Lactose intolerance**: Inability to digest milk **sugar** (lactose). Causes digestive discomfort but is not life-threatening. Lactose-free milk IS safe for these customers.\n\n### Where Milk Hides\n- Butter, ghee, cream, cheese, yoghurt.\n- Chocolate (milk and white).\n- Baked goods (cakes, biscuits, bread — milk powder is common).\n- Mashed potato (usually made with butter and milk).\n- Glazed bread rolls and buns (egg or milk wash).\n- Powdered soups, instant sauces, and gravy granules.\n- Some processed meats (sausages, burgers — may contain milk powder).\n- Margarine (many brands contain milk derivatives).\n\n### Goat and Sheep Milk\nPeople with cow's milk allergy often react to goat's and sheep's milk too, because the proteins are similar. Never substitute without checking with the customer.",
+              "keyTakeaway": "Milk allergy is about protein (casein/whey), not lactose. Lactose-free milk is NOT safe for milk allergy sufferers."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Allergens 8-14: Molluscs to Sulphites",
+          "slides": [
+            {
+              "id": "m2-s8",
+              "type": "text-graphic-split",
+              "title": "8. Molluscs",
+              "content": "## Allergen 8: Molluscs\n\nMolluscs are a separate allergen category from crustaceans. Both are \"shellfish\" in common language, but the law treats them differently.\n\n### Types of Molluscs\n- **Bivalves**: Mussels, clams, oysters, scallops, cockles.\n- **Gastropods**: Snails (escargot), whelks, abalone.\n- **Cephalopods**: Squid (calamari), octopus, cuttlefish.\n\n### Where Molluscs Hide\n- **Oyster sauce**: Extremely common in Chinese and Asian cooking.\n- **Seafood platters and paella**: Mixed shellfish dishes.\n- **Fish stews and chowders**: Often contain clams or mussels.\n- **Squid ink**: Used in black pasta and risotto.\n- **Scallop sauce**: Used in some fine-dining preparations.\n\n### Kitchen Tip\nOyster sauce is one of the most commonly overlooked mollusc allergens. It is used in many stir-fry sauces, fried rice, and noodle dishes. Always check Asian sauces for mollusc-derived ingredients.",
+              "keyTakeaway": "Molluscs include mussels, squid, and snails — separate from crustaceans. Oyster sauce is the most commonly overlooked mollusc allergen."
+            },
+            {
+              "id": "m2-s9",
+              "type": "text-graphic-split",
+              "title": "9. Mustard",
+              "content": "## Allergen 9: Mustard\n\nMustard allergy can cause severe reactions including anaphylaxis, yet it is one of the most overlooked allergens in kitchens.\n\n### Forms of Mustard\n- **Prepared mustard**: English, Dijon, French, wholegrain, American.\n- **Mustard powder**: Used in cheese sauces, salad dressings, and spice rubs.\n- **Mustard seeds**: Used in pickling, Indian cooking, and some breads.\n- **Mustard oil**: Used in South Asian cuisine.\n- **Mustard flour**: Used as an emulsifier in processed foods.\n\n### Where Mustard Hides\n- Salad dressings and vinaigrettes.\n- Marinades and barbecue sauces.\n- Curry pastes and curry powder.\n- Piccalilli, pickles, and chutneys.\n- Sausages and processed meats.\n- Ketchup (some brands).\n- Cheese sauces (Welsh rarebit).\n- Mayonnaise (some recipes include mustard).\n\n### Kitchen Tip\nMustard powder is often added to cheese sauces and spice rubs without being obvious. Always check recipe cards and ingredient labels.",
+              "keyTakeaway": "Mustard hides in dressings, marinades, curry pastes, and cheese sauces. Mustard powder is a common hidden ingredient."
+            },
+            {
+              "id": "m2-s10",
+              "type": "text-graphic-split",
+              "title": "10. Tree Nuts",
+              "content": "## Allergen 10: Tree Nuts\n\nTree nut allergy is one of the most common causes of fatal anaphylaxis. It is usually a lifelong allergy.\n\n### The Tree Nuts\nAlmonds, hazelnuts (filberts), walnuts, cashews, pecans, Brazil nuts, pistachios, macadamia nuts (Queensland nuts).\n\n### Peanuts Are NOT Tree Nuts\nPeanuts grow underground and are **legumes** (like lentils and soya). They are a separate allergen (allergen 11). However, many people are allergic to **both** peanuts and tree nuts.\n\n### Where Tree Nuts Hide\n- **Pesto**: Traditional recipe contains pine nuts; many commercial brands use cashews or walnuts.\n- **Marzipan and frangipane**: Made from almonds.\n- **Praline and nougat**: Hazelnuts, almonds.\n- **Baklava**: Pistachios, walnuts.\n- **Cereal and granola**: Often contain almonds or hazelnuts.\n- **Nut milks and nut butters**: Almond milk, cashew butter.\n- **Asian dishes**: Cashew chicken, kung pao (peanuts AND cashews).\n- **Ice cream**: Many flavours contain nuts.\n- **Salads**: Candied walnuts, flaked almonds.\n- **Chocolate and confectionery**: Hazelnut is extremely common.\n\n### Pine Nuts\nPine nuts are technically seeds, not nuts, but some people with tree nut allergy react to them. Always flag pine nuts to nut-allergy customers.",
+              "keyTakeaway": "Tree nut allergy is often lifelong and frequently fatal. Pesto, marzipan, and Asian dishes are common hiding places. Peanuts are a separate allergen."
+            },
+            {
+              "id": "m2-s11",
+              "type": "text-graphic-split",
+              "title": "11. Peanuts",
+              "content": "## Allergen 11: Peanuts (Groundnuts)\n\nPeanut allergy is one of the most well-known and feared food allergies. It is the leading cause of food-related anaphylaxis deaths in the UK.\n\n### Key Facts\n- Peanuts are **legumes** (related to lentils, chickpeas, and soya), NOT tree nuts.\n- Peanut allergy is usually **lifelong** — only around 20% of children outgrow it.\n- Reactions can be triggered by **extremely small amounts** — even airborne peanut dust in some cases.\n\n### Where Peanuts Hide\n- **Satay sauce**: Made primarily from peanuts.\n- **Groundnut oil**: Another name for peanut oil. Refined peanut oil *may* be tolerated by some, but unrefined/cold-pressed is not safe. Always declare it.\n- **Curry pastes**: Some Thai and Indian pastes contain ground peanuts.\n- **Cakes and biscuits**: Peanut butter cookies, Snickers-style desserts.\n- **Asian stir-fries**: Kung pao, pad thai (often topped with crushed peanuts).\n- **Cereal bars and snack bars**: Frequently contain peanuts.\n- **African and Caribbean stews**: Groundnut soup/stew.\n\n### Cross-Reactivity\nPeople with peanut allergy may also react to **lupin** and (less commonly) to other legumes like soya and chickpeas.",
+              "keyTakeaway": "Peanut allergy is the leading cause of fatal food anaphylaxis in the UK. Peanuts are legumes, not nuts. Satay sauce and groundnut oil are key hiding places."
+            },
+            {
+              "id": "m2-s12",
+              "type": "text-graphic-split",
+              "title": "12. Sesame",
+              "content": "## Allergen 12: Sesame Seeds\n\nSesame allergy is rising rapidly, particularly in children. Sesame was the allergen that killed Natasha Ednan-Laperouse.\n\n### Forms of Sesame\n- **Whole seeds**: On bread rolls, burger buns, bagels, breadsticks.\n- **Tahini**: Ground sesame paste — the main ingredient in **hummus**.\n- **Sesame oil**: Used widely in Asian cooking.\n- **Gomashio**: A Japanese condiment (sesame and salt).\n- **Halvah/halva**: A Middle Eastern sweet made from tahini.\n\n### Where Sesame Hides\n- Hummus and baba ganoush (tahini-based).\n- Bread rolls and burger buns (seeds on top).\n- Stir-fries and noodle dishes (sesame oil).\n- Falafel (some recipes contain sesame).\n- Sushi (sesame seeds as garnish).\n- Energy bars and health foods.\n- Turkish and Middle Eastern pastries.\n\n### Kitchen Tip\nSesame seeds fall off bread easily and can contaminate surfaces, equipment, and other foods. Be especially careful when slicing sesame-topped rolls near other foods.",
+              "keyTakeaway": "Sesame killed Natasha Ednan-Laperouse. It hides in hummus (tahini), bread rolls, and Asian cooking. Seeds fall off bread and contaminate surfaces easily."
+            },
+            {
+              "id": "m2-s13",
+              "type": "text-graphic-split",
+              "title": "13. Soya",
+              "content": "## Allergen 13: Soya (Soybeans)\n\nSoya is one of the most widely used ingredients in food manufacturing, making it extremely difficult to avoid.\n\n### Where Soya Hides\n- **Soy sauce**: A staple in Asian cooking (also contains wheat/gluten).\n- **Tofu and tempeh**: Common in vegetarian and vegan dishes.\n- **Edamame beans**: Whole soybeans, often served as a starter.\n- **Miso soup**: Fermented soybean paste.\n- **Textured Vegetable Protein (TVP)**: Used in vegetarian mince, burgers, and sausages.\n- **Soya lecithin (E322)**: An emulsifier found in chocolate, baked goods, margarine, and many processed foods.\n- **Soybean oil**: Used as a cooking oil (refined soybean oil may be tolerated, but must still be declared).\n- **Bread**: Many commercial breads contain soya flour.\n- **Processed meats**: Soya protein used as a filler.\n- **Infant formula**: Some are soya-based.\n\n### Important Note\nSoya lecithin (E322) is present in an enormous number of processed foods, including most chocolate. Always check labels carefully.",
+              "keyTakeaway": "Soya is in soy sauce, tofu, vegetarian products, chocolate (as lecithin E322), and many commercial breads. It is extremely widespread."
+            },
+            {
+              "id": "m2-s14",
+              "type": "text-graphic-split",
+              "title": "14. Sulphur Dioxide and Sulphites",
+              "content": "## Allergen 14: Sulphur Dioxide / Sulphites\n\nSulphur dioxide (SO2) and sulphites are preservatives used to extend shelf life and prevent browning.\n\n### Legal Threshold\nMust be declared when present at levels **above 10 mg/kg or 10 mg/litre** in the final product.\n\n### Where Sulphites Hide\n- **Dried fruit**: Apricots, raisins, sultanas, cranberries (sulphites keep them soft and colourful).\n- **Wine and beer**: Sulphites are a natural by-product of fermentation and are often added as a preservative.\n- **Soft drinks and fruit juices**: Some contain sulphite preservatives.\n- **Sausages and burgers**: Sulphites used to preserve colour and freshness.\n- **Pickled foods and vinegar**: Especially white wine vinegar.\n- **Prepared salads**: Pre-cut lettuce may be treated with sulphites.\n- **Dehydrated vegetables**: Dried onion, garlic powder.\n- **Prawns and shellfish**: Often treated with sulphites (metabisulphite) to prevent black spots.\n\n### Who Reacts?\nSulphite sensitivity is most common in people with **asthma** — it can trigger bronchospasm (severe asthma attack). Around 5-10% of asthma sufferers are sensitive to sulphites.\n\n### Kitchen Tip\nCheck the labels of all dried fruit, wines, and processed meats. Sulphites are often listed as E220-E228 on ingredient labels.",
+              "keyTakeaway": "Sulphites are in dried fruit, wine, sausages, and shellfish. They mainly affect asthmatics. Check for E-numbers E220-E228."
+            },
+            {
+              "id": "m2-s15",
+              "type": "text-graphic-split",
+              "title": "Quick Reference: The Big 14 Summary",
+              "content": "## All 14 at a Glance\n\nUse this as a memory aid. The 14 allergens are:\n\n| # | Allergen | Key Hiding Place |\n|---|----------|------------------|\n| 1 | Celery | Stock cubes, soups, spice mixes |\n| 2 | Cereals (Gluten) | Bread, pasta, soy sauce, batter |\n| 3 | Crustaceans | Thai curry paste, prawn crackers |\n| 4 | Eggs | Mayo, cakes, fresh pasta, glazes |\n| 5 | Fish | Worcestershire sauce, Caesar dressing |\n| 6 | Lupin | Speciality breads, GF products |\n| 7 | Milk | Chocolate, mashed potato, bread |\n| 8 | Molluscs | Oyster sauce, calamari |\n| 9 | Mustard | Dressings, curry, cheese sauce |\n| 10 | Tree Nuts | Pesto, marzipan, praline |\n| 11 | Peanuts | Satay, groundnut oil, curry paste |\n| 12 | Sesame | Hummus, bread rolls, stir-fries |\n| 13 | Soya | Soy sauce, tofu, chocolate (lecithin) |\n| 14 | Sulphites | Dried fruit, wine, sausages |\n\n### Memory Tip\nSome people use the mnemonic: **\"Can Clever Chefs Explain Food Labels More Meticulously? Maybe Not, Perhaps Some Should.\"** (Celery, Cereals, Crustaceans, Eggs, Fish, Lupin, Milk, Molluscs, Mustard, Nuts, Peanuts, Sesame, Soya, Sulphites).",
+              "keyTakeaway": "Memorise all 14 allergens. Use your allergen matrix — but knowing the common hiding places helps you spot risks faster."
+            }
+          ]
+        },
+        {
+          "id": "m2-l3",
+          "title": "Scenarios: Identifying Allergens",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Pesto Pasta",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with a nut allergy orders the penne pasta with pesto. How do you respond?",
+                    "options": [
+                      {
+                        "label": "Serve it — pesto is just basil and olive oil.",
+                        "nextNodeId": "wrong_assume"
+                      },
+                      {
+                        "label": "Check the allergen matrix and the pesto ingredients before responding.",
+                        "nextNodeId": "correct_check"
+                      },
+                      {
+                        "label": "Tell the customer pesto 'probably' has nuts and suggest they choose something else.",
+                        "nextNodeId": "partial_probably"
+                      }
+                    ]
+                  },
+                  "wrong_assume": {
+                    "text": "Incorrect. Traditional pesto contains pine nuts and parmesan cheese (milk). Many commercial pestos use cashews or walnuts instead of pine nuts. Assuming without checking could be fatal. You must always verify the specific product used in your kitchen.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "correct_check": {
+                    "text": "Good — you check the allergen matrix and the pesto jar label. The pesto contains cashew nuts, parmesan (milk), and the pasta is made with egg. You now have three allergens to communicate: tree nuts, milk, and egg. How do you handle this?",
+                    "options": [
+                      {
+                        "label": "Tell the customer about the nuts and offer an alternative.",
+                        "nextNodeId": "partial_nuts_only"
+                      },
+                      {
+                        "label": "Inform the customer about all three allergens (nuts, milk, egg) and offer alternatives.",
+                        "nextNodeId": "correct_all_three"
+                      },
+                      {
+                        "label": "Remove the pesto and serve the pasta plain.",
+                        "nextNodeId": "wrong_remove"
+                      }
+                    ]
+                  },
+                  "partial_probably": {
+                    "text": "You are right to be cautious, but saying 'probably' is not good enough. You must give definitive information. The customer needs a clear yes or no — not a guess. Check the allergen matrix or pesto label to confirm exactly what allergens are present.",
+                    "options": [
+                      {
+                        "label": "Check the allergen matrix properly",
+                        "nextNodeId": "correct_check"
+                      }
+                    ]
+                  },
+                  "partial_nuts_only": {
+                    "text": "You have identified the nut allergen, which is good. But the customer asked about nuts — they may also need to know about milk (parmesan) and egg (pasta), especially if they have multiple allergies. Best practice is to declare all allergens present in the dish, even if the customer only asked about one.",
+                    "options": [
+                      {
+                        "label": "Inform about all allergens present",
+                        "nextNodeId": "correct_all_three"
+                      }
+                    ]
+                  },
+                  "correct_all_three": {
+                    "text": "Excellent. You have checked the allergen matrix, identified all three allergens (tree nuts, milk, egg), communicated them clearly, and offered a safe alternative. This is the gold-standard response.",
+                    "options": []
+                  },
+                  "wrong_remove": {
+                    "text": "Incorrect. Removing the pesto from the cooked pasta does not remove the allergen. Nut proteins will have contaminated the pasta, sauce, and plate. The dish must be remade from scratch with allergen-free ingredients and clean equipment.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "correct_check"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Soy Sauce Mix-Up",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with coeliac disease orders a stir-fry. The chef confirms the noodles are rice noodles (gluten-free). Can you tell the customer it is safe?",
+                    "options": [
+                      {
+                        "label": "Yes — rice noodles are gluten-free, so the dish is safe.",
+                        "nextNodeId": "wrong_noodles_only"
+                      },
+                      {
+                        "label": "No — check the sauce and all other ingredients first.",
+                        "nextNodeId": "correct_check_all"
+                      },
+                      {
+                        "label": "Ask the chef if they used gluten-free soy sauce.",
+                        "nextNodeId": "partial_soy"
+                      }
+                    ]
+                  },
+                  "wrong_noodles_only": {
+                    "text": "Incorrect. While the noodles are gluten-free, the stir-fry sauce almost certainly contains soy sauce, which is fermented with wheat and contains gluten. You have only checked one component of the dish. Every ingredient must be verified.",
+                    "options": [
+                      {
+                        "label": "Go back and check everything",
+                        "nextNodeId": "correct_check_all"
+                      }
+                    ]
+                  },
+                  "partial_soy": {
+                    "text": "Good thinking — soy sauce is the most likely source of gluten in a stir-fry. The chef confirms they used regular soy sauce, which contains wheat. But you should also check for other gluten sources. What else might contain gluten?",
+                    "options": [
+                      {
+                        "label": "Nothing else — soy sauce is the only risk.",
+                        "nextNodeId": "wrong_soy_only"
+                      },
+                      {
+                        "label": "Check the oyster sauce, any marinades, and whether any battered items were cooked in the same wok.",
+                        "nextNodeId": "correct_thorough"
+                      },
+                      {
+                        "label": "Just swap the soy sauce for tamari and serve.",
+                        "nextNodeId": "partial_swap"
+                      }
+                    ]
+                  },
+                  "correct_check_all": {
+                    "text": "Correct. You check the full recipe: rice noodles (GF), but the sauce contains regular soy sauce (wheat/gluten), and the oyster sauce also contains wheat. The dish as currently made is not safe for a coeliac customer. You can remake it using tamari (wheat-free soy sauce) and a gluten-free oyster sauce alternative, prepared in a clean wok.",
+                    "options": []
+                  },
+                  "wrong_soy_only": {
+                    "text": "Incorrect. Oyster sauce, hoisin sauce, and some marinades also contain wheat or gluten. Battered items cooked in the same wok will also have left gluten residue. You must check every component.",
+                    "options": [
+                      {
+                        "label": "Check everything thoroughly",
+                        "nextNodeId": "correct_thorough"
+                      }
+                    ]
+                  },
+                  "correct_thorough": {
+                    "text": "Excellent. You have identified that soy sauce, oyster sauce, and potential cross-contamination from previous wok use are all gluten risks. The dish must be remade from scratch in a clean wok with verified gluten-free alternatives for every ingredient.",
+                    "options": []
+                  },
+                  "partial_swap": {
+                    "text": "Swapping the soy sauce for tamari is a good start, but the dish has already been cooked with regular soy sauce — you cannot just add tamari now. It must be remade from scratch. Additionally, you need to check all other sauce components (oyster sauce, hoisin) and use a clean wok.",
+                    "options": [
+                      {
+                        "label": "Understood — remake from scratch with all GF ingredients",
+                        "nextNodeId": "correct_thorough"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Cross-Contamination",
+      "description": "Preventing allergens from spreading during storage, preparation, cooking, and service.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "How Cross-Contamination Happens",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "What is Allergen Cross-Contamination?",
+              "content": "## The Invisible Threat\n\nAllergen cross-contamination (sometimes called cross-contact) occurs when an allergen is **unintentionally transferred** from a food that contains it to a food that should not contain it.\n\n### Why It Is So Dangerous\n- Allergen proteins are **invisible** — you cannot see, smell, or taste them.\n- They are **heat stable** — cooking, frying, baking, and boiling do NOT destroy allergen proteins.\n- **Microscopic amounts** are enough to trigger a fatal reaction.\n- Unlike bacterial contamination, you **cannot kill allergens** with heat or sanitiser.\n\n### Key Difference from Bacterial Cross-Contamination\nWith bacteria, thorough cooking can make food safe. With allergens, **nothing** makes contaminated food safe. The only solution is to prevent the transfer in the first place.\n\n### The Law\nUnder the Food Information Regulations 2014, providing food that contains an undeclared allergen due to cross-contamination is a **criminal offence**. Businesses have been prosecuted and individuals imprisoned for exactly this.",
+              "keyTakeaway": "Allergen proteins are invisible, heat-stable, and cannot be washed or cooked away. Prevention is the ONLY solution."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Routes of Cross-Contamination",
+              "content": "## How Allergens Spread\n\n### Direct Contact\n- Picking nuts off a salad and serving it (traces remain in the dressing and on the leaves).\n- Removing croutons from a soup (gluten has already leached into the liquid).\n- Plating an allergen-free dish next to a dish containing the allergen.\n\n### Indirect Contact (Via Surfaces and Equipment)\n- Using a knife to cut a sandwich with cheese, wiping it, then using it to cut a dairy-free sandwich.\n- Sharing chopping boards between allergen and allergen-free prep.\n- Tongs used for bread rolls then used for allergen-free items.\n- Serving spoons shared between dishes.\n\n### Cooking Equipment\n- Frying chips in the same oil as battered fish (gluten + fish contamination).\n- Using the same grill plate for a burger with cheese and then a dairy-free burger.\n- Toasting gluten-free bread in a toaster used for regular bread.\n- Frothing oat milk on a steam wand contaminated with cow's milk.\n\n### Airborne Transfer\n- Flour dust settling on allergen-free food during baking.\n- Steam from boiling pasta carrying gluten proteins.\n- Grinding or crushing nuts releasing airborne particles.\n\n### Splash and Spill\n- Milk splashing into a nearby pan.\n- Sauce dripping from an upper shelf onto food below in a fridge.",
+              "keyTakeaway": "Allergens spread through direct contact, shared equipment, cooking oils, airborne dust, and splashes. You cannot see the transfer happening."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Storage Controls",
+              "content": "## Safe Allergen Storage\n\nProper storage is the first line of defence against cross-contamination.\n\n### Fridge and Dry Store Rules\n- Store allergen-containing ingredients in **sealed, labelled containers**.\n- Place allergens on **lower shelves** so they cannot drip or spill onto allergen-free food above.\n- Use **colour-coded containers** or labels for common allergens (e.g., purple for allergen-free, red for nut-containing).\n- Keep allergen-free ingredients **separated** from allergen-containing ingredients — ideally in a dedicated area or shelf.\n\n### Deliveries\n- Check all deliveries for **intact packaging** — damaged packaging increases contamination risk.\n- Verify that ingredients match the **specification** — suppliers sometimes change formulations without notice.\n- Store deliveries in the correct location immediately.\n\n### Labelling\n- All decanted ingredients must be clearly labelled with the product name and **allergens present**.\n- Date labels (use-by, best-before) must be transferred when decanting.\n- Never mix batches of the same ingredient (old and new) without checking they are the same product from the same supplier.\n\n### \"Free-From\" Stock\nIf your kitchen stocks \"free-from\" alternatives (gluten-free bread, dairy-free milk, etc.), store them **completely separately** from their allergen-containing equivalents to prevent mix-ups.",
+              "keyTakeaway": "Store allergens low, sealed, and labelled. Keep free-from products completely separate. Check deliveries — suppliers change formulations."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Preparation and Cooking Controls",
+              "content": "## Safe Allergen Preparation\n\n### The Purple Standard\nPurple is the widely recognised colour code for **allergen-free** equipment in UK kitchens. Many suppliers offer purple chopping boards, knives, utensils, and cloths specifically for allergen-free preparation.\n\n### Preparation Best Practices\n1. **Wash hands thoroughly** with soap and water before preparing an allergen-free meal. Alcohol gel does NOT remove allergen proteins.\n2. **Use dedicated equipment**: Separate chopping boards, knives, pans, utensils, and cloths for allergen-free prep.\n3. **Clean work surfaces** with hot soapy water and a fresh cloth before starting. A quick wipe is NOT enough.\n4. **Prepare allergen-free meals first** — before the kitchen becomes busy and contamination risks increase.\n5. **Never use shared fryers** — dedicate a fryer (or alternative cooking method) for allergen-free items.\n\n### Cooking Controls\n- Use **separate pans, grills, and oven trays** for allergen-free cooking.\n- **Never reuse cooking oil** that has been used for allergen-containing foods.\n- If using a shared oven, place allergen-free items on a **higher shelf** and cover them.\n- Use **separate serving utensils** — never share ladles, tongs, or spatulas between allergen and allergen-free dishes.\n\n### The Two-Stage Clean\n1. **Clean**: Remove visible food debris with hot soapy water.\n2. **Sanitise**: Apply food-safe sanitiser and allow appropriate contact time.\n3. Use a **fresh cloth** — never the same cloth used for other cleaning.",
+              "keyTakeaway": "Use dedicated purple equipment for allergen-free prep. Wash hands with soap (not gel). Apply a two-stage clean. Prepare allergen-free meals first."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Service Controls",
+              "content": "## Preventing Cross-Contamination During Service\n\nCross-contamination does not only happen in the kitchen. The service area is equally risky.\n\n### Front-of-House Risks\n- **Shared serving utensils** at buffets and carveries — a customer uses the nut-dish spoon to serve themselves rice, contaminating the rice for the next person.\n- **Bread baskets**: Regular and gluten-free bread served in the same basket or touched by the same hands.\n- **Condiment stations**: Shared butter, jam, or sauce pots become contaminated by knives that have touched bread or other allergens.\n- **Garnishes**: A barista adds a biscuit to a saucer alongside a dairy-free drink — the biscuit contains milk and gluten.\n\n### Service Best Practices\n- **Allergen-free meals should be delivered by a designated person** who has confirmed the order with the kitchen.\n- **Do not carry allergen-free and allergen-containing dishes stacked or overlapping.**\n- Use a **visual marker** (coloured cocktail stick, specific plate, or flag) to identify allergen-free meals.\n- **Confirm with the customer** when delivering: \"This is the dairy-free risotto for the milk allergy — is that correct?\"\n- At **buffets**, use separate serving utensils for each dish and label every dish with its allergens.",
+              "keyTakeaway": "Cross-contamination happens during service too. Use visual markers, separate utensils, and always confirm the allergen-free dish with the customer."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Scenarios: Cross-Contamination",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Shared Fryer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer with coeliac disease orders chips. Your kitchen has one deep fat fryer that is used for battered fish, onion rings, and chips. What do you do?",
+                    "options": [
+                      {
+                        "label": "Cook the chips in the fryer — potatoes are naturally gluten-free.",
+                        "nextNodeId": "wrong_fryer"
+                      },
+                      {
+                        "label": "Tell the customer you cannot provide gluten-free chips and suggest an alternative.",
+                        "nextNodeId": "partial_refuse"
+                      },
+                      {
+                        "label": "Cook the chips using a separate method (oven, dedicated pan) with clean oil.",
+                        "nextNodeId": "correct_separate"
+                      }
+                    ]
+                  },
+                  "wrong_fryer": {
+                    "text": "Incorrect. While potatoes are naturally gluten-free, the fryer oil is contaminated with gluten from battered fish and onion rings. Cooking chips in this oil will transfer gluten to them. For a coeliac customer, this is dangerous — even trace amounts of gluten cause intestinal damage.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_refuse": {
+                    "text": "Telling the customer you cannot serve gluten-free chips from the shared fryer is honest, but simply refusing is not ideal. Could you offer a safe alternative instead?",
+                    "options": [
+                      {
+                        "label": "Offer oven-baked chips cooked on a clean tray with fresh oil.",
+                        "nextNodeId": "correct_oven"
+                      },
+                      {
+                        "label": "Suggest the customer orders a salad instead.",
+                        "nextNodeId": "partial_salad"
+                      },
+                      {
+                        "label": "Cook them in the fryer but tell the customer about the risk.",
+                        "nextNodeId": "wrong_inform"
+                      }
+                    ]
+                  },
+                  "correct_separate": {
+                    "text": "Correct. You cannot use a shared fryer for allergen-free cooking. Oven-baking the chips on a clean tray with fresh oil, or using a dedicated allergen-free pan, ensures the customer gets a safe meal. Make sure you also use clean utensils to handle the chips.",
+                    "options": []
+                  },
+                  "correct_oven": {
+                    "text": "Correct. Oven-baking on a clean tray with fresh oil is a safe alternative. Make sure the tray has been properly cleaned (two-stage clean) and that no gluten-containing items are baking alongside.",
+                    "options": []
+                  },
+                  "partial_salad": {
+                    "text": "While a salad could be safe, you should first check that the salad ingredients are gluten-free (croutons? dressings?) and offer the customer a choice rather than pushing them toward a specific alternative. The better approach is to find a way to provide what they originally wanted — such as oven-baked chips.",
+                    "options": [
+                      {
+                        "label": "Offer oven-baked chips as an alternative",
+                        "nextNodeId": "correct_oven"
+                      }
+                    ]
+                  },
+                  "wrong_inform": {
+                    "text": "Incorrect. Informing the customer does not make contaminated food safe. You have a legal duty to provide accurate allergen information and to prevent cross-contamination. Serving food you know is contaminated is a breach of the Food Information Regulations, even if you disclose the risk.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "partial_refuse"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Flour Dust",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are preparing a gluten-free pizza base on the same worktop where your colleague is kneading wheat flour dough. Flour dust is visible in the air. What should you do?",
+                    "options": [
+                      {
+                        "label": "Continue — the flour dust is only a small amount and won't matter.",
+                        "nextNodeId": "wrong_continue"
+                      },
+                      {
+                        "label": "Cover your gluten-free base with cling film to protect it.",
+                        "nextNodeId": "partial_cover"
+                      },
+                      {
+                        "label": "Stop, move to a clean area, and prepare the GF base away from flour.",
+                        "nextNodeId": "correct_move"
+                      }
+                    ]
+                  },
+                  "wrong_continue": {
+                    "text": "Incorrect. Airborne flour particles are a significant source of gluten cross-contamination. Wheat flour can remain airborne for several hours and settles on all surfaces and uncovered food. Even a light dusting of flour on a gluten-free base makes it unsafe for a coeliac customer.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_cover": {
+                    "text": "Covering the base shows awareness of the risk, but it is not sufficient. Flour dust will have already settled on the worktop, your hands, your apron, and your equipment. The contamination is not limited to what lands on the base. What is the better approach?",
+                    "options": [
+                      {
+                        "label": "Move to a completely clean, flour-free area.",
+                        "nextNodeId": "correct_move_after"
+                      },
+                      {
+                        "label": "Wipe the worktop and continue here.",
+                        "nextNodeId": "wrong_wipe"
+                      }
+                    ]
+                  },
+                  "correct_move": {
+                    "text": "Correct. You must move away from airborne flour contamination. Prepare the gluten-free base in a separate, clean area using dedicated equipment that has not been exposed to flour dust. Wash your hands and change your apron if flour has settled on it. Ideally, gluten-free preparation should always happen in a separate area or at a different time from wheat flour work.",
+                    "options": []
+                  },
+                  "correct_move_after": {
+                    "text": "Correct. Moving to a separate area is essential. Wash your hands, clean your equipment, and use a surface that has not been exposed to flour dust. In a well-managed kitchen, gluten-free prep is done in a designated area or before any wheat flour is used.",
+                    "options": []
+                  },
+                  "wrong_wipe": {
+                    "text": "Incorrect. Wiping the worktop does not remove flour dust from the air, your clothes, or your equipment. Flour particles continue to settle for hours. The only safe option is to move to an uncontaminated area.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "partial_cover"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Communication & Customer Service",
+      "description": "Taking allergen orders, checking ingredients, and communicating effectively with customers and the kitchen.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Taking Allergen Orders",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "The Allergen Conversation",
+              "content": "## Never Guess — Always Check\n\nWhen a customer mentions a food allergy or intolerance, you must follow a structured process every single time. This is not optional — it is a legal requirement.\n\n### The 5-Step Allergen Order Process\n\n**Step 1: Listen**\nTake the allergy seriously. Never dismiss, minimise, or show annoyance. The customer is trusting you with their health.\n\n**Step 2: Ask**\nAsk: \"Which allergens do you need to avoid?\" and \"Do you have any other allergies?\" — many people have more than one.\n\n**Step 3: Check**\nConsult the **allergen matrix**, check labels, or speak to the chef. **Never rely on memory.** Recipes change, suppliers change, and your memory is not reliable enough when a life is at stake.\n\n**Step 4: Communicate to the Kitchen**\nInform the kitchen clearly and specifically: \"Table 4, seat 2: **severe nut allergy**. The chicken stir-fry must be prepared nut-free with dedicated equipment.\" Use your kitchen's allergy alert system (written ticket, verbal call, coloured flag).\n\n**Step 5: Confirm on Delivery**\nWhen delivering the food, confirm with the customer: \"This is the nut-free chicken stir-fry for the nut allergy — is that correct?\" Ensure the right meal goes to the right person.\n\n### If You Do Not Know\nIf you cannot confirm whether a dish is safe, **say so honestly**. \"I'm not sure — let me check with the kitchen\" is always the right answer. Never guess.",
+              "keyTakeaway": "Follow the 5-step process: Listen, Ask, Check, Communicate to Kitchen, Confirm on Delivery. Never guess — always check."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Recipe and Supplier Changes",
+              "content": "## When Ingredients Change\n\nOne of the most dangerous moments in allergen management is when a recipe or supplier changes **without the allergen matrix being updated**.\n\n### Why This Matters\n- A chef switches from Brand A mayonnaise to Brand B. Brand B contains **mustard flour** — Brand A did not. The allergen matrix still says \"no mustard.\"\n- A bakery supplier changes their bread recipe to include **soya flour**. Nobody checks the new label.\n- A new menu item is added but nobody creates an allergen entry for it.\n\n### Your Responsibility\n- **Always check labels** when a new product arrives, even if it looks the same as the old one.\n- **Report any ingredient changes** to the person responsible for the allergen matrix immediately.\n- **Never assume** that because a product was safe last week, it is safe this week.\n- Brands reformulate products regularly. \"Same product, new recipe\" is a common occurrence.\n\n### \"May Contain\" Warnings\nManufacturers use \"may contain traces of...\" to warn of possible cross-contamination during production. This is **not a legal requirement** — it is a voluntary warning. However, you **must** pass this information to the customer so they can make an informed decision. Never hide a \"may contain\" warning.",
+              "keyTakeaway": "Always check labels when suppliers or recipes change. 'May contain' warnings must be communicated to the customer — never hidden."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Effective Communication with the Kitchen",
+              "content": "## The Kitchen-Service Chain\n\nAllergen safety depends on clear, reliable communication between front-of-house and the kitchen. Breakdowns in this chain are a leading cause of allergen incidents.\n\n### Methods of Communication\n- **Written tickets**: The most reliable method. Write the allergy clearly on the order ticket/KDS. Many EPOS systems allow you to flag allergies.\n- **Verbal call**: \"Allergy on table 4!\" should be acknowledged with a repeat-back from the kitchen: \"Heard — nut allergy, table 4.\"\n- **Coloured flags/stickers**: Some kitchens use coloured markers on tickets or plates to indicate allergen-free meals.\n- **Allergy log book**: Some businesses require allergen orders to be logged for traceability.\n\n### Common Failures\n- Telling a colleague verbally during a busy service and it being forgotten.\n- Writing \"no nuts\" on a ticket but not specifying the seat number — wrong person gets the wrong meal.\n- Kitchen staff changing mid-shift without the allergen information being handed over.\n\n### Golden Rules\n1. **Write it down** — verbal-only communication is the weakest link.\n2. **Be specific** — \"nut allergy\" not just \"allergy\".\n3. **Confirm receipt** — make sure the kitchen has acknowledged.\n4. **Track the dish** — know which plate is the allergen-free one.\n5. **Deliver personally** — do not let the wrong person carry the allergen meal.",
+              "keyTakeaway": "Write down the allergy, be specific, confirm the kitchen received it, track the dish, and deliver it personally. Verbal-only communication fails."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Handling Difficult Situations",
+              "content": "## When Things Get Complicated\n\n### \"Is This Definitely Safe?\"\nCustomers may press you for absolute guarantees. Be honest: \"We have checked the allergen matrix and prepared this with dedicated equipment. We have taken every precaution, but I cannot guarantee zero risk in a kitchen that also handles [allergen].\" Honesty builds trust.\n\n### Customers Who Downplay Their Allergy\nSome customers say \"It's only a mild allergy\" or \"A little bit won't hurt.\" **Treat every allergy as potentially life-threatening.** Allergic reactions are unpredictable — a previous mild reaction does not predict the next.\n\n### Customers With Multiple Allergies\nTake each allergen seriously. Check the matrix for every allergen they mention. If the dish is complex and the allergens are numerous, involve the chef directly in the conversation.\n\n### Language Barriers\nIf a customer has difficulty communicating their allergy in English:\n- Use allergen cards (many customers carry them in their language).\n- Use pictorial allergen symbols.\n- Never serve food if you are unsure about an allergy you cannot confirm.\n\n### When You Cannot Guarantee Safety\nIf you genuinely cannot guarantee a dish is safe — for example, in a kitchen that heavily uses the allergen — it is better to **refuse to serve** than to take the risk. Offer an alternative or suggest the customer chooses a different dish.",
+              "keyTakeaway": "Be honest about what you can and cannot guarantee. Treat every allergy as life-threatening. When in doubt, do not serve."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Scenarios: Communication",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Recipe Change",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The head chef has changed the mayonnaise brand used in your kitchen. You are serving a prawn cocktail to a regular customer who has a mustard allergy. The old mayo was mustard-free. What do you do?",
+                    "options": [
+                      {
+                        "label": "Serve it — mayonnaise is just egg and oil, it won't contain mustard.",
+                        "nextNodeId": "wrong_assume"
+                      },
+                      {
+                        "label": "Check the label on the new mayonnaise before serving.",
+                        "nextNodeId": "correct_check"
+                      },
+                      {
+                        "label": "Ask the chef if the new mayo is the same as the old one.",
+                        "nextNodeId": "partial_ask"
+                      }
+                    ]
+                  },
+                  "wrong_assume": {
+                    "text": "Incorrect. Many mayonnaise brands include mustard flour, mustard oil, or mustard powder as an emulsifier or flavouring. Assuming without checking could cause a severe allergic reaction. Never assume an ingredient is allergen-free without reading the label.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "correct_check": {
+                    "text": "Good — you read the label on the new mayonnaise. It lists 'mustard flour' in the ingredients. This means the prawn cocktail now contains mustard, which was not the case before. What do you do next?",
+                    "options": [
+                      {
+                        "label": "Inform the customer and offer an alternative (e.g., mayo-free or with the old brand if available).",
+                        "nextNodeId": "correct_inform"
+                      },
+                      {
+                        "label": "Make the prawn cocktail without mayo.",
+                        "nextNodeId": "partial_no_mayo"
+                      },
+                      {
+                        "label": "Update the allergen matrix and serve the dish.",
+                        "nextNodeId": "wrong_update_serve"
+                      }
+                    ]
+                  },
+                  "partial_ask": {
+                    "text": "Asking the chef is a reasonable instinct, but the chef may not have checked the full ingredient list of the new brand. The most reliable action is to read the label yourself. Chefs are busy and may not remember every ingredient in every product they have changed.",
+                    "options": [
+                      {
+                        "label": "Read the label yourself to be sure.",
+                        "nextNodeId": "correct_check"
+                      }
+                    ]
+                  },
+                  "correct_inform": {
+                    "text": "Excellent. You have checked the label, identified the new allergen, informed the customer, offered an alternative, and you should now ensure the allergen matrix is updated to reflect the change. This is the complete correct response.",
+                    "options": []
+                  },
+                  "partial_no_mayo": {
+                    "text": "Offering the dish without mayo is one option, but you should first inform the customer about the change so they can decide. They may prefer a different dish altogether. Also, make sure the allergen matrix is updated for all staff.",
+                    "options": [
+                      {
+                        "label": "Inform the customer and update the allergen matrix.",
+                        "nextNodeId": "correct_inform"
+                      }
+                    ]
+                  },
+                  "wrong_update_serve": {
+                    "text": "Updating the allergen matrix is essential, but you must NOT serve the dish containing mustard to a customer with a mustard allergy. Updating the matrix helps future orders, but this order needs to be changed now.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "correct_check"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Busy Service",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is a busy Saturday evening. Table 6 has a dairy allergy. You told the chef verbally, but during the rush, the chef forgot and prepared the risotto with butter and parmesan. The dish is now on the pass ready to go. What do you do?",
+                    "options": [
+                      {
+                        "label": "Serve it — it looks fine and the customer probably won't notice.",
+                        "nextNodeId": "wrong_serve"
+                      },
+                      {
+                        "label": "Scrape off the parmesan and send it out.",
+                        "nextNodeId": "wrong_scrape"
+                      },
+                      {
+                        "label": "Send it back and ask the chef to remake it dairy-free from scratch.",
+                        "nextNodeId": "correct_remake"
+                      }
+                    ]
+                  },
+                  "wrong_serve": {
+                    "text": "This could kill the customer. Serving a dish containing a known allergen to an allergic customer is a criminal offence under the Food Safety Act 1990. It does not matter how busy you are — there is no excuse for knowingly serving an allergen.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "wrong_scrape": {
+                    "text": "Incorrect. Removing the parmesan does not remove the dairy allergen. The butter is cooked into the rice, and milk proteins from the parmesan have spread throughout the dish. You cannot scrape, pick, or rinse an allergen out of food. The dish must be remade.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "correct_remake": {
+                    "text": "Correct. The dish must be remade from scratch using dairy-free alternatives (oil instead of butter, no parmesan, nutritional yeast or dairy-free cheese if available). Now — how do you prevent this from happening again?",
+                    "options": [
+                      {
+                        "label": "Make sure to shout louder next time.",
+                        "nextNodeId": "wrong_shout"
+                      },
+                      {
+                        "label": "Write the allergy on the ticket/KDS and use a visual marker system.",
+                        "nextNodeId": "correct_system"
+                      },
+                      {
+                        "label": "Always prepare allergen meals yourself instead of relying on the kitchen.",
+                        "nextNodeId": "wrong_yourself"
+                      }
+                    ]
+                  },
+                  "wrong_shout": {
+                    "text": "Shouting louder is not a reliable system. In a noisy, busy kitchen, verbal communication alone will fail again. You need a written system — allergy marked on the ticket, visual flag on the plate, and a verbal confirmation from the chef.",
+                    "options": [
+                      {
+                        "label": "Implement a written system",
+                        "nextNodeId": "correct_system"
+                      }
+                    ]
+                  },
+                  "correct_system": {
+                    "text": "Correct. A reliable system uses multiple layers: written on the ticket or KDS, a verbal call that is acknowledged, and a visual marker on the finished plate. This prevents human error during busy service. The system should be documented and all staff trained on it.",
+                    "options": []
+                  },
+                  "wrong_yourself": {
+                    "text": "It is not practical or safe for front-of-house staff to prepare kitchen dishes. The correct solution is a robust communication system — written tickets, verbal acknowledgement, and visual markers — that the whole team follows consistently.",
+                    "options": [
+                      {
+                        "label": "Use a proper communication system",
+                        "nextNodeId": "correct_system"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Emergency Procedures",
+      "description": "Recognising allergic reactions, responding to anaphylaxis, and using adrenaline auto-injectors.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Recognising Allergic Reactions",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Types of Allergic Reaction",
+              "content": "## From Mild to Life-Threatening\n\nAllergic reactions range from mild discomfort to fatal anaphylaxis. You must be able to recognise the full spectrum.\n\n### Mild Reactions\n- **Skin**: Localised redness, itching, mild rash (hives) in one area.\n- **Oral**: Tingling or itching in the mouth, lips, or tongue.\n- **Digestive**: Nausea, stomach cramps.\n- **Eyes/Nose**: Watery eyes, sneezing, runny nose.\n\n### Moderate Reactions\n- **Skin**: Widespread hives (urticaria) across the body.\n- **Swelling**: Angioedema — swelling of the face, lips, eyes, or hands.\n- **Digestive**: Vomiting, diarrhoea, abdominal pain.\n- **Respiratory**: Mild wheezing, coughing.\n\n### Severe Reaction — Anaphylaxis\n- **Airway**: Swollen tongue or throat, difficulty swallowing, hoarse voice.\n- **Breathing**: Severe wheezing, difficulty breathing, cyanosis (blue lips/fingertips).\n- **Circulation**: Rapid pulse then weak pulse, pale/clammy skin, drop in blood pressure, dizziness, collapse.\n- **Consciousness**: Confusion, sense of impending doom, loss of consciousness.\n\n### Critical Fact\nAnaphylaxis can develop in **under 60 seconds**. It is a medical emergency. A mild reaction can escalate to anaphylaxis rapidly and without warning.",
+              "keyTakeaway": "Know the progression: mild (localised rash/tingling) to moderate (widespread hives/swelling) to severe anaphylaxis (airway/breathing/collapse). Anaphylaxis can develop in under 60 seconds."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Anaphylaxis: The Action Plan",
+              "content": "## What to Do — The Emergency Protocol\n\nIf you suspect a customer or colleague is having an anaphylactic reaction, follow this protocol immediately. Speed saves lives.\n\n### Step 1: Call 999\nCall 999 (or 112) immediately and say: **\"Anaphylaxis\"** — this ensures the ambulance is dispatched as the highest priority. Do not wait to see if the symptoms get worse.\n\n### Step 2: Adrenaline Auto-Injector (AAI)\n- Most people with known severe allergies carry an AAI (EpiPen, Jext, or Emerade).\n- Help them use it if they are able. If they are unable, you may need to administer it.\n- **Inject into the outer mid-thigh** through clothing if necessary.\n- Hold in place for **10 seconds** (EpiPen/Jext) or **5 seconds** (Emerade).\n- Note the time of injection.\n\n### Step 3: Position the Patient\n- **Lie them flat** with legs raised (this helps blood return to the heart).\n- If they are having difficulty breathing, allow them to **sit up** slightly.\n- If they are pregnant, position them on their **left side**.\n- **NEVER stand them up or allow them to walk** — this can cause cardiac arrest.\n- If unconscious, place in the **recovery position**.\n\n### Step 4: Second Dose\nIf there is no improvement after **5 minutes**, administer a **second AAI** into the other thigh (if available).\n\n### Step 5: Monitor\nStay with the patient. Monitor breathing and pulse. Be prepared to perform **CPR** if they stop breathing or their heart stops.",
+              "keyTakeaway": "Call 999 saying 'anaphylaxis'. Use the AAI in the outer mid-thigh. Lie them flat with legs raised. Give a second dose after 5 minutes if no improvement. NEVER stand them up."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "Adrenaline Auto-Injectors (AAIs)",
+              "content": "## Know the Devices\n\nThere are three brands of AAI available in the UK. The technique differs slightly for each.\n\n### EpiPen (Most Common)\n- **Colour**: Yellow cap (adult 0.3mg), Green cap (junior 0.15mg).\n- **Method**: Remove blue safety cap, press orange tip firmly against outer mid-thigh, hold for 10 seconds.\n- **Memory aid**: \"Blue to the sky, orange to the thigh.\"\n\n### Jext\n- **Colour**: Yellow cap.\n- **Method**: Remove yellow cap, press black injector tip against outer mid-thigh, hold for 10 seconds.\n\n### Emerade\n- **Colour**: Varies.\n- **Method**: Remove needle shield, press against outer mid-thigh, hold for 5 seconds.\n\n### Important Points\n- AAIs can be administered **through clothing** — do not waste time removing trousers.\n- They are designed to be used by **non-medical people** in an emergency.\n- Once used, the device should be given to the paramedics.\n- **Spare AAIs**: Since 2017, UK schools and some public venues can keep spare AAIs for emergency use.\n\n### Workplace AAIs\nSome food businesses choose to keep a spare AAI on-site for emergencies. If your workplace has one, make sure you know where it is kept and that it has not expired.",
+              "keyTakeaway": "EpiPen: 'Blue to the sky, orange to the thigh' — hold 10 seconds. AAIs can be used through clothing. Always give the used device to paramedics."
+            },
+            {
+              "id": "m5-s4",
+              "type": "text-graphic-split",
+              "title": "After the Emergency",
+              "content": "## Post-Incident Actions\n\nOnce the emergency has been managed and the patient has been taken to hospital, there are critical follow-up actions.\n\n### Immediate Actions\n1. **Preserve the food**: Do not throw away the food the customer was eating. Keep it sealed and labelled — it may need to be tested to identify the allergen.\n2. **Record everything**: Write down exactly what happened, what the customer ate, what time symptoms started, what actions were taken, and who was involved.\n3. **Notify your manager**: If they are not already aware.\n\n### Investigation\n4. **Check the allergen matrix**: Was the information correct? Was the dish prepared according to the matrix?\n5. **Check for cross-contamination**: Review the preparation and service process. Was there a point where contamination could have occurred?\n6. **Check supplier information**: Has an ingredient changed? Is the label accurate?\n\n### Reporting\n7. **RIDDOR**: If a customer or staff member has a severe allergic reaction at your premises, it may need to be reported under RIDDOR (Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013).\n8. **Environmental Health**: The local authority may investigate.\n9. **Insurance**: Notify your business insurer.\n\n### Learning\n10. **Review and improve**: Use the incident to improve your allergen management systems. Update training, processes, and communication as needed.",
+              "keyTakeaway": "After an incident: preserve the food as evidence, record everything, check the allergen matrix, investigate for cross-contamination, and report under RIDDOR if applicable."
+            }
+          ]
+        },
+        {
+          "id": "m5-l2",
+          "title": "Scenarios: Emergency Response",
+          "slides": [
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Customer Collapse",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer who ordered the prawn linguine suddenly complains of throat tightness, breaks out in hives across their chest, and appears to be struggling to breathe. What is your first action?",
+                    "options": [
+                      {
+                        "label": "Offer them a glass of water and see if it passes.",
+                        "nextNodeId": "wrong_water"
+                      },
+                      {
+                        "label": "Call 999 immediately and say 'anaphylaxis'.",
+                        "nextNodeId": "correct_999"
+                      },
+                      {
+                        "label": "Ask a colleague to find the first aid kit while you stay with the customer.",
+                        "nextNodeId": "partial_firstaid"
+                      }
+                    ]
+                  },
+                  "wrong_water": {
+                    "text": "Incorrect. This customer is showing signs of anaphylaxis — throat tightness, hives, and breathing difficulty. Water will not help and may cause choking if their throat is swelling. Anaphylaxis is a medical emergency requiring immediate action.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "correct_999": {
+                    "text": "Correct — calling 999 and saying 'anaphylaxis' is the priority. The ambulance is now on the way. The customer tells you they have an EpiPen in their bag. What do you do?",
+                    "options": [
+                      {
+                        "label": "Wait for the ambulance — only paramedics should use an EpiPen.",
+                        "nextNodeId": "wrong_wait"
+                      },
+                      {
+                        "label": "Retrieve the EpiPen and help the customer use it (or administer it if they cannot).",
+                        "nextNodeId": "correct_epipen"
+                      },
+                      {
+                        "label": "Give them an antihistamine tablet instead — it's safer.",
+                        "nextNodeId": "wrong_antihistamine"
+                      }
+                    ]
+                  },
+                  "partial_firstaid": {
+                    "text": "A first aid kit will not help with anaphylaxis — there is no anaphylaxis treatment in a standard first aid kit. The customer needs adrenaline (from their own AAI) and an ambulance. Your first action must be calling 999.",
+                    "options": [
+                      {
+                        "label": "Call 999 immediately",
+                        "nextNodeId": "correct_999"
+                      }
+                    ]
+                  },
+                  "wrong_wait": {
+                    "text": "Incorrect. Adrenaline auto-injectors are designed to be used by anyone in an emergency — you do not need to be medically trained. Every minute without adrenaline increases the risk of death. The ambulance may be 10-15 minutes away. Use the AAI now.",
+                    "options": [
+                      {
+                        "label": "Help them use the EpiPen immediately",
+                        "nextNodeId": "correct_epipen"
+                      }
+                    ]
+                  },
+                  "correct_epipen": {
+                    "text": "Correct. You retrieve the EpiPen, remove the blue safety cap, and press the orange end against their outer mid-thigh for 10 seconds. The customer's breathing starts to ease. How should you position them while waiting for the ambulance?",
+                    "options": [
+                      {
+                        "label": "Help them stand up and walk to get fresh air.",
+                        "nextNodeId": "wrong_stand"
+                      },
+                      {
+                        "label": "Lie them flat with their legs raised.",
+                        "nextNodeId": "correct_position"
+                      },
+                      {
+                        "label": "Sit them upright in a chair.",
+                        "nextNodeId": "partial_sit"
+                      }
+                    ]
+                  },
+                  "wrong_antihistamine": {
+                    "text": "Incorrect. Antihistamines work too slowly for anaphylaxis and do not address the life-threatening symptoms (airway swelling, blood pressure drop). Adrenaline is the ONLY first-line treatment for anaphylaxis. Use the EpiPen.",
+                    "options": [
+                      {
+                        "label": "Use the EpiPen instead",
+                        "nextNodeId": "correct_epipen"
+                      }
+                    ]
+                  },
+                  "wrong_stand": {
+                    "text": "DANGEROUS. Standing or walking during anaphylaxis can cause sudden cardiac arrest due to low blood pressure. Several deaths have occurred when patients stood up during a reaction. Keep them lying down.",
+                    "options": [
+                      {
+                        "label": "Lie them down immediately",
+                        "nextNodeId": "correct_position"
+                      }
+                    ]
+                  },
+                  "correct_position": {
+                    "text": "Correct. Lying flat with legs raised helps maintain blood pressure and blood flow to vital organs. Stay with the patient, monitor their breathing, and be prepared to give a second EpiPen after 5 minutes if symptoms return. Hand the used EpiPen to the paramedics when they arrive.",
+                    "options": []
+                  },
+                  "partial_sit": {
+                    "text": "Sitting upright is acceptable only if the patient is having severe breathing difficulty and lying flat makes it worse. In most cases, lying flat with legs raised is the recommended position because it helps maintain blood pressure. If breathing is their main symptom, a semi-reclined position may be better.",
+                    "options": [
+                      {
+                        "label": "Understood",
+                        "nextNodeId": "correct_position"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Delayed Reaction",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A customer finished their meal 20 minutes ago. They come back from the car park saying they feel unwell — their lips are swelling and they feel dizzy. They say, 'I think I might be having a reaction but it's probably nothing — I feel silly.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Reassure them it is probably just anxiety and suggest they sit down.",
+                        "nextNodeId": "wrong_dismiss"
+                      },
+                      {
+                        "label": "Take it seriously — ask about allergies, check symptoms, and prepare to call 999.",
+                        "nextNodeId": "correct_take_serious"
+                      },
+                      {
+                        "label": "Give them a glass of milk to settle their stomach.",
+                        "nextNodeId": "wrong_milk"
+                      }
+                    ]
+                  },
+                  "wrong_dismiss": {
+                    "text": "Dangerous. Lip swelling and dizziness after eating are classic signs of an allergic reaction. Dismissing it as anxiety wastes critical time. Some allergic reactions have a delayed onset of up to 2 hours. The fact that the customer feels 'silly' is common — people often downplay their own symptoms.",
+                    "options": [
+                      {
+                        "label": "Go back and take this seriously",
+                        "nextNodeId": "correct_take_serious"
+                      }
+                    ]
+                  },
+                  "correct_take_serious": {
+                    "text": "Correct. You ask if they have any food allergies. They say they are allergic to sesame but thought the flatbread was safe. You check and find the flatbread was topped with sesame seeds. Symptoms are progressing — their face is now swelling. What next?",
+                    "options": [
+                      {
+                        "label": "Give them an antihistamine and monitor.",
+                        "nextNodeId": "partial_antihistamine"
+                      },
+                      {
+                        "label": "Call 999, ask if they have an AAI, and prepare to assist.",
+                        "nextNodeId": "correct_full_response"
+                      },
+                      {
+                        "label": "Drive them to A&E yourself — it'll be faster.",
+                        "nextNodeId": "wrong_drive"
+                      }
+                    ]
+                  },
+                  "wrong_milk": {
+                    "text": "Incorrect. If the customer has a milk allergy in addition to their unknown allergen trigger, you could make things worse. Never give food or drink to someone having an allergic reaction unless it is water and they are fully conscious with no swallowing difficulty.",
+                    "options": [
+                      {
+                        "label": "Go back and choose again",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_antihistamine": {
+                    "text": "Antihistamines can help with mild reactions (hives, itching) but are too slow for anaphylaxis. This customer has facial swelling and dizziness — these are signs of a severe reaction progressing toward anaphylaxis. Adrenaline and an ambulance are needed.",
+                    "options": [
+                      {
+                        "label": "Call 999 and prepare to use an AAI",
+                        "nextNodeId": "correct_full_response"
+                      }
+                    ]
+                  },
+                  "correct_full_response": {
+                    "text": "Correct. You call 999, stating 'anaphylaxis'. The customer has their Jext pen in their car — a colleague retrieves it. You help them administer it into their outer mid-thigh. You lie them flat with legs raised and stay with them until the ambulance arrives. Afterwards, you preserve the flatbread as evidence and record the full incident details.",
+                    "options": []
+                  },
+                  "wrong_drive": {
+                    "text": "Incorrect. Driving a patient to hospital is dangerous — their condition could deteriorate in the car and you would be unable to help while driving. An ambulance has adrenaline, oxygen, and trained paramedics. Always call 999.",
+                    "options": [
+                      {
+                        "label": "Go back and call 999 instead",
+                        "nextNodeId": "correct_full_response"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Test your knowledge of all 14 allergens, UK legislation, cross-contamination prevention, communication, and emergency procedures.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Quiz",
+          "slides": [
+            {
+              "id": "final-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "How many major allergens must be declared by law in the UK?",
+        "options": ["10", "12", "14", "16"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q2",
+        "text": "Which of these is NOT one of the 14 major allergens?",
+        "options": ["Celery", "Tomato", "Lupin", "Mustard"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "What does PPDS stand for?",
+        "options": [
+          "Pre-Packed for Direct Sale",
+          "Prepared and Packaged for Display and Sale",
+          "Pre-Produced Dietary Standard",
+          "Packaged Product Declaration System"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q4",
+        "text": "Natasha's Law was introduced following the death of Natasha Ednan-Laperouse. Which allergen caused her fatal reaction?",
+        "options": ["Peanuts", "Milk", "Sesame", "Tree nuts"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q5",
+        "text": "Under Natasha's Law, what must be shown on PPDS food labels?",
+        "options": [
+          "Just the food name and price",
+          "The food name, full ingredients list, and allergens emphasised",
+          "A list of the 14 allergens with ticks next to those present",
+          "Only the allergens present, in bold"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "Which UK regulation implements the EU Food Information for Consumers Regulation (EU FIC 1169/2011)?",
+        "options": [
+          "Food Safety Act 1990",
+          "Food Hygiene Regulations 2006",
+          "Food Information Regulations 2014",
+          "Health and Safety at Work Act 1974"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q7",
+        "text": "For non-pre-packed food in a restaurant, how can allergen information be provided?",
+        "options": [
+          "Only in writing on the menu",
+          "In writing or verbally, with a sign directing customers to ask staff",
+          "Verbally only, no sign required",
+          "It does not need to be provided for restaurant food"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "What is the maximum prison sentence for serious breaches of food safety law relating to allergens?",
+        "options": ["6 months", "1 year", "2 years", "5 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q9",
+        "text": "What is the fundamental difference between a food allergy and a food intolerance?",
+        "options": [
+          "Allergies affect children and intolerances affect adults",
+          "Allergies involve the immune system and can be life-threatening; intolerances involve the digestive system",
+          "Intolerances are more dangerous than allergies",
+          "Allergies cause stomach pain and intolerances cause skin rashes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "What is Coeliac disease?",
+        "options": [
+          "An allergy to wheat that causes anaphylaxis",
+          "A dislike of bread products",
+          "An autoimmune condition triggered by gluten that damages the small intestine",
+          "An intolerance to all grains including rice"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q11",
+        "text": "Which cereals contain gluten?",
+        "options": [
+          "Wheat, rye, barley, and oats",
+          "Wheat, rice, barley, and corn",
+          "Wheat, rye, quinoa, and oats",
+          "All cereals contain gluten"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q12",
+        "text": "Soy sauce is a hidden source of which allergen?",
+        "options": [
+          "Soya only",
+          "Fish only",
+          "Soya and cereals containing gluten (wheat)",
+          "Sulphites only"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q13",
+        "text": "A customer with a nut allergy orders pesto pasta. Traditional pesto typically contains which allergens?",
+        "options": [
+          "Tree nuts and milk (parmesan)",
+          "Peanuts and eggs",
+          "Sesame and fish",
+          "Soya and mustard"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q14",
+        "text": "Which of these is a Crustacean?",
+        "options": ["Mussel", "Squid", "Prawn", "Oyster"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q15",
+        "text": "Which of these is a Mollusc?",
+        "options": ["Crab", "Lobster", "Squid", "Crayfish"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q16",
+        "text": "Where is celery most commonly hidden as an allergen?",
+        "options": [
+          "Chocolate and confectionery",
+          "Stock cubes, soups, and spice mixes",
+          "Bread and pastries",
+          "Dairy products"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Lupin is a member of which food family?",
+        "options": ["Tree nut family", "Cereal family", "Legume family", "Shellfish family"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q18",
+        "text": "People with a peanut allergy may also react to which other allergen due to cross-reactivity?",
+        "options": ["Tree nuts", "Lupin", "Sesame", "Milk"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "A customer has a milk allergy. Is lactose-free milk safe for them?",
+        "options": [
+          "Yes, lactose-free means all milk proteins are removed",
+          "No, lactose-free milk still contains casein and whey proteins",
+          "Yes, if it is heated above 75°C first",
+          "Only if it is goat's milk"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Worcestershire sauce is a hidden source of which allergen?",
+        "options": ["Eggs", "Mustard", "Fish (anchovies)", "Celery"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q21",
+        "text": "Tahini, found in hummus, is made from which allergen?",
+        "options": ["Peanuts", "Tree nuts", "Sesame seeds", "Soya beans"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q22",
+        "text": "Sulphur dioxide and sulphites must be declared when present above what level?",
+        "options": ["1 mg/kg", "5 mg/kg", "10 mg/kg", "50 mg/kg"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q23",
+        "text": "Which group is most commonly sensitive to sulphites?",
+        "options": [
+          "People with diabetes",
+          "People with asthma",
+          "Pregnant women",
+          "Elderly people"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "Where are sulphites commonly found?",
+        "options": [
+          "Fresh vegetables and salads",
+          "Dried fruit, wine, and sausages",
+          "Dairy products and eggs",
+          "Tree nuts and peanuts"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "Which E-numbers indicate sulphites on a food label?",
+        "options": ["E100-E199", "E200-E219", "E220-E228", "E300-E399"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q26",
+        "text": "Peanuts are classified as which type of food?",
+        "options": ["A tree nut", "A legume", "A seed", "A cereal"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "A customer with a tree nut allergy asks if pine nuts are safe. What is the correct response?",
+        "options": [
+          "Yes — pine nuts are seeds, not tree nuts, so they are safe",
+          "Pine nuts are technically seeds but some people with tree nut allergy react to them — you should flag the risk",
+          "No — pine nuts are classified as tree nuts under UK law",
+          "Only if they are roasted"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "What is an allergen matrix?",
+        "options": [
+          "A cleaning schedule for allergen-free equipment",
+          "A grid showing which of the 14 allergens are present in each menu item",
+          "A training certificate for allergen awareness",
+          "A legal document submitted to Environmental Health"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "Can cooking destroy food allergens?",
+        "options": [
+          "Yes, cooking above 75°C destroys all allergens",
+          "Yes, but only if boiled for 30 minutes",
+          "No, allergen proteins are heat stable and cannot be destroyed by cooking",
+          "Only some allergens are destroyed by cooking"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q30",
+        "text": "You pick walnuts off a salad for a customer with a nut allergy. Is the salad now safe?",
+        "options": [
+          "Yes, the nuts have been removed",
+          "Yes, if you also wipe the plate",
+          "No, nut protein traces remain on the salad and dressing",
+          "Yes, if the customer agrees it is fine"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q31",
+        "text": "What is the standard colour code for allergen-free equipment in UK kitchens?",
+        "options": ["Red", "Blue", "Green", "Purple"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q32",
+        "text": "Which cleaning method is required to remove allergen residues from surfaces?",
+        "options": [
+          "A quick wipe with a dry cloth",
+          "Rinsing under cold water",
+          "A two-stage clean (clean with hot soapy water, then sanitise)",
+          "Wiping with alcohol gel"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q33",
+        "text": "Why should allergen-containing foods be stored on lower shelves?",
+        "options": [
+          "They are usually heavier",
+          "To prevent them dripping or spilling onto allergen-free food below",
+          "Lower shelves are colder",
+          "It is easier to see the labels"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "A colleague fries chips in the same oil used for battered fish. Which allergens could contaminate the chips?",
+        "options": [
+          "Eggs and milk",
+          "Cereals containing gluten and fish",
+          "Sulphites and celery",
+          "Peanuts and soya"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "Does alcohol hand gel remove allergen proteins from hands?",
+        "options": [
+          "Yes, alcohol kills everything including allergens",
+          "Yes, if rubbed thoroughly for 30 seconds",
+          "No, you must wash hands with soap and water to remove allergen proteins",
+          "Only if the gel contains triclosan"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q36",
+        "text": "Flour dust is visible in the air near a gluten-free preparation area. What is the risk?",
+        "options": [
+          "No risk — airborne flour cannot contaminate food",
+          "Low risk — flour dust settles quickly",
+          "High risk — airborne flour can settle on surfaces and food, causing gluten cross-contamination",
+          "Risk only if the flour is wholemeal"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q37",
+        "text": "What should you do when a food supplier changes the brand of an ingredient?",
+        "options": [
+          "Nothing — similar products have similar ingredients",
+          "Check the new label for allergen changes and update the allergen matrix",
+          "Return the product and demand the same brand",
+          "Ask a colleague if they have used it before"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "A product label says 'May contain traces of nuts.' What does this mean?",
+        "options": [
+          "The product definitely contains nuts",
+          "The product is safe for people with nut allergies",
+          "There is a risk of cross-contamination with nuts during production",
+          "The product contains less than 1% nuts"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q39",
+        "text": "A customer tells you about their allergy. What is the correct first step?",
+        "options": [
+          "Guess whether the dish they ordered is safe based on your knowledge",
+          "Listen carefully and check the allergen matrix or ask the chef",
+          "Tell them everything on the menu is safe",
+          "Suggest they eat somewhere else"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "Why is verbal-only communication about allergens to the kitchen unreliable?",
+        "options": [
+          "Chefs cannot hear well",
+          "Verbal information is easily forgotten or miscommunicated in a busy kitchen",
+          "It is illegal to communicate allergens verbally",
+          "Verbal communication is always reliable"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "What is Anaphylaxis?",
+        "options": [
+          "A mild stomach upset after eating",
+          "A severe, life-threatening allergic reaction affecting the whole body",
+          "A type of food intolerance",
+          "An anxiety attack triggered by eating"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "Which of these is a sign of anaphylaxis?",
+        "options": [
+          "Mild headache and tiredness",
+          "Swollen tongue, difficulty breathing, and drop in blood pressure",
+          "Runny nose only",
+          "Slight stomach discomfort"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "What is the first thing you should do if you suspect someone is having anaphylaxis?",
+        "options": [
+          "Offer them water",
+          "Give them an antihistamine tablet",
+          "Call 999 and say 'anaphylaxis'",
+          "Ask them to stand up and walk around"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "Where should an adrenaline auto-injector (AAI) be administered?",
+        "options": [
+          "Into the upper arm",
+          "Into the outer mid-thigh",
+          "Into the buttock",
+          "Into the stomach"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q45",
+        "text": "For an EpiPen, the memory aid is 'Blue to the sky, orange to the thigh.' How long should you hold it in place?",
+        "options": ["3 seconds", "5 seconds", "10 seconds", "30 seconds"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q46",
+        "text": "How should you position a person experiencing anaphylaxis?",
+        "options": [
+          "Standing upright",
+          "Sitting in a chair leaning forward",
+          "Lying flat with legs raised",
+          "Walking around slowly"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q47",
+        "text": "Why should you NEVER stand up a patient experiencing anaphylaxis?",
+        "options": [
+          "They might fall and hurt themselves",
+          "Standing can cause cardiac arrest due to low blood pressure",
+          "It makes the rash worse",
+          "It is more comfortable lying down"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "If there is no improvement 5 minutes after the first AAI dose, what should you do?",
+        "options": [
+          "Wait for the ambulance — one dose is the maximum",
+          "Administer a second AAI into the other thigh",
+          "Give the patient water and antihistamines",
+          "Shake the patient to keep them awake"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "After an allergen incident, why should you preserve the food the customer ate?",
+        "options": [
+          "So you can serve it to someone else",
+          "For insurance purposes only",
+          "It may need to be tested to identify the allergen that caused the reaction",
+          "Environmental Health Officers require you to eat it yourself"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q50",
+        "text": "Which of these is an example of PPDS food?",
+        "options": [
+          "A sandwich made while the customer waits",
+          "A pre-made sandwich wrapped and placed in a display fridge at the same premises",
+          "A factory-sealed sandwich from a supermarket",
+          "A meal served at a table in a restaurant"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "If you provide incorrect allergen information to a customer, what could happen?",
+        "options": [
+          "Nothing, as long as you did not mean to",
+          "A verbal warning from your manager",
+          "Criminal prosecution, unlimited fines, and up to 2 years imprisonment",
+          "A small fine only"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q52",
+        "text": "Oyster sauce is a hidden source of which allergen?",
+        "options": ["Fish", "Crustaceans", "Molluscs", "Sulphites"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q53",
+        "text": "Which allergen is found in traditional Caesar salad dressing?",
+        "options": ["Sesame", "Lupin", "Fish (anchovies)", "Celery"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q54",
+        "text": "Soya lecithin (E322) is found in which common food?",
+        "options": ["Fresh fruit", "Most chocolate", "Plain rice", "Fresh fish"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "A customer has a dairy allergy. Which of these is NOT safe for them?",
+        "options": [
+          "Oat milk",
+          "Margarine that contains milk derivatives",
+          "Coconut cream",
+          "Soya yoghurt"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "Thai curry paste commonly contains which hidden allergen?",
+        "options": ["Celery", "Lupin", "Crustaceans (shrimp paste)", "Eggs"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q57",
+        "text": "Which age group is at the highest risk of fatal allergic reactions?",
+        "options": [
+          "Children under 5",
+          "Teenagers and young adults",
+          "Adults over 65",
+          "Middle-aged adults"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "Who is responsible for allergen safety in a food business?",
+        "options": [
+          "Only the head chef",
+          "Only the manager",
+          "The customer is responsible for their own safety",
+          "Everyone who handles, prepares, or serves food"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q59",
+        "text": "Can you use the same knife for regular bread and gluten-free bread if you wipe it first?",
+        "options": [
+          "Yes, wiping removes all traces",
+          "No, you must use a clean or dedicated knife",
+          "Yes, if you use a damp cloth",
+          "Yes, if the gluten-free bread is toasted first"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "A customer says they have a 'mild' nut allergy. How should you treat this?",
+        "options": [
+          "As mild — serve food with trace amounts of nuts",
+          "Ask them to rate their allergy on a scale of 1-10",
+          "As potentially life-threatening — allergic reactions are unpredictable",
+          "Ignore it — mild allergies are not dangerous"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q61",
+        "text": "What is the correct action if you spill flour on a work surface during service?",
+        "options": [
+          "Blow it away quickly",
+          "Leave it for the cleaner at the end of shift",
+          "Sweep it into the bin",
+          "Clean it up immediately with a damp cloth and sanitise the surface"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q62",
+        "text": "Which of these grains is naturally gluten-free?",
+        "options": ["Barley", "Spelt", "Quinoa", "Rye"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "Mustard is a hidden allergen in which of these foods?",
+        "options": [
+          "Plain white rice",
+          "Curry powder, salad dressings, and some ketchup brands",
+          "Fresh fruit salad",
+          "Sparkling water"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "When should allergen-free meals ideally be prepared?",
+        "options": [
+          "At the end of service when the kitchen is being cleaned",
+          "At the same time as all other meals",
+          "Before the kitchen gets busy and before allergen-containing ingredients are used",
+          "Only on Mondays"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q65",
+        "text": "You are serving a buffet. Which practice prevents allergen cross-contamination?",
+        "options": [
+          "Using the same serving spoon for all dishes to save washing up",
+          "Labelling each dish with its allergens and providing separate serving utensils",
+          "Placing all dishes close together for customer convenience",
+          "Removing allergen labels to avoid confusing customers"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "What should be written on a kitchen order ticket when a customer has declared an allergy?",
+        "options": [
+          "Nothing — just tell the chef verbally",
+          "The word 'allergy' with no further detail",
+          "The specific allergy, the table number, and the seat number",
+          "The customer's full medical history"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q67",
+        "text": "An antihistamine tablet is appropriate treatment for which level of allergic reaction?",
+        "options": [
+          "Anaphylaxis",
+          "Any allergic reaction",
+          "Mild reactions only (localised hives, itching)",
+          "Antihistamines should never be given"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q68",
+        "text": "How quickly can anaphylaxis develop after exposure to an allergen?",
+        "options": [
+          "At least 2 hours",
+          "Within 30-60 minutes only",
+          "Within seconds to minutes",
+          "It always takes at least 15 minutes"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q69",
+        "text": "Which statement about sesame seeds is correct?",
+        "options": [
+          "Sesame seeds are only found in Asian food",
+          "Sesame seeds fall off bread easily and can contaminate other foods and surfaces",
+          "Sesame allergy is extremely rare",
+          "Sesame oil does not contain the allergen"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "Marzipan is made from which allergen?",
+        "options": ["Peanuts", "Sesame", "Almonds (tree nuts)", "Coconut"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q71",
+        "text": "In what year did Natasha's Law come into force?",
+        "options": ["2018", "2019", "2021", "2023"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q72",
+        "text": "Which of these is NOT a method of allergen cross-contamination?",
+        "options": [
+          "Using the same fryer oil for different foods",
+          "Storing allergens above non-allergens in the fridge",
+          "Reading the allergen matrix before preparing a dish",
+          "Using the same chopping board for different ingredients"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "A customer with a fish allergy orders chips. You check and find the chips are cooked in a dedicated vegetable oil fryer. Are the chips safe?",
+        "options": [
+          "Yes — vegetable oil does not contain fish",
+          "Yes, only if the fryer is also free from battered items containing fish",
+          "No — all chip fryers are contaminated with fish",
+          "Only if the chips are oven-baked"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "What is the correct way to emphasise allergens on a PPDS label?",
+        "options": [
+          "Write them in a smaller font so they don't scare customers",
+          "List them separately at the bottom of the label",
+          "Emphasise them in bold, italics, CAPITALS, or a different colour within the ingredients list",
+          "Underline every word on the label"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q75",
+        "text": "Where is egg commonly found as a hidden allergen?",
+        "options": [
+          "Steamed vegetables",
+          "Glazed bread rolls, mayonnaise, and fresh pasta",
+          "Plain rice",
+          "Fresh fruit"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "Which of these about groundnut oil is correct?",
+        "options": [
+          "Groundnut oil is made from tree nuts",
+          "Groundnut oil is another name for peanut oil",
+          "Groundnut oil is always safe for peanut allergy sufferers",
+          "Groundnut oil is made from sunflower seeds"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "What is the most reliable method for communicating an allergy to the kitchen?",
+        "options": [
+          "Shouting across the kitchen",
+          "Telling a colleague and asking them to pass it on",
+          "Writing it on the order ticket/KDS with verbal confirmation from the chef",
+          "Sending a text message to the chef"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "A product you use regularly has been reformulated by the manufacturer. What should you do?",
+        "options": [
+          "Nothing — the manufacturer would have told you if allergens changed",
+          "Continue using it — if it looks the same, it is the same",
+          "Check the new label for any allergen changes and update the allergen matrix",
+          "Stop using the product until the manufacturer confirms it is identical"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q79",
+        "text": "Which of these people can legally administer an adrenaline auto-injector in an emergency?",
+        "options": [
+          "Only a doctor or paramedic",
+          "Only a qualified first aider",
+          "Only the person who owns the AAI",
+          "Anyone — AAIs are designed for use by non-medical people in emergencies"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q80",
+        "text": "After an allergen incident at your workplace, which regulation may require you to report it?",
+        "options": [
+          "Data Protection Act",
+          "RIDDOR (Reporting of Injuries, Diseases and Dangerous Occurrences Regulations)",
+          "Equality Act",
+          "Consumer Rights Act"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

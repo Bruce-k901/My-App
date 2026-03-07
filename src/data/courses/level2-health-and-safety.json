@@ -1,0 +1,2013 @@
+{
+  "id": "uk-l2-health-and-safety",
+  "title": "Health and Safety Level 2 (UK)",
+  "shortDescription": "Risk assessment, fire safety, manual handling, and kitchen hazards for the workplace.",
+  "description": "Comprehensive workplace safety course covering risk assessment, fire safety, manual handling, and kitchen-specific hazards. Aligned with the Health and Safety at Work etc. Act 1974, the Management of Health and Safety at Work Regulations 1999, and relevant Approved Codes of Practice.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-hs",
+  "category": "workplace-safety",
+  "level": "Level 2",
+  "estimatedMinutes": 240,
+  "icon": "HardHat",
+  "tags": [
+    "health and safety",
+    "risk assessment",
+    "fire safety",
+    "manual handling",
+    "COSHH",
+    "workplace",
+    "RIDDOR",
+    "PPE",
+    "hierarchy of control"
+  ],
+  "learningOutcomes": [
+    "Conduct basic risk assessments using the HSE 5-step process",
+    "Understand fire prevention, evacuation procedures, and correct extinguisher use",
+    "Apply safe manual handling techniques using the TILE framework",
+    "Identify and control common kitchen and workplace hazards including COSHH substances",
+    "Explain employer and employee duties under the Health and Safety at Work etc. Act 1974",
+    "Describe the hierarchy of control and apply it to real workplace situations"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction",
+      "description": "Introduction to Health and Safety and the legal framework.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to Health and Safety",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Health and Safety Level 2 (UK)\n\nEvery year in the UK, over **560,000 workers** sustain a non-fatal injury at work, and around **135 workers** are killed. In the hospitality sector, kitchens, restaurants, and hotels consistently rank among the highest-risk workplaces due to the combination of heat, sharp objects, chemicals, heavy loads, and fast-paced environments.\n\nThis course gives you the knowledge to protect yourself, your colleagues, and the public.\n\n### What You Will Learn\n- **Risk assessment** — The HSE 5-step process for identifying and controlling hazards.\n- **Fire safety** — Prevention, the fire triangle, evacuation procedures, and extinguisher selection.\n- **Manual handling** — The TILE framework and safe lifting techniques.\n- **Kitchen hazards** — Slips, trips, cuts, burns, electrical safety, and COSHH.\n\n### The Legal Framework\nUK health and safety law is built on the **Health and Safety at Work etc. Act 1974 (HSWA)**. It places duties on both employers and employees. This course covers those duties and the regulations that support them.\n\nUse **Next** to move through the course.",
+              "keyTakeaway": "Workplace injuries are common and preventable. This course equips you with the legal knowledge and practical skills to keep yourself and others safe."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "Your Legal Duties",
+              "content": "## Everyone Has a Role to Play\n\nHealth and safety is not just the employer's job. The **Health and Safety at Work etc. Act 1974** places clear duties on both sides.\n\n### Employer Duties (Section 2)\n- Provide a **safe workplace** with safe equipment and systems of work.\n- Ensure **adequate training, information, and supervision**.\n- Provide a **written health and safety policy** (if 5+ employees).\n- Consult employees on matters affecting their health and safety.\n\n### Employee Duties (Section 7)\n- Take **reasonable care** of your own health and safety and that of others.\n- **Co-operate** with your employer on health and safety matters.\n- **Do not interfere** with or misuse anything provided for safety (e.g. fire extinguishers, guards).\n- **Report** hazards, defects, and near misses promptly.\n\n### Key Point\nIgnoring a hazard because \"it's not my job\" is not a defence in law. Every employee has a legal duty to act.",
+              "keyTakeaway": "The HSWA 1974 places duties on both employers and employees. Ignoring hazards is never acceptable — everyone has a legal responsibility to act."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Risk Assessment",
+      "description": "Identifying and controlling workplace hazards using the HSE 5-step process.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "Understanding Risk Assessment",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "What is Risk Assessment?",
+              "content": "## A Legal Duty, Not Just Paperwork\n\nUnder the **Management of Health and Safety at Work Regulations 1999** (Regulation 3), every employer must carry out a **suitable and sufficient** assessment of risks to employees and anyone else who may be affected by their work — including customers, visitors, and contractors.\n\n### The HSE 5-Step Process\n1. **Identify hazards** — Walk the workplace. What could cause harm? Think about activities, substances, equipment, and the environment.\n2. **Decide who might be harmed and how** — Staff, contractors, customers, delivery drivers, vulnerable groups (pregnant workers, young workers, disabled people).\n3. **Evaluate the risk and decide on controls** — How likely is harm? How serious would it be? Use the hierarchy of control to choose proportionate measures.\n4. **Record your findings** — If you employ **5 or more people**, the assessment must be written down. Even smaller businesses benefit from recording it.\n5. **Review and update** — Whenever there is a significant change (new equipment, new process, after an incident, or at regular intervals).\n\n### Why It Matters\nRisk assessment is the foundation of everything else in this course. Fire safety plans, manual handling procedures, and COSHH assessments all flow from a proper risk assessment.",
+              "keyTakeaway": "Risk assessment is a legal requirement under the Management Regulations 1999. The HSE 5-step process is the standard method for identifying and controlling workplace hazards."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Hazard vs Risk",
+              "content": "## Know the Difference\n\nThese two terms are often confused, but they mean different things in health and safety law.\n\n### Hazard\nAnything with the **potential** to cause harm. A hazard is a property of the thing itself.\n- A wet floor is a hazard (it could cause someone to slip).\n- A sharp knife is a hazard (it could cause a cut).\n- Hot oil is a hazard (it could cause a burn).\n- A cleaning chemical is a hazard (it could irritate skin or lungs).\n\n### Risk\nThe **likelihood** that someone will actually be harmed by the hazard, combined with the **severity** of that harm.\n- A wet floor in a busy kitchen during service = **high risk** (many people walking through, fast pace, carrying items).\n- A wet floor in a locked storeroom overnight = **low risk** (nobody is there).\n\n### Putting It Together\n| Hazard | Who is at risk? | Severity | Likelihood | Control measure |\n|---|---|---|---|---|\n| Wet floor near fryers | Kitchen staff | Broken bones, head injury | High during service | Non-slip flooring, immediate clean-up, wet floor signs, non-slip shoes |\n| Hot oven door | Chef, kitchen porter | Burns | Medium | Oven gloves, verbal warnings, awareness training |\n\nUnderstanding this distinction is critical because it determines how you **prioritise** your controls. High-risk hazards need immediate action; low-risk hazards may need monitoring.",
+              "keyTakeaway": "A hazard is something that could cause harm. Risk is the likelihood and severity of that harm. Risk assessment combines both to prioritise controls."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "The Hierarchy of Control",
+              "content": "## Choosing the Right Control Measure\n\nThe **hierarchy of control** is a ranked list of control measures, from most effective to least effective. You must work down the list, starting at the top. PPE is always the **last resort**, not the first.\n\n### The Five Levels\n1. **Eliminate** — Remove the hazard entirely. Can you stop doing the activity or use a completely different process? Example: Buying pre-chopped vegetables eliminates knife use for that task.\n2. **Substitute** — Replace the hazard with something less dangerous. Example: Switching to a less toxic cleaning product.\n3. **Engineering controls** — Physically separate people from the hazard. Example: Machine guards, extraction ventilation over fryers, safety interlocks on equipment.\n4. **Administrative controls** — Change the way people work. Example: Training, procedures, signage, job rotation to reduce repetitive strain, safe systems of work.\n5. **PPE (Personal Protective Equipment)** — Protect the individual. Example: Gloves, goggles, non-slip shoes, ear defenders. PPE is the last line of defence because it only protects the wearer and depends on correct use.\n\n### Why This Order Matters\nHigher-level controls protect **everyone** automatically. Lower-level controls depend on **individual behaviour** and can fail. A machine guard protects every user; PPE only works if the person wears it correctly.\n\n### Kitchen Example\nFryer burn risk: **Engineering** (thermostat cut-off, splash guard) + **Administrative** (training, never overfill) + **PPE** (heat-resistant gloves). You would never rely on PPE alone.",
+              "keyTakeaway": "Always work down the hierarchy: eliminate, substitute, engineer, administrate, then PPE as a last resort. Higher controls protect everyone; PPE depends on individual behaviour."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Recording and Reviewing",
+              "content": "## Making It Count\n\nA risk assessment is only useful if it is recorded, communicated, and kept up to date.\n\n### Recording Your Findings\n- Employers with **5 or more employees** must record their risk assessment in writing (Regulation 3, Management Regs 1999).\n- The record must include the **significant findings** — the hazards identified, who is at risk, and the control measures in place.\n- It does not need to be perfect or cover every tiny risk. It must be **suitable and sufficient** — proportionate to the actual risks.\n\n### Communicating to Staff\n- Employees must be told about the risks that affect them and the controls in place (Regulation 10).\n- This is often done through **induction training**, **toolbox talks**, and **written safe systems of work**.\n- If staff do not know about a hazard, the control measures are meaningless.\n\n### When to Review\n- After an **accident, incident, or near miss**.\n- When **new equipment, substances, or processes** are introduced.\n- When **staff roles change** (e.g. a new starter, someone returning from injury).\n- At **regular intervals** — many businesses review annually as a minimum.\n- When **legislation changes** or new guidance is published.\n\n### Common Mistakes\n- Completing a risk assessment once and filing it away forever.\n- Copying a generic template without tailoring it to your workplace.\n- Not involving frontline staff who actually do the work.",
+              "keyTakeaway": "Record significant findings, communicate them to all affected staff, and review the assessment after any change, incident, or at regular intervals."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Reporting: RIDDOR and Accident Books",
+              "content": "## When Things Go Wrong\n\nEven with good controls, accidents and incidents happen. UK law requires specific reporting and record-keeping.\n\n### RIDDOR — Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013\nCertain events **must** be reported to the HSE:\n- **Deaths** — Immediately by phone, then written report within 10 days.\n- **Specified injuries** — Fractures (except fingers, thumbs, and toes), amputations, crush injuries, loss of consciousness, burns requiring hospital treatment.\n- **Over-7-day incapacitation** — If a worker cannot do their normal duties for more than 7 consecutive days (reported within 15 days).\n- **Occupational diseases** — Carpal tunnel syndrome, occupational dermatitis, hand-arm vibration syndrome, occupational asthma.\n- **Dangerous occurrences** — Near misses with high-harm potential (e.g. structural collapse, gas leak, electrical short circuit).\n\n### The Accident Book (BI 510)\nAll workplaces should maintain an accident book. Every accident, injury, and near miss must be recorded, including:\n- Date, time, and location.\n- Name and details of the injured person.\n- Nature of the injury and circumstances.\n- Any first aid or medical treatment given.\n\nAccident records help identify patterns and prevent recurrence. They are also evidence in any subsequent investigation or claim.\n\n### Near Misses\nA near miss is an event that **could have** caused harm but did not. Reporting near misses is vital because they reveal weaknesses in your controls before someone gets hurt.",
+              "keyTakeaway": "RIDDOR requires reporting of deaths, specified injuries, over-7-day incapacitation, diseases, and dangerous occurrences. Record all incidents in the accident book — including near misses."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Broken Tile",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During the morning prep shift, you notice a cracked floor tile near the dishwash area. The crack has created a raised edge that could catch someone's foot. Several staff walk through this area carrying heavy pots. What do you do?",
+                    "options": [
+                      {
+                        "label": "It is only a small crack — carry on working and mention it at the next team meeting.",
+                        "nextNodeId": "wrong_ignore"
+                      },
+                      {
+                        "label": "Place a warning sign over the tile and report it to your manager immediately.",
+                        "nextNodeId": "partial_sign"
+                      },
+                      {
+                        "label": "Cordon off the area so nobody walks over it, then report it to your manager as an urgent repair.",
+                        "nextNodeId": "correct_cordon"
+                      }
+                    ]
+                  },
+                  "wrong_ignore": {
+                    "text": "This is not a safe approach. A cracked tile with a raised edge is a trip hazard, especially in a busy area where staff are carrying heavy items. Delaying action until a team meeting could mean someone is injured in the meantime. Under Section 7 of the HSWA 1974, you have a duty to take reasonable care. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Put a wet floor sign near it and carry on.",
+                        "nextNodeId": "wrong_wrong_sign"
+                      },
+                      {
+                        "label": "Cordon off the area and report it immediately.",
+                        "nextNodeId": "correct_cordon"
+                      },
+                      {
+                        "label": "Try to fix the tile yourself with some adhesive.",
+                        "nextNodeId": "wrong_diy"
+                      }
+                    ]
+                  },
+                  "wrong_wrong_sign": {
+                    "text": "A wet floor sign is not appropriate here — the hazard is a trip from a broken tile, not a slip from a wet surface. Using the wrong signage may confuse people and does not adequately warn of the actual danger. The area needs to be physically cordoned off.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "wrong_diy": {
+                    "text": "Attempting a DIY repair is not appropriate. You may not have the right materials, the repair may not last, and you could make the hazard worse. Floor repairs should be carried out by a competent person. Your duty is to prevent access and report the issue.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_sign": {
+                    "text": "Reporting to your manager is good, but a warning sign alone may not prevent someone from walking over the tile, especially if they are carrying items and cannot see the sign easily. In a busy kitchen, physical barriers are more effective than signs alone. What additional step would make this safer?",
+                    "options": [
+                      {
+                        "label": "Nothing else — the sign is enough.",
+                        "nextNodeId": "wrong_sign_enough"
+                      },
+                      {
+                        "label": "Also cordon off the area so no one can walk directly over the tile.",
+                        "nextNodeId": "correct_final"
+                      },
+                      {
+                        "label": "Tell colleagues verbally and hope they remember.",
+                        "nextNodeId": "wrong_verbal"
+                      }
+                    ]
+                  },
+                  "wrong_sign_enough": {
+                    "text": "In a fast-paced kitchen environment, signs are often overlooked — especially by staff carrying heavy pots. A physical barrier (cones, caution tape, or a table blocking the path) is much more effective at preventing someone from walking over the hazard.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_sign"
+                      }
+                    ]
+                  },
+                  "wrong_verbal": {
+                    "text": "Verbal warnings alone are unreliable. People forget, new staff arrive mid-shift, and in a noisy kitchen environment messages get lost. Physical controls (cordoning off) are always more reliable than relying on people to remember.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_sign"
+                      }
+                    ]
+                  },
+                  "correct_cordon": {
+                    "text": "Excellent. Cordoning off the area is an engineering control — it physically prevents people from encountering the hazard. Reporting it to your manager ensures the repair is arranged promptly. You have applied the hierarchy of control correctly: you cannot eliminate the tile immediately, so you have isolated the hazard and escalated it. This would also be worth recording in the accident book as a near miss or hazard report.",
+                    "options": []
+                  },
+                  "correct_final": {
+                    "text": "Correct. Combining a physical barrier with a report to management is the best approach. The barrier provides immediate protection while the repair is arranged. This is a practical example of applying the hierarchy of control — engineering controls (barrier) supported by administrative controls (reporting and communication).",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The New Starter's First Day",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A new kitchen porter starts today. The manager is off sick and has asked you to show the new starter around. You are very busy with lunch prep. How do you handle the health and safety induction?",
+                    "options": [
+                      {
+                        "label": "Give them an apron and tell them to shadow you — they will pick it up as they go.",
+                        "nextNodeId": "wrong_shadow"
+                      },
+                      {
+                        "label": "Walk them through the key safety points: fire exits, first aid, hazards, PPE, and who to report to. Then let them start on low-risk tasks.",
+                        "nextNodeId": "correct_induction"
+                      },
+                      {
+                        "label": "Tell them to read the health and safety policy in the office and come back when they are done.",
+                        "nextNodeId": "partial_policy"
+                      }
+                    ]
+                  },
+                  "wrong_shadow": {
+                    "text": "This approach leaves the new starter exposed to hazards they do not understand. They will not know where fire exits are, what PPE to wear, or how to report a problem. Under the Management of Health and Safety at Work Regulations 1999 (Regulation 13), employers must provide adequate training — especially to new starters. Shadowing alone does not meet this requirement, particularly when you are too busy to explain things properly. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Just give them the health and safety handbook to read.",
+                        "nextNodeId": "partial_policy"
+                      },
+                      {
+                        "label": "Take 15 minutes to cover the essentials: fire exits, first aid, hazards, PPE, reporting. Then assign low-risk tasks with supervision.",
+                        "nextNodeId": "correct_induction"
+                      },
+                      {
+                        "label": "Send them home and wait for the manager to return tomorrow.",
+                        "nextNodeId": "wrong_send_home"
+                      }
+                    ]
+                  },
+                  "wrong_send_home": {
+                    "text": "While waiting for the manager might seem cautious, it is an overreaction. The new starter can safely begin work as long as they receive a basic induction covering the essential safety information. You are capable of delivering this — it does not require the manager.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_shadow"
+                      }
+                    ]
+                  },
+                  "partial_policy": {
+                    "text": "Asking someone to read a policy document is a start, but it is not sufficient on its own. New starters need a practical walkthrough of the actual workplace — they need to see where the fire exits are, where the first aid kit is, and what the real hazards look like. A written policy does not show them any of this. What additional step is needed?",
+                    "options": [
+                      {
+                        "label": "Nothing — reading the policy covers everything.",
+                        "nextNodeId": "wrong_policy_only"
+                      },
+                      {
+                        "label": "Follow up with a practical walkthrough of the premises, covering fire exits, first aid, hazards, and PPE requirements.",
+                        "nextNodeId": "correct_follow_up"
+                      },
+                      {
+                        "label": "Ask another team member to keep an eye on them.",
+                        "nextNodeId": "wrong_eye"
+                      }
+                    ]
+                  },
+                  "wrong_policy_only": {
+                    "text": "A written policy alone does not constitute adequate induction training. The new starter needs to physically see the fire exits, know where the first aid kit is, understand the specific hazards in this kitchen, and know who to report to. Paper-based training must be supported by practical demonstration.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_policy"
+                      }
+                    ]
+                  },
+                  "wrong_eye": {
+                    "text": "Informal supervision is not a substitute for proper induction training. The colleague may be too busy to explain things, and 'keeping an eye on them' does not ensure the new starter knows about fire exits, first aid, or specific hazards. A structured walkthrough is required.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_policy"
+                      }
+                    ]
+                  },
+                  "correct_induction": {
+                    "text": "Well done. Even when time is short, a focused safety induction covering fire exits, first aid, key hazards, required PPE, and reporting procedures ensures the new starter can work safely. Starting them on low-risk tasks with supervision is proportionate and responsible. Under Regulation 13 of the Management Regulations, training must be provided when people start work, and it must be adequate for the risks they face.",
+                    "options": []
+                  },
+                  "correct_follow_up": {
+                    "text": "Correct. Combining the written policy with a practical walkthrough gives the new starter both the reference material and the real-world context they need. This meets the legal requirement for adequate training and ensures they can identify hazards, find safety equipment, and know who to contact if something goes wrong.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Fire Safety",
+      "description": "Prevention, the fire triangle, evacuation procedures, and extinguisher selection.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Fire Prevention and Evacuation",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "The Fire Triangle",
+              "content": "## Three Elements Must Be Present\n\nA fire cannot start or sustain itself without all three of these elements present simultaneously:\n\n1. **Fuel** — Any material that burns. In kitchens: cooking oil, fat, paper, cardboard packaging, wooden chopping boards, cloth towels, gas, grease deposits in extraction hoods.\n2. **Oxygen** — Present in the air around us (approximately 21%). Draughts, open windows, and ventilation systems can feed a fire with additional oxygen.\n3. **Heat (ignition source)** — Anything that raises the fuel to its ignition temperature. In kitchens: open flames (gas hobs), electrical sparks, overheated oil, faulty wiring, friction.\n\n### How Extinguishers Work\nEvery fire extinguisher works by removing one or more sides of the triangle:\n- **Water** removes **heat** (cooling).\n- **Foam** removes **heat** and smothers (removes oxygen).\n- **CO2** removes **oxygen** (displacing it with carbon dioxide).\n- **Dry powder** interrupts the chemical chain reaction and smothers.\n- **Wet chemical** cools and creates a seal over burning oil (removes heat and oxygen).\n\n### Prevention Principle\nFire prevention is about keeping these three elements **apart**. Store flammable materials away from ignition sources. Maintain electrical equipment. Clean grease from extraction systems.",
+              "keyTakeaway": "Fire needs fuel, oxygen, and heat. Remove any one element and the fire cannot burn. Prevention means keeping these three elements apart."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Fire Extinguisher Types",
+              "content": "## Choosing the Right Extinguisher\n\nUsing the wrong extinguisher can be **ineffective or dangerous**. In the UK, all extinguishers are red with a coloured band indicating the type.\n\n### Extinguisher Types and Uses\n| Colour Band | Type | Use On | NEVER Use On |\n|---|---|---|---|\n| **Red** (all red) | Water | Paper, wood, textiles (Class A) | Electrical fires, cooking oil |\n| **Cream** | Foam | Paper, wood, flammable liquids (Class A & B) | Cooking oil, electrical (caution) |\n| **Black** | CO2 | Electrical fires, flammable liquids (Class B) | Cooking oil, paper (limited effect) |\n| **Blue** | Dry Powder | Most fire types (Class A, B, C) | Not recommended indoors (visibility) |\n| **Yellow** | Wet Chemical | **Cooking oil and fat fires (Class F)** | Electrical fires |\n| N/A | Fire Blanket | Small cooking fires, clothing fires | Large fires |\n\n### Critical Kitchen Rule\n**Never use water on a cooking oil fire.** Water is denser than oil and sinks beneath it. The water instantly turns to steam, causing a violent eruption that throws burning oil into the air. This is called a **boilover** and causes catastrophic burns and fire spread.\n\n### The PASS Technique\n- **P**ull the pin.\n- **A**im at the base of the fire.\n- **S**queeze the handle.\n- **S**weep from side to side.",
+              "keyTakeaway": "Match the extinguisher to the fire type. Never use water on oil fires. In kitchens, wet chemical extinguishers and fire blankets are essential for Class F (cooking oil) fires."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Kitchen-Specific Fire Risks",
+              "content": "## Why Kitchens Are High Risk\n\nCommercial kitchens combine all three elements of the fire triangle in close proximity, making them one of the highest fire-risk environments in any workplace.\n\n### Common Causes of Kitchen Fires\n- **Cooking oil and fat** — Deep fryers, sauteing, and grilling produce extremely flammable vapours. Oil ignites at its **flash point** (around 300-330 degrees C for most cooking oils). Once ignited, it burns intensely.\n- **Grease build-up in extraction systems** — Filters, ducts, and canopy hoods accumulate grease over time. If not cleaned regularly, this grease can ignite from heat rising through the system. UK fire safety guidance recommends cleaning extraction systems at least every **6-12 months** (more often in busy kitchens).\n- **Unattended cooking** — Leaving pans on heat while attending to other tasks is a leading cause of kitchen fires.\n- **Electrical faults** — Worn cables, damaged plugs, overloaded sockets, and equipment used near water.\n- **Combustible storage** — Cardboard boxes, paper towels, cloths, and packaging stored near hobs, ovens, or fryers.\n- **Gas leaks** — Improperly connected or maintained gas appliances. Gas should be checked annually by a Gas Safe registered engineer.\n\n### Prevention Measures\n- Never overfill deep fryers (max two-thirds full).\n- Never leave cooking unattended.\n- Clean extraction filters on schedule.\n- Keep combustible materials away from heat sources.\n- Report faulty equipment immediately.",
+              "keyTakeaway": "Kitchens combine fuel, oxygen, and heat in close proximity. Grease in extraction systems, unattended cooking, and overfilled fryers are leading causes of kitchen fires."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Evacuation Procedures",
+              "content": "## If There Is a Fire\n\nThe **Regulatory Reform (Fire Safety) Order 2005** requires all non-domestic premises to have a fire risk assessment and an emergency plan. Every employee must know what to do.\n\n### The Fire Action Plan\n1. **Raise the alarm** — Activate the nearest fire alarm call point (break glass). Do not assume someone else has done it.\n2. **Call 999** — Or ensure someone has called. Give the address and nature of the fire.\n3. **Evacuate** — Leave by the nearest safe exit. Do not stop to collect belongings. Close doors and windows behind you to slow fire spread.\n4. **Do not use lifts** — Lifts can stop between floors, fill with smoke, or open onto a fire floor.\n5. **Assemble at the meeting point** — Go to the designated assembly point so you can be accounted for.\n6. **Do not re-enter** — Until the fire service gives the all-clear.\n\n### Your Responsibilities\n- **Know your escape routes** — Walk them before an emergency. There must be at least two means of escape.\n- **Know the assembly point** — It should be far enough from the building and clearly marked.\n- **Know where fire extinguishers and blankets are** — But only tackle small fires if you are trained, confident, and have a clear escape route behind you.\n- **Fire doors** — Must be kept closed (or on automatic closers). Never wedge fire doors open.\n\n### Fire Drills\nFire drills must be conducted at least every **6 months** in most workplaces. They test the evacuation plan, identify problems, and ensure all staff (including night shifts and new starters) know what to do.",
+              "keyTakeaway": "Raise the alarm, evacuate via the nearest safe exit, assemble at the meeting point, and never re-enter until the fire service gives the all-clear. Know your escape routes before an emergency."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Fire Risk Assessment and Prevention",
+              "content": "## Preventing Fire Before It Starts\n\nThe **Regulatory Reform (Fire Safety) Order 2005** requires the 'responsible person' (usually the employer or building manager) to carry out a **fire risk assessment** and keep it under review.\n\n### What a Fire Risk Assessment Covers\n- **Identify fire hazards** — Sources of fuel, ignition, and oxygen.\n- **Identify people at risk** — Staff, customers, disabled people, lone workers, sleeping occupants.\n- **Evaluate the risk** — How likely is a fire? How severe would the consequences be?\n- **Record findings and implement controls** — Remove or reduce hazards, install detection and warning systems, ensure adequate escape routes.\n- **Review regularly** — After any fire, near miss, change of use, or building alteration.\n\n### Key Prevention Measures\n- **Housekeeping** — Keep workplaces tidy. Remove waste, packaging, and flammable materials from corridors and escape routes.\n- **Electrical safety** — PAT testing, no overloaded sockets, no damaged cables. Switch off equipment when not in use.\n- **No smoking** — Enforce no-smoking policies. Provide designated smoking areas away from buildings.\n- **Arson prevention** — Secure bins, lock external doors, ensure good lighting around the building.\n- **Maintenance** — Fire alarms, emergency lighting, sprinklers, and extinguishers must be tested and serviced regularly.\n\n### Detection and Warning\n- **Smoke detectors and heat detectors** — Tested weekly (a different detector each week).\n- **Fire alarm system** — Tested weekly and serviced at least annually.\n- **Emergency lighting** — Monthly functional test, annual full-duration test.",
+              "keyTakeaway": "Fire risk assessment is a legal requirement. Prevention focuses on housekeeping, electrical safety, maintenance of detection systems, and regular testing of alarms and emergency lighting."
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Fire in the Extraction Hood",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are working the evening shift when you notice flames flickering inside the extraction hood above the grill station. The flames are small but visible. The kitchen is busy with a full restaurant. What is your first action?",
+                    "options": [
+                      {
+                        "label": "Turn off the extraction fan and try to smother the flames with a damp cloth.",
+                        "nextNodeId": "wrong_cloth"
+                      },
+                      {
+                        "label": "Activate the fire alarm immediately and begin evacuation.",
+                        "nextNodeId": "partial_alarm_first"
+                      },
+                      {
+                        "label": "Turn off the grill and gas supply, then activate the fire alarm.",
+                        "nextNodeId": "correct_gas_first"
+                      }
+                    ]
+                  },
+                  "wrong_cloth": {
+                    "text": "Attempting to tackle a fire inside an extraction hood with a damp cloth is extremely dangerous. The hood contains accumulated grease which is highly flammable. A cloth cannot smother a fire inside ductwork, and you risk burns from reaching into the hood. You also have not raised the alarm, which means nobody else knows there is a fire. What should you do?",
+                    "options": [
+                      {
+                        "label": "Try using a fire extinguisher on the hood instead.",
+                        "nextNodeId": "wrong_extinguisher_hood"
+                      },
+                      {
+                        "label": "Turn off the gas and grill, then raise the alarm immediately.",
+                        "nextNodeId": "correct_gas_first"
+                      },
+                      {
+                        "label": "Continue service and monitor the flames — they might go out on their own.",
+                        "nextNodeId": "wrong_monitor"
+                      }
+                    ]
+                  },
+                  "wrong_extinguisher_hood": {
+                    "text": "A standard extinguisher cannot effectively reach inside extraction ductwork. Professional kitchen extraction systems may have built-in suppression systems (such as Ansul), but attempting to fight a duct fire with a handheld extinguisher is ineffective and delays evacuation. The priority is to cut the fuel source (gas) and raise the alarm.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "wrong_monitor": {
+                    "text": "This is extremely dangerous. Grease fires in extraction systems can escalate rapidly. The grease deposits throughout the ductwork act as fuel, and the extraction system provides airflow (oxygen). A small visible flame can become a major fire within minutes. Never assume a fire will go out on its own.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "start"
+                      }
+                    ]
+                  },
+                  "partial_alarm_first": {
+                    "text": "Raising the alarm is a critical step, and you are right to prioritise it. However, if you can safely do so, turning off the gas and grill first removes the heat source feeding the fire. This takes only seconds and can prevent the fire from escalating while you evacuate. What would make this response even better?",
+                    "options": [
+                      {
+                        "label": "Also turn off the gas supply and grill before leaving the area.",
+                        "nextNodeId": "correct_combined"
+                      },
+                      {
+                        "label": "Nothing else — just evacuate immediately.",
+                        "nextNodeId": "partial_just_go"
+                      },
+                      {
+                        "label": "Try to put the fire out with a wet chemical extinguisher before evacuating.",
+                        "nextNodeId": "wrong_delay_evac"
+                      }
+                    ]
+                  },
+                  "wrong_delay_evac": {
+                    "text": "Attempting to fight a fire inside extraction ductwork with a handheld extinguisher delays evacuation and is unlikely to be effective. Once the alarm is raised and the gas is off, evacuation is the priority. Let the fire service deal with duct fires.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_alarm_first"
+                      }
+                    ]
+                  },
+                  "partial_just_go": {
+                    "text": "Evacuating immediately after raising the alarm is never wrong — your safety comes first. However, if the gas controls are within arm's reach and you can turn them off in seconds without delaying your evacuation, doing so removes the heat source and can prevent the fire from escalating. In an extraction fire, cutting the fuel supply is a significant action.",
+                    "options": [
+                      {
+                        "label": "Understood",
+                        "nextNodeId": "correct_combined"
+                      }
+                    ]
+                  },
+                  "correct_gas_first": {
+                    "text": "Excellent decision. Turning off the gas and grill removes the heat source feeding the fire. Activating the fire alarm immediately after ensures everyone is alerted and evacuation can begin. In a kitchen with an extraction fire, cutting the fuel source is critical because grease in the ductwork will continue to burn if heat keeps feeding into the system. After raising the alarm, evacuate the building and call 999. Let the fire service handle the duct fire — it requires specialist equipment.",
+                    "options": []
+                  },
+                  "correct_combined": {
+                    "text": "Correct. The ideal response is: turn off the gas and grill (removing the heat source), raise the alarm, evacuate, and call 999. Cutting the fuel supply takes seconds and can prevent a small extraction fire from becoming catastrophic. The fire service has the specialist equipment needed to deal with fires inside ductwork. Well done.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Blocked Fire Exit",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You arrive at work and notice that a large delivery of boxes has been stacked in front of the rear fire exit. The delivery driver has left. The boxes are heavy and would take 15-20 minutes to move. The restaurant opens in 30 minutes. What do you do?",
+                    "options": [
+                      {
+                        "label": "Leave the boxes — you can move them after the lunch rush when it is quieter.",
+                        "nextNodeId": "wrong_leave"
+                      },
+                      {
+                        "label": "Move the boxes immediately, even if it delays opening. A blocked fire exit is unacceptable.",
+                        "nextNodeId": "correct_move"
+                      },
+                      {
+                        "label": "Open the restaurant but prop the front door wide open as an alternative exit.",
+                        "nextNodeId": "wrong_alternative"
+                      }
+                    ]
+                  },
+                  "wrong_leave": {
+                    "text": "A blocked fire exit is a serious and immediate breach of fire safety law. Under the Regulatory Reform (Fire Safety) Order 2005, escape routes must be kept clear and usable at all times when the premises are occupied. If a fire broke out during lunch service, staff and customers could be trapped. This is not something that can wait until it is convenient. What should you do?",
+                    "options": [
+                      {
+                        "label": "Move the boxes now, before opening.",
+                        "nextNodeId": "correct_move"
+                      },
+                      {
+                        "label": "Reduce the number of customers allowed in to compensate for the blocked exit.",
+                        "nextNodeId": "wrong_reduce"
+                      },
+                      {
+                        "label": "Put a sign on the fire exit saying 'Temporarily out of use'.",
+                        "nextNodeId": "wrong_sign"
+                      }
+                    ]
+                  },
+                  "wrong_reduce": {
+                    "text": "Reducing customer numbers does not solve the problem. The fire exit must be clear and usable. There is no acceptable workaround for a blocked escape route. The boxes must be moved before the premises can be occupied.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_leave"
+                      }
+                    ]
+                  },
+                  "wrong_sign": {
+                    "text": "You cannot put a fire exit 'out of use' by putting a sign on it. Fire exits are a legal requirement and must be available whenever the building is occupied. A sign does not remove the danger — it just acknowledges it while doing nothing about it.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_leave"
+                      }
+                    ]
+                  },
+                  "wrong_alternative": {
+                    "text": "While having multiple exits is good, the front door is not a substitute for a designated fire exit. Fire exits are positioned to provide escape routes from all parts of the building. If a fire blocks the route to the front door, people in the rear of the building have no way out. The blocked fire exit must be cleared. Additionally, propping doors open can compromise fire compartmentation. What is the correct approach?",
+                    "options": [
+                      {
+                        "label": "Move the boxes immediately before anyone occupies the building.",
+                        "nextNodeId": "correct_move"
+                      },
+                      {
+                        "label": "Ask the fire service for permission to open with one exit blocked.",
+                        "nextNodeId": "wrong_permission"
+                      },
+                      {
+                        "label": "Open anyway and move the boxes during service when you get a spare moment.",
+                        "nextNodeId": "wrong_during_service"
+                      }
+                    ]
+                  },
+                  "wrong_permission": {
+                    "text": "The fire service will not grant permission to operate with a blocked fire exit. It is your legal responsibility to ensure all escape routes are clear before the premises are occupied. There is no mechanism for getting an exemption.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_alternative"
+                      }
+                    ]
+                  },
+                  "wrong_during_service": {
+                    "text": "You must not open the premises to the public with a blocked fire exit. Moving boxes during a busy service is impractical and means the exit is blocked while customers are present. This is a breach of fire safety law and puts lives at risk.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_alternative"
+                      }
+                    ]
+                  },
+                  "correct_move": {
+                    "text": "Correct. A blocked fire exit is a serious, immediate hazard. Under the Regulatory Reform (Fire Safety) Order 2005, all escape routes must be clear and usable whenever the premises are occupied. Moving the boxes must take priority over opening on time. If you cannot move them alone, get help from colleagues. Report the issue to your manager and consider speaking to the delivery company to prevent it happening again. Delaying the restaurant opening by 15 minutes is far preferable to a blocked exit during a fire.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Manual Handling",
+      "description": "Safe lifting techniques, the TILE framework, and reducing musculoskeletal injuries.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Safe Lifting and Carrying",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Why Manual Handling Matters",
+              "content": "## The Scale of the Problem\n\nManual handling — lifting, carrying, pushing, pulling, and moving loads by hand — is the **single largest cause** of workplace musculoskeletal disorders (MSDs) in the UK.\n\n### The Statistics\n- Manual handling injuries account for approximately **one third** of all workplace injuries reported to the HSE.\n- Over **470,000 workers** in the UK suffer from work-related musculoskeletal disorders.\n- **8.9 million working days** are lost annually to MSDs.\n- Back injuries are the most common, but shoulders, arms, wrists, and knees are also frequently affected.\n\n### In Hospitality\nKitchens and hospitality environments are particularly high-risk because:\n- **Heavy loads** — Sacks of flour (25kg), crates of produce, beer kegs (40-50kg), full stock pots.\n- **Awkward shapes** — Large trays, stacked boxes, bulky equipment.\n- **Repetitive movements** — Unloading deliveries, carrying plates, lifting pans.\n- **Confined spaces** — Narrow corridors, walk-in fridges, cramped kitchens.\n- **Wet or slippery floors** — Increases the risk of injury during a lift.\n\n### The Legal Framework\nThe **Manual Handling Operations Regulations 1992** (as amended) require employers to:\n1. **Avoid** manual handling where reasonably practicable.\n2. **Assess** the risk where it cannot be avoided.\n3. **Reduce** the risk to the lowest level reasonably practicable.",
+              "keyTakeaway": "Manual handling causes one third of all workplace injuries. The Manual Handling Operations Regulations 1992 require employers to avoid, assess, and reduce manual handling risks."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "The TILE Framework",
+              "content": "## Assessing Every Lift\n\nBefore you lift anything, use the **TILE** framework to assess the risk. TILE stands for **Task, Individual, Load, Environment**.\n\n### T — Task\n- What does the task involve? Lifting, carrying, pushing, pulling, twisting?\n- How far does the load need to be moved?\n- Does it involve repetitive movements or holding the load for a long time?\n- Can the task be redesigned to reduce the risk?\n\n### I — Individual\n- Are you physically capable of the lift? Consider your strength, fitness, and any existing injuries.\n- Have you been trained in safe manual handling?\n- Are you pregnant? (Pregnancy increases vulnerability to manual handling injuries.)\n- Are you a young worker who may lack experience or physical development?\n\n### L — Load\n- How heavy is it? Is the weight marked on it?\n- Is it an awkward shape, bulky, or difficult to grip?\n- Is it unstable, or could the contents shift (e.g. liquid in a container)?\n- Is it hot, cold, sharp, or otherwise hazardous to hold?\n\n### E — Environment\n- Is the floor wet, uneven, or cluttered?\n- Is there enough space to move safely?\n- Are there stairs, ramps, or tight corners?\n- Is the lighting adequate? Is it too hot or cold (affecting grip or concentration)?\n\n### If any TILE factor raises concern, stop and find a safer way.",
+              "keyTakeaway": "TILE stands for Task, Individual, Load, Environment. Assess all four factors before every manual handling operation. If any factor raises concern, find a safer method."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Safe Lifting Technique",
+              "content": "## Step by Step\n\nWhen manual handling cannot be avoided, use the correct technique to minimise injury risk.\n\n### Before the Lift\n1. **Plan** — Where is the load going? Is the route clear? Do you need help or a trolley?\n2. **Position your feet** — Shoulder-width apart, one foot slightly forward for balance.\n3. **Bend your knees** — Lower yourself using your leg muscles, not your back. Keep your back straight or slightly arched.\n4. **Get a firm grip** — Use the whole hand, not just fingertips. Wear gloves if the surface is slippery.\n\n### During the Lift\n5. **Keep the load close** — The closer to your body, the less strain on your back. Hug the load.\n6. **Lift smoothly** — Use your leg muscles to power the lift. Do not jerk or snatch.\n7. **Keep your back straight** — Avoid bending your spine forward or to the side.\n8. **Avoid twisting** — Move your feet to turn. Never twist your spine while holding a load.\n9. **Look ahead** — Keep your head up and your eyes forward, not looking down at the load.\n\n### Putting Down\n10. **Reverse the process** — Bend your knees, keep the load close, lower it smoothly.\n11. **Position carefully** — Avoid trapping your fingers between the load and the surface.\n\n### HSE Guideline Weights\nThese are **guidelines**, not legal limits. Risk assessment is always required:\n- **Men**: Up to 25kg close to body at waist height; reduces significantly if the load is held at arm's length, above shoulder height, or below knee level.\n- **Women**: Up to 16kg close to body at waist height; same reductions apply.",
+              "keyTakeaway": "Bend your knees, keep the load close to your body, avoid twisting, and use your legs to lift. HSE guidelines suggest up to 25kg for men and 16kg for women under ideal conditions."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Mechanical Aids and Team Lifting",
+              "content": "## Reducing the Risk\n\nThe hierarchy of control applies to manual handling: avoid it first, then reduce the risk.\n\n### Mechanical Aids\nWherever possible, use equipment to reduce or eliminate manual lifting:\n- **Sack trucks and trolleys** — For moving boxes, crates, and sacks.\n- **Pallet trucks** — For heavy palletised deliveries.\n- **Hoists and lifts** — For repetitive lifting between levels.\n- **Conveyor belts** — In high-volume operations.\n- **Kick stools** — To avoid stretching above shoulder height. Never stand on chairs or boxes.\n\n### Team Lifting\nWhen a load is too heavy or awkward for one person:\n- **One person leads** — They coordinate and call \"Ready, steady, lift.\"\n- **Lift and lower together** — At the same time, at the same pace.\n- **Communicate throughout** — Especially when navigating obstacles or putting the load down.\n- **Match heights if possible** — A significant height difference between lifters changes the load distribution.\n- **Never exceed two-thirds of the combined individual capacity** — Two people can safely lift less than double what one person can.\n\n### Delivery Management\n- Arrange for deliveries to be placed at waist height where possible.\n- Break bulk deliveries into smaller loads.\n- Ensure delivery areas are well-lit, dry, and free from obstacles.\n- Schedule deliveries for times when enough staff are available to help.\n\n### Your Right to Refuse\nIf you believe a lift is unsafe, you have the right to refuse and ask for help, equipment, or a different approach. No employer can lawfully force you to carry out a lift you believe is dangerous.",
+              "keyTakeaway": "Use mechanical aids whenever possible. For team lifts, one person leads and everyone lifts together. You have the right to refuse an unsafe lift and request help or equipment."
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Heavy Delivery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A delivery of catering-size oil drums (20 litres each, approximately 18kg) has arrived. The delivery driver has left them on the pavement outside the kitchen. You need to get six drums into the storeroom, which is down a corridor and through a fire door. The corridor floor is dry but the storeroom step is slightly raised. What do you do?",
+                    "options": [
+                      {
+                        "label": "Carry two drums at once (one in each hand) to save time — you are strong enough.",
+                        "nextNodeId": "wrong_two_at_once"
+                      },
+                      {
+                        "label": "Use a sack truck or trolley, and take the drums one or two at a time through the corridor.",
+                        "nextNodeId": "correct_trolley"
+                      },
+                      {
+                        "label": "Carry one drum at a time using correct lifting technique — it is only 18kg, well within the guideline.",
+                        "nextNodeId": "partial_carry"
+                      }
+                    ]
+                  },
+                  "wrong_two_at_once": {
+                    "text": "Carrying two 18kg drums simultaneously (36kg total) significantly exceeds safe guidelines for most people, especially when navigating a corridor, fire door, and raised step. Carrying items in both hands also means you cannot open doors, steady yourself if you trip, or see the step clearly. This is a high-risk approach. What would be safer?",
+                    "options": [
+                      {
+                        "label": "Use a sack truck or trolley.",
+                        "nextNodeId": "correct_trolley"
+                      },
+                      {
+                        "label": "Carry one drum at a time instead.",
+                        "nextNodeId": "partial_carry"
+                      },
+                      {
+                        "label": "Stack all six on a pallet and drag the pallet along the corridor.",
+                        "nextNodeId": "wrong_drag"
+                      }
+                    ]
+                  },
+                  "wrong_drag": {
+                    "text": "Dragging a loaded pallet across a floor is a manual handling risk in itself — the combined weight would be over 100kg. Pallets do not slide easily on standard flooring, and this approach could damage the floor and cause back strain from pulling. Use the right equipment: a sack truck, trolley, or pallet truck.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_two_at_once"
+                      }
+                    ]
+                  },
+                  "partial_carry": {
+                    "text": "Carrying one 18kg drum at a time using correct technique is feasible, but consider the full picture. You need to carry six drums along a corridor, through a fire door, and over a raised step — that is six separate lifts, carries, and puts-down. Repetitive manual handling increases fatigue and injury risk, even at manageable weights. The raised step adds a trip hazard. Is there a better approach?",
+                    "options": [
+                      {
+                        "label": "You are right — I should use a sack truck or trolley to wheel them through.",
+                        "nextNodeId": "correct_trolley"
+                      },
+                      {
+                        "label": "Six lifts is fine if I use good technique each time.",
+                        "nextNodeId": "wrong_fine"
+                      },
+                      {
+                        "label": "I will carry three and then take a long break before the other three.",
+                        "nextNodeId": "wrong_break"
+                      }
+                    ]
+                  },
+                  "wrong_fine": {
+                    "text": "While each individual lift may be within your capacity, the Manual Handling Operations Regulations require employers and employees to avoid manual handling where reasonably practicable. A trolley or sack truck is available, makes the task safer and faster, and eliminates the repetitive strain. Good technique does not eliminate risk — it reduces it. Avoidance is always better.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_carry"
+                      }
+                    ]
+                  },
+                  "wrong_break": {
+                    "text": "Taking a break reduces fatigue, but it does not address the fundamental issue: you are manually handling loads that could easily be moved with a trolley. The regulations require you to avoid manual handling where practicable, and a sack truck is both available and practical.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_carry"
+                      }
+                    ]
+                  },
+                  "correct_trolley": {
+                    "text": "Well done. Using a sack truck or trolley is the correct approach. It avoids unnecessary manual lifting, handles the weight safely, and makes navigating the corridor, fire door, and raised step much easier. This applies the hierarchy of control: you have avoided the manual handling risk where reasonably practicable. Before moving the drums, check the trolley is in good condition, the route is clear, and take care over the raised step. If no trolley is available, ask your manager to provide one or arrange for the delivery to be placed closer to the storeroom in future.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Awkward Stock Pot",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The head chef asks you to move a large stock pot full of hot soup from the stove to a low shelf in the walk-in fridge for cooling. The pot is heavy (approximately 15kg), hot, and has no handles on the sides — only two small handles on top. The route involves crossing the kitchen and going into the walk-in fridge, which has a slightly wet floor. What do you do?",
+                    "options": [
+                      {
+                        "label": "Grab the top handles and carry it carefully across the kitchen and into the fridge.",
+                        "nextNodeId": "wrong_carry_hot"
+                      },
+                      {
+                        "label": "Raise your concerns: the pot is hot, heavy, hard to grip, and the fridge floor is wet. Ask for help and suggest using a trolley.",
+                        "nextNodeId": "correct_raise_concerns"
+                      },
+                      {
+                        "label": "Wait for the soup to cool on the stove first, then move it.",
+                        "nextNodeId": "partial_cool_first"
+                      }
+                    ]
+                  },
+                  "wrong_carry_hot": {
+                    "text": "This is a high-risk approach. Let us apply TILE:\n- **Task**: Carrying a heavy load across a kitchen and into a cold room.\n- **Individual**: Carrying alone, with scalding hot contents.\n- **Load**: 15kg, hot, poor grip (small top handles only), liquid contents that can slosh.\n- **Environment**: Busy kitchen, wet fridge floor, temperature change.\n\nEvery element of TILE raises a red flag. Carrying hot liquid with a poor grip over a wet floor could result in severe burns, a slip, or both. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Ask for help and use a trolley to wheel it across.",
+                        "nextNodeId": "correct_raise_concerns"
+                      },
+                      {
+                        "label": "Put on oven gloves for a better grip and carry on.",
+                        "nextNodeId": "wrong_gloves"
+                      },
+                      {
+                        "label": "Ladle the soup into smaller containers and carry those instead.",
+                        "nextNodeId": "partial_decant"
+                      }
+                    ]
+                  },
+                  "wrong_gloves": {
+                    "text": "Oven gloves reduce the burn risk but actually make grip worse — bulky gloves on small handles reduce your control of the pot. The load is still heavy, the floor is still wet, and the contents can still slosh. PPE alone does not address the root hazard. You need to either use a trolley or decant the soup into smaller, safer containers.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_carry_hot"
+                      }
+                    ]
+                  },
+                  "partial_decant": {
+                    "text": "Decanting into smaller containers is a reasonable approach — it reduces the weight per trip and can allow you to use containers with better handles. However, it still involves handling hot liquid, and multiple trips across a wet fridge floor still carry slip risk. Consider whether a trolley could be used to move the pot (or smaller containers) more safely. What is the best combined approach?",
+                    "options": [
+                      {
+                        "label": "Decant into smaller containers and use a trolley to transport them.",
+                        "nextNodeId": "correct_combined"
+                      },
+                      {
+                        "label": "Just carry the smaller containers by hand — they are light enough.",
+                        "nextNodeId": "wrong_small_carry"
+                      },
+                      {
+                        "label": "Ask the chef to move the pot themselves since they are more experienced.",
+                        "nextNodeId": "wrong_delegate"
+                      }
+                    ]
+                  },
+                  "wrong_small_carry": {
+                    "text": "While lighter containers are easier to handle, the fundamental hazards remain: hot liquid and a wet fridge floor. Multiple trips over a wet surface increase the cumulative risk of a slip. A trolley eliminates the carrying risk and reduces trips.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_decant"
+                      }
+                    ]
+                  },
+                  "wrong_delegate": {
+                    "text": "The chef's experience does not change the physical hazards. A heavy, hot pot with poor handles over a wet floor is dangerous for everyone, regardless of experience. The solution is to change the method (trolley, decanting), not just change the person doing it.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_decant"
+                      }
+                    ]
+                  },
+                  "partial_cool_first": {
+                    "text": "From a manual handling perspective, letting the soup cool reduces the burn risk. However, from a food safety perspective, hot food should be cooled rapidly — leaving it on a switched-off stove at ambient temperature encourages bacterial growth. The soup needs to reach fridge temperature within a safe timeframe. The best approach is to move it safely (using a trolley or decanting) while it is still hot, and cool it properly in the fridge. What should you do?",
+                    "options": [
+                      {
+                        "label": "Use a trolley to move it to the fridge while hot, or decant into shallower containers for faster cooling.",
+                        "nextNodeId": "correct_combined"
+                      },
+                      {
+                        "label": "Leave it on the stove overnight and refrigerate it in the morning.",
+                        "nextNodeId": "wrong_overnight"
+                      },
+                      {
+                        "label": "Carry it quickly while it is still warm but not scalding.",
+                        "nextNodeId": "wrong_warm_carry"
+                      }
+                    ]
+                  },
+                  "wrong_overnight": {
+                    "text": "Leaving hot food at ambient temperature overnight is a serious food safety violation. Bacteria multiply rapidly in the 'danger zone' (8-63 degrees C). The soup must be cooled and refrigerated within a safe timeframe. The manual handling challenge does not justify a food safety breach.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_cool_first"
+                      }
+                    ]
+                  },
+                  "wrong_warm_carry": {
+                    "text": "Even 'warm' liquid in a heavy pot with poor handles over a wet floor is still risky. The temperature reduction helps with burn risk, but the weight, grip, and floor conditions remain the same. Use a trolley or decant into safer containers.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_cool_first"
+                      }
+                    ]
+                  },
+                  "correct_raise_concerns": {
+                    "text": "Excellent. You have correctly identified multiple risk factors using TILE: the task is complex, the individual is working alone, the load is hot and hard to grip, and the environment includes a wet floor. Raising your concerns is exactly what the law expects — Section 7 of the HSWA requires you to take reasonable care. A trolley eliminates the carrying risk. If the fridge floor is wet, it should be dried or a non-slip mat placed. Team lifting or decanting are additional options. Well done for speaking up.",
+                    "options": []
+                  },
+                  "correct_combined": {
+                    "text": "Correct. The ideal approach combines multiple controls: decanting into smaller, easier-to-handle containers (reducing load weight and improving grip), using a trolley (eliminating manual carrying), and addressing the wet fridge floor (asking for it to be dried or using a non-slip mat). This also supports food safety by getting the soup into the fridge promptly in shallower containers that cool faster. Well done.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Kitchen Hazards",
+      "description": "Slips, trips, cuts, burns, electrical safety, and COSHH chemical management.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Common Kitchen and Workplace Hazards",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Slips, Trips, and Falls",
+              "content": "## The Most Common Workplace Injury\n\nSlips, trips, and falls account for over **30%** of all reported workplace injuries in the UK. In kitchens and hospitality, they are the **number one cause of major injuries**.\n\n### Common Causes in Kitchens\n- **Wet or greasy floors** — Water, oil, food spillages, condensation from fridges, mopping without adequate drying.\n- **Obstacles and clutter** — Boxes, cables, bags, equipment left in walkways.\n- **Uneven surfaces** — Damaged floor tiles, raised thresholds, loose mats, changes in floor level.\n- **Poor lighting** — Dimly lit corridors, storerooms, and walk-in fridges.\n- **Inappropriate footwear** — Open-toed shoes, smooth soles, high heels, untied laces.\n- **Rushing** — Fast-paced kitchen environments encourage running and cutting corners.\n\n### Prevention Measures\n- **Clean spills immediately** — Do not walk past a spill. Clean it or mark it and arrange cleaning.\n- **Use wet floor signs** — But signs are a **temporary measure**, not a permanent solution. The spill must still be cleaned.\n- **Non-slip flooring** — Kitchen floors should have a slip-resistant surface appropriate for the environment.\n- **Non-slip safety shoes** — Mandatory in most professional kitchens. Closed-toe with slip-resistant soles.\n- **Keep walkways clear** — Store equipment, boxes, and cables out of pathways.\n- **Good lighting** — Ensure all work areas, corridors, and storerooms are well lit.\n- **Report damage** — Cracked tiles, loose mats, and damaged flooring must be reported and repaired.\n\n### HSE Guidance\nThe HSE's 'Catering Information Sheet No. 6' provides specific guidance on preventing slips and trips in kitchens.",
+              "keyTakeaway": "Slips, trips, and falls are the most common workplace injury. Clean spills immediately, wear non-slip shoes, keep walkways clear, and report floor damage."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Cuts and Burns",
+              "content": "## Sharp Objects and Hot Surfaces\n\nCuts and burns are among the most frequent injuries in commercial kitchens. Most are preventable with good practice and awareness.\n\n### Preventing Cuts\n- **Use the right knife** — A knife suited to the task. A bread knife for bread, a paring knife for small work. The wrong knife slips.\n- **Keep knives sharp** — A dull knife requires more force, is more likely to slip, and causes worse injuries. Sharpen regularly.\n- **Cut on a stable surface** — Use a chopping board. Place a damp cloth underneath to prevent it sliding.\n- **Never catch a falling knife** — Step back and let it fall. Pick it up after it has landed.\n- **Store safely** — Knife blocks, magnetic strips, or blade guards. Never leave knives loose in drawers or sinks.\n- **Carry safely** — Blade pointing down, close to your body, and announce \"sharp behind\" or \"knife behind\" when moving through the kitchen.\n- **Broken glass** — Sweep up with a dustpan and brush. Never use bare hands. Wrap in newspaper or place in a rigid container before disposing.\n- **Mandolines and graters** — Always use the guard. These cause some of the most severe kitchen cuts.\n\n### Preventing Burns and Scalds\n- **Oven gloves and dry cloths** — Never use wet cloths on hot items (steam burns). Ensure gloves are in good condition.\n- **Assume everything is hot** — Pans, baking trays, oven doors, grill bars. Treat all as hot until confirmed otherwise.\n- **Open lids away from you** — Steam escapes upward and toward the person opening the lid.\n- **Announce hot items** — Call \"hot behind\", \"hot pan coming through\".\n- **Never overfill pans** — Boiling liquid can spill over, and oil can splatter.\n\n### First Aid for Burns\n- **Cool under cold running water** for at least **20 minutes** (updated NHS guidance).\n- **Do not** apply ice, butter, toothpaste, or any cream.\n- **Cover** with cling film or a clean, non-fluffy dressing.\n- **Seek medical attention** for burns larger than the person's hand, or on the face, hands, feet, or joints.",
+              "keyTakeaway": "Keep knives sharp and store them safely. Never catch a falling knife. Cool burns under cold running water for at least 20 minutes. Never use wet cloths on hot items."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "COSHH: Chemical Safety",
+              "content": "## Control of Substances Hazardous to Health Regulations 2002\n\nCOSHH requires employers to assess and control the risks from hazardous substances used at work. In kitchens and hospitality, this primarily means **cleaning chemicals, sanitisers, oven cleaners, degreasers, and descalers**.\n\n### What COSHH Requires\n1. **Assess** the risks from hazardous substances.\n2. **Prevent or control** exposure.\n3. **Provide information, instruction, and training** to staff.\n4. **Monitor** exposure where necessary.\n5. **Carry out health surveillance** where required.\n6. **Plan for emergencies** — spill kits, first aid, ventilation.\n\n### Safety Data Sheets (SDS)\nEvery chemical product comes with a **Safety Data Sheet** from the manufacturer. It contains:\n- What the substance is and its hazards.\n- Safe handling, storage, and disposal instructions.\n- Required PPE.\n- First aid and emergency procedures.\n- SDS documents must be **accessible to all staff** who use the product.\n\n### Practical Rules\n- **Read the label** — Dilution rates, contact time, PPE requirements.\n- **Never mix chemicals** — Especially bleach with other products. Mixing bleach with ammonia-based cleaners produces toxic chloramine gas. Mixing bleach with acidic cleaners produces toxic chlorine gas.\n- **Use PPE** — Gloves, goggles, aprons as specified on the SDS.\n- **Store correctly** — In original containers, clearly labelled, away from food, in a locked or designated area.\n- **Ventilate** — When using strong chemicals, ensure adequate ventilation.\n- **Report** — Any spills, splashes, skin irritation, or breathing difficulties.\n\n### GHS Hazard Symbols\nChemical containers are labelled with red-bordered diamond symbols indicating hazards: corrosive, flammable, toxic, irritant, environmental hazard, oxidiser.",
+              "keyTakeaway": "COSHH requires employers to assess and control chemical risks. Never mix chemicals. Always read the SDS, use specified PPE, and store chemicals in original containers away from food."
+            },
+            {
+              "id": "m5-s4",
+              "type": "text-graphic-split",
+              "title": "Electrical Safety and Equipment",
+              "content": "## A Common but Preventable Hazard\n\nElectrical accidents in the workplace can cause burns, electric shock, and death. In kitchens, the combination of electrical equipment and water makes this especially dangerous.\n\n### Common Electrical Hazards\n- **Damaged cables and plugs** — Frayed, cut, or cracked insulation exposes live wires.\n- **Overloaded sockets** — Plugging too many appliances into one socket or using extension leads in chain.\n- **Water near electrics** — Splashes from sinks, steam from cooking, wet hands touching switches.\n- **Faulty equipment** — Sparking, overheating, burning smell, intermittent operation.\n- **Improper repairs** — DIY electrical repairs by unqualified staff.\n\n### Legal Requirements\n- The **Electricity at Work Regulations 1989** require all electrical systems and equipment to be maintained to prevent danger.\n- **Portable Appliance Testing (PAT)** — While not a specific legal requirement in itself, regular inspection and testing of portable electrical equipment is considered best practice and is expected by insurers and HSE inspectors.\n- The **Provision and Use of Work Equipment Regulations 1998 (PUWER)** require that all work equipment is suitable for purpose, maintained, and used by trained people.\n\n### What You Should Do\n- **Visually inspect** equipment before each use — check the cable, plug, and casing.\n- **Report any defects** immediately — label faulty equipment as \"DO NOT USE\" and remove from service.\n- **Never use damaged equipment** — Even if it \"still works\".\n- **Keep water away** from electrical equipment and sockets.\n- **Switch off and unplug** equipment when not in use and before cleaning.\n- **Never attempt repairs** unless you are qualified and authorised.\n- **Use RCDs** (Residual Current Devices) — These cut the power instantly if a fault is detected, preventing electrocution.",
+              "keyTakeaway": "Inspect electrical equipment before use, report all defects immediately, never use damaged equipment, and keep water away from electrics. Unplug before cleaning."
+            },
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Chemical Mix-Up",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is the end of a busy Saturday night. You are cleaning the kitchen. A colleague has already sprayed the grill with a bleach-based oven cleaner. Another colleague, not realising this, picks up a bottle of acidic descaler and is about to spray it onto the same grill to 'give it a better clean'. What do you do?",
+                    "options": [
+                      {
+                        "label": "Stop them immediately. Explain that mixing bleach and acid produces toxic chlorine gas.",
+                        "nextNodeId": "correct_stop"
+                      },
+                      {
+                        "label": "Let them spray it — the chemicals will work better together and clean more effectively.",
+                        "nextNodeId": "wrong_let_them"
+                      },
+                      {
+                        "label": "You are not sure if it is dangerous, so you suggest asking the manager first.",
+                        "nextNodeId": "partial_ask_manager"
+                      }
+                    ]
+                  },
+                  "wrong_let_them": {
+                    "text": "This is extremely dangerous. Mixing bleach (sodium hypochlorite) with acidic products produces **chlorine gas**, which is toxic. Even small amounts in an enclosed kitchen can cause severe respiratory irritation, chemical burns to the lungs, and in concentrated amounts can be fatal. The reaction is immediate — there would be no time to react once the chemicals are mixed. What should you have done?",
+                    "options": [
+                      {
+                        "label": "Stopped them before they sprayed.",
+                        "nextNodeId": "correct_stop"
+                      },
+                      {
+                        "label": "Opened the windows to ventilate first, then let them spray.",
+                        "nextNodeId": "wrong_ventilate"
+                      },
+                      {
+                        "label": "Told them to wear a face mask before spraying.",
+                        "nextNodeId": "wrong_mask"
+                      }
+                    ]
+                  },
+                  "wrong_ventilate": {
+                    "text": "Ventilation does not make it safe to mix these chemicals. The reaction produces toxic gas immediately on contact. Even with open windows, the concentration near the grill would be dangerous. The only safe action is to prevent the mixing entirely.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_let_them"
+                      }
+                    ]
+                  },
+                  "wrong_mask": {
+                    "text": "A standard dust mask does not protect against chlorine gas. Even a chemical-rated respirator would not make this practice safe — you should never deliberately create a toxic gas in a workplace. The chemicals must not be mixed, full stop.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_let_them"
+                      }
+                    ]
+                  },
+                  "partial_ask_manager": {
+                    "text": "Your instinct to check is good, but in this situation the danger is immediate. If your colleague sprays the descaler while you are looking for the manager, the toxic reaction will already have occurred. When you see an immediate danger, you must act to prevent it first and consult afterwards. Under Section 7 of the HSWA 1974, you have a duty to take reasonable care for the safety of others. What should you do right now?",
+                    "options": [
+                      {
+                        "label": "Stop them immediately and explain the chemical mixing danger.",
+                        "nextNodeId": "correct_stop"
+                      },
+                      {
+                        "label": "Shout to the manager while your colleague continues spraying.",
+                        "nextNodeId": "wrong_shout"
+                      },
+                      {
+                        "label": "Go and check the Safety Data Sheets to see if mixing is safe.",
+                        "nextNodeId": "wrong_check_sds"
+                      }
+                    ]
+                  },
+                  "wrong_shout": {
+                    "text": "If your colleague continues spraying while you call for the manager, the damage is already done. The reaction between bleach and acid is instantaneous. You must physically prevent the mixing before doing anything else.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_ask_manager"
+                      }
+                    ]
+                  },
+                  "wrong_check_sds": {
+                    "text": "Checking the SDS is normally the right approach, but not when someone is about to spray an incompatible chemical in the next few seconds. You must stop the immediate danger first. The SDS for both products would confirm the danger — but by the time you found and read them, the chemicals would already be mixed. Act first, verify after.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "partial_ask_manager"
+                      }
+                    ]
+                  },
+                  "correct_stop": {
+                    "text": "Correct. You must stop your colleague immediately. Mixing bleach with acidic products produces toxic chlorine gas, which can cause severe respiratory damage and death. The correct procedure is: stop the spraying, rinse the existing chemical off the grill thoroughly with water, allow it to dry, and then apply the second product if needed — never while the first is still present. This incident should be reported to the manager so that COSHH training can be reinforced and chemical storage can be reviewed to prevent future mix-ups. Consider labelling the grill area when chemicals are applied.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Sparking Mixer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are using the large stand mixer to make dough when you notice small sparks coming from near the power cable where it enters the base of the machine. The mixer is still running and the dough is nearly ready. What do you do?",
+                    "options": [
+                      {
+                        "label": "Switch the mixer off at the plug immediately, do not touch the machine body, and report it.",
+                        "nextNodeId": "correct_switch_off"
+                      },
+                      {
+                        "label": "Finish the dough first — it is nearly done and you do not want to waste it. Then report the sparking after.",
+                        "nextNodeId": "wrong_finish"
+                      },
+                      {
+                        "label": "Unplug the mixer by pulling the cable to disconnect it quickly.",
+                        "nextNodeId": "wrong_pull_cable"
+                      }
+                    ]
+                  },
+                  "wrong_finish": {
+                    "text": "Continuing to use equipment that is sparking is extremely dangerous. Electrical sparks indicate a fault that could cause electric shock, a fire, or both. Sparks near a cable entry point suggest damaged wiring, a loose connection, or worn insulation. The fault could escalate at any moment — mid-dough-batch is not the time to take that risk. No amount of dough is worth an electric shock or a kitchen fire. What should you do?",
+                    "options": [
+                      {
+                        "label": "Switch it off at the plug (not on the machine), report it immediately.",
+                        "nextNodeId": "correct_switch_off"
+                      },
+                      {
+                        "label": "Turn it off on the machine's switch and check if the sparking stops.",
+                        "nextNodeId": "wrong_machine_switch"
+                      },
+                      {
+                        "label": "Call an electrician while the mixer continues running.",
+                        "nextNodeId": "wrong_call_running"
+                      }
+                    ]
+                  },
+                  "wrong_machine_switch": {
+                    "text": "If the fault is in the cable or connection (which the sparking location suggests), the machine's own switch may not safely isolate it — the fault could be between the plug and the machine's switch. Switching off at the wall socket or unplugging (safely) isolates the power supply completely. Also, touching the machine body while it has an electrical fault could result in electric shock.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_finish"
+                      }
+                    ]
+                  },
+                  "wrong_call_running": {
+                    "text": "You must not leave the mixer running while waiting for an electrician. Every second it runs with a fault increases the risk of fire or shock. Disconnect the power first, then arrange repair. An electrician could take hours to arrive — the mixer must not operate in the meantime.",
+                    "options": [
+                      {
+                        "label": "Go back and reconsider",
+                        "nextNodeId": "wrong_finish"
+                      }
+                    ]
+                  },
+                  "wrong_pull_cable": {
+                    "text": "Pulling a cable to unplug equipment is dangerous, especially when there is already an electrical fault. You could damage the cable further, cause a larger spark, or receive an electric shock through the cable. The cable insulation may already be compromised. Instead, switch off at the wall socket first (if you can reach it safely without touching the machine), then remove the plug by gripping the plug body, not the cable. What is the safest approach?",
+                    "options": [
+                      {
+                        "label": "Switch off at the wall socket first, then remove the plug by the plug body.",
+                        "nextNodeId": "correct_switch_off"
+                      },
+                      {
+                        "label": "Use the machine's off switch to stop the motor first.",
+                        "nextNodeId": "partial_machine_first"
+                      },
+                      {
+                        "label": "Turn off the power at the consumer unit (fuse box) for extra safety.",
+                        "nextNodeId": "partial_fuse_box"
+                      }
+                    ]
+                  },
+                  "partial_machine_first": {
+                    "text": "Using the machine's switch to stop the motor is a reasonable intermediate step, but remember the fault is between the plug and the machine, so the machine switch may not safely isolate it. You must also switch off at the wall socket to fully disconnect the power. Avoid touching the machine body — the casing could be live if there is an earth fault.",
+                    "options": [
+                      {
+                        "label": "Switch off at the wall socket and report the fault",
+                        "nextNodeId": "correct_switch_off"
+                      }
+                    ]
+                  },
+                  "partial_fuse_box": {
+                    "text": "Switching off at the consumer unit would certainly isolate the power, but it also shuts down other circuits in the kitchen, which could create additional hazards (e.g. lights going off, other equipment stopping). If you can safely reach the wall socket for the mixer, switching it off there is sufficient and less disruptive. The consumer unit is a fallback if the socket is inaccessible.",
+                    "options": [
+                      {
+                        "label": "Switch off at the wall socket and report the fault",
+                        "nextNodeId": "correct_switch_off"
+                      }
+                    ]
+                  },
+                  "correct_switch_off": {
+                    "text": "Correct. The safest response is to switch off at the wall socket immediately, without touching the machine body (which could be live). Once the power is disconnected, label the equipment clearly as 'FAULTY — DO NOT USE', and report the fault to your manager. The mixer must not be used again until it has been inspected and repaired by a competent person (a qualified electrician). Record the incident in the defect log or maintenance book. The dough can be remade — an electric shock or fire cannot be undone.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Knowledge check covering all modules.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m6-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What are the three elements of the fire triangle?",
+        "options": [
+          "Fuel, oxygen, heat",
+          "Smoke, flames, water",
+          "Fuel, electricity, ventilation",
+          "Ignition, combustion, radiation"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q2",
+        "text": "What should you NEVER use on a cooking oil or fat fire?",
+        "options": ["A fire blanket", "A wet chemical extinguisher", "Water", "A CO2 extinguisher"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q3",
+        "text": "When lifting a heavy load, you should:",
+        "options": [
+          "Bend your back and keep your legs straight",
+          "Bend your knees and keep the load close to your body",
+          "Lift quickly in one jerking motion to get it over with",
+          "Twist your upper body to position the load"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "In the hierarchy of control, PPE is considered:",
+        "options": [
+          "The first control measure to implement",
+          "An engineering control",
+          "A last resort when other controls are not reasonably practicable",
+          "Unnecessary in low-risk environments"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q5",
+        "text": "Under the Health and Safety at Work etc. Act 1974, who has a legal duty to assess and manage workplace risks?",
+        "options": [
+          "Only employees",
+          "Only the Health and Safety Executive",
+          "The employer",
+          "Only the fire service"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q6",
+        "text": "What does RIDDOR stand for?",
+        "options": [
+          "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
+          "Risk Identification and Detection of Dangerous Operations Report",
+          "Registration of Industrial Damage and Disaster Occurrence Records",
+          "Routine Inspection and Documentation of Daily Operational Risks"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q7",
+        "text": "Which of the following injuries MUST be reported to the HSE under RIDDOR?",
+        "options": [
+          "A minor paper cut requiring a plaster",
+          "A fracture sustained at work (other than fingers, thumbs, or toes)",
+          "A bruise from bumping into a table",
+          "A headache after a long shift"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "What is a risk assessment?",
+        "options": [
+          "A document listing all employees and their qualifications",
+          "A systematic process to identify hazards, evaluate risks, and determine appropriate control measures",
+          "A fire drill schedule maintained by the fire warden",
+          "An insurance form completed annually by the business owner"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "What is the difference between a hazard and a risk?",
+        "options": [
+          "There is no practical difference; the terms are interchangeable",
+          "A hazard is something with the potential to cause harm; a risk is the likelihood and severity of that harm occurring",
+          "A risk is an object; a hazard is a process or activity",
+          "A hazard only applies to chemical substances; a risk applies to physical objects"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "The Health and Safety at Work etc. Act 1974 places legal duties on:",
+        "options": [
+          "Employers only",
+          "Employees only",
+          "Both employers and employees",
+          "Only businesses with more than 50 staff"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q11",
+        "text": "Which extinguisher type should be used on an electrical fire?",
+        "options": [
+          "Red (water)",
+          "Cream (foam)",
+          "Black (CO2) or blue (dry powder)",
+          "Yellow (wet chemical)"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q12",
+        "text": "What should you do FIRST if you discover a fire in the workplace?",
+        "options": [
+          "Try to extinguish it before telling anyone",
+          "Raise the alarm",
+          "Open windows to let smoke escape",
+          "Search for the fire extinguisher that matches the fire type"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "How often should fire drills typically be carried out in most workplaces?",
+        "options": [
+          "Once every 3 years",
+          "Only when a new fire marshal is appointed",
+          "At least every 6 months",
+          "Only after a real fire has occurred"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q14",
+        "text": "In a fire emergency, what is the correct sequence of actions?",
+        "options": [
+          "Fight the fire, then alert others, then evacuate",
+          "Raise the alarm, call the fire service, evacuate via the nearest safe exit",
+          "Collect your belongings, then use the lift to evacuate",
+          "Close all windows, turn off all lights, then walk to the car park"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "What does COSHH stand for?",
+        "options": [
+          "Control of Substances Hazardous to Health",
+          "Certification of Safety and Health Handling",
+          "Compliance of Staff Health and Hygiene",
+          "Classification of Standard Hazard Handling"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q16",
+        "text": "Under COSHH, employers must:",
+        "options": [
+          "Ban all chemical products from the workplace",
+          "Assess risks from hazardous substances and implement appropriate control measures",
+          "Allow employees to choose which chemicals they prefer to use",
+          "Only keep Safety Data Sheets for products costing over fifty pounds"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "What information does a Safety Data Sheet (SDS) provide?",
+        "options": [
+          "The price of the chemical and where to buy it",
+          "Hazard information, safe handling procedures, required PPE, storage, and emergency measures",
+          "A list of all employees trained to use the product",
+          "The chemical formula only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Manual handling injuries account for approximately what proportion of all reported workplace injuries?",
+        "options": [
+          "About 5 per cent",
+          "About 10 per cent",
+          "About one third",
+          "About three quarters"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q19",
+        "text": "Before manually handling a load, you should:",
+        "options": [
+          "Just pick it up quickly to minimise exposure time",
+          "Assess the weight, shape, route, and your own capability, and plan the lift",
+          "Always ask someone else to do it instead",
+          "Ensure you have consumed a high-energy meal beforehand"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "The acronym TILE in manual handling stands for:",
+        "options": [
+          "Task, Individual, Load, Environment",
+          "Time, Inspection, Lifting, Equipment",
+          "Training, Identification, Logistics, Evaluation",
+          "Technique, Instruction, Load-bearing, Ergonomics"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q21",
+        "text": "Slips, trips, and falls are:",
+        "options": [
+          "Rare in professional kitchens",
+          "The most common cause of major workplace injury",
+          "Only a concern in outdoor work environments",
+          "Usually caused by defective equipment rather than floor conditions"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "When you discover a spillage on the kitchen floor, you should:",
+        "options": [
+          "Walk around it and let the next person deal with it",
+          "Clean it up immediately or arrange for immediate cleaning, and put up a warning sign while the area is still wet",
+          "Leave it for the contracted cleaning company",
+          "Cover it with a towel and continue working"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "PPE stands for:",
+        "options": [
+          "Personal Protective Equipment",
+          "Professional Performance Evaluation",
+          "Planned Preventive Engineering",
+          "Physical Premises Examination"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q24",
+        "text": "Under UK health and safety law, who is responsible for providing PPE to employees?",
+        "options": [
+          "The employee must purchase their own PPE",
+          "The employer must provide PPE free of charge",
+          "The PPE manufacturer distributes it directly",
+          "The Health and Safety Executive supplies it to all workplaces"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "What should an employee do if their PPE is damaged or worn?",
+        "options": [
+          "Continue using it until a scheduled replacement date",
+          "Report the damage and request a replacement before continuing work that requires it",
+          "Repair it themselves using adhesive tape",
+          "Carry on without PPE if the damage seems minor"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "DSE stands for:",
+        "options": [
+          "Display Screen Equipment",
+          "Daily Safety Exercise",
+          "Danger Sign Evaluation",
+          "Documented Safety Evidence"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q27",
+        "text": "What is the purpose of a DSE assessment?",
+        "options": [
+          "To check the speed of a computer's processor",
+          "To assess the health risks associated with using screens at work and reduce them",
+          "To test the user's eyesight for reading prescriptions",
+          "To determine whether staff need IT training"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "First aiders in the workplace must:",
+        "options": [
+          "Be fully qualified doctors or nurses",
+          "Hold a valid, in-date first aid certificate from an approved training provider",
+          "Have at least 10 years of healthcare experience",
+          "Be appointed by the Health and Safety Executive directly"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "What should be recorded in the workplace accident book?",
+        "options": [
+          "Only accidents that result in hospital treatment",
+          "All accidents, injuries, and near misses, including minor ones",
+          "Only accidents that are reported to the HSE under RIDDOR",
+          "Only accidents witnessed by a manager or supervisor"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "Which body is the primary enforcer of health and safety law in the UK?",
+        "options": [
+          "The police",
+          "The Health and Safety Executive (HSE) and local authority Environmental Health teams",
+          "Trading Standards",
+          "The Fire and Rescue Service exclusively"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "An HSE prohibition notice means:",
+        "options": [
+          "A written recommendation to consider improvements",
+          "An immediate instruction to stop a specific dangerous activity until the risk is removed",
+          "A fine of exactly one thousand pounds",
+          "A requirement to close the business permanently"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "Workplace stress, as defined in health and safety terms, is:",
+        "options": [
+          "A normal part of any busy job that does not require action",
+          "A harmful reaction to excessive pressures or demands at work that the person feels unable to cope with",
+          "Only a concern for office-based workers",
+          "Feeling tired after completing a particularly long shift"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "Who has a duty to report a hazard they notice in the workplace?",
+        "options": [
+          "Only the appointed health and safety representative",
+          "Only managers and supervisors",
+          "Any employee who sees the hazard",
+          "Only employees who have completed a health and safety course"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q34",
+        "text": "The hierarchy of control prioritises which measure first?",
+        "options": [
+          "Personal Protective Equipment",
+          "Elimination of the hazard entirely",
+          "Administrative controls such as training and procedures",
+          "Substitution with a less hazardous alternative"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "Which of these is an example of an engineering control?",
+        "options": [
+          "Wearing ear defenders in a noisy environment",
+          "Installing a machine guard to prevent contact with moving parts",
+          "Writing a new safety policy document",
+          "Conducting a toolbox talk for all staff"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q36",
+        "text": "Employers with five or more employees are legally required to:",
+        "options": [
+          "Have a written health and safety policy",
+          "Employ a full-time dedicated safety officer",
+          "Close the business during any adverse weather",
+          "Hold weekly health and safety committee meetings"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q37",
+        "text": "A near miss in the workplace should be:",
+        "options": [
+          "Ignored because nobody was actually hurt",
+          "Reported and investigated to identify weaknesses and prevent future incidents",
+          "Only recorded if a manager personally witnesses it",
+          "Reported only if it involves chemical substances"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "Portable electrical equipment in the workplace should be:",
+        "options": [
+          "Visually inspected before use and subject to regular PAT testing where appropriate",
+          "Replaced with brand new equipment every twelve months regardless of condition",
+          "Only inspected if it produces visible sparks during operation",
+          "Tested only by the manufacturer when originally purchased"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q39",
+        "text": "If you notice a frayed electrical cable on a piece of kitchen equipment, you should:",
+        "options": [
+          "Wrap it with adhesive tape to insulate the exposed wires",
+          "Stop using the equipment immediately, label it as faulty, and report it for repair by a competent person",
+          "Continue using it if the equipment still functions normally",
+          "Cut the frayed section off and reconnect the wires yourself"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "Under UK law, 'working at height' is defined as:",
+        "options": [
+          "Working above 3 metres from ground level only",
+          "Working in any place where a person could fall a distance liable to cause injury",
+          "Working on scaffolding or ladders only",
+          "Working on the roof of a building exclusively"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "A safety sign with a blue circular background indicates:",
+        "options": [
+          "A warning of an environmental hazard",
+          "A mandatory instruction — something you must do",
+          "A safe condition, such as an exit route",
+          "The location of fire-fighting equipment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "A safety sign with a yellow triangle indicates:",
+        "options": [
+          "A mandatory instruction",
+          "A warning of a specific hazard",
+          "The location of fire-fighting equipment",
+          "A prohibition — something you must not do"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "Under Section 7 of the HSWA 1974, employees have a duty to:",
+        "options": [
+          "Write and maintain the company's health and safety policy",
+          "Take reasonable care of their own health and safety and that of others affected by their actions",
+          "Provide PPE for all colleagues on shift",
+          "Conduct formal risk assessments for every task they perform"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q44",
+        "text": "A 'safe system of work' is best described as:",
+        "options": [
+          "A structured method of working that identifies hazards and defines safe procedures to eliminate or minimise risk",
+          "Any working practice that has been used for more than five years without incident",
+          "A checklist completed once a year during the annual safety audit",
+          "A verbal instruction given by the manager at the start of each shift"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q45",
+        "text": "Workplace noise levels should be formally assessed when:",
+        "options": [
+          "Employees complain about background music being too loud",
+          "People have to shout to be heard by someone approximately 2 metres away",
+          "It rains heavily and noise enters through the roof",
+          "The business is located near a busy road"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "The main purpose of workplace health and safety training is to:",
+        "options": [
+          "Help the business pass inspections and avoid fines",
+          "Ensure employees understand the risks they face and can work safely",
+          "Complete paperwork required by the insurance company",
+          "Give employees a break from their normal duties"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "An HSE improvement notice requires the employer to:",
+        "options": [
+          "Close the business immediately and indefinitely",
+          "Remedy the contravention within a specified timeframe set by the inspector",
+          "Dismiss the employee responsible for the breach",
+          "Pay a fixed penalty of ten thousand pounds"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "Fire exits must always have:",
+        "options": [
+          "CCTV cameras recording at all times",
+          "Clear signage, no obstructions, and functioning emergency lighting",
+          "A security guard stationed nearby during business hours",
+          "An automatic sprinkler system directly above the exit door"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "When using a ladder in the workplace, you should:",
+        "options": [
+          "Lean as far as possible to avoid having to move the ladder",
+          "Maintain three points of contact at all times (two hands and one foot, or two feet and one hand)",
+          "Stand on the top two rungs to reach higher areas",
+          "Use it as a working platform for extended periods"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "The HSE guideline figures for manual lifting suggest that under ideal conditions, a man should lift no more than approximately:",
+        "options": [
+          "50kg regardless of the conditions or posture",
+          "25kg close to the body at waist height, reducing significantly for other positions",
+          "10kg as an absolute maximum in all circumstances",
+          "40kg when the load is held at arm's length above shoulder height"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "Lone workers should be protected by:",
+        "options": [
+          "A blanket ban on all lone working in any circumstance",
+          "A specific risk assessment, communication plan, and regular check-in procedures",
+          "Allowing them to work only during daylight hours",
+          "Providing them with a personal alarm but no other measures"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "The primary purpose of health and safety induction training for new starters is to:",
+        "options": [
+          "Show new employees where the canteen and car park are located",
+          "Ensure new workers understand the specific hazards, safety procedures, and emergency plans at their workplace before they start work",
+          "Complete a mandatory HR form for the employee's personnel file",
+          "Introduce the new starter to senior management"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "Which of these is an example of a biological hazard in the workplace?",
+        "options": [
+          "A loose carpet tile in the corridor",
+          "Exposure to bloodborne pathogens or infectious agents",
+          "Excessive noise from kitchen extraction fans",
+          "A damaged electrical cable on a mixer"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Under PUWER, all work equipment must be:",
+        "options": [
+          "Suitable for its intended purpose, properly maintained, and used only by people who have received adequate training",
+          "The cheapest option available on the market",
+          "Replaced every year regardless of its condition",
+          "Purchased from a single approved supplier"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q55",
+        "text": "Employers must consult employees about:",
+        "options": [
+          "The colour scheme of the office or kitchen redecoration",
+          "Health and safety arrangements that directly affect them",
+          "Menu planning and food costs",
+          "Staff social events and team-building activities"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "Which legislation specifically covers fire safety in non-domestic premises in England and Wales?",
+        "options": [
+          "The Health and Safety at Work etc. Act 1974",
+          "The Regulatory Reform (Fire Safety) Order 2005",
+          "The Management of Health and Safety at Work Regulations 1999",
+          "The Workplace (Health, Safety and Welfare) Regulations 1992"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "When using the PASS technique to operate a fire extinguisher, the 'A' stands for:",
+        "options": [
+          "Activate the alarm system",
+          "Aim at the base of the fire",
+          "Apply pressure to the handle",
+          "Assess the size of the fire"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "Why should you NEVER use water on a cooking oil fire?",
+        "options": [
+          "Water extinguishers are too heavy to use in a kitchen",
+          "Water sinks below the hot oil and instantly vaporises, causing a violent eruption of burning oil",
+          "Water makes the oil taste unpleasant",
+          "Water damages kitchen flooring more than other extinguisher types"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "How long should you cool a burn under cold running water according to current NHS guidance?",
+        "options": [
+          "At least 5 minutes",
+          "At least 10 minutes",
+          "At least 20 minutes",
+          "Until the pain stops completely"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q60",
+        "text": "The Management of Health and Safety at Work Regulations 1999 require employers to conduct risk assessments. If an employer has 5 or more employees, they must:",
+        "options": [
+          "Conduct risk assessments verbally but do not need to write them down",
+          "Record the significant findings of their risk assessments in writing",
+          "Only assess risks related to fire safety",
+          "Hire an external consultant to carry out all risk assessments"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "Which colour band on a fire extinguisher identifies it as a wet chemical extinguisher, suitable for cooking oil fires?",
+        "options": ["Red", "Blue", "Black", "Yellow"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q62",
+        "text": "Under RIDDOR, an over-7-day incapacitation injury must be reported to the HSE within:",
+        "options": [
+          "24 hours of the injury occurring",
+          "7 days of the injury occurring",
+          "15 days of the injury occurring",
+          "30 days of the injury occurring"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "Which of the following is an example of 'substitution' in the hierarchy of control?",
+        "options": [
+          "Installing a machine guard on a food slicer",
+          "Replacing a highly toxic cleaning product with a less harmful alternative",
+          "Requiring all staff to wear chemical-resistant gloves",
+          "Writing a new operating procedure for the deep fryer"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "When carrying a knife through a busy kitchen, the correct procedure is to:",
+        "options": [
+          "Hold it high above your head so people can see it",
+          "Carry it with the blade pointing down, close to your body, and announce 'sharp behind'",
+          "Run quickly so you are out of people's way faster",
+          "Wrap it in a damp cloth to cover the blade"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "Why must chemicals never be transferred to unmarked or food containers?",
+        "options": [
+          "The chemicals lose their effectiveness when transferred",
+          "Someone could mistake the chemical for a food product, leading to poisoning or chemical burns",
+          "Unmarked containers are more expensive to replace",
+          "Food containers are not designed to hold heavy liquids"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "What toxic gas is produced when bleach is mixed with acidic cleaning products?",
+        "options": ["Carbon monoxide", "Nitrogen dioxide", "Chlorine gas", "Hydrogen sulphide"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q67",
+        "text": "The Electricity at Work Regulations 1989 require that:",
+        "options": [
+          "All electrical work must be carried out by the building owner",
+          "All electrical systems and equipment must be maintained to prevent danger",
+          "Electrical equipment must be replaced every 5 years",
+          "Only equipment over 240 volts needs to be inspected"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "What does an RCD (Residual Current Device) do?",
+        "options": [
+          "It prevents power cuts during storms",
+          "It detects electrical faults and cuts the power rapidly to prevent electrocution",
+          "It increases the voltage to ensure equipment runs efficiently",
+          "It records all electrical usage for billing purposes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "When team-lifting a heavy or awkward load, one person should:",
+        "options": [
+          "Lift first and tell the others to catch up",
+          "Take the lead, coordinate the lift, and call 'Ready, steady, lift'",
+          "Stand back and supervise without helping to carry",
+          "Lift the heavier side to balance the load"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "Fire doors in the workplace should:",
+        "options": [
+          "Be wedged open during busy periods for convenience",
+          "Be kept closed at all times or fitted with automatic closers that release when the fire alarm sounds",
+          "Be removed if they obstruct the workflow",
+          "Be locked from the outside to prevent unauthorised access"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "Which of the following is the employer's duty under the Manual Handling Operations Regulations 1992?",
+        "options": [
+          "Ensure all employees can lift at least 25kg",
+          "Avoid manual handling where reasonably practicable, then assess and reduce the risk where it cannot be avoided",
+          "Provide back-support belts to all staff as the primary control",
+          "Only assess manual handling if an employee has already been injured"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "A safety sign with a red circle and a diagonal line through it indicates:",
+        "options": [
+          "A mandatory instruction — you must do something",
+          "A prohibition — something you must NOT do",
+          "A safe condition, such as a first aid point",
+          "The location of fire-fighting equipment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q73",
+        "text": "When should a risk assessment be reviewed?",
+        "options": [
+          "Only when the business changes ownership",
+          "After an accident, when new equipment or processes are introduced, or at regular planned intervals",
+          "Only every 5 years as required by law",
+          "Only when an HSE inspector specifically requests it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "If you drop a knife while working in the kitchen, you should:",
+        "options": [
+          "Try to catch it before it hits the floor",
+          "Step back and let it fall, then pick it up carefully after it lands",
+          "Kick it out of the way and pick it up later",
+          "Shout a warning and jump over it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "What is the legal maximum working temperature in UK workplaces?",
+        "options": [
+          "30 degrees Celsius for offices, 27 degrees Celsius for manual work",
+          "There is no specific maximum, but the temperature must be 'reasonable' and a risk assessment should be conducted if it becomes uncomfortable",
+          "25 degrees Celsius in all workplaces",
+          "35 degrees Celsius, above which the premises must close"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "Why is it important to keep knives sharp?",
+        "options": [
+          "Sharp knives look more professional in a commercial kitchen",
+          "A sharp knife requires less force to cut, which reduces the chance of it slipping and causing injury",
+          "Dull knives are illegal to use under food hygiene regulations",
+          "Sharp knives do not need to be cleaned as often"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "Under Section 8 of the HSWA 1974, it is an offence to:",
+        "options": [
+          "Ask your employer to provide safer equipment",
+          "Report a hazard to your manager during a busy shift",
+          "Intentionally or recklessly interfere with or misuse anything provided for safety",
+          "Take a break during a long shift"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "Which of the following best describes 'competence' in health and safety?",
+        "options": [
+          "Having a university degree in occupational health",
+          "Having sufficient training, experience, knowledge, and skills to carry out the task safely",
+          "Being the longest-serving employee in the department",
+          "Having completed an online quiz about workplace safety"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "Extraction systems in commercial kitchens should be cleaned:",
+        "options": [
+          "Only when a visible build-up of grease is observed",
+          "Regularly — typically every 6 to 12 months, or more often in busy kitchens, to prevent grease fires",
+          "Once every 5 years as part of a major refurbishment",
+          "Only when the system stops working entirely"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "What is the 'responsible person' under the Regulatory Reform (Fire Safety) Order 2005?",
+        "options": [
+          "The local fire and rescue service commander",
+          "The person who has control of the premises — typically the employer, owner, or occupier — who must ensure fire safety",
+          "Any employee who happens to be on shift when a fire occurs",
+          "The person who installed the fire alarm system"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "GHS hazard symbols on chemical containers are displayed as:",
+        "options": [
+          "Green circles with white pictograms",
+          "Red-bordered diamonds with black pictograms on a white background",
+          "Blue squares with yellow text",
+          "Orange rectangles with black text"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q82",
+        "text": "Under the Workplace (Health, Safety and Welfare) Regulations 1992, the minimum workplace temperature for sedentary work is:",
+        "options": [
+          "13 degrees Celsius",
+          "16 degrees Celsius",
+          "18 degrees Celsius",
+          "21 degrees Celsius"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q83",
+        "text": "If you see a colleague lifting a heavy box with a curved back and straight legs, you should:",
+        "options": [
+          "Leave them alone — it is their choice how they lift",
+          "Intervene politely, explain the risk of back injury, and demonstrate the correct technique using bent knees and a straight back",
+          "Report them to the HSE for a RIDDOR violation",
+          "Take a photo for evidence in case they injure themselves later"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q84",
+        "text": "When using a wet chemical extinguisher on a cooking oil fire, you should:",
+        "options": [
+          "Aim directly into the centre of the burning oil at close range",
+          "Apply the spray gently onto a nearby wall or surface so it flows over the burning oil, creating a cooling seal",
+          "Spray from at least 10 metres away for personal safety",
+          "Throw the extinguisher into the fire and evacuate"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q85",
+        "text": "What does PAT testing stand for?",
+        "options": [
+          "Personal Assessment of Technical equipment",
+          "Portable Appliance Testing",
+          "Preventive Action Tracking",
+          "Periodic Audit of Technical systems"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

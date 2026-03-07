@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Plus, ChefHat, Users, Wine, Coffee, IceCream, Sparkles, Clock, Lock, Search } from 'lucide-react';
+import { Plus, ChefHat, Users, Wine, Coffee, IceCream, Sparkles, Clock, Lock, Search } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 
 const SOP_TEMPLATES = [
@@ -30,7 +30,7 @@ const SOP_TEMPLATES = [
     title: 'Drinks (Bar)',
     description: 'Cocktails, spirits, and beverage recipes',
     icon: Wine,
-    color: 'from-purple-500/20 to-pink-500/20',
+    color: 'from-purple-500/20 to-module-fg/25',
     borderColor: 'border-purple-500/30',
     link: '/dashboard/sops/drinks-template',
     category: 'Drinks'
@@ -61,7 +61,7 @@ const SOP_TEMPLATES = [
     description: 'Sanitation and hygiene procedures',
     icon: Sparkles,
     color: 'from-teal-500/20 to-blue-500/20',
-    borderColor: 'border-teal-500/30',
+    borderColor: 'border-module-fg/30',
     link: '/dashboard/sops/cleaning-template',
     category: 'Cleaning'
   },
@@ -81,7 +81,7 @@ const SOP_TEMPLATES = [
     description: 'End of shift and security checklist',
     icon: Lock,
     color: 'from-indigo-500/20 to-purple-500/20',
-    borderColor: 'border-indigo-500/30',
+    borderColor: 'border-module-fg/30',
     link: '/dashboard/sops/closing-template',
     category: 'Closing'
   }
@@ -108,19 +108,19 @@ export default function TemplatesPage() {
       {/* Search and Filter */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+ <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"size={20} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search templates..."
-            className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+            className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg pl-10 pr-4 py-2 text-[rgb(var(--text-primary))] placeholder-[rgb(var(--text-tertiary))]"
           />
         </div>
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+          className="bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-4 py-2 text-[rgb(var(--text-primary))]"
         >
           <option value="all">All Categories</option>
           <option value="Food Prep">Food Prep</option>
@@ -138,20 +138,78 @@ export default function TemplatesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {filteredTemplates.map((template) => {
           const Icon = template.icon;
+          // Extract base color from template for light mode
+          const colorMap: Record<string, { bg: string; border: string; text: string; icon: string }> = {
+            'food-prep': { 
+              bg: 'bg-orange-50 dark:bg-gradient-to-br dark:from-orange-500/20 dark:to-red-500/20', 
+              border: 'border-orange-200 dark:border-orange-500/30',
+              text: 'text-orange-900',
+              icon: 'text-orange-600'
+            },
+            'service': { 
+              bg: 'bg-blue-50 dark:bg-gradient-to-br dark:from-blue-500/20 dark:to-cyan-500/20', 
+              border: 'border-blue-200 dark:border-blue-500/30',
+              text: 'text-blue-900',
+              icon: 'text-blue-600'
+            },
+            'drinks': { 
+              bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-module-fg/25', 
+              border: 'border-purple-200 dark:border-purple-500/30',
+              text: 'text-purple-900',
+              icon: 'text-purple-600'
+            },
+            'hot-drinks': { 
+              bg: 'bg-amber-50 dark:bg-gradient-to-br dark:from-amber-500/20 dark:to-yellow-500/20', 
+              border: 'border-amber-200 dark:border-amber-500/30',
+              text: 'text-amber-900',
+              icon: 'text-amber-600'
+            },
+            'cold-drinks': { 
+              bg: 'bg-green-50 dark:bg-gradient-to-br dark:from-green-500/20 dark:to-emerald-500/20', 
+              border: 'border-green-200 dark:border-green-500/30',
+              text: 'text-green-900',
+              icon: 'text-green-600'
+            },
+            'cleaning': { 
+              bg: 'bg-teal-50 dark:bg-gradient-to-br dark:from-teal-500/20 dark:to-blue-500/20', 
+              border: 'border-teal-200 dark:border-module-fg/30',
+              text: 'text-teal-900',
+              icon: 'text-module-fg'
+            },
+            'opening': { 
+              bg: 'bg-yellow-50 dark:bg-gradient-to-br dark:from-yellow-500/20 dark:to-orange-500/20', 
+              border: 'border-yellow-200 dark:border-yellow-500/30',
+              text: 'text-yellow-900',
+              icon: 'text-yellow-600'
+            },
+            'closing': { 
+              bg: 'bg-indigo-50 dark:bg-gradient-to-br dark:from-indigo-500/20 dark:to-purple-500/20', 
+              border: 'border-indigo-200 dark:border-module-fg/30',
+              text: 'text-indigo-900',
+              icon: 'text-module-fg'
+            }
+          };
+          const colors = colorMap[template.id] || { 
+            bg: 'bg-gray-50 dark:bg-gradient-to-br dark:from-gray-500/20 dark:to-gray-500/20', 
+            border: 'border-gray-200 dark:border-gray-500/30',
+            text: 'text-theme-primary',
+            icon: 'text-theme-secondary'
+          };
+          
           return (
             <button
               key={template.id}
               onClick={() => handleCreateSOP(template.link)}
-              className={`bg-gradient-to-br ${template.color} border ${template.borderColor} rounded-xl p-6 text-left hover:scale-105 transition-all cursor-pointer group`}
+              className={`${colors.bg} border ${colors.border} rounded-xl p-6 text-left hover:scale-105 transition-all cursor-pointer group hover:shadow-lg`}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className={`p-3 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors`}>
-                  <Icon size={24} className="text-white" />
+                <div className={`p-3 rounded-lg bg-white/80 dark:bg-white/10 group-hover:bg-white dark:group-hover:bg-white/20 transition-colors`}>
+                  <Icon size={24} className={colors.icon} />
                 </div>
-                <h3 className="text-lg font-semibold text-white">{template.title}</h3>
+                <h3 className={`text-lg font-semibold ${colors.text}`}>{template.title}</h3>
               </div>
-              <p className="text-sm text-neutral-300">{template.description}</p>
-              <div className="mt-4 flex items-center gap-2 text-xs text-neutral-400">
+              <p className={`text-sm ${colors.text} opacity-80 dark:opacity-90`}>{template.description}</p>
+              <div className={`mt-4 flex items-center gap-2 text-xs ${colors.text} opacity-70 dark:opacity-70`}>
                 <Plus size={14} />
                 <span>Create new</span>
               </div>
@@ -161,7 +219,7 @@ export default function TemplatesPage() {
       </div>
 
       {filteredTemplates.length === 0 && (
-        <div className="text-center py-12 text-neutral-400">
+ <div className="text-center py-12 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           No templates found matching your search.
         </div>
       )}

@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X } from '@/components/ui/icons';
 
 interface SOPBlockWrapperProps {
   node: any;

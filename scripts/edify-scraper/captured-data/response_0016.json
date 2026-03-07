@@ -1,0 +1,60 @@
+{
+  "name": "Albion",
+  "status": "ACTIVE",
+  "contactName": null,
+  "contactPhones": [],
+  "orderEmails": ["orders@albionff.co.uk"],
+  "accountsEmails": ["info@albionff.co.uk"],
+  "orderCutOffTimes": {
+    "friday": {
+      "day": "thursday",
+      "time": "12:00",
+      "available": false
+    },
+    "monday": {
+      "day": "friday",
+      "time": "12:00",
+      "available": false
+    },
+    "sunday": {
+      "day": "friday",
+      "time": "12:00",
+      "available": false
+    },
+    "tuesday": {
+      "day": "monday",
+      "time": "12:00",
+      "available": false
+    },
+    "saturday": {
+      "day": "friday",
+      "time": "12:00",
+      "available": false
+    },
+    "thursday": {
+      "day": "wednesday",
+      "time": "12:00",
+      "available": false
+    },
+    "wednesday": {
+      "day": "tuesday",
+      "time": "12:00",
+      "available": false
+    }
+  },
+  "minimumOrderValue": null,
+  "categories": [],
+  "notes": "Account number: OKJA01",
+  "sites": ["64ce33d7-8681-4a9f-808b-2fa9f325b73c", "9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59"],
+  "supplierSiteAccountNumbers": [],
+  "supplierSiteOrderCutOffTimes": [],
+  "apiUrl": null,
+  "sendOrderToEmail": true,
+  "sendOrderToApi": false,
+  "bidfoodEnabled": false,
+  "autoUpdateProductPrices": false,
+  "id": "dac12b3e-bf0e-4314-8c20-4e25be8ffe94",
+  "cpuId": null,
+  "companyAutoUpdateProductPrices": null,
+  "isCompanyPriceUpdateException": false
+}

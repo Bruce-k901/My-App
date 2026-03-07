@@ -1,0 +1,284 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { sendCourseAssignmentNotification } from '@/lib/training/notifications';
+import { createCourseReminderTask } from '@/lib/training/calendar';
+import { createCourseFollowUpTask } from '@/lib/training/createCourseFollowUpTask';
+
+/**
+ * POST /api/training/assignments
+ * Create a new course assignment
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { profileId, courseId, deadline } = body;
+
+    if (!profileId || !courseId) {
+      return NextResponse.json(
+        { error: 'Missing required fields: profileId and courseId' },
+        { status: 400 }
+      );
+    }
+
+    // Get user's profile to check permissions and get company_id
+    // Use .or() to match either id or auth_user_id (some profiles may have one but not the other)
+    const { data: currentProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, company_id, app_role, is_platform_admin')
+      .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
+      .maybeSingle();
+
+    if (profileError || !currentProfile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+    }
+
+    // Check if user has permission (manager/owner/admin or platform admin)
+    const isManager = currentProfile.is_platform_admin || ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
+      .includes((currentProfile.app_role || '').toLowerCase());
+
+    if (!isManager) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
+    // Get target profile and course to verify they exist and are in same company
+    const supabaseAdmin = getSupabaseAdmin();
+
+    const { data: targetProfile, error: targetError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, company_id, full_name, email, home_site, site_id')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    if (targetError || !targetProfile) {
+      return NextResponse.json({ error: 'Target employee not found' }, { status: 404 });
+    }
+
+    if (!currentProfile.is_platform_admin && targetProfile.company_id !== currentProfile.company_id) {
+      return NextResponse.json({ error: 'Employee not in same company' }, { status: 403 });
+    }
+
+    const { data: course, error: courseError } = await supabaseAdmin
+      .from('training_courses')
+      .select('id, company_id, name, code, duration_minutes')
+      .eq('id', courseId)
+      .maybeSingle();
+
+    if (courseError || !course) {
+      return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+    }
+
+    if (!currentProfile.is_platform_admin && course.company_id !== currentProfile.company_id) {
+      return NextResponse.json({ error: 'Course not in same company' }, { status: 403 });
+    }
+
+    // Check if active assignment already exists
+    const { data: existingAssignment } = await supabaseAdmin
+      .from('course_assignments')
+      .select('id')
+      .eq('profile_id', profileId)
+      .eq('course_id', courseId)
+      .in('status', ['invited', 'confirmed', 'in_progress'])
+      .maybeSingle();
+
+    if (existingAssignment) {
+      return NextResponse.json(
+        { error: 'Active assignment already exists for this employee and course' },
+        { status: 400 }
+      );
+    }
+
+    // Create assignment
+    const deadlineDate = deadline ? new Date(deadline).toISOString().split('T')[0] : null;
+    
+    const { data: assignment, error: assignmentError } = await supabaseAdmin
+      .from('course_assignments')
+      .insert({
+        company_id: currentProfile.company_id,
+        profile_id: profileId,
+        course_id: courseId,
+        status: 'invited',
+        assigned_by: currentProfile.id,
+        deadline_date: deadlineDate,
+      })
+      .select('*')
+      .single();
+
+    if (assignmentError) {
+      console.error('Error creating assignment:', assignmentError);
+      return NextResponse.json(
+        { error: 'Failed to create assignment', details: assignmentError.message },
+        { status: 500 }
+      );
+    }
+
+    // Get site details for notifications
+    const siteId = targetProfile.home_site || targetProfile.site_id;
+    let siteData: { id: string; name: string } | null = null;
+    if (siteId) {
+      const { data: site } = await supabaseAdmin
+        .from('sites')
+        .select('id, name')
+        .eq('id', siteId)
+        .maybeSingle();
+      siteData = site;
+    }
+
+    // Send msgly notification
+    try {
+      const channelId = await sendCourseAssignmentNotification(
+        assignment,
+        course,
+        targetProfile,
+        siteData
+      );
+
+      if (channelId) {
+        await supabaseAdmin
+          .from('course_assignments')
+          .update({ msgly_conversation_id: channelId })
+          .eq('id', assignment.id);
+      }
+    } catch (msgError) {
+      console.error('Error creating messaging notification:', msgError);
+    }
+
+    // Create calendar reminder for the employee
+    try {
+      const notificationId = await createCourseReminderTask(
+        assignment,
+        course,
+        { id: profileId, company_id: currentProfile.company_id }
+      );
+
+      if (notificationId) {
+        await supabaseAdmin
+          .from('course_assignments')
+          .update({ calendar_task_id: notificationId })
+          .eq('id', assignment.id);
+      }
+    } catch (calError) {
+      console.error('Error creating calendar reminder:', calError);
+    }
+
+    // Create follow-up task for the assigning manager
+    try {
+      await createCourseFollowUpTask({
+        assignmentId: assignment.id,
+        profileId: profileId,
+        courseId: courseId,
+        companyId: currentProfile.company_id,
+        siteId: siteId || null,
+        managerId: currentProfile.id,
+        employeeName: targetProfile.full_name || 'Employee',
+        courseName: course.name,
+        deadlineDate: deadlineDate,
+      });
+    } catch (followUpError) {
+      console.error('Error creating follow-up task:', followUpError);
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: assignment,
+    });
+  } catch (error: any) {
+    console.error('Error in POST /api/training/assignments:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * GET /api/training/assignments
+ * Get assignments (filter by profileId or companyId)
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user's profile
+    const { data: currentProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, company_id, app_role')
+      .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
+      .maybeSingle();
+
+    if (profileError || !currentProfile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const profileId = searchParams.get('profileId');
+    const companyId = searchParams.get('companyId');
+
+    // Build query
+    let query = supabase
+      .from('course_assignments')
+      .select(`
+        *,
+        course:training_courses(id, name, code, category, duration_minutes),
+        profile:profiles(id, full_name, email)
+      `);
+
+    // Apply filters based on user role
+    const isManager = ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
+      .includes((currentProfile.app_role || '').toLowerCase());
+
+    if (profileId) {
+      // If requesting specific profile, check permissions
+      if (profileId === currentProfile.id || isManager) {
+        query = query.eq('profile_id', profileId);
+      } else {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+    } else if (companyId) {
+      // If requesting company-wide, must be manager
+      if (!isManager) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (companyId !== currentProfile.company_id) {
+        return NextResponse.json({ error: 'Company mismatch' }, { status: 403 });
+      }
+      query = query.eq('company_id', companyId);
+    } else {
+      // Default: return user's own assignments
+      query = query.eq('profile_id', currentProfile.id);
+    }
+
+    const { data: assignments, error: assignmentsError } = await query.order('assigned_at', { ascending: false });
+
+    if (assignmentsError) {
+      console.error('Error fetching assignments:', assignmentsError);
+      return NextResponse.json(
+        { error: 'Failed to fetch assignments', details: assignmentsError.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: assignments || [],
+    });
+  } catch (error: any) {
+    console.error('Error in GET /api/training/assignments:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

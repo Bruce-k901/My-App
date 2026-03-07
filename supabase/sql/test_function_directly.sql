@@ -1,77 +1,53 @@
--- ============================================================================
--- Test the check_user_company_match function directly
--- This will show us exactly what the function returns
--- ============================================================================
+-- Test the function directly to see what it returns
 
--- Get your user ID and company_id
+-- Step 1: Check auth context
 SELECT 
-  '=== YOUR INFO ===' as section,
-  auth.uid() as your_user_id,
-  (SELECT company_id FROM public.profiles WHERE id = auth.uid()) as your_company_id;
+  'Step 1: Auth' as step,
+  auth.uid() as user_id;
 
--- Test 1: Function with NULL (should return TRUE)
+-- Step 2: Check own profile (bypassing RLS)
+SET LOCAL role = 'postgres';
 SELECT 
-  '=== TEST 1: NULL company_id ===' as section,
-  public.check_user_company_match(auth.uid(), NULL::UUID) as result,
-  'Expected: TRUE' as expected;
+  'Step 2: Your profile (bypassing RLS)' as step,
+  id,
+  email,
+  app_role,
+  company_id,
+  LOWER(COALESCE(app_role::TEXT, '')) IN ('admin', 'owner', 'manager') as is_manager
+FROM profiles
+WHERE id = auth.uid() OR auth_user_id = auth.uid();
+RESET role;
 
--- Test 2: Function with your actual company_id (should return TRUE)
+-- Step 3: Test the function
 SELECT 
-  '=== TEST 2: Your company_id ===' as section,
-  public.check_user_company_match(
-    auth.uid(),
-    (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-  ) as result,
-  (SELECT company_id FROM public.profiles WHERE id = auth.uid()) as company_id_used,
-  'Expected: TRUE' as expected;
+  'Step 3: Function result' as step,
+  public.get_company_profile_ids() as profile_ids,
+  array_length(public.get_company_profile_ids(), 1) as count;
 
--- Test 3: Function with wrong company_id (should return FALSE)
+-- Step 4: Manually check what profiles exist in your company
+SET LOCAL role = 'postgres';
 SELECT 
-  '=== TEST 3: Wrong company_id ===' as section,
-  public.check_user_company_match(
-    auth.uid(),
-    '00000000-0000-0000-0000-000000000000'::UUID
-  ) as result,
-  'Expected: FALSE' as expected;
+  'Step 4: All profiles in company (bypassing RLS)' as step,
+  COUNT(*) as total,
+  ARRAY_AGG(id ORDER BY id) as all_ids
+FROM profiles
+WHERE company_id = (
+  SELECT company_id FROM profiles WHERE id = auth.uid() OR auth_user_id = auth.uid() LIMIT 1
+);
+RESET role;
 
--- Test 4: Simulate what happens during INSERT
--- This simulates the exact policy check
+-- Step 5: Test if ANY() works with the function result
 SELECT 
-  '=== TEST 4: Policy Simulation ===' as section,
-  auth.uid() as created_by_check,
-  public.check_user_company_match(
-    auth.uid(),
-    (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-  ) as company_match_check,
-  CASE 
-    WHEN auth.uid() = auth.uid() 
-      AND public.check_user_company_match(
-        auth.uid(),
-        (SELECT company_id FROM public.profiles WHERE id = auth.uid())
-      )
-    THEN '✓ Policy SHOULD ALLOW INSERT'
-    ELSE '✗ Policy WILL BLOCK INSERT'
-  END as policy_result;
+  'Step 5: Test ANY() condition' as step,
+  p.id,
+  p.email,
+  (p.id = ANY(public.get_company_profile_ids())) as matches_policy
+FROM profiles p
+WHERE p.id = auth.uid() OR p.auth_user_id = auth.uid();
 
--- Test 5: Check if there are multiple INSERT policies (conflict?)
+-- Step 6: Check what RLS allows
 SELECT 
-  '=== TEST 5: All INSERT Policies ===' as section,
-  policyname,
-  cmd,
-  roles,
-  qual as using_expression,
-  with_check as with_check_expression
-FROM pg_policies
-WHERE schemaname = 'public'
-  AND tablename = 'conversations'
-  AND cmd = 'INSERT';
-
--- Test 6: Check RLS is enabled
-SELECT 
-  '=== TEST 6: RLS Status ===' as section,
-  tablename,
-  rowsecurity as rls_enabled
-FROM pg_tables
-WHERE schemaname = 'public'
-  AND tablename = 'conversations';
-
+  'Step 6: RLS result' as step,
+  COUNT(*) as visible_profiles
+FROM profiles
+WHERE id = ANY(public.get_company_profile_ids());

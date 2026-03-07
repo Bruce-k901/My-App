@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getAllTemplates, SFBB_TEMPERATURE_FIELDS } from '@/data/compliance-templates';
+import { getAllTemplates } from '@/data/compliance-templates';
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +58,50 @@ export async function POST(request: NextRequest) {
       const { data: existing } = await query.maybeSingle();
 
       if (existing) {
-        skipped.push({ slug: template.slug, name: template.name, reason: 'Already exists' });
+        // Update recurrence_pattern + evidence_types on existing templates
+        // so new checklist items and enhanced evidence types propagate
+        const {
+          workflowType: exWorkflowType,
+          workflowConfig: exWorkflowConfig,
+          id: _exId,
+          created_at: _exCreated,
+          updated_at: _exUpdated,
+          ...exTemplateData
+        } = template;
+
+        const exWorkflowEnvelope =
+          exWorkflowType || exWorkflowConfig
+            ? { type: exWorkflowType ?? null, config: exWorkflowConfig ?? null }
+            : null;
+
+        const exNormalizedRecurrence =
+          exTemplateData.recurrence_pattern && typeof exTemplateData.recurrence_pattern === 'object'
+            ? { ...exTemplateData.recurrence_pattern }
+            : exTemplateData.recurrence_pattern
+            ? exTemplateData.recurrence_pattern
+            : {};
+
+        const exRecurrenceWithWorkflow =
+          exWorkflowEnvelope && typeof exNormalizedRecurrence === 'object'
+            ? { ...exNormalizedRecurrence, __workflow: exWorkflowEnvelope }
+            : exNormalizedRecurrence;
+
+        const { error: updateError } = await supabase
+          .from('task_templates')
+          .update({
+            recurrence_pattern: exRecurrenceWithWorkflow,
+            description: exTemplateData.description,
+            instructions: exTemplateData.instructions,
+            evidence_types: exTemplateData.evidence_types,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id);
+
+        if (updateError) {
+          console.error(`Error updating ${template.name}:`, updateError);
+        }
+
+        skipped.push({ slug: template.slug, name: template.name, reason: 'Updated' });
         continue;
       }
 
@@ -116,28 +159,6 @@ export async function POST(request: NextRequest) {
           reason: insertError.message 
         });
       } else {
-        // Import template fields for SFBB Temperature Checks
-        if (template.slug === 'sfbb-temperature-checks') {
-          const fieldsToInsert = SFBB_TEMPERATURE_FIELDS.map(field => ({
-            template_id: inserted.id,
-            field_name: field.field_name,
-            field_type: field.field_type,
-            label: field.label,
-            required: field.required,
-            field_order: field.field_order,
-            help_text: field.help_text,
-            options: field.options || null,
-          }));
-
-          const { error: fieldsError } = await supabase
-            .from('template_fields')
-            .insert(fieldsToInsert);
-
-          if (fieldsError) {
-            console.error(`Error inserting fields for ${template.name}:`, fieldsError);
-          }
-        }
-
         imported.push({ id: inserted.id, name: inserted.name, slug: inserted.slug });
       }
     }

@@ -37,8 +37,8 @@ export function getPPMStatus(
   if (!nextServiceDate) {
     return {
       status: 'unscheduled',
-      bgColor: 'bg-gray-500/20',
-      textColor: 'text-gray-400',
+      bgColor: 'bg-theme-surface-elevated0/20',
+      textColor: 'text-theme-tertiary',
       borderColor: 'border-gray-500',
       color: '#6B7280'
     };
@@ -82,7 +82,7 @@ export function getPPMStatus(
  * @returns Formatted date string or fallback
  */
 export function formatServiceDate(dateString: string | null | undefined): string {
-  if (!dateString) return '—';
+  if (!dateString) return '-';
   
   try {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -91,7 +91,7 @@ export function formatServiceDate(dateString: string | null | undefined): string
       year: 'numeric',
     });
   } catch {
-    return '—';
+    return '-';
   }
 }
 

@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         .eq("company_id", companyId);
 
       const { data: ppmSchedules } = await adminSupabase
-        .from("ppm_schedule")
+        .from("ppm_schedules")
         .select("*")
         .in("asset_id", assets?.map((a: any) => a.id) || []);
 
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(exportData, {
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename="checkly-export-${companyId}-${new Date().toISOString().split("T")[0]}.json"`,
+        "Content-Disposition": `attachment; filename="opsly-export-${companyId}-${new Date().toISOString().split("T")[0]}.json"`,
       },
     });
   } catch (error: any) {

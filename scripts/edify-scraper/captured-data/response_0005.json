@@ -1,0 +1,15 @@
+{
+  "id": "6f4320a6-3ba9-4cfd-a2da-25e51b864f2e",
+  "email": "bruce@e-a-g.co",
+  "status": "ACTIVE",
+  "firstName": "Bruce",
+  "lastName": "Test",
+  "contactPhone": "+447891710002",
+  "additionalResources": [],
+  "createdAt": "2026-03-03T13:35:38.687Z",
+  "createdBy": "89b7a76a-3891-46bf-a589-baa54ec87151",
+  "updatedAt": "2026-03-04T22:31:13.727Z",
+  "updatedBy": "89b7a76a-3891-46bf-a589-baa54ec87151",
+  "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+  "ccOnOwnOrders": false
+}

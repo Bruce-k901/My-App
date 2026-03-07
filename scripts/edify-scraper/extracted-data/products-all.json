@@ -1,0 +1,5473 @@
+[
+  {
+    "id": "8e5ca67f-df00-4014-a894-a591f615f713",
+    "name": "Almond Cookie ",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Almondcookie",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "012dec05-7941-4355-860b-cf8fc06a5381",
+    "name": "Almond Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Almond Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.6
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9a3d0923-5d96-4c58-97fd-ea894cefbb5c",
+    "name": "Brown Butter Choc Cookie",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Brown Butter Choc Cookie",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.5
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0bc3d576-a851-4256-a9a5-3f44a897f59e",
+    "name": "Choc Hazelnut Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Choc Hazelnut Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      },
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 2
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.8
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ac3347b8-1915-4083-8d4f-1c7f8967fa63",
+    "name": "Cinna Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Cinna Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.7
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      },
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.7
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4f583103-1b1c-4a5e-abff-e34520c1b974",
+    "name": "Croissant",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Croissant",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.05
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.05
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "85a04cf1-c3c9-4acf-849c-61cb5e309306",
+    "name": "Earl Grey Morning Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Earl Grey Morning Bun",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.5
+      },
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d59fe4fb-c4d8-4d12-a4ee-bc58d387fe28",
+    "name": "Flourless Pecan cookie",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Flourless Pecan cookie",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.5
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "526c17aa-1700-43ab-ac88-333697a31d73",
+    "name": "Gingerbread ",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "0.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Gingerbread",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "6fe8791e-5701-47d4-af58-0add98298141",
+    "name": "Lemon Poppy Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Lemon Poppy Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.7
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 2.5
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "46b10aaa-7bc7-42f0-8f8c-dff0af3aaddf",
+    "name": "Not a Pan Au Choc",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Not a Pan Au Choc",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.1
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.1
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "864b8098-b464-46a1-bd55-f113125e575e",
+    "name": "Oatmeal raisin cookie",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "1.000",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Oatmeal raisin cookie",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1
+      },
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1
+      },
+      {
+        "siteId": "379c8081-aeff-4978-a004-c325903271dd",
+        "price": 1.5
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "11ed85f0-7e96-41c7-ae0a-091460d34639",
+    "name": "Pistachio Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Pistachio Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      },
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.8
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.8
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2209c9f2-94f3-4b9c-8cc5-746c3e374859",
+    "name": "PR Cinnamon BOX",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "9.900",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PRcinBOX",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "11ef199f-f2ba-4cdb-a444-70dad510df5c",
+    "name": "PR Croissant BOX",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.600",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PRCroisBOX",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "6b633945-bf2a-4f4e-97bd-f446445cf0df",
+    "name": "PR MIX BOX",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "7.500",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PRMixBOX",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "fbeac77d-83d7-462a-a7e6-7b39367f28d2",
+    "name": "PR Morning BOX",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "7.600",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PRMonBOX",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a1b99cb8-4866-42c9-bf95-5576cbb7b8a9",
+    "name": "PR PAC BOX",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.600",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PRPACBOX",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "7413ef2a-4a34-4c20-9b51-cae58b0e2acc",
+    "name": "Red Pesto & Cheese Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.000",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Red Pesto & Cheese Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "97d3f380-d29c-4ac3-a20d-b2e6e8427339",
+        "price": 1.2
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.2
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4ab5898b-41e7-4601-a687-8642b2a4fc40",
+    "name": "SV box",
+    "status": "ACTIVE",
+    "productClass": "Croissant",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.000",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "SVbox",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f22f6686-3ea8-4265-b1da-defb9c68e68f",
+    "name": "SV ginger heart",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "0.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "SVgingerheart",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f17b6977-d9ec-4e4f-8f5f-d49efe024466",
+    "name": "Triple Choc Hazelnut Cookie",
+    "status": "ACTIVE",
+    "productClass": "Cookie",
+    "productCategory": "Cookies",
+    "packQuantity": "1.000",
+    "packCost": "1.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Triple Choc Hazelnut Cookie",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 1.5
+      },
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 1.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8b50d59d-3d1d-4ba9-b1fc-93822dcfab29",
+    "name": "Vanilla Bean Swirl",
+    "status": "ACTIVE",
+    "productClass": "Swirls",
+    "productCategory": "Pastry",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Vanilla Bean Swirl",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": ["379c8081-aeff-4978-a004-c325903271dd"],
+    "productSitePricings": [
+      {
+        "siteId": "0a1c3888-ca32-43e1-b07d-b820cd132629",
+        "price": 2.5
+      },
+      {
+        "siteId": "95f690d5-8108-4097-9b86-f2eb613e7ce0",
+        "price": 2.5
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "acb50452-2c1e-4c61-a8aa-11365c160e65",
+    "name": "Allspice",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "11.490",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "ALLSPICE GROUND",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d1c12442-58d1-4e80-af8b-643264e7e583",
+    "name": "Almond extract",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.660",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "60.000",
+    "supplierProductCode": "ESSNMALMOND",
+    "taxRate": null,
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "5222602c-863f-4e08-a6ce-7bd6efe5352d",
+    "name": "Apple Pectin",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "33.560",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "PECTINAPP",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "475d4e6d-650e-4e46-ac7b-a9ae3e3a845a",
+    "name": "Apple Slices, Frozen",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "3.410",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "APPLESLICED",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "23cd82f8-1989-42f7-9399-d798f50cde19",
+    "name": "Applewood Cheese",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.650",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "200.000",
+    "supplierProductCode": "CHEESEVEGANAPPSL",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "89097ed3-f058-4560-af7f-0a1f438dfe73",
+    "name": "Avocado Diced, Frozen",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "8.420",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "AVOCADODICED",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "47640992-7bb6-40e1-a193-4c9f3f51faa0",
+    "name": "Basil",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "1.890",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "BASELFR",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0e348d9b-cf9a-48d2-b758-0f86da7f124a",
+    "name": "Canned peppers",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "8.690",
+    "packType": "Can",
+    "singleUnitType": "Can",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2500.000",
+    "supplierProductCode": "PEPPERSROASTR",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e8480d98-8b02-406f-a7c9-4968a087a129",
+    "name": "Coconut cream",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "1.700",
+    "packType": "Can",
+    "singleUnitType": "Can",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "400.000",
+    "supplierProductCode": "COCCREAM",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1a40a05d-964a-4e31-9d25-b8a5ddc836f0",
+    "name": "Coconut Milk Rude Health",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "2.450",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "MILKCOCONUTR",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ee2523a4-e09e-4c3c-8b3b-3aa417e5aa2b",
+    "name": "Dijon Mustard",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Sauces",
+    "packQuantity": "1.000",
+    "packCost": "4.100",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "MUSTDIJ1",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "5b360406-0c6e-43a3-8dea-4c70dc5c3667",
+    "name": "Dried Sage",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "4.290",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "200.000",
+    "supplierProductCode": "Sage",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "cbb74508-8bb6-42da-ac51-e6b9ef9c1d68",
+    "name": "Dried Tyhme",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.500",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "200.000",
+    "supplierProductCode": "Tyhme",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "17cc008a-91bb-44e4-8ad5-ee5db63b395c",
+    "name": "Ffreeze dried Strawberries",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "11.250",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "STRAWBFDSLCD",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "db063a33-70ca-47bc-bca9-c6d72fabafb3",
+    "name": "Fine Salt",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "10.690",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "SALTSEA10",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "627cfe2d-5897-49e3-80f2-fabe2323fa71",
+    "name": "Flat Leaf Parsley",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "1.490",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "PARSLEYRET",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "119c891a-abea-47fe-b105-f0e5aedc9ec9",
+    "name": "Flax seeds",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.250",
+    "packType": "Kg",
+    "singleUnitType": "Kg",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "LINSEEDG",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8dcdda8f-ea74-4d66-adf1-b50afb757730",
+    "name": "Frozen banana",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "27.400",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "BANANAFZ",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "c0fb6f49-a69e-4dcd-9965-c5afcc34bc0e",
+    "name": "Frozen blueberries",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "6.220",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "BLUEBERRFZ",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b2279c6e-f9e5-4454-8c7a-e28fecc1aa23",
+    "name": "Frozen Lemon Zest",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "6.420",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "ZESTFZLEMON",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f99b31e4-16aa-44b0-b4d4-bbeafc179e9a",
+    "name": "Frozen Orange zest",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "6.100",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "ZESTFZORANGE",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b4538270-c8bc-4b55-973a-bb0f47df012d",
+    "name": "Frozen spinach",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "5.480",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2500.000",
+    "supplierProductCode": "SPINACHFZ",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "18918daf-6dc8-445f-8c19-7ed47b7e9eb8",
+    "name": "Frozen Strawberrys",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Frozen",
+    "packQuantity": "1.000",
+    "packCost": "8.980",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2500.000",
+    "supplierProductCode": "STRABFZ2",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "dfeb95d8-a5f7-4900-bcc5-9499e54c8014",
+    "name": "Garlic Powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "4.980",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Garlicpow",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "99a73e00-e719-403b-bb06-f1183822dfe7",
+    "name": "Ginger",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "4.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "GINGERFR",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1cf544c6-d671-4ec9-846a-ee0703a84beb",
+    "name": "Granular Citric Acid",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "18.750",
+    "packType": "Kg",
+    "singleUnitType": "Kg",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "CITRICACIDPOWDER",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "81dbd484-7681-4594-a17b-b9a81db0f7d3",
+    "name": "Green Apples",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "2.090",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": true,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "APPLEFBRAM",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e9c06886-5b06-4ad6-9537-e7e1f437afbd",
+    "name": "Ground ginger",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.900",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "GINGGROUND",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a463eda7-34b5-4920-a7b3-3d0700154f52",
+    "name": "Lemon Juice, Fresh",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.890",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "LEMONF",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "31b2bed1-8766-4de6-bd3d-13c018ef3f0a",
+    "name": "Loose leaf earl gray tea",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.590",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "TEANEARLLOOSE",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3d834be7-d38c-40f1-8050-b1697b56adf9",
+    "name": "Mango Cubes",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "4.690",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "MANGOCUBESFZ",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4dd4aeac-8389-47af-b3bb-3494f57607bb",
+    "name": "Nutritonal Yeast",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "22.980",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "650.000",
+    "supplierProductCode": "NUTRITIONAL750",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ea374747-e8f7-4295-92de-f1b1e5b31206",
+    "name": "Oat Rude Health (occasional)",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Alternative milk",
+    "packQuantity": "6.000",
+    "packCost": "11.340",
+    "packType": "Case",
+    "singleUnitType": "Carton",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "MILKOATRUDE",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3d345320-abcf-4558-8256-6390b7e1325d",
+    "name": "Onion Powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "3.900",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Onionpow",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9c526d25-56f0-4e8e-ab61-208f5461213b",
+    "name": "Orange Juice CPU",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Bakery",
+    "packQuantity": "1.000",
+    "packCost": "2.990",
+    "packType": "L",
+    "singleUnitType": "L",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "ORANGEF",
+    "taxRate": "20.000",
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "93aa6f5b-5412-465e-a6bb-c290a7f92fe5",
+    "name": "Original Coconut Water - Vita Coco",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "12.000",
+    "packCost": "12.990",
+    "packType": "Case",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "COCONUTWATER",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "cfe2eac1-d69c-4fbb-8c42-180992cc5a07",
+    "name": "Poppy seeds",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "4.980",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "POPPY",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0409670a-5b00-4b25-87d1-1daa18378af7",
+    "name": "Psyllium Husk",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "17.980",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "PsylliumHusk500",
+    "taxRate": "20.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "848130d9-ae62-48d1-8140-792911e75557",
+    "name": "Raspberry powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "12.350",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "RASPBDRIED",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1ae2ceff-22ad-42a2-8a6d-75d00fd0c7d1",
+    "name": "Red Wine Vinegar",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "1.890",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "VINRW1",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "beea68df-ecfa-4983-945b-7d9b9d324d57",
+    "name": "Rose Petals",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "8.390",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "ROSEOETAL",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "31e0e531-a95a-49e9-bfe0-5d7d125560ea",
+    "name": "Sage",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Fruit & Veg",
+    "packQuantity": "1.000",
+    "packCost": "1.690",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "SAGEFR",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2edeef79-c76e-4695-9308-9c1a5b9d1780",
+    "name": "Shipton flour croissants",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "33.790",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "FLOUSHIPCROISSAN",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ade00922-6102-4fbb-88a5-121e8a3e17fc",
+    "name": "Soy Sauce - Kikkoman",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "7.390",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "SOYSAUCEKIK1",
+    "taxRate": "20.000",
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ecef0938-b0d6-4ba2-bd0a-3f72cf8c6787",
+    "name": "Strawberries,Frozen",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "8.980",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2.500",
+    "supplierProductCode": "STRAWBFZ2",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2879c362-a4ef-4b8a-b1e1-978c89b8d25e",
+    "name": "Sun dried tomatoes",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "11.500",
+    "packType": "Kg",
+    "singleUnitType": "Kg",
+    "allowSplitPack": true,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "SUNTOM1",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "55cfde2b-9dfb-4a98-89b5-b91ea33b3cd9",
+    "name": "tofu",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "3.380",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "450.000",
+    "supplierProductCode": "TOFUPLAIN",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "08f42009-1d81-4f23-b09a-cd7461ba0f91",
+    "name": "Tomarto Powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "15.950",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "TOMATOPOW500",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4835d1d3-9873-4cea-a56e-51938daf101b",
+    "name": "Turmeric Ground",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.490",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Turmeric",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b11eaddc-f0af-4f05-ba50-ea5e9c8adfa7",
+    "name": "Vanilla Extract",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "9.790",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "118.000",
+    "supplierProductCode": "ESSVANNM118",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "28cbde75-5794-4805-9872-e179c3cbb889",
+    "name": "Yoghurt Coconut Collaborative",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "8.540",
+    "packType": "Item",
+    "singleUnitType": "Item",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "YOGCOCONUT1",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2f2a7155-a7f9-4948-a393-c431f1257a35",
+    "name": "Greaseproof squares (200x200)",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "100.000",
+    "packCost": "0.070",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Greaseproof squares (200x200)",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "456a6f08-e13b-4e18-92d2-88ebde461c93",
+    "name": "10/12/16oz",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "52.840",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "678905",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "c1cf7836-5098-4ed1-9002-a9038e7dd5b0",
+    "name": "12oz Cup Green Decent",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "68.800",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "00001",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a868bff7-5eb3-43eb-ae81-b1d53236381d",
+    "name": "6/8oz lid Decent",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "46.620",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "0987",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9630783f-346c-424b-8b52-0e5aee72992e",
+    "name": "6mm Straws",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "2000.000",
+    "packCost": "34.020",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "9846",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d6106aff-8e0d-46f0-879a-28eebe739b85",
+    "name": "6oz Cup Decent",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "50.320",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "000098",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8255996f-dab5-4474-b518-8f245cec8e55",
+    "name": "8oz Cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "52.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "09876",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "bf7933a5-3568-4859-bac9-8e2a29718f4d",
+    "name": "clear cup lid",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "44.100",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "3579",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "47dc3a94-a5a8-468b-aae5-43a36170606f",
+    "name": "Decent Clear Cup 12 Oz",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "177.920",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "00000",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "cb8cbf6c-df8b-4705-a878-fbceab089e57",
+    "name": "espresso Cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "50.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "9762678",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "cc19b73c-97ad-4e75-9d5f-e3896f4723a0",
+    "name": "Handle Kraft Bags",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "55.020",
+    "packType": "Box",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "000021",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3f145f13-3eb0-46b4-8063-edb8fb8dc98b",
+    "name": "Kraft Bag",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1000.000",
+    "packCost": "23.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "000003",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "980365c7-15b9-46fe-84ed-e056e15ac731",
+    "name": "General waste bin bags",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "25.000",
+    "packCost": "42.500",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "White bin bags",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9a82a24a-0cf9-44cc-9153-fba364c89b7c",
+    "name": "Recycling bin bags",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "25.000",
+    "packCost": "27.500",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Recycling bin bags",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a0b860e3-6840-4f91-baa4-51dd4750948f",
+    "name": "12oz cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "86.000",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "CUP0080",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b0985027-255f-4bdb-83e6-2c533a918312",
+    "name": "12oz lid",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "66.050",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "LID0025",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4ef5c7fd-bfa1-4080-9276-b0e34bff9a6b",
+    "name": "1883 - Strawberry Syrup",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "9.500",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "FSP0110",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2d1e9622-392b-4189-b820-c9bca437bd64",
+    "name": "1883 Syrup - Mango",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "9.500",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "FSP0490",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "75ca20cf-f5c3-4f7c-b1d5-310cd4bc45a0",
+    "name": "6/8oz lid",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "58.280",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "LID0015",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e6a1e6ac-019f-4aa2-9ed4-abe36a33d8c2",
+    "name": "6oz cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "58.500",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "CUP0020",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8b02962b-273c-4f11-ab5f-7ed2098af497",
+    "name": "8oz cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "65.000",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "CUP0030",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8f0ee5dc-f8d4-46ad-a96f-25032aeb9b07",
+    "name": "Alchemy Chai Con",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "19.950",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "750.000",
+    "supplierProductCode": "FAA0010",
+    "taxRate": null,
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ec3e387f-70b2-41bc-9dd4-0e968a8dec0a",
+    "name": "Almonds Flaked",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "78.950",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "NT3/FL/10",
+    "taxRate": "0.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1948a553-783d-4f70-81de-feed99f6d21c",
+    "name": "Almonds Ground",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "72.950",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "NT1/WH/10B",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "97e7a3c0-4126-4950-bea3-5888d2c5d3a4",
+    "name": "AntibacterialSurface spray",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "6000.000",
+    "packCost": "14.000",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CL/0030",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "107a71b3-cf21-492a-ad2e-51fbb8e31480",
+    "name": "Baking Powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "8.490",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "3500.000",
+    "supplierProductCode": "AD18/3",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "27c0ccdf-8276-4fc5-96f7-ce3d8687fd74",
+    "name": "Bicarb of Soda",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "5.400",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "3000.000",
+    "supplierProductCode": "AD19/5",
+    "taxRate": "20.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b751324e-876a-4149-b9b1-29cf90e1c75e",
+    "name": "Blanched peanut",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "109.860",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2200.000",
+    "supplierProductCode": "NT5/BL/25",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": ["9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59"],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ea874e37-ffd7-4a43-8c67-f4a63de2988f",
+    "name": "Blue roll",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "6.000",
+    "packCost": "10.500",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "P8/X7",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "79d81e45-db9f-4567-8829-98bdbfd46887",
+    "name": "Bonsoy Soy milk",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "6.000",
+    "packCost": "15.790",
+    "packType": "Box",
+    "singleUnitType": "Carton",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "BON0010",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d36ccc5a-1e9a-46c2-9e00-717e7a3f36d0",
+    "name": "Brown Napkins",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "38.000",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "5000.000",
+    "supplierProductCode": "NAP0010",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f49260ab-46cf-418a-89ee-47cd1907e531",
+    "name": "Brown Strung Bags",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "8.200",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "BAG0050",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "949a78f9-177d-4a61-86f0-0ef0da388b88",
+    "name": "Califia Oat Milk 6x1ltr",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Alternative milk",
+    "packQuantity": "6.000",
+    "packCost": "7.750",
+    "packType": "Case",
+    "singleUnitType": "Carton",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "CLF0010",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "540a5972-ad4c-41d9-b7cf-0ab7188b4b45",
+    "name": "Can0 Sparkling Cano water",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "24.000",
+    "packCost": "11.500",
+    "packType": "Case",
+    "singleUnitType": "Can",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CAN0020",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3bb8c7a5-1650-4b18-8dc6-9f73a74711d6",
+    "name": "Can0 Still Cano water",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "24.000",
+    "packCost": "11.500",
+    "packType": "Case",
+    "singleUnitType": "Can",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CAN0010",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "7c2523a3-0381-4123-a41e-a4a487eb68af",
+    "name": "Caramel Syrup",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Syrups",
+    "packQuantity": "1.000",
+    "packCost": "9.500",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "SG22",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "17ff2987-535d-42c1-af94-ef46dd4da048",
+    "name": "Cardomom Ground",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "21.560",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "SHCAR",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "6469b6c8-1ab4-4030-b659-4087ecbae6ba",
+    "name": "Cashew pieces",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "105.690",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "22680.000",
+    "supplierProductCode": "CASH01",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": ["9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59"],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "361c8dca-b685-4f38-8c6b-cb0a0a3567a4",
+    "name": "Caster Sugar",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "17.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "SG3/BS",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2e270b63-632a-4e9a-87ed-114973a68ef2",
+    "name": "Chocolate 54%",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "144.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "CH1/10/D",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "c327760b-6a94-4a42-b6a4-f5f840a612e4",
+    "name": "Chocolate 70%",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "158.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "CH/70C",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "de6be6c4-762a-41e5-b98a-28632fe00ccc",
+    "name": "Chocolate choc Batons",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "19.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1600.000",
+    "supplierProductCode": "CH/BARS",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "89d3c8ec-aa3e-4a21-9ea4-c3dcbd899094",
+    "name": "Cinnamon Ground",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "24.440",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "3000.000",
+    "supplierProductCode": "SH15/GR/3",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b0dfbed3-7fcf-4a91-b417-547100c70294",
+    "name": "CLEANUX THICK BLEACH 5L  *SPLIT*",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "4.150",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CLC0110",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "16e7ee52-c1dd-43ae-be6b-8223c6347fc8",
+    "name": "Cling Wrap",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "300.000",
+    "packCost": "9.790",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "HR13/18",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "6a95e140-5806-4380-9c50-05444bf6d37f",
+    "name": "Cocoa Powder",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "95.960",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "COA01",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3adcdbd5-3105-4c9b-9c9c-361701b96896",
+    "name": "Coconut oil",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "38.350",
+    "packType": "Tub",
+    "singleUnitType": "Tub",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "COCO010",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e1a5bd74-ccb6-459b-bbd5-f0181f7d238d",
+    "name": "Cornflour",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "38.610",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "FL11",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "5f0d9a4d-ddf2-43c9-a5c7-4f71f7bfe7a7",
+    "name": "Cranberries",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "67.230",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "11340.000",
+    "supplierProductCode": "T28/C",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2fa5b125-3db1-4b8f-82af-3f3cc4283cd0",
+    "name": "Daily Dose Apple Juice",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "23.700",
+    "packType": "Case",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "DLD0020",
+    "taxRate": "0.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "727aae11-e8ae-404c-94b5-1d6e88344c85",
+    "name": "Daily Dose Hot Shot",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "16.000",
+    "packCost": "23.900",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "DLD0040",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": true,
+    "variants": []
+  },
+  {
+    "id": "50b41069-0a66-4fe3-ac46-d349664c243c",
+    "name": "Daily Dose  Orange juice",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "23.700",
+    "packType": "Case",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "DLD0010",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "246d28ba-ca50-422f-ad36-862f6ca2628d",
+    "name": "Dark Soft Brown Sugar",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "22.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "SG10/25",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8e6b6edd-dca8-44d8-8d2a-df0ae95fb1b0",
+    "name": "Demerara Sugar",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "22.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "SG11/25",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ded1ff48-9e5f-4382-b12a-6774cbfdb27c",
+    "name": "Diced Dates",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "26.490",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "12500.000",
+    "supplierProductCode": "DF20",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e5f5ddae-134a-4f06-bb3f-1a8a8bbc0497",
+    "name": "Dishwasher Detergent",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "5.740",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CLD010",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e3436981-c5f5-4772-a740-8513417208e0",
+    "name": "Disposable Piping Bag",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Other",
+    "packQuantity": "100.000",
+    "packCost": "9.990",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PIPING",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "86d58569-06e9-4e83-bbd4-da54ab130abb",
+    "name": "Dried Raisins",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "58.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "12500.000",
+    "supplierProductCode": "DF8",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "443a61bf-9b74-4253-94b7-4bb702ce60f2",
+    "name": "Dried Yeast",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "62.740",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "Y5",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "81c1d0b5-56a9-4c5e-97bd-96c5d00a663d",
+    "name": "Espresso Cleaner",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "8.990",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "900.000",
+    "supplierProductCode": "PUL0010",
+    "taxRate": "20.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2a2b3fac-59a8-48a3-b6f6-231c4302e66a",
+    "name": "Espresso cups",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "48.200",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "CUP0010",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "25c920bc-958a-483e-ad39-6e97ee9ecd81",
+    "name": "Fine Desicated Coconut",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "109.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "CC/F25",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b96e993d-ac4c-4a0e-b482-588237205176",
+    "name": "Flaked Salt",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "24.000",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "3000.000",
+    "supplierProductCode": "Flaked Salt",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e941fed1-266c-41c8-a275-f34bf1ddc259",
+    "name": "Floor Cleaner",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "10.150",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "5000.000",
+    "supplierProductCode": "Floor Cleaner",
+    "taxRate": "20.000",
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2f3d90cd-cefd-45fc-a2e1-593b039b77ec",
+    "name": "Glass & Steel cleaner",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "6000.000",
+    "packCost": "14.000",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Glass & Steel cleaner",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1e6e6112-665e-4dc8-9f9a-0358e8e9a94f",
+    "name": "Gloves, Large",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "5.950",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "Gloves, Large",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "738cbeba-39a1-4ec8-8305-984c55308aaa",
+    "name": "Gloves, Medium",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "5.950",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "Gloves, Medium",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ef3ae065-ddb8-44d9-a7c7-9f00b3337a7b",
+    "name": "Glucose",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "18.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "12500.000",
+    "supplierProductCode": "Glucose",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1347de13-52ae-474c-b7b8-ecc801646097",
+    "name": "Good & Proper Earl Grey",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "250.000",
+    "packCost": "48.000",
+    "packType": "Box",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Earl Grey",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "eb1443a8-5d4c-4ece-987a-6fb18a3e79e2",
+    "name": "Good & Proper Everyday Brew",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "250.000",
+    "packCost": "40.000",
+    "packType": "Box",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Everyday Brew",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "415c24f7-4ada-4080-a87e-c1dc3818b29e",
+    "name": "Good & Proper Hoicha",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "7.000",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "50.000",
+    "supplierProductCode": "Hoicha",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e9465fec-d7fd-48a7-80d5-6321327de31c",
+    "name": "Good & Proper Matcha",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "24.500",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "100.000",
+    "supplierProductCode": "Matcha",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "05191f84-7ae3-446b-b71a-0bb7d48f93aa",
+    "name": "Ground Black Pepper",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "6.000",
+    "packCost": "41.000",
+    "packType": "Case",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "550.000",
+    "supplierProductCode": "Ground Black Pepper",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "fd86d065-0c5d-4239-ac77-3a1cc4031b2b",
+    "name": "Ground Nutmeg",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "17.030",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "Ground Nutmeg",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "038052fb-ef38-43c0-ad0c-3748b67ebeef",
+    "name": "Handle Bags Large",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "15.250",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "250.000",
+    "supplierProductCode": "Handle Bags Large",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a71fe130-1736-43a4-a449-f9dd3c3fe021",
+    "name": "Hand soap",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "7.080",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Hand soap",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "1329576f-2fc8-4367-b4ee-b7bbb31cb3bf",
+    "name": "Hazelnuts",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "479.950",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Hazelnuts",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "739a7aa3-6cac-4dc1-af08-f92263d5c218",
+    "name": "Hazelnut Syrup",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Syrups",
+    "packQuantity": "1.000",
+    "packCost": "8.150",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "SG24",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8ec58891-1b02-4588-b77b-013d34202aa1",
+    "name": "Hollander - Chocolate Mix",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "16.500",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1800.000",
+    "supplierProductCode": "HDS0010",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f02bb650-5d2f-4377-89aa-b6cdec1c8b46",
+    "name": "Icing Sugar",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "22.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Icing Sugar",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "73e594ce-151d-4be6-9c5f-ee856726dab1",
+    "name": "Jumbo Rolled Oats",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "25.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Jumbo Rolled Oats",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "28930535-eefc-420b-b789-9899bb287e98",
+    "name": "Light Soft Brown",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "22.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Light Soft Brown",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e0fb98c2-2cce-4842-9419-16f22e21473c",
+    "name": "Maple Syrup - Grade A Dark Robust - (1x4L BIB)",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "70.000",
+    "packType": "Tub",
+    "singleUnitType": "Tub",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "4000.000",
+    "supplierProductCode": "Mapmps0010",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d88dfc57-d7a4-4367-81cc-eb3271adce16",
+    "name": "Mop Handle",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "7.990",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "CLM0015",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a3640ffb-2ef7-41a9-9f13-cacca133e633",
+    "name": "Mop Head",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "5.990",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "CLM010",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9f1d6c91-0e76-4194-9af5-c4f93ac43d68",
+    "name": "Oatly",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "8.000",
+    "packCost": "14.450",
+    "packType": "Case",
+    "singleUnitType": "Carton",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.500",
+    "supplierProductCode": "Oatly",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "126a1a99-1cb4-4adb-a99e-051c618c9635",
+    "name": "Oil Spray",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "6.000",
+    "packCost": "29.950",
+    "packType": "Case",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "600.000",
+    "supplierProductCode": "Oil Spray",
+    "taxRate": null,
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "550901c8-37b1-4890-b00c-aa16b2e96ce4",
+    "name": "Oven Spray",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "4.200",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Oven Spray",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "69a41027-b046-48ad-9ce7-d2fa0f061134",
+    "name": "Paper for wholesale boxes",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "24.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "P4",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a2f637f1-ba99-4d81-b905-eedefd8a56b8",
+    "name": "Paprika",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "6.000",
+    "packCost": "25.950",
+    "packType": "Case",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Paprika",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "fc3fb23a-e37e-43f5-a1c3-75798f343964",
+    "name": "Pecan Pieces",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "169.950",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "13600.000",
+    "supplierProductCode": "Pecan Pieces",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ba93b14c-4f55-4a84-abf3-608fb1ba45d5",
+    "name": "Pistachio Pieces",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "245.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "Pistachio Pieces",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b36ea9ba-4953-444a-bdbc-15466fecbc2c",
+    "name": "Plastic Bags for cookies",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "38.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2000.000",
+    "supplierProductCode": "POLY/XL",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": ["9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59"],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ae0f9374-83eb-4af3-b9c0-239cb0b847d8",
+    "name": "Poly Bags Large",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Other",
+    "packQuantity": "1000.000",
+    "packCost": "34.950",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Poly Bags Large",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "3459677a-6ab2-4af1-b0c3-b4c96980eb66",
+    "name": "Rinse aid",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "5.410",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Rinse aid",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "71b2fd2e-67c1-4e95-a033-27795972a310",
+    "name": "RudeHealth oat",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Alternative milk",
+    "packQuantity": "6.000",
+    "packCost": "10.500",
+    "packType": "Case",
+    "singleUnitType": "Carton",
+    "allowSplitPack": true,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "RHA0070",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": ["9699173d-f5b7-4c3b-9dc7-0cb8e9a5ed59"],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a6040c1d-5905-42f9-8e2f-8d2d6b52a011",
+    "name": "Sesame Seeds",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "62.500",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Sesame Seeds",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f478df17-81a5-4016-a74e-ec006c5b05bb",
+    "name": "Stirrers",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "4.500",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "Stirrers",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d830388e-dbc1-4d71-b3fb-6c9eb6c8527e",
+    "name": "Straws smoothie 12mm",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "5.750",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "250.000",
+    "supplierProductCode": "Straws smoothie 12mm",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "75ab214e-60fa-4f27-9b05-5f595fa586ad",
+    "name": "Sugar Sachets",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "7.000",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "Sugar Sachets",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "ae734e8c-d43a-43ba-97fb-d8eca7090894",
+    "name": "Sunflower Oil",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "42.950",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "20000.000",
+    "supplierProductCode": "Sunflower Oil",
+    "taxRate": null,
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a027b282-4ad8-4881-9fb6-bd7721856b11",
+    "name": "Sweetner Sachets",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "1.000",
+    "packCost": "15.200",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "Sweetner Sachets",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a6413bdd-ef8f-4776-b064-5e57e0ff2923",
+    "name": "Syrup Pump",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "0.000",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "PUMP",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "03502e66-759b-46c7-b94c-924f70cf3dee",
+    "name": "Thick Bleach",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "4.150",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Thick Bleach",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8c4f11df-dc29-430b-9d41-ebef75329f9e",
+    "name": "Toilet paper",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "36.000",
+    "packCost": "20.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "STT0010",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "63b36f8c-864a-4fa4-9625-77f19289cbd3",
+    "name": "Trump XL Rinse aid",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "5.410",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Trump XL Rinse aid",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "56ab4788-2a27-4ae2-98dc-05ef7698e0c6",
+    "name": "Vanilla Syrup 1883",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Syrups",
+    "packQuantity": "1.000",
+    "packCost": "8.150",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "SG23",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "e0bb3cdb-e576-4d0a-ab23-b04d93a197b0",
+    "name": "Vitamin Well - Elevate pineapple strawberry",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "12.220",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Vitawell elevate",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "03d8d469-ba9e-40a1-8b85-22c13bcbc2c2",
+    "name": "Vitamin Well - Hydrate - Rhubarb & Strawberry",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "12.220",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Vitamin Well - Hydrate - Rhubarb & Strawberry",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "2b0526e6-6f61-4c86-8b04-77b2e1a19eb1",
+    "name": "Vitamin Well - Recover - Peach & Elderflower",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "12.220",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Vitamin Well - Recover - Peach & Elderflower",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f6d6ab20-9f02-473a-8da4-955f2ae66f18",
+    "name": "Vitamin Well - Reload - Lemon & Lime",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Beverage",
+    "packQuantity": "12.000",
+    "packCost": "12.220",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Vitamin Well - Reload - Lemon & Lime",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f2afbe6d-1598-49e3-8c2d-f39bb6a6299c",
+    "name": "Walnut Pieces",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "78.000",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "13600.000",
+    "supplierProductCode": "Walnut Pieces",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a526f31c-75b0-40c4-91e2-0f0a06ae30d1",
+    "name": "Washing up liquid",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5000.000",
+    "packCost": "5.630",
+    "packType": "Case",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "Washing up liquid",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a9827b15-85e9-4228-b298-fc669b7866ac",
+    "name": "WASHING UP LIQUID PREMIUM 5LTR",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "5.000",
+    "packCost": "5.630",
+    "packType": "Bottle",
+    "singleUnitType": "L",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "CLC040",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "63226c6e-ecff-4149-ad8d-2bca5c4e036e",
+    "name": "White Chocolate",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "44.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2500.000",
+    "supplierProductCode": "White Chocolate",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a8347347-6d24-4373-b4aa-2b3bfb57b73c",
+    "name": "Wooden spoons",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "1.000",
+    "packCost": "0.040",
+    "packType": "Case",
+    "singleUnitType": "Case",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "WCC0030",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "40cfe147-94ed-4013-8e62-3bff5c291ee8",
+    "name": "Yellow sponges",
+    "status": "ACTIVE",
+    "productClass": "Other",
+    "productCategory": "Cleaning",
+    "packQuantity": "1.000",
+    "packCost": "2.500",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10.000",
+    "supplierProductCode": "CLS020",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "213b7bab-1374-4532-985f-7b9e79d24ec4",
+    "name": "Okja Printed boxes large",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "250.000",
+    "packCost": "95.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "94793749",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0c5f8110-805d-422b-b0ba-e6b14e44d2be",
+    "name": "16oz clear cup",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": null,
+    "packQuantity": "1000.000",
+    "packCost": "62.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "P51203",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "8a9d5599-31d9-403b-9664-2c442ab96928",
+    "name": "16oz lids",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": null,
+    "packQuantity": "1000.000",
+    "packCost": "32.000",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "p51220",
+    "taxRate": null,
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0b043fff-f195-4a72-a4a3-d4d8607d320c",
+    "name": "1 Pastry Crashlock Box",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "200.000",
+    "packCost": "40.680",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "1 pastry Crashlock box",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d8ec49bc-2113-4346-b8a2-41157314c0c6",
+    "name": "2 Pastry Crashlock Box",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "200.000",
+    "packCost": "42.500",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "2 Pastry Crashlock Box",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "18a82621-bd51-44d3-8cb3-7e1db7ceb560",
+    "name": "Coffee",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Coffee",
+    "packQuantity": "1.000",
+    "packCost": "5.300",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Coffee",
+    "taxRate": "20.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "dcc3836c-0def-486f-8c8c-e6fbdd53a82b",
+    "name": "Decaf",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Coffee",
+    "packQuantity": "1.000",
+    "packCost": "5.300",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "Decaf",
+    "taxRate": "20.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "19ce7fcb-9387-43c7-8137-61ce1a133ac5",
+    "name": "Oat milk",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Dairy",
+    "packQuantity": "1.000",
+    "packCost": "1.300",
+    "packType": "Carton",
+    "singleUnitType": "Carton",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Oat milk",
+    "taxRate": null,
+    "unitOfMeasure": "LITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "0ca5c133-8559-4f53-946c-06db0028dbd2",
+    "name": "Stickers Green okja",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "10000.000",
+    "packCost": "680.000",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "stickers",
+    "taxRate": "0.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b62f9a98-47c4-46d5-bec3-ecb06cdc477a",
+    "name": "Swedish tray",
+    "status": "ACTIVE",
+    "productClass": "Packaging",
+    "productCategory": "Packaging",
+    "packQuantity": "500.000",
+    "packCost": "37.220",
+    "packType": "Pack",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Okja",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "04f2ff56-06f8-4c50-aa49-8c5ed6a655b2",
+    "name": "Tom pesto",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "4.750",
+    "packType": "Jar",
+    "singleUnitType": "Jar",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "200.000",
+    "supplierProductCode": "Tom",
+    "taxRate": "20.000",
+    "unitOfMeasure": "EACH",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "30f1f791-473c-4a75-bad6-608b1dd72d40",
+    "name": "Decaf coffee (Origin)",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": "Coffee",
+    "packQuantity": "1.000",
+    "packCost": "26.820",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1.000",
+    "supplierProductCode": "Atlas Decaf",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "f6fbfaa8-99d7-4962-a931-daf83b5f775b",
+    "name": "Origin Coffee",
+    "status": "ACTIVE",
+    "productClass": "Beverage - Coffee",
+    "productCategory": null,
+    "packQuantity": "3.000",
+    "packCost": "108.870",
+    "packType": "Case",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "2.000",
+    "supplierProductCode": "Resolute - 3 x 2kg - Whole Bean - Case of 6kg",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "21e9f700-263d-4a88-a539-e8e9fefbb8fd",
+    "name": "LAF Cleaner tabs",
+    "status": "ACTIVE",
+    "productClass": "Beverage",
+    "productCategory": "Cleaning",
+    "packQuantity": "400.000",
+    "packCost": "15.340",
+    "packType": "Box",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "LAF Cleaner tabs",
+    "taxRate": null,
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "4eb423ef-9041-4a76-abdb-482067eb63d3",
+    "name": "Coconut oil NUTSINBULK",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "50.630",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "12.500",
+    "supplierProductCode": "CoconutNIB",
+    "taxRate": null,
+    "unitOfMeasure": "KILOGRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "9b0e48df-0311-40eb-bf8c-692c5a92bf3c",
+    "name": "cornflour Sainsbury",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "2.750",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "cornfloursansbury",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "be28613c-3665-4383-ac70-70be5b718ef3",
+    "name": "vanilla extract tesco",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "1.800",
+    "packType": "Bottle",
+    "singleUnitType": "Bottle",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "60.000",
+    "supplierProductCode": "vanillatesco",
+    "taxRate": null,
+    "unitOfMeasure": "MILLILITRE",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "a26645bb-2f34-46ba-957a-29690dae0e64",
+    "name": "Vegan Banana bread",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "16.000",
+    "packType": "Each",
+    "singleUnitType": "Each",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "879.000",
+    "supplierProductCode": "veganbananbread",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "96a1fa7e-29a3-400d-bc69-c29eb4d9b313",
+    "name": "Flour, Croissant",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "23.160",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "25000.000",
+    "supplierProductCode": "Flour, Croissant",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "b009a52a-d541-45e1-81bc-4e1e4e532ab5",
+    "name": "Flour, Soft White",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Dry",
+    "packQuantity": "1.000",
+    "packCost": "10.100",
+    "packType": "Bag",
+    "singleUnitType": "Bag",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "16000.000",
+    "supplierProductCode": "Flour, Soft White",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "7e87e1ec-4c18-4a6e-bb3d-4c0f8f026242",
+    "name": "Delivery fee",
+    "status": "ACTIVE",
+    "productClass": null,
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "6.620",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": null,
+    "supplierProductCode": "delivery fee",
+    "taxRate": "20.000",
+    "unitOfMeasure": null,
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "47134484-604a-4363-8835-109c3755c68c",
+    "name": "Gellan Gum",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "45.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "500.000",
+    "supplierProductCode": "5060341112928",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "df5c5f7d-f80f-4688-bf52-9b03079e860d",
+    "name": "Sunflower Lecithin Powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": "Food",
+    "packQuantity": "1.000",
+    "packCost": "289.950",
+    "packType": "Pack",
+    "singleUnitType": "Pack",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "10000.000",
+    "supplierProductCode": "5056191008665",
+    "taxRate": "0.000",
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  },
+  {
+    "id": "d39fed7b-889b-46a5-8c0a-7ee3444102ed",
+    "name": "Vanilla powder",
+    "status": "ACTIVE",
+    "productClass": "Food",
+    "productCategory": null,
+    "packQuantity": "1.000",
+    "packCost": "299.950",
+    "packType": "Box",
+    "singleUnitType": "Box",
+    "allowSplitPack": false,
+    "singleItemVolumeOrWeight": "1000.000",
+    "supplierProductCode": "5056191017049",
+    "taxRate": null,
+    "unitOfMeasure": "GRAM",
+    "blockedSites": [],
+    "productSitePricings": [
+      {
+        "siteId": null,
+        "price": null
+      }
+    ],
+    "forceOrderingByPackQuantityMultiples": false,
+    "variants": []
+  }
+]

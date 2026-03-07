@@ -52,8 +52,8 @@ export default function LibraryPage({ params }: { params: Promise<{ id: string }
   if (!library) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-white mb-4">Library Not Found</h1>
-        <p className="text-white/60">This library doesn't exist or you don't have access to it.</p>
+        <h1 className="text-2xl font-bold text-theme-primary mb-4">Library Not Found</h1>
+        <p className="text-theme-tertiary">This library doesn't exist or you don't have access to it.</p>
       </div>
     );
   }
@@ -61,15 +61,15 @@ export default function LibraryPage({ params }: { params: Promise<{ id: string }
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">{library.name}</h1>
-        <p className="text-white/60">{library.description || 'Manage items in this library'}</p>
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">{library.name}</h1>
+        <p className="text-theme-tertiary">{library.description || 'Manage items in this library'}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.length === 0 ? (
           <div className="col-span-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-            <p className="text-white/60">No items in this library yet.</p>
-            <button className="mt-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200">
+            <p className="text-theme-tertiary">No items in this library yet.</p>
+            <button className="mt-4 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] rounded-lg transition-all duration-200">
               Add First Item
             </button>
           </div>
@@ -77,11 +77,11 @@ export default function LibraryPage({ params }: { params: Promise<{ id: string }
           items.map((item) => (
             <div
               key={item.id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:border-pink-500/20 transition-colors"
+              className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:border-module-fg/20 transition-colors"
             >
-              <h3 className="text-lg font-semibold text-white mb-2">{item.name}</h3>
+              <h3 className="text-lg font-semibold text-theme-primary mb-2">{item.name}</h3>
               {item.description && (
-                <p className="text-sm text-white/60">{item.description}</p>
+                <p className="text-sm text-theme-tertiary">{item.description}</p>
               )}
             </div>
           ))
