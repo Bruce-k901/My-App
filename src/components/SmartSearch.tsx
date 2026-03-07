@@ -64,8 +64,17 @@ export default function SmartSearch({
 
       if (error) throw error;
 
-      // Tag primary results with source table
-      let allResults = (data || []).map((item: any) => ({ ...item, _sourceTable: libraryTable }));
+      // Tag primary results with source table and deduplicate by name
+      const seenNames = new Set<string>();
+      const primaryConfig = TABLE_CONFIG[libraryTable];
+      const primaryNameCol = primaryConfig?.nameColumn || 'item_name';
+      let allResults: any[] = [];
+      for (const item of (data || [])) {
+        const name = (item[primaryNameCol] || item.name || '').toLowerCase();
+        if (name && seenNames.has(name)) continue; // Skip duplicate names within same table
+        if (name) seenNames.add(name);
+        allResults.push({ ...item, _sourceTable: libraryTable });
+      }
 
       // Fetch additional tables if specified
       if (additionalTables && additionalTables.length > 0) {
@@ -84,7 +93,14 @@ export default function SmartSearch({
 
           const { data: extraData, error: extraError } = await query;
           if (!extraError && extraData) {
-            allResults = [...allResults, ...extraData.map((item: any) => ({ ...item, _sourceTable: table }))];
+            const config = TABLE_CONFIG[table];
+            const nameCol = config?.nameColumn || 'item_name';
+            for (const item of extraData) {
+              const name = (item[nameCol] || item.name || '').toLowerCase();
+              if (name && seenNames.has(name)) continue; // Skip if name already seen
+              if (name) seenNames.add(name);
+              allResults.push({ ...item, _sourceTable: table });
+            }
           }
         }
       }

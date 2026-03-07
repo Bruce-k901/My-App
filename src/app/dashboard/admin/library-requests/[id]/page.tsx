@@ -159,28 +159,28 @@ export default function AdminLibraryRequestDetailPage() {
     switch (status) {
       case 'pending':
         return (
-          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm flex items-center gap-2">
+          <span className="px-3 py-1 bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-full text-sm flex items-center gap-2">
             <Clock size={14} />
             Pending Review
           </span>
         );
       case 'approved':
         return (
-          <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm flex items-center gap-2">
+          <span className="px-3 py-1 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm flex items-center gap-2">
             <CheckCircle2 size={14} />
             Approved
           </span>
         );
       case 'deployed':
         return (
-          <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm flex items-center gap-2">
+          <span className="px-3 py-1 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded-full text-sm flex items-center gap-2">
             <CheckCircle2 size={14} />
             Deployed
           </span>
         );
       case 'rejected':
         return (
-          <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm flex items-center gap-2">
+          <span className="px-3 py-1 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-full text-sm flex items-center gap-2">
             <XCircle size={14} />
             Rejected
           </span>
@@ -259,10 +259,10 @@ export default function AdminLibraryRequestDetailPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {field.required && (
-                          <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs">Required</span>
+                          <span className="px-2 py-0.5 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded text-xs">Required</span>
                         )}
                         {field.main_table && (
-                          <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">Main Table</span>
+                          <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded text-xs">Main Table</span>
                         )}
                       </div>
                     </div>
@@ -437,13 +437,13 @@ export default function AdminLibraryRequestDetailPage() {
               {request.rejection_reason && (
                 <div>
                   <span className="text-theme-tertiary">Rejection Reason:</span>
-                  <p className="text-red-400 mt-1">{request.rejection_reason}</p>
+                  <p className="text-red-600 dark:text-red-400 mt-1">{request.rejection_reason}</p>
                 </div>
               )}
               {request.deployment_notes && (
                 <div>
                   <span className="text-theme-tertiary">Deployment Notes:</span>
-                  <p className="text-green-400 mt-1">{request.deployment_notes}</p>
+                  <p className="text-green-600 dark:text-green-400 mt-1">{request.deployment_notes}</p>
                 </div>
               )}
             </div>

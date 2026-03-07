@@ -1,8 +1,10 @@
 // @salsa - SALSA Compliance: Supplier list page (card click → detail page, approval badges, status filter)
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, Phone, Mail, Building2, Calendar, Clock, ArrowLeft, ChevronRight, Loader2, AlertTriangle, Check, Layers } from '@/components/ui/icons';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { Plus, Search, Phone, Mail, Building2, Calendar, Clock, ArrowLeft, ChevronRight, Loader2, AlertTriangle, Check, Layers, ArrowRightLeft } from '@/components/ui/icons';
+
+const ProductMappingTable = lazy(() => import('@/components/stockly/ProductMappingTable'));
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -49,6 +51,7 @@ export default function SuppliersPage() {
   const [isMergeOpen, setIsMergeOpen] = useState(false);
   const [canonicalId, setCanonicalId] = useState<string | null>(null);
   const [merging, setMerging] = useState(false);
+  const [activeTab, setActiveTab] = useState<'suppliers' | 'mapping'>('suppliers');
 
   useEffect(() => {
     if (companyId) {
@@ -265,6 +268,42 @@ export default function SuppliersPage() {
           </div>
         </div>
 
+        {/* Tab Bar */}
+        <div className="flex gap-1 bg-theme-surface border border-theme rounded-xl p-1">
+          <button
+            onClick={() => setActiveTab('suppliers')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'suppliers'
+                ? 'bg-theme-button text-theme-primary shadow-sm'
+                : 'text-theme-tertiary hover:text-theme-secondary'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            <span>Suppliers</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('mapping')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'mapping'
+                ? 'bg-theme-button text-theme-primary shadow-sm'
+                : 'text-theme-tertiary hover:text-theme-secondary'
+            }`}
+          >
+            <ArrowRightLeft className="w-4 h-4" />
+            <span>Product Mapping</span>
+          </button>
+        </div>
+
+        {activeTab === 'mapping' ? (
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[300px]">
+              <Loader2 className="w-6 h-6 animate-spin text-theme-tertiary" />
+            </div>
+          }>
+            <ProductMappingTable />
+          </Suspense>
+        ) : (
+        <>
         {/* Search + Filter */}
         <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -404,6 +443,8 @@ export default function SuppliersPage() {
               );
             })}
           </div>
+        )}
+        </>
         )}
 
         {/* Quick-Add Modal */}

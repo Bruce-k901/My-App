@@ -35,6 +35,7 @@ import {
   Factory,
   Wrench,
   Users,
+  TrendingUp,
 } from '@/components/ui/icons';
 import { cn } from "@/lib/utils";
 import { ClockInButton } from "@/components/notifications/ClockInButton";

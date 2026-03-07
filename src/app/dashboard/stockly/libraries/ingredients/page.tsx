@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight, Check, Package } from '@/components/ui/icons';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight, Check, Package, ArrowRight, Sparkles } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import Select from '@/components/ui/Select';
@@ -14,10 +14,15 @@ import { StorageArea } from '@/lib/types/stockly';
 import { ensureSupplierExists, ensureSuppliersExist } from '@/lib/utils/supplierPlaceholderFlow';
 import { SupplierSearchInput } from '@/components/stockly/SupplierSearchInput';
 import { formatUnitCost } from '@/lib/utils/libraryHelpers';
+import { useStocklyDepartments } from '@/hooks/stockly/use-stockly-departments';
+import { getMoveTargets } from '@/lib/stockly/library-config';
+import { moveLibraryItem } from '@/lib/stockly/move-library-item';
 import { PlanlyBadgeInline } from '@/components/planly/PlanlyBadge';
 import { usePlanlyBadgeStatusBulk } from '@/hooks/planly/usePlanlyBadgeStatus';
 // @salsa — Shared allergen utility (replaces inline full-name list)
 import { UK_ALLERGENS as UK_ALLERGENS_OBJECTS, allergenKeyToLabel, allergenLabelToKey } from '@/lib/stockly/allergens';
+import { NUTRITION_FIELDS } from '@/types/library.types';
+import { NutritionLabelCompact } from '@/components/stockly/NutritionLabelCompact';
 
 const INGREDIENT_CATEGORIES = [
   'Meat', 'Fish', 'Vegetables', 'Fruits', 'Dairy', 'Grains', 'Bakery', 'Dry Goods', 'Other'
@@ -37,6 +42,8 @@ export default function IngredientsLibraryPage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery); // Initialize with searchQuery
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterSupplier, setFilterSupplier] = useState('all');
+  const [filterDepartment, setFilterDepartment] = useState('all');
+  const departments = useStocklyDepartments(companyId);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -89,6 +96,15 @@ export default function IngredientsLibraryPage() {
           low_stock_alert,
           sku,
           storage_area_id,
+          department,
+          nutrition_energy_kcal,
+          nutrition_fat_g,
+          nutrition_saturated_fat_g,
+          nutrition_carbohydrate_g,
+          nutrition_sugars_g,
+          nutrition_fibre_g,
+          nutrition_protein_g,
+          nutrition_salt_g,
           created_at,
           updated_at
         `)
@@ -465,7 +481,17 @@ export default function IngredientsLibraryPage() {
         costing_method: rowDraft.costing_method || 'average',
         is_prep_item: rowDraft.is_prep_item ?? false,
         is_purchasable: rowDraft.is_purchasable ?? true,
+        department: rowDraft.department || null,
         company_id: companyId,
+        // Nutrition per 100g
+        nutrition_energy_kcal: rowDraft.nutrition_energy_kcal === '' ? null : parseFloat(String(rowDraft.nutrition_energy_kcal)) || null,
+        nutrition_fat_g: rowDraft.nutrition_fat_g === '' ? null : parseFloat(String(rowDraft.nutrition_fat_g)) || null,
+        nutrition_saturated_fat_g: rowDraft.nutrition_saturated_fat_g === '' ? null : parseFloat(String(rowDraft.nutrition_saturated_fat_g)) || null,
+        nutrition_carbohydrate_g: rowDraft.nutrition_carbohydrate_g === '' ? null : parseFloat(String(rowDraft.nutrition_carbohydrate_g)) || null,
+        nutrition_sugars_g: rowDraft.nutrition_sugars_g === '' ? null : parseFloat(String(rowDraft.nutrition_sugars_g)) || null,
+        nutrition_fibre_g: rowDraft.nutrition_fibre_g === '' ? null : parseFloat(String(rowDraft.nutrition_fibre_g)) || null,
+        nutrition_protein_g: rowDraft.nutrition_protein_g === '' ? null : parseFloat(String(rowDraft.nutrition_protein_g)) || null,
+        nutrition_salt_g: rowDraft.nutrition_salt_g === '' ? null : parseFloat(String(rowDraft.nutrition_salt_g)) || null,
       };
       // Only add optional columns if they have values (columns may not exist in all DBs)
       if (rowDraft.is_retail_saleable) payload.is_retail_saleable = true;
@@ -633,6 +659,19 @@ export default function IngredientsLibraryPage() {
     }
   };
 
+  const TARGET_LIBRARIES = getMoveTargets('ingredients_library');
+
+  const handleMoveToLibrary = async (item: any, targetTable: string, label: string) => {
+    if (!confirm(`Move "${item.ingredient_name}" to ${label} library? It will be removed from Ingredients.`)) return;
+    const result = await moveLibraryItem(item, 'ingredients_library', targetTable, companyId);
+    if (result.success) {
+      toast.success(`Moved "${item.ingredient_name}" to ${label}`);
+      loadIngredients();
+    } else {
+      toast.error(`Failed to move: ${result.error || 'Unknown error'}`);
+    }
+  };
+
   const handleEdit = (item: any) => {
     setEditingRowId(item.id);
     setRowDraft({
@@ -664,7 +703,16 @@ export default function IngredientsLibraryPage() {
       retail_price: item.retail_price ?? '',
       wholesale_price: item.wholesale_price ?? '',
       online_price: item.online_price ?? '',
-      storage_area_id: item.storage_area_id ?? ''
+      storage_area_id: item.storage_area_id ?? '',
+      // Nutrition per 100g
+      nutrition_energy_kcal: item.nutrition_energy_kcal ?? '',
+      nutrition_fat_g: item.nutrition_fat_g ?? '',
+      nutrition_saturated_fat_g: item.nutrition_saturated_fat_g ?? '',
+      nutrition_carbohydrate_g: item.nutrition_carbohydrate_g ?? '',
+      nutrition_sugars_g: item.nutrition_sugars_g ?? '',
+      nutrition_fibre_g: item.nutrition_fibre_g ?? '',
+      nutrition_protein_g: item.nutrition_protein_g ?? '',
+      nutrition_salt_g: item.nutrition_salt_g ?? '',
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
   };
@@ -970,14 +1018,18 @@ export default function IngredientsLibraryPage() {
     const queryLower = debouncedSearchQuery.toLowerCase();
     const isAllCategory = filterCategory === 'all';
     const isAllSupplier = filterSupplier === 'all';
+    const isAllDepartment = filterDepartment === 'all';
 
     return ingredients.filter((item: any) => {
       const matchesSearch = !queryLower || (item.ingredient_name || '').toLowerCase().includes(queryLower);
       const matchesCategory = isAllCategory || item.category === filterCategory;
       const matchesSupplier = isAllSupplier || (item.supplier || '').trim() === filterSupplier;
-      return matchesSearch && matchesCategory && matchesSupplier;
+      const matchesDepartment = isAllDepartment
+        || (filterDepartment === '_shared' && !item.department)
+        || item.department === filterDepartment;
+      return matchesSearch && matchesCategory && matchesSupplier && matchesDepartment;
     });
-  }, [ingredients, debouncedSearchQuery, filterCategory, filterSupplier]);
+  }, [ingredients, debouncedSearchQuery, filterCategory, filterSupplier, filterDepartment]);
 
   // Get Planly badge status for all ingredients
   const ingredientIds = useMemo(() =>
@@ -1005,6 +1057,35 @@ export default function IngredientsLibraryPage() {
  <button onClick={handleDownloadCSV} className="px-4 py-2 bg-theme-surface ] border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
               <Download size={16} />
               Download CSV
+            </button>
+            <button
+              onClick={async () => {
+                const missing = ingredients.filter((ing: any) => ing.nutrition_energy_kcal == null && ing.ingredient_name);
+                if (missing.length === 0) { toast.info('All ingredients already have nutrition data'); return; }
+                toast.info(`Fetching nutrition for ${missing.length} ingredients...`);
+                // Process in batches of 20
+                let filled = 0;
+                for (let i = 0; i < missing.length; i += 20) {
+                  const batch = missing.slice(i, i + 20).map((ing: any) => ({ id: ing.id, name: ing.ingredient_name }));
+                  try {
+                    const res = await fetch('/api/stockly/nutrition-lookup', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ ingredients: batch, company_id: companyId }),
+                    });
+                    const data = await res.json();
+                    if (res.ok) filled += data.updated || 0;
+                  } catch (err) {
+                    console.error('Batch nutrition error:', err);
+                  }
+                }
+                toast.success(`Nutrition data added for ${filled} ingredients`);
+                loadIngredients();
+              }}
+              className="px-4 py-2 bg-theme-surface border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            >
+              <Sparkles size={16} />
+              Bulk Fill Nutrition
             </button>
             <input ref={csvInputRef} type="file" accept=".csv,text/csv" onChange={handleUploadChange} className="hidden" />
             <button
@@ -1080,6 +1161,17 @@ export default function IngredientsLibraryPage() {
               <option value="all">All Suppliers</option>
               {uniqueSuppliers.map(sup => (
                 <option key={sup} value={sup}>{sup}</option>
+              ))}
+            </select>
+            <select
+              value={filterDepartment}
+              onChange={(e) => setFilterDepartment(e.target.value)}
+              className="bg-theme-surface border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Departments</option>
+              <option value="_shared">Shared</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
           </div>
@@ -1327,6 +1419,23 @@ export default function IngredientsLibraryPage() {
                                 <div className="text-sm text-theme-primary font-medium">{item.pack_cost != null ? `£${item.pack_cost}` : '-'}</div>
                               )}
                             </div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Department</div>
+                              {editingRowId === item.id ? (
+                                <select
+                                  className="w-full bg-theme-surface border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+                                  value={rowDraft?.department ?? ''}
+                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, department: e.target.value || null }))}
+                                >
+                                  <option value="">Shared (All)</option>
+                                  {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <div className="text-sm text-theme-primary font-medium">{item.department || 'Shared'}</div>
+                              )}
+                            </div>
                             <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
                               <div className="text-xs text-theme-tertiary mb-2">Allergens (UK 14)</div>
                               {editingRowId === item.id ? (
@@ -1370,6 +1479,77 @@ export default function IngredientsLibraryPage() {
                                     '-'
                                   )}
                                 </div>
+                              )}
+                            </div>
+
+                            {/* Nutrition per 100g (UK Big 7) */}
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="text-xs text-theme-tertiary">Nutrition per 100g (UK Big 7)</div>
+                                {editingRowId === item.id && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const name = rowDraft?.ingredient_name || item.ingredient_name;
+                                      if (!name) return;
+                                      toast.info(`Looking up nutrition for ${name}...`);
+                                      try {
+                                        const res = await fetch('/api/stockly/nutrition-lookup', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({
+                                            ingredients: [{ id: item.id, name }],
+                                            company_id: companyId,
+                                          }),
+                                        });
+                                        const data = await res.json();
+                                        if (!res.ok) throw new Error(data.error);
+                                        const result = data.results?.[0];
+                                        if (result && result.energy_kcal != null) {
+                                          setRowDraft((d: any) => ({
+                                            ...d,
+                                            nutrition_energy_kcal: result.energy_kcal,
+                                            nutrition_fat_g: result.fat_g,
+                                            nutrition_saturated_fat_g: result.saturated_fat_g,
+                                            nutrition_carbohydrate_g: result.carbohydrate_g,
+                                            nutrition_sugars_g: result.sugars_g,
+                                            nutrition_fibre_g: result.fibre_g,
+                                            nutrition_protein_g: result.protein_g,
+                                            nutrition_salt_g: result.salt_g,
+                                          }));
+                                          toast.success('Nutrition data filled');
+                                        } else {
+                                          toast.info('No nutrition data found for this ingredient');
+                                        }
+                                      } catch (err: any) {
+                                        toast.error(err.message || 'Failed to fetch nutrition');
+                                      }
+                                    }}
+                                    className="text-xs px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                                  >
+                                    AI Auto-fill
+                                  </button>
+                                )}
+                              </div>
+                              {editingRowId === item.id ? (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {NUTRITION_FIELDS.map(({ key, label, unit, dbColumn }) => (
+                                    <div key={key}>
+                                      <label className="text-xs text-theme-tertiary">{label} ({unit})</label>
+                                      <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        className="w-full bg-theme-surface border border-theme rounded px-2 py-1 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                        value={rowDraft?.[dbColumn] ?? ''}
+                                        onChange={(e) => setRowDraft((d: any) => ({ ...d, [dbColumn]: e.target.value }))}
+                                        placeholder="—"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <NutritionLabelCompact item={item} />
                               )}
                             </div>
 
@@ -1646,6 +1826,25 @@ export default function IngredientsLibraryPage() {
                                   <Trash2 size={16} />
                                   <span className="sr-only">Delete</span>
                                 </button>
+                                <div className="relative inline-block ml-2">
+                                  <select
+                                    defaultValue=""
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (!val) return;
+                                      const target = TARGET_LIBRARIES.find(t => t.table === val);
+                                      if (target) handleMoveToLibrary(item, target.table, target.label);
+                                      e.target.value = '';
+                                    }}
+                                    className="h-9 pl-2 pr-6 rounded-lg border border-amber-600 dark:border-amber-500/60 text-amber-600 dark:text-amber-400 bg-theme-surface hover:bg-theme-muted text-sm cursor-pointer appearance-none"
+                                  >
+                                    <option value="" disabled>Move to...</option>
+                                    {TARGET_LIBRARIES.map(lib => (
+                                      <option key={lib.table} value={lib.table}>{lib.label}</option>
+                                    ))}
+                                  </select>
+                                  <ArrowRight size={14} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none" />
+                                </div>
                               </>
                             )}
                           </div>

@@ -375,7 +375,7 @@ export default function WasteLogPage() {
                     min="0"
                     max={item.quantity}
                     value={soldQuantities[item.id] || 0}
-                    onChange={(e) => updateSoldQty(item.id, parseInt(e.target.value) || 0)}
+                    onChange={(e) => updateSoldQty(item.id, e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
                     className="w-16 px-2 py-1.5 bg-theme-button border border-theme rounded-lg text-theme-primary text-center text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                   />
                   <button

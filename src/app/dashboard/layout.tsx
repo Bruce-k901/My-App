@@ -41,7 +41,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     const isChecklyPage = pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists') || pathname?.includes('/incidents') || pathname?.includes('/sops') || pathname?.includes('/risk-assessments') || pathname?.includes('/logs') || pathname?.includes('/equipment') || pathname?.includes('/pest-control') || pathname?.includes('/settings');
     const isPlanlyPage = pathname?.includes('/planly');
     const isAssetlyPage = pathname?.includes('/assets') || pathname?.includes('/ppm');
-
     setPaddingClass(
       (isTeamlyPage || isStocklyPage || isChecklyPage || isPlanlyPage || isAssetlyPage)
         ? 'px-1 py-4 sm:px-2 sm:py-6 md:px-3 md:pb-6 lg:px-3'
@@ -72,11 +71,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isPlanly = pathname?.startsWith('/dashboard/planly');
   const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
   const showModuleSidebar = isCheckly || isStockly || isTeamly || isPlanly || isAssetly;
-  const moduleClass = isCheckly ? 'module-checkly' :
-                      isStockly ? 'module-stockly' :
-                      isTeamly  ? 'module-teamly'  :
-                      isPlanly  ? 'module-planly'  :
-                      isAssetly ? 'module-assetly' : '';
+  const moduleClass = isCheckly    ? 'module-checkly' :
+                      isStockly    ? 'module-stockly' :
+                      isTeamly     ? 'module-teamly'  :
+                      isPlanly     ? 'module-planly'  :
+                      isAssetly    ? 'module-assetly' : '';
 
   // ============================================
   // MOBILE LAYOUT - No desktop header/sidebar

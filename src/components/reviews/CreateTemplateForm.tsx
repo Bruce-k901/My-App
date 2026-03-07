@@ -95,7 +95,7 @@ export function CreateTemplateForm() {
             min="5"
             step="5"
             value={formData.recommended_duration_minutes}
-            onChange={(e) => setFormData({ ...formData, recommended_duration_minutes: parseInt(e.target.value) || 30 })}
+            onChange={(e) => setFormData({ ...formData, recommended_duration_minutes: e.target.value === '' ? '' : parseInt(e.target.value) || 30 })}
           />
         </div>
       </div>

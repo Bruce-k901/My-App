@@ -140,7 +140,7 @@ export default function ShiftPatternForm({ pattern, onSubmit, onClose, isSubmitt
                 max="480"
                 step="15"
                 value={breakMins}
-                onChange={(e) => setBreakMins(Math.max(0, Math.min(480, parseInt(e.target.value) || 0)))}
+                onChange={(e) => setBreakMins(Math.max(0, Math.min(480, e.target.value === '' ? 0 : parseInt(e.target.value) || 0)))}
                 className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
               />
             </div>

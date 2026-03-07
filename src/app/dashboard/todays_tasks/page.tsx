@@ -1905,20 +1905,20 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
 
   const getStatusColor = (task: ChecklistTaskWithTemplate) => {
     if (task.status === 'completed') {
-      return 'bg-green-500/10 text-green-400 border-green-500/20'
+      return 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
     }
-    
+
     // Calculate timing status for non-completed tasks with grace period
     const taskData = task.task_data as any
     const template = task.template as any
     const recurrencePattern = template?.recurrence_pattern || {}
     const gracePeriodDays = taskData?.grace_period_days ?? recurrencePattern?.grace_period_days ?? 0
     const timing = calculateTaskTiming(task.due_date, task.due_time || null, new Date(), gracePeriodDays)
-    if (timing.status === 'overdue') return 'bg-red-600/20 text-red-300 border-red-600/40' // More urgent red
-    if (timing.status === 'grace_period') return 'bg-orange-500/10 text-orange-400 border-orange-500/20' // Orange for grace period
-    if (timing.status === 'late') return 'bg-red-500/10 text-red-400 border-red-500/20'
-    if (timing.status === 'due') return 'bg-green-500/10 text-green-400 border-green-500/20'
-    if (timing.status === 'pending') return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+    if (timing.status === 'overdue') return 'bg-red-100 dark:bg-red-600/20 text-red-800 dark:text-red-300 border-red-300 dark:border-red-600/40' // More urgent red
+    if (timing.status === 'grace_period') return 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/20' // Orange for grace period
+    if (timing.status === 'late') return 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20'
+    if (timing.status === 'due') return 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
+    if (timing.status === 'pending') return 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20'
     
     return 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
   }
@@ -1958,11 +1958,11 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'food_safety': 'bg-green-500/10 text-green-400',
-      'h_and_s': 'bg-blue-500/10 text-blue-400',
-      'fire': 'bg-red-500/10 text-red-400',
-      'cleaning': 'bg-purple-500/10 text-purple-400',
-      'compliance': 'bg-yellow-500/10 text-yellow-400'
+      'food_safety': 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400',
+      'h_and_s': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
+      'fire': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
+      'cleaning': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400',
+      'compliance': 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
     }
     return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary'
   }

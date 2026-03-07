@@ -1,0 +1,274 @@
+{
+  "coffees_sold": 0,
+  "total_cogs": "205.36",
+  "total_gross_sales": 981.4,
+  "total_net_sales": 981.4,
+  "total_discounts": 0,
+  "total_tax": 0,
+  "total_orders": 12,
+  "total_by_category": {
+    "Cookie": "112.00",
+    "Food": "799.40",
+    "Croissant": "70.00"
+  },
+  "rows": [
+    {
+      "pos_name": "Almond Cookie ",
+      "modifier": "",
+      "edify_name": {
+        "name": "Almond cookie",
+        "url": "https://app.edifysystems.io/recipes/9404ef8f-fb24-419b-8653-369540d2a3b0/edit"
+      },
+      "product_class": "Cookie",
+      "quantity": 6,
+      "cost_per_unit": "0.34",
+      "total_cost": "2.07",
+      "sale_price_per_unit": "1.50",
+      "net_sales_total": "9.00",
+      "gross_margin": "77.0%"
+    },
+    {
+      "pos_name": "Almond Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Almond Swirl",
+        "url": "https://app.edifysystems.io/recipes/e368c7b4-a7f9-4fe6-bd40-e20331d9b9a6/edit"
+      },
+      "product_class": "Food",
+      "quantity": 49,
+      "cost_per_unit": "0.46",
+      "total_cost": "22.55",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "122.50",
+      "gross_margin": "81.6%"
+    },
+    {
+      "pos_name": "Brown Butter Choc Cookie",
+      "modifier": "",
+      "edify_name": {
+        "name": "Brown Butter Cookie",
+        "url": "https://app.edifysystems.io/recipes/43601341-6195-40e6-b198-7e42e432600e/edit"
+      },
+      "product_class": "Cookie",
+      "quantity": 32,
+      "cost_per_unit": "0.43",
+      "total_cost": "13.92",
+      "sale_price_per_unit": "1.50",
+      "net_sales_total": "48.00",
+      "gross_margin": "71.0%"
+    },
+    {
+      "pos_name": "Brownie ",
+      "modifier": "",
+      "edify_name": {
+        "name": "Brownie",
+        "url": "https://app.edifysystems.io/recipes/f716c891-9c8b-4603-b70f-b3635f5c20ac/edit"
+      },
+      "product_class": "Food",
+      "quantity": 3,
+      "cost_per_unit": "0.49",
+      "total_cost": "1.47",
+      "sale_price_per_unit": "1.50",
+      "net_sales_total": "4.50",
+      "gross_margin": "67.3%"
+    },
+    {
+      "pos_name": "Choc Hazelnut Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Choc Hazelnut Swirl",
+        "url": "https://app.edifysystems.io/recipes/c4f7c159-c0f2-4a85-b514-3529533df623/edit"
+      },
+      "product_class": "Food",
+      "quantity": 49,
+      "cost_per_unit": "0.50",
+      "total_cost": "24.33",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "122.50",
+      "gross_margin": "80.1%"
+    },
+    {
+      "pos_name": "Cinna Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Cinna swirl",
+        "url": "https://app.edifysystems.io/recipes/63387fef-7e0e-4fb6-8018-ade8c05e67a8/edit"
+      },
+      "product_class": "Food",
+      "quantity": 20,
+      "cost_per_unit": "0.26",
+      "total_cost": "5.14",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "50.00",
+      "gross_margin": "89.7%"
+    },
+    {
+      "pos_name": "Croissant",
+      "modifier": "",
+      "edify_name": {
+        "name": "Croissant",
+        "url": "https://app.edifysystems.io/recipes/38cbee69-3015-4fd0-bd64-c6f1ad82184c/edit"
+      },
+      "product_class": "Food",
+      "quantity": 60,
+      "cost_per_unit": "0.12",
+      "total_cost": "7.43",
+      "sale_price_per_unit": "1.47",
+      "net_sales_total": "88.20",
+      "gross_margin": "91.6%"
+    },
+    {
+      "pos_name": "Earl Grey Morning Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Earl Grey Morning Bun",
+        "url": "https://app.edifysystems.io/recipes/18fbee6b-3e9f-4419-a844-7f49d2f9f7d3/edit"
+      },
+      "product_class": "Food",
+      "quantity": 16,
+      "cost_per_unit": "0.17",
+      "total_cost": "2.74",
+      "sale_price_per_unit": "1.41",
+      "net_sales_total": "22.50",
+      "gross_margin": "87.8%"
+    },
+    {
+      "pos_name": "Flourless Pecan cookie",
+      "modifier": "",
+      "edify_name": {
+        "name": "Flourless choc & pecan cookie",
+        "url": "https://app.edifysystems.io/recipes/ca034edf-919a-44ca-ae6e-432303331cee/edit"
+      },
+      "product_class": "Cookie",
+      "quantity": 12,
+      "cost_per_unit": "0.81",
+      "total_cost": "9.69",
+      "sale_price_per_unit": "1.50",
+      "net_sales_total": "18.00",
+      "gross_margin": "46.2%"
+    },
+    {
+      "pos_name": "Lemon Poppy Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Lemon Poppy Swirl",
+        "url": "https://app.edifysystems.io/recipes/a4cf8955-a0c8-4783-86a6-57a59004096c/edit"
+      },
+      "product_class": "Food",
+      "quantity": 27,
+      "cost_per_unit": "0.18",
+      "total_cost": "4.83",
+      "sale_price_per_unit": "2.44",
+      "net_sales_total": "65.90",
+      "gross_margin": "92.7%"
+    },
+    {
+      "pos_name": "Not a Pan Au Choc",
+      "modifier": "",
+      "edify_name": {
+        "name": "Pan au Choc",
+        "url": "https://app.edifysystems.io/recipes/2b753996-41e6-462f-b2d5-15c92381e04c/edit"
+      },
+      "product_class": "Food",
+      "quantity": 66,
+      "cost_per_unit": "0.22",
+      "total_cost": "14.76",
+      "sale_price_per_unit": "1.48",
+      "net_sales_total": "97.80",
+      "gross_margin": "84.9%"
+    },
+    {
+      "pos_name": "Oatmeal raisin cookie",
+      "modifier": "",
+      "edify_name": {
+        "name": "Oat & Raisin Cookie",
+        "url": "https://app.edifysystems.io/recipes/d435a3d7-32fb-477a-95ed-66af9ab2ef4b/edit"
+      },
+      "product_class": "Cookie",
+      "quantity": 22,
+      "cost_per_unit": "0.34",
+      "total_cost": "7.58",
+      "sale_price_per_unit": "1.00",
+      "net_sales_total": "22.00",
+      "gross_margin": "65.5%"
+    },
+    {
+      "pos_name": "Pistachio Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Pistachio Swirl",
+        "url": "https://app.edifysystems.io/recipes/bdfe188b-eb64-4a64-8cdc-79344507c19a/edit"
+      },
+      "product_class": "Food",
+      "quantity": 49,
+      "cost_per_unit": "0.75",
+      "total_cost": "36.62",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "122.50",
+      "gross_margin": "70.1%"
+    },
+    {
+      "pos_name": "Red Pesto & Cheese Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Red pesto & cheese swirl",
+        "url": "https://app.edifysystems.io/recipes/fc11a507-08ca-4288-966c-9dfa7e6be381/edit"
+      },
+      "product_class": "Food",
+      "quantity": 39,
+      "cost_per_unit": "0.59",
+      "total_cost": "23.15",
+      "sale_price_per_unit": "2.00",
+      "net_sales_total": "78.00",
+      "gross_margin": "70.3%"
+    },
+    {
+      "pos_name": "Sausage Roll",
+      "modifier": "",
+      "edify_name": {
+        "name": "Sausage Roll",
+        "url": "https://app.edifysystems.io/recipes/ecd206a3-07da-4589-95a1-2a4fd202c511/edit"
+      },
+      "product_class": "Croissant",
+      "quantity": 28,
+      "cost_per_unit": "0.79",
+      "total_cost": "22.03",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "70.00",
+      "gross_margin": "68.5%"
+    },
+    {
+      "pos_name": "Triple Choc Hazelnut Cookie",
+      "modifier": "",
+      "edify_name": {
+        "name": "Triple Choc Chunk Hazelnut Cookie",
+        "url": "https://app.edifysystems.io/recipes/ec2559c2-7c2a-4c86-a4e4-ac72d8fa8001/edit"
+      },
+      "product_class": "Cookie",
+      "quantity": 10,
+      "cost_per_unit": "0.44",
+      "total_cost": "4.41",
+      "sale_price_per_unit": "1.50",
+      "net_sales_total": "15.00",
+      "gross_margin": "70.6%"
+    },
+    {
+      "pos_name": "Vanilla Bean Swirl",
+      "modifier": "",
+      "edify_name": {
+        "name": "Vanilla bean swirl",
+        "url": "https://app.edifysystems.io/recipes/d01c6143-627a-464d-8f7a-4970c0212fae/edit"
+      },
+      "product_class": "Food",
+      "quantity": 10,
+      "cost_per_unit": "0.26",
+      "total_cost": "2.64",
+      "sale_price_per_unit": "2.50",
+      "net_sales_total": "25.00",
+      "gross_margin": "89.4%"
+    }
+  ],
+  "siteNames": ["Okja - Kitchen CPU"],
+  "openingStocktakeDate": "2026-03-03",
+  "closingStocktakeDate": "2026-03-04"
+}

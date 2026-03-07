@@ -160,9 +160,9 @@ export default function CandidatesPage() {
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      active: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-      hired: 'bg-green-500/10 text-green-400 border-green-500/30',
-      rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
+      active: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
+      hired: 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
+      rejected: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
       withdrawn: 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/30',
     }
     return (
@@ -350,7 +350,7 @@ export default function CandidatesPage() {
                       {candidate.tags.slice(0, 3).map((tag, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 text-xs rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30"
+                          className="px-2 py-0.5 text-xs rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30"
                         >
                           {tag}
                         </span>

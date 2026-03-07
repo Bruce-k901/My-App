@@ -2288,7 +2288,7 @@ export default function WasteLogPage() {
                                     min="0"
                                     value={line.quantity}
                                     onChange={(e) => {
-                                      const value = parseFloat(e.target.value) || 0;
+                                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                                       updateTemplateLine(line.id, { quantity: value });
                                     }}
                                     className="w-24 px-2 py-1.5 bg-theme-surface border border-theme rounded text-sm text-right text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"

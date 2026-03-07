@@ -545,8 +545,8 @@ export default function HealthCheckTestPage() {
   const statusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle2 className="w-3.5 h-3.5 text-module-fg" />
-      case 'in_progress': return <Clock className="w-3.5 h-3.5 text-blue-400" />
-      case 'overdue': return <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+      case 'in_progress': return <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+      case 'overdue': return <AlertTriangle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
       default: return <Clock className="w-3.5 h-3.5 text-theme-disabled" />
     }
   }
@@ -621,7 +621,7 @@ export default function HealthCheckTestPage() {
           </div>
           {lastScanDiag.scan_errors.length > 0 && (
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-red-400">Scan Errors (per-rule failures):</h4>
+              <h4 className="text-xs font-semibold text-red-600 dark:text-red-400">Scan Errors (per-rule failures):</h4>
               <div className="max-h-40 overflow-y-auto rounded bg-red-500/10 border border-red-500/30 p-2 text-xs font-mono text-red-300 space-y-0.5">
                 {lastScanDiag.scan_errors.map((e, i) => <div key={i}>{e}</div>)}
               </div>
@@ -629,7 +629,7 @@ export default function HealthCheckTestPage() {
           )}
           {lastScanDiag.errors.length > 0 && (
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-amber-400">Generation Errors:</h4>
+              <h4 className="text-xs font-semibold text-amber-600 dark:text-amber-400">Generation Errors:</h4>
               <div className="max-h-40 overflow-y-auto rounded bg-amber-500/10 border border-amber-500/30 p-2 text-xs font-mono text-amber-300 space-y-0.5">
                 {lastScanDiag.errors.map((e, i) => <div key={i}>{e}</div>)}
               </div>
@@ -731,7 +731,7 @@ export default function HealthCheckTestPage() {
                           <h3 className="text-sm font-medium text-theme-primary truncate">{report.site_name}</h3>
                           {statusIcon(report.status)}
                           {report.is_test_data && (
-                            <span className="text-[9px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-400 font-medium">TEST</span>
+                            <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 font-medium">TEST</span>
                           )}
                         </div>
                         <div className="text-[10px] text-theme-disabled mt-0.5 flex gap-3 flex-wrap">
@@ -749,13 +749,13 @@ export default function HealthCheckTestPage() {
                       <div className="text-right shrink-0">
                         <span className={`text-lg font-bold ${
                           report.health_score != null && report.health_score >= 80 ? 'text-module-fg'
-                          : report.health_score != null && report.health_score >= 50 ? 'text-amber-400'
-                          : 'text-red-400'
+                          : report.health_score != null && report.health_score >= 50 ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-red-600 dark:text-red-400'
                         }`}>
                           {report.health_score != null ? `${Math.round(report.health_score)}%` : '-'}
                         </span>
                         {scoreDelta != null && scoreDelta !== 0 && (
-                          <div className={`text-[10px] ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-400'}`}>
+                          <div className={`text-[10px] ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-600 dark:text-red-400'}`}>
                             {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}%
                           </div>
                         )}
@@ -763,17 +763,17 @@ export default function HealthCheckTestPage() {
 
                       {/* Severity pills */}
                       <div className="flex gap-1.5 text-[10px] shrink-0">
-                        {report.critical_count > 0 && <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">{report.critical_count} crit</span>}
-                        {report.medium_count > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">{report.medium_count} med</span>}
+                        {report.critical_count > 0 && <span className="px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 font-medium">{report.critical_count} crit</span>}
+                        {report.medium_count > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium">{report.medium_count} med</span>}
                         {report.low_count > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-theme-tertiary">{report.low_count} low</span>}
                       </div>
 
                       {/* Status breakdown */}
                       <div className="hidden xl:flex gap-1.5 text-[10px] shrink-0 border-l border-white/[0.06] pl-3">
                         {report.completed_items > 0 && <span className="text-module-fg">{report.completed_items} fixed</span>}
-                        {report.delegated_items > 0 && <span className="text-purple-400">{report.delegated_items} delegated</span>}
+                        {report.delegated_items > 0 && <span className="text-purple-600 dark:text-purple-400">{report.delegated_items} delegated</span>}
                         {report.ignored_items > 0 && <span className="text-theme-disabled">{report.ignored_items} ignored</span>}
-                        {report.escalated_items > 0 && <span className="text-red-400">{report.escalated_items} escalated</span>}
+                        {report.escalated_items > 0 && <span className="text-red-600 dark:text-red-400">{report.escalated_items} escalated</span>}
                       </div>
 
                       {/* Actions */}
@@ -781,7 +781,7 @@ export default function HealthCheckTestPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); runAISuggestions(report.id) }}
                           disabled={aiRunning}
-                          className="p-1.5 rounded-md hover:bg-module-fg/10 text-purple-400 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-md hover:bg-module-fg/10 text-purple-600 dark:text-purple-400 transition-colors disabled:opacity-50"
                           title="Generate AI suggestions"
                         >
                           <Wand2 className="w-4 h-4" />
@@ -871,14 +871,14 @@ export default function HealthCheckTestPage() {
                           </div>
                           <div className="text-[10px] text-theme-disabled mt-1 flex gap-3 flex-wrap">
                             <span>Due: {task.due_date} {task.due_time ?? ''}</span>
-                            <span>Priority: <span className={task.priority === 'high' ? 'text-red-400' : 'text-amber-400'}>{task.priority}</span></span>
+                            <span>Priority: <span className={task.priority === 'high' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>{task.priority}</span></span>
                             <span>Status: {task.status}</span>
                             {task.assigned_name && <span>Assigned: {task.assigned_name}</span>}
                           </div>
                           {breakdown && (
                             <div className="flex gap-2 mt-2 text-[10px]">
-                              {breakdown.critical > 0 && <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">{breakdown.critical} critical</span>}
-                              {breakdown.medium > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">{breakdown.medium} medium</span>}
+                              {breakdown.critical > 0 && <span className="px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400">{breakdown.critical} critical</span>}
+                              {breakdown.medium > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400">{breakdown.medium} medium</span>}
                               {breakdown.low > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-theme-tertiary">{breakdown.low} low</span>}
                             </div>
                           )}
@@ -934,19 +934,19 @@ export default function HealthCheckTestPage() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 {item.status === 'escalated'
-                                  ? <ArrowUpRight className="w-4 h-4 text-red-400" />
-                                  : <MessageSquare className="w-4 h-4 text-purple-400" />
+                                  ? <ArrowUpRight className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                  : <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                                 }
                                 <h4 className="text-sm font-medium text-theme-primary">{item.title}</h4>
                                 {modColors && (
                                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${modColors.bg} ${modColors.text}`}>{item.module}</span>
                                 )}
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                                  item.severity === 'critical' ? 'bg-red-500/20 text-red-400'
-                                  : item.severity === 'medium' ? 'bg-amber-500/20 text-amber-400'
+                                  item.severity === 'critical' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                                  : item.severity === 'medium' ? 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400'
                                   : 'bg-white/[0.05] text-theme-tertiary'
                                 }`}>{item.severity}</span>
-                                <span className={`text-[10px] font-medium ${item.status === 'escalated' ? 'text-red-400' : 'text-purple-400'}`}>
+                                <span className={`text-[10px] font-medium ${item.status === 'escalated' ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'}`}>
                                   {item.status}
                                 </span>
                               </div>
@@ -958,7 +958,7 @@ export default function HealthCheckTestPage() {
                                 )}
                                 {item.delegated_at && <div>Delegated: {new Date(item.delegated_at).toLocaleString()}</div>}
                                 {item.due_date && (
-                                  <div>Due: <span className={new Date(item.due_date) < new Date() ? 'text-red-400' : 'text-theme-tertiary'}>{new Date(item.due_date).toLocaleDateString()}</span></div>
+                                  <div>Due: <span className={new Date(item.due_date) < new Date() ? 'text-red-600 dark:text-red-400' : 'text-theme-tertiary'}>{new Date(item.due_date).toLocaleDateString()}</span></div>
                                 )}
                                 {item.delegation_message && (
                                   <div className="p-2 mt-1 rounded bg-purple-500/10 border border-purple-500/20 text-purple-300">
@@ -993,7 +993,7 @@ export default function HealthCheckTestPage() {
                 {/* Reminders */}
                 <div className="space-y-3 pt-4 border-t border-white/[0.06]">
                   <h2 className="text-sm font-medium text-theme-tertiary flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-amber-400" />
+                    <Bell className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     Scheduled Reminders ({reminders.length})
                   </h2>
                   {reminders.length === 0 ? (
@@ -1017,7 +1017,7 @@ export default function HealthCheckTestPage() {
                             {r.sent_at ? (
                               <div className="text-module-fg">Sent: {new Date(r.sent_at).toLocaleString()}</div>
                             ) : (
-                              <div className="text-amber-400">Pending</div>
+                              <div className="text-amber-600 dark:text-amber-400">Pending</div>
                             )}
                             {r.sent_to_name && <div>To: {r.sent_to_name}</div>}
                           </div>

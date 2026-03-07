@@ -98,9 +98,24 @@ function startPeriodicUpdateChecks(registration: ServiceWorkerRegistration): voi
  * Tell the waiting service worker to activate (used by UpdateToast)
  */
 export function activateWaitingWorker(): void {
-  if (swRegistration?.waiting) {
-    swRegistration.waiting.postMessage('SKIP_WAITING');
+  try {
+    // Try the cached ref first
+    if (swRegistration?.waiting) {
+      swRegistration.waiting.postMessage('SKIP_WAITING');
+    }
+    // Also try a fresh registration (module-level ref can be stale)
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      if (reg?.waiting) {
+        reg.waiting.postMessage('SKIP_WAITING');
+      }
+    }).catch(() => {});
+  } catch {
+    // ignore — the fallback reload below will handle it
   }
+
+  // Guarantee a reload after 1.5s even if controllerchange doesn't fire.
+  // If controllerchange fires first, the page navigates away and this is moot.
+  setTimeout(() => window.location.reload(), 1500);
 }
 
 /**

@@ -2,18 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { sendEmail } from '@/lib/send-email'
 
-// Module accent colours and light background tints for the email
-const MODULE_THEME: Record<string, { accent: string; bg: string }> = {
-  checkly: { accent: '#B8860B', bg: '#FFFBEB' },
-  teamly: { accent: '#BE185D', bg: '#FDF2F8' },
-  stockly: { accent: '#0F766E', bg: '#F0FDFA' },
-  planly: { accent: '#15803D', bg: '#F0FDF4' },
-  assetly: { accent: '#92400E', bg: '#FFF7ED' },
+// ───────────────────────────────────────────────────────────────────────────
+// MODULE BRAND COLORS — March 2026 Rebrand
+// For email (light background): use "dark" color for accents
+// ───────────────────────────────────────────────────────────────────────────
+
+const MODULE_THEME: Record<string, { accent: string; bg: string; name: string }> = {
+  checkly: { accent: '#7E8052', bg: '#FDFCF8', name: 'Checkly' },      // Olive Gold
+  teamly: { accent: '#3B0A0A', bg: '#FEF7F7', name: 'Teamly' },        // Crimson Smoke dark
+  stockly: { accent: '#1B4242', bg: '#F0FFFE', name: 'Stockly' },      // Teal Depth
+  assetly: { accent: '#002B36', bg: '#F0FFFE', name: 'Assetly' },      // Deep Teal
+  planly: { accent: '#4E7E5D', bg: '#F8FBF8', name: 'Planly' },        // Forest Green
+  calendar: { accent: '#7B8FA1', bg: '#F9FAFB', name: 'Your Day' },    // Storm Marble mid
 }
 
-// ---------------------------------------------------------------------------
-// Safe query wrapper — returns empty array on any error (including missing tables)
-// ---------------------------------------------------------------------------
+// Brand CTA colour
+const BRAND_CTA = '#8A2B2B' // Crimson Smoke mid
+
+// ───────────────────────────────────────────────────────────────────────────
+// Safe query wrapper
+// ───────────────────────────────────────────────────────────────────────────
+
 async function safeQuery<T>(
   label: string,
   queryFn: () => PromiseLike<{ data: T[] | null; error: any }>
@@ -35,277 +44,697 @@ async function safeQuery<T>(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Per-module data fetchers
-// ---------------------------------------------------------------------------
+// ───────────────────────────────────────────────────────────────────────────
+// DATA FETCHERS
+// ───────────────────────────────────────────────────────────────────────────
 
-interface ChecklyRaw {
-  tasks: any[]
+// 1. COMPLIANCE DATA (PRIORITY)
+interface ComplianceData {
+  completionRate: number
+  totalDue: number
+  completed: number
+  missed: number
   overdueTasks: any[]
-  tempLogs: any[]
+  overdueCount: number
   tempFailures: any[]
   incidents: any[]
 }
 
-async function fetchChecklyData(
-  supabase: any, companyId: string, siteIds: string[],
-  yesterdayStr: string, yesterdayStart: string, yesterdayEnd: string
-): Promise<ChecklyRaw> {
-  const [tasks, overdueTasks, tempLogs, tempFailures, incidents] = await Promise.all([
-    safeQuery('checklist_tasks', () =>
-      supabase.from('checklist_tasks')
-        .select('id, site_id, status, priority, custom_name, template:task_templates(name)')
-        .eq('company_id', companyId)
-        .eq('due_date', yesterdayStr)
-    ),
-    safeQuery('overdue_tasks', () =>
-      supabase.from('checklist_tasks')
-        .select('id, site_id, status, priority, custom_name, due_date, template:task_templates(name)')
-        .eq('company_id', companyId)
-        .lt('due_date', yesterdayStr)
-        .in('status', ['pending', 'in_progress'])
-        .order('due_date', { ascending: true })
-        .limit(200)
-    ),
-    safeQuery('temp_logs', () =>
-      supabase.from('temperature_logs')
-        .select('id, site_id, status')
-        .eq('company_id', companyId)
-        .gte('recorded_at', yesterdayStart)
-        .lte('recorded_at', yesterdayEnd)
-    ),
-    safeQuery('temp_failures', () =>
-      supabase.from('temperature_logs')
-        .select('id, site_id')
-        .eq('company_id', companyId)
-        .gte('recorded_at', yesterdayStart)
-        .lte('recorded_at', yesterdayEnd)
-        .in('status', ['failed', 'critical', 'breach', 'out_of_range'])
-    ),
-    safeQuery('incidents', () =>
-      supabase.from('incidents')
-        .select('id, site_id, severity, title, status')
-        .eq('company_id', companyId)
-        .gte('created_at', yesterdayStart)
-        .lte('created_at', yesterdayEnd)
-    ),
-  ])
-  return { tasks, overdueTasks, tempLogs, tempFailures, incidents }
-}
+async function fetchComplianceData(
+  supabase: any,
+  companyId: string,
+  siteId: string | null,
+  yesterdayStr: string,
+  todayStr: string,
+  yesterdayStart: string,
+  yesterdayEnd: string
+): Promise<ComplianceData> {
+  // Tasks due YESTERDAY
+  let tasksQuery = supabase
+    .from('checklist_tasks')
+    .select('id, site_id, status, custom_name, template:task_templates(name)')
+    .eq('company_id', companyId)
+    .eq('due_date', yesterdayStr)
 
-interface TeamlyRaw {
-  shifts: any[]
-  leaveRequests: any[]
-  expiringProfiles: any[]
-  trainingCompleted: any[]
-}
+  if (siteId) tasksQuery = tasksQuery.eq('site_id', siteId)
+  const tasks = await safeQuery('yesterday_tasks', () => tasksQuery)
 
-async function fetchTeamlyData(
-  supabase: any, companyId: string, siteIds: string[],
-  yesterdayStr: string, yesterdayStart: string, yesterdayEnd: string
-): Promise<TeamlyRaw> {
-  const thirtyDaysOut = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const completed = tasks.filter(t => t.status === 'completed').length
+  const missed = tasks.filter(t => ['missed', 'failed'].includes(t.status)).length
+  const totalDue = tasks.length
+  const completionRate = totalDue > 0 ? Math.round((completed / totalDue) * 100) : 100
 
-  const [shifts, leaveRequests, expiringProfiles, trainingCompleted] = await Promise.all([
-    siteIds.length > 0
-      ? safeQuery('rota_shifts', () =>
-          supabase.from('rota_shifts')
-            .select('id, site_id, profile_id, status')
-            .in('site_id', siteIds)
-            .eq('shift_date', yesterdayStr)
-            .not('profile_id', 'is', null)
-        )
-      : Promise.resolve([]),
-    safeQuery('leave_requests', () =>
-      supabase.from('leave_requests')
-        .select('id, profile_id, status')
-        .eq('company_id', companyId)
-        .gte('requested_at', yesterdayStart)
-        .lte('requested_at', yesterdayEnd)
-    ),
-    safeQuery('expiring_certs', () =>
-      supabase.from('profiles')
-        .select('id, full_name, site_id, food_safety_expiry_date, first_aid_expiry_date, fire_marshal_expiry_date')
-        .eq('company_id', companyId)
-        .eq('status', 'active')
-        .or(`food_safety_expiry_date.lte.${thirtyDaysOut},first_aid_expiry_date.lte.${thirtyDaysOut},fire_marshal_expiry_date.lte.${thirtyDaysOut}`)
-    ),
-    safeQuery('training_completed', () =>
-      supabase.from('training_records')
-        .select('id, profile_id')
-        .eq('company_id', companyId)
-        .eq('status', 'completed')
-        .gte('completed_at', yesterdayStart)
-        .lte('completed_at', yesterdayEnd)
-    ),
-  ])
-  return { shifts, leaveRequests, expiringProfiles, trainingCompleted }
-}
+  // Overdue tasks (tasks due BEFORE today that are still pending)
+  let overdueQuery = supabase
+    .from('checklist_tasks')
+    .select('id, site_id, custom_name, due_date, priority, template:task_templates(name)')
+    .eq('company_id', companyId)
+    .lt('due_date', todayStr)
+    .in('status', ['pending', 'in_progress'])
+    .order('due_date', { ascending: true })
+    .order('priority', { ascending: false })
+    .limit(10) // Only fetch top 10 most urgent
 
-interface StocklyRaw {
-  movements: any[]
-}
+  if (siteId) overdueQuery = overdueQuery.eq('site_id', siteId)
+  const overdueTasks = await safeQuery('overdue_tasks', () => overdueQuery)
 
-async function fetchStocklyData(
-  supabase: any, companyId: string,
-  yesterdayStart: string, yesterdayEnd: string
-): Promise<StocklyRaw> {
-  const [movements] = await Promise.all([
-    safeQuery('stock_movements', () =>
-      supabase.from('stock_movements')
-        .select('id, movement_type, quantity')
-        .eq('company_id', companyId)
-        .gte('recorded_at', yesterdayStart)
-        .lte('recorded_at', yesterdayEnd)
-    ),
-  ])
-  return { movements }
-}
+  // Get total overdue count separately
+  let overdueCountQuery = supabase
+    .from('checklist_tasks')
+    .select('id', { count: 'exact', head: true })
+    .eq('company_id', companyId)
+    .lt('due_date', todayStr)
+    .in('status', ['pending', 'in_progress'])
 
-interface PlanlyRaw {
-  orders: any[]
-}
+  if (siteId) overdueCountQuery = overdueCountQuery.eq('site_id', siteId)
+  const { count: overdueCount } = await overdueCountQuery
 
-async function fetchPlanlyData(
-  supabase: any, siteIds: string[], yesterdayStr: string
-): Promise<PlanlyRaw> {
-  if (siteIds.length === 0) return { orders: [] }
+  // Temperature failures from yesterday
+  let tempQuery = supabase
+    .from('temperature_logs')
+    .select('id, site_id, equipment_name, recorded_temp, status')
+    .eq('company_id', companyId)
+    .gte('recorded_at', yesterdayStart)
+    .lte('recorded_at', yesterdayEnd)
+    .in('status', ['failed', 'critical', 'breach', 'out_of_range'])
 
-  const customers = await safeQuery<any>('planly_customers', () =>
-    supabase.from('planly_customers')
-      .select('id, site_id')
-      .in('site_id', siteIds)
-      .eq('is_active', true)
-  )
-  const customerIds = customers.map((c: any) => c.id)
-  if (customerIds.length === 0) return { orders: [] }
+  if (siteId) tempQuery = tempQuery.eq('site_id', siteId)
+  const tempFailures = await safeQuery('temp_failures', () => tempQuery)
 
-  const orders = await safeQuery<any>('planly_orders', () =>
-    supabase.from('planly_orders')
-      .select('id, customer_id, status')
-      .in('customer_id', customerIds)
-      .eq('delivery_date', yesterdayStr)
-  )
+  // Incidents from yesterday
+  let incidentsQuery = supabase
+    .from('incidents')
+    .select('id, site_id, severity, title, status, incident_type')
+    .eq('company_id', companyId)
+    .gte('created_at', yesterdayStart)
+    .lte('created_at', yesterdayEnd)
+    .order('severity', { ascending: false })
 
-  const custSiteMap = new Map<string, string>()
-  for (const c of customers) custSiteMap.set(c.id, c.site_id)
-  for (const o of orders) o._site_id = custSiteMap.get(o.customer_id) || null
+  if (siteId) incidentsQuery = incidentsQuery.eq('site_id', siteId)
+  const incidents = await safeQuery('incidents', () => incidentsQuery)
 
-  return { orders }
-}
-
-interface AssetlyRaw {
-  issueAssets: any[]
-  ppmTasks: any[]
-}
-
-async function fetchAssetlyData(
-  supabase: any, companyId: string, siteIds: string[], yesterdayStr: string
-): Promise<AssetlyRaw> {
-  const [issueAssets, ppmTasks] = await Promise.all([
-    safeQuery('assets_issues', () =>
-      supabase.from('assets')
-        .select('id, name, site_id, status')
-        .eq('company_id', companyId)
-        .in('status', ['needs_repair', 'out_of_service'])
-        .gte('updated_at', `${yesterdayStr}T00:00:00Z`)
-        .lte('updated_at', `${yesterdayStr}T23:59:59Z`)
-    ),
-    siteIds.length > 0
-      ? safeQuery('ppm_tasks', () =>
-          supabase.from('ppm_tasks')
-            .select('id, site_id, task_name, due_date, last_completed')
-            .in('site_id', siteIds)
-            .eq('due_date', yesterdayStr)
-        )
-      : Promise.resolve([]),
-  ])
-  return { issueAssets, ppmTasks }
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function getTaskName(task: any): string {
-  return task.custom_name || task.template?.name || 'Unnamed task'
-}
-
-function getExpiringCertDetails(profiles: any[], thirtyDaysOut: string, siteFilter?: string | null): string[] {
-  const details: string[] = []
-  for (const p of profiles) {
-    if (siteFilter && p.site_id !== siteFilter) continue
-    const name = p.full_name || 'Staff member'
-    if (p.food_safety_expiry_date && p.food_safety_expiry_date <= thirtyDaysOut) {
-      details.push(`${name} — Food Safety (${p.food_safety_expiry_date})`)
-    }
-    if (p.first_aid_expiry_date && p.first_aid_expiry_date <= thirtyDaysOut) {
-      details.push(`${name} — First Aid (${p.first_aid_expiry_date})`)
-    }
-    if (p.fire_marshal_expiry_date && p.fire_marshal_expiry_date <= thirtyDaysOut) {
-      details.push(`${name} — Fire Marshal (${p.fire_marshal_expiry_date})`)
-    }
+  return {
+    completionRate,
+    totalDue,
+    completed,
+    missed,
+    overdueTasks,
+    overdueCount: overdueCount || 0,
+    tempFailures,
+    incidents,
   }
-  return details
 }
 
-function countExpiringCerts(profiles: any[], thirtyDaysOut: string, siteFilter?: string | null): number {
-  let count = 0
-  for (const p of profiles) {
-    if (siteFilter && p.site_id !== siteFilter) continue
-    if (p.food_safety_expiry_date && p.food_safety_expiry_date <= thirtyDaysOut) count++
-    if (p.first_aid_expiry_date && p.first_aid_expiry_date <= thirtyDaysOut) count++
-    if (p.fire_marshal_expiry_date && p.fire_marshal_expiry_date <= thirtyDaysOut) count++
+// 2. STAFF DATA
+interface StaffData {
+  sickness: any[]
+  holidayRequests: any[]
+  upcomingReviews: any[]
+  openShifts: any[]
+  trialShifts: any[]
+  pendingCourses: any[]
+}
+
+async function fetchStaffData(
+  supabase: any,
+  companyId: string,
+  siteId: string | null,
+  yesterdayStart: string,
+  yesterdayEnd: string,
+  todayStr: string,
+  next7Days: string
+): Promise<StaffData> {
+  // Sickness records started yesterday
+  let sicknessQuery = supabase
+    .from('staff_sickness_records')
+    .select('id, profile:profiles(full_name), start_date, end_date, reason')
+    .eq('company_id', companyId)
+    .gte('start_date', yesterdayStart.split('T')[0])
+    .lte('start_date', yesterdayEnd.split('T')[0])
+
+  if (siteId) sicknessQuery = sicknessQuery.eq('site_id', siteId)
+  const sickness = await safeQuery('sickness', () => sicknessQuery)
+
+  // Holiday/leave requests submitted yesterday
+  let leaveQuery = supabase
+    .from('leave_requests')
+    .select('id, profile:profiles(full_name), start_date, end_date, leave_type, status')
+    .eq('company_id', companyId)
+    .eq('status', 'pending')
+    .gte('requested_at', yesterdayStart)
+    .lte('requested_at', yesterdayEnd)
+
+  const holidayRequests = await safeQuery('holiday_requests', () => leaveQuery)
+
+  // Reviews/1-on-1s coming up in next 7 days
+  let reviewsQuery = supabase
+    .from('one_on_ones')
+    .select('id, profile:profiles(full_name), scheduled_date, review_type')
+    .eq('company_id', companyId)
+    .gte('scheduled_date', todayStr)
+    .lte('scheduled_date', next7Days)
+    .eq('status', 'scheduled')
+    .order('scheduled_date', { ascending: true })
+
+  const upcomingReviews = await safeQuery('upcoming_reviews', () => reviewsQuery)
+
+  // Open shifts not filled (today and next 7 days)
+  let shiftsQuery = supabase
+    .from('rota_shifts')
+    .select('id, site_id, shift_date, shift_start, shift_end, role')
+    .is('profile_id', null)
+    .gte('shift_date', todayStr)
+    .lte('shift_date', next7Days)
+    .order('shift_date', { ascending: true })
+    .limit(10)
+
+  if (siteId) shiftsQuery = shiftsQuery.eq('site_id', siteId)
+  const openShifts = await safeQuery('open_shifts', () => shiftsQuery)
+
+  // Trial shifts planned for today
+  let trialQuery = supabase
+    .from('candidate_trial_shifts')
+    .select('id, candidate:recruitment_candidates(full_name), trial_date, trial_time, site_id')
+    .eq('company_id', companyId)
+    .eq('trial_date', todayStr)
+    .eq('status', 'scheduled')
+
+  if (siteId) trialQuery = trialQuery.eq('site_id', siteId)
+  const trialShifts = await safeQuery('trial_shifts', () => trialQuery)
+
+  // Pending training courses not yet scheduled
+  let coursesQuery = supabase
+    .from('training_records')
+    .select('id, profile:profiles(full_name), course_name, assigned_date')
+    .eq('company_id', companyId)
+    .eq('status', 'assigned')
+    .is('scheduled_date', null)
+    .order('assigned_date', { ascending: true })
+    .limit(10)
+
+  const pendingCourses = await safeQuery('pending_courses', () => coursesQuery)
+
+  return {
+    sickness,
+    holidayRequests,
+    upcomingReviews,
+    openShifts,
+    trialShifts,
+    pendingCourses,
   }
-  return count
 }
 
-// ---------------------------------------------------------------------------
-// HTML builders
-// ---------------------------------------------------------------------------
+// 3. STOCK DATA
+interface StockData {
+  expiringToday: any[]
+  salesYesterday: {
+    revenue: number
+    gp: number
+    gpPercent: number
+    transactionCount: number
+  }
+  topSellers: any[]
+  discountTotal: number
+  revenueStreams: any[]
+}
 
-interface StatItem {
+async function fetchStockData(
+  supabase: any,
+  companyId: string,
+  siteId: string | null,
+  yesterdayStr: string,
+  todayStr: string
+): Promise<StockData> {
+  // Expiring today (use_by or best_before = today)
+  let expiringQuery = supabase
+    .from('stock_batches')
+    .select('id, batch_code, stock_item:stock_items(name), quantity_remaining, unit, use_by_date, best_before_date')
+    .eq('status', 'active')
+    .gt('quantity_remaining', 0)
+    .or(`use_by_date.eq.${todayStr},best_before_date.eq.${todayStr}`)
+    .limit(10)
+
+  if (siteId && siteId !== 'all') expiringQuery = expiringQuery.eq('site_id', siteId)
+  const expiringToday = await safeQuery('expiring_today', () => expiringQuery)
+
+  // Sales from yesterday
+  let salesQuery = supabase
+    .from('sales')
+    .select('id, net_revenue, gross_revenue, discounts, order_source, fulfillment_type, payment_details')
+    .eq('company_id', companyId)
+    .eq('sale_date', yesterdayStr)
+    .eq('status', 'completed')
+
+  if (siteId && siteId !== 'all') salesQuery = salesQuery.eq('site_id', siteId)
+  const sales = await safeQuery('sales_yesterday', () => salesQuery)
+
+  const revenue = sales.reduce((sum, s) => sum + (s.net_revenue || 0), 0)
+  const grossRevenue = sales.reduce((sum, s) => sum + (s.gross_revenue || 0), 0)
+  const discountTotal = sales.reduce((sum, s) => sum + (s.discounts || 0), 0)
+
+  // Calculate GP from theoretical GP table if available
+  let gpQuery = supabase
+    .from('daily_sales_summary')
+    .select('theoretical_gp')
+    .eq('company_id', companyId)
+    .eq('summary_date', yesterdayStr)
+    .single()
+
+  if (siteId && siteId !== 'all') gpQuery = gpQuery.eq('site_id', siteId)
+  const { data: gpData } = await gpQuery
+  const gp = gpData?.theoretical_gp || 0
+  const gpPercent = revenue > 0 ? Math.round((gp / revenue) * 100) : 0
+
+  // Top sellers - get sale items from yesterday
+  let itemsQuery = supabase
+    .rpc('get_top_selling_items', {
+      p_company_id: companyId,
+      p_site_id: siteId && siteId !== 'all' ? siteId : null,
+      p_date_from: yesterdayStr,
+      p_date_to: yesterdayStr,
+      p_limit: 5,
+    })
+
+  const topSellers = await safeQuery('top_sellers', () => itemsQuery)
+
+  // Revenue streams breakdown
+  const streamMap = new Map<string, number>()
+  for (const sale of sales) {
+    const source = sale.order_source || sale.fulfillment_type || 'Walk-in'
+    streamMap.set(source, (streamMap.get(source) || 0) + (sale.net_revenue || 0))
+  }
+  const revenueStreams = Array.from(streamMap.entries())
+    .map(([source, amount]) => ({ source, amount }))
+    .sort((a, b) => b.amount - a.amount)
+
+  return {
+    expiringToday,
+    salesYesterday: {
+      revenue,
+      gp,
+      gpPercent,
+      transactionCount: sales.length,
+    },
+    topSellers,
+    discountTotal,
+    revenueStreams,
+  }
+}
+
+// 4. ASSETS DATA
+interface AssetsData {
+  callouts: any[]
+  outOfCommission: any[]
+}
+
+async function fetchAssetsData(
+  supabase: any,
+  companyId: string,
+  siteId: string | null
+): Promise<AssetsData> {
+  // Callouts still awaiting contractor response
+  let calloutsQuery = supabase
+    .from('asset_callouts')
+    .select('id, asset:assets(name), issue_description, created_at, status, contractor:contractors(business_name)')
+    .eq('company_id', companyId)
+    .in('status', ['pending', 'contractor_notified', 'awaiting_contractor'])
+    .order('created_at', { ascending: true })
+    .limit(10)
+
+  if (siteId) calloutsQuery = calloutsQuery.eq('site_id', siteId)
+  const callouts = await safeQuery('callouts', () => calloutsQuery)
+
+  // Equipment out of commission
+  let assetsQuery = supabase
+    .from('assets')
+    .select('id, name, asset_type, status, site_id')
+    .eq('company_id', companyId)
+    .eq('status', 'out_of_service')
+
+  if (siteId) assetsQuery = assetsQuery.eq('site_id', siteId)
+  const outOfCommission = await safeQuery('out_of_service', () => assetsQuery)
+
+  return {
+    callouts,
+    outOfCommission,
+  }
+}
+
+// 5. CALENDAR DATA
+interface CalendarData {
+  events: any[]
+}
+
+async function fetchCalendarData(
+  supabase: any,
+  companyId: string,
+  profileId: string,
+  todayStr: string
+): Promise<CalendarData> {
+  // Calendar events for today
+  let eventsQuery = supabase
+    .from('calendar_events')
+    .select('id, title, start_time, end_time, event_type, description')
+    .eq('company_id', companyId)
+    .contains('attendee_ids', [profileId])
+    .gte('start_time', `${todayStr}T00:00:00Z`)
+    .lte('start_time', `${todayStr}T23:59:59Z`)
+    .order('start_time', { ascending: true })
+
+  const events = await safeQuery('calendar_events', () => eventsQuery)
+
+  return { events }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// HTML BUILDERS
+// ───────────────────────────────────────────────────────────────────────────
+
+interface AlertLevel {
+  status: 'critical' | 'warning' | 'good'
+  color: string
+  bg: string
   label: string
-  value: string | number
-  alert?: boolean
-  warn?: boolean
 }
 
-function buildModuleSection(
-  title: string,
-  accent: string,
-  bgTint: string,
-  stats: StatItem[],
-  details?: string[]
-): string {
-  const statRows = stats.map(s => {
-    const valColour = s.alert ? '#DC2626' : s.warn ? '#B45309' : '#111827'
-    const valWeight = (s.alert || s.warn) ? '700' : '600'
-    return `
-      <tr>
-        <td style="padding: 5px 0; color: #6b7280; font-size: 13px; width: 55%;">${s.label}</td>
-        <td style="padding: 5px 0; color: ${valColour}; font-size: 13px; font-weight: ${valWeight}; text-align: right;">${s.value}</td>
-      </tr>`
-  }).join('')
+function getAlertLevel(compliance: ComplianceData): AlertLevel {
+  const hasCritical = compliance.tempFailures.length > 0 ||
+    compliance.incidents.some(i => ['critical', 'major', 'fatality'].includes(i.severity))
 
-  const detailHtml = details && details.length > 0 ? `
-    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.06);">
-      ${details.map(d => `<div style="color: #6b7280; font-size: 12px; padding: 2px 0; line-height: 1.4;">&bull; ${d}</div>`).join('')}
-    </div>` : ''
+  const hasWarning = compliance.missed > 0 ||
+    compliance.overdueCount > 5 ||
+    compliance.completionRate < 80
 
-  return `
-  <div style="margin-bottom: 16px; border-left: 4px solid ${accent}; padding: 14px 16px; background: ${bgTint}; border-radius: 0 8px 8px 0;">
-    <div style="color: ${accent}; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px;">${title}</div>
-    <table cellpadding="0" cellspacing="0" style="width: 100%;">
-      ${statRows}
-    </table>
-    ${detailHtml}
-  </div>`
+  if (hasCritical) {
+    return { status: 'critical', color: '#DC2626', bg: '#FEF2F2', label: 'Action Required' }
+  }
+  if (hasWarning) {
+    return { status: 'warning', color: '#D97706', bg: '#FFFBEB', label: 'Needs Attention' }
+  }
+  return { status: 'good', color: '#059669', bg: '#F0FDF4', label: 'All Clear' }
 }
 
-// ---------------------------------------------------------------------------
-// Main route handler
-// ---------------------------------------------------------------------------
+function buildComplianceSection(data: ComplianceData, accent: string, bgTint: string): string {
+  if (data.totalDue === 0 && data.overdueCount === 0 && data.tempFailures.length === 0 && data.incidents.length === 0) {
+    return ''
+  }
+
+  let content = `
+    <div style="padding: 16px; margin-bottom: 12px; border-left: 4px solid ${accent}; background: ${bgTint}; border-radius: 0 8px 8px 0;">
+      <div style="font-weight: 700; font-size: 13px; color: ${accent}; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">Compliance</div>
+  `
+
+  // Completion rate
+  const rateColor = data.completionRate >= 90 ? '#059669' : data.completionRate >= 75 ? '#D97706' : '#DC2626'
+  content += `
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+      <span style="color: #6B7280; font-size: 14px;">Yesterday's completion</span>
+      <span style="color: ${rateColor}; font-size: 14px; font-weight: 600;">${data.completionRate}%</span>
+    </div>
+  `
+
+  if (data.totalDue > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Tasks due</span>
+        <span style="color: #374151; font-size: 14px;">${data.completed} of ${data.totalDue} completed</span>
+      </div>
+    `
+  }
+
+  if (data.missed > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Missed tasks</span>
+        <span style="color: #DC2626; font-size: 14px; font-weight: 600;">${data.missed}</span>
+      </div>
+    `
+  }
+
+  if (data.overdueCount > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Overdue tasks</span>
+        <span style="color: #D97706; font-size: 14px; font-weight: 600;">${data.overdueCount}</span>
+      </div>
+    `
+
+    // Show top 3 overdue
+    if (data.overdueTasks.length > 0) {
+      content += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);">`
+      data.overdueTasks.slice(0, 3).forEach(task => {
+        const name = task.custom_name || task.template?.name || 'Unnamed task'
+        content += `<div style="color: #6B7280; font-size: 12px; padding: 3px 0;">• Overdue: ${name} (${task.due_date})</div>`
+      })
+      if (data.overdueCount > 3) {
+        content += `<div style="color: #9CA3AF; font-size: 12px; padding: 3px 0;">...and ${data.overdueCount - 3} more</div>`
+      }
+      content += `</div>`
+    }
+  }
+
+  if (data.tempFailures.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Temperature failures</span>
+        <span style="color: #DC2626; font-size: 14px; font-weight: 700;">${data.tempFailures.length}</span>
+      </div>
+    `
+  }
+
+  if (data.incidents.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Incidents</span>
+        <span style="color: #DC2626; font-size: 14px; font-weight: 700;">${data.incidents.length}</span>
+      </div>
+    `
+
+    // Show incident details
+    content += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);">`
+    data.incidents.slice(0, 3).forEach(inc => {
+      const sevBadge = inc.severity ? ` [${inc.severity}]` : ''
+      content += `<div style="color: #6B7280; font-size: 12px; padding: 3px 0;">• ${inc.title || 'Incident'}${sevBadge}</div>`
+    })
+    content += `</div>`
+  }
+
+  content += `</div>`
+  return content
+}
+
+function buildStaffSection(data: StaffData, accent: string, bgTint: string): string {
+  const hasData = data.sickness.length > 0 || data.holidayRequests.length > 0 ||
+    data.upcomingReviews.length > 0 || data.openShifts.length > 0 ||
+    data.trialShifts.length > 0 || data.pendingCourses.length > 0
+
+  if (!hasData) return ''
+
+  let content = `
+    <div style="padding: 16px; margin-bottom: 12px; border-left: 4px solid ${accent}; background: ${bgTint}; border-radius: 0 8px 8px 0;">
+      <div style="font-weight: 700; font-size: 13px; color: ${accent}; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">People</div>
+  `
+
+  if (data.sickness.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">New sickness</span>
+        <span style="color: #D97706; font-size: 14px; font-weight: 600;">${data.sickness.length}</span>
+      </div>
+    `
+  }
+
+  if (data.holidayRequests.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Holiday requests</span>
+        <span style="color: #3B82F6; font-size: 14px; font-weight: 600;">${data.holidayRequests.length} pending</span>
+      </div>
+    `
+  }
+
+  if (data.upcomingReviews.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Reviews coming up</span>
+        <span style="color: #374151; font-size: 14px;">${data.upcomingReviews.length} in next 7 days</span>
+      </div>
+    `
+  }
+
+  if (data.openShifts.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Unfilled shifts</span>
+        <span style="color: #D97706; font-size: 14px; font-weight: 600;">${data.openShifts.length}</span>
+      </div>
+    `
+  }
+
+  if (data.trialShifts.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Trial shifts today</span>
+        <span style="color: #059669; font-size: 14px; font-weight: 600;">${data.trialShifts.length}</span>
+      </div>
+    `
+  }
+
+  if (data.pendingCourses.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Training not scheduled</span>
+        <span style="color: #D97706; font-size: 14px; font-weight: 600;">${data.pendingCourses.length}</span>
+      </div>
+    `
+  }
+
+  content += `</div>`
+  return content
+}
+
+function buildStockSection(data: StockData, accent: string, bgTint: string): string {
+  if (!data.salesYesterday.revenue && data.expiringToday.length === 0) return ''
+
+  let content = `
+    <div style="padding: 16px; margin-bottom: 12px; border-left: 4px solid ${accent}; background: ${bgTint}; border-radius: 0 8px 8px 0;">
+      <div style="font-weight: 700; font-size: 13px; color: ${accent}; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">Stock & Sales</div>
+  `
+
+  if (data.expiringToday.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Expiring today</span>
+        <span style="color: #DC2626; font-size: 14px; font-weight: 700;">${data.expiringToday.length} items</span>
+      </div>
+    `
+  }
+
+  if (data.salesYesterday.revenue > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Sales yesterday</span>
+        <span style="color: #374151; font-size: 14px; font-weight: 600;">£${data.salesYesterday.revenue.toFixed(0)}</span>
+      </div>
+    `
+
+    if (data.salesYesterday.gp > 0) {
+      content += `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: #6B7280; font-size: 14px;">Theoretical GP</span>
+          <span style="color: #059669; font-size: 14px; font-weight: 600;">£${data.salesYesterday.gp.toFixed(0)} (${data.salesYesterday.gpPercent}%)</span>
+        </div>
+      `
+    }
+
+    if (data.salesYesterday.transactionCount > 0) {
+      content += `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: #6B7280; font-size: 14px;">Transactions</span>
+          <span style="color: #374151; font-size: 14px;">${data.salesYesterday.transactionCount}</span>
+        </div>
+      `
+    }
+
+    if (data.discountTotal > 0) {
+      content += `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: #6B7280; font-size: 14px;">Discounts given</span>
+          <span style="color: #D97706; font-size: 14px;">£${data.discountTotal.toFixed(0)}</span>
+        </div>
+      `
+    }
+
+    // Top sellers
+    if (data.topSellers.length > 0) {
+      content += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);">`
+      content += `<div style="color: #374151; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Top sellers:</div>`
+      data.topSellers.slice(0, 3).forEach((item: any) => {
+        content += `<div style="color: #6B7280; font-size: 12px; padding: 2px 0;">• ${item.name} (${item.quantity} sold)</div>`
+      })
+      content += `</div>`
+    }
+
+    // Revenue streams
+    if (data.revenueStreams.length > 1) {
+      content += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);">`
+      content += `<div style="color: #374151; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Revenue streams:</div>`
+      data.revenueStreams.forEach(stream => {
+        content += `<div style="color: #6B7280; font-size: 12px; padding: 2px 0;">• ${stream.source}: £${stream.amount.toFixed(0)}</div>`
+      })
+      content += `</div>`
+    }
+  }
+
+  content += `</div>`
+  return content
+}
+
+function buildAssetsSection(data: AssetsData, accent: string, bgTint: string): string {
+  if (data.callouts.length === 0 && data.outOfCommission.length === 0) return ''
+
+  let content = `
+    <div style="padding: 16px; margin-bottom: 12px; border-left: 4px solid ${accent}; background: ${bgTint}; border-radius: 0 8px 8px 0;">
+      <div style="font-weight: 700; font-size: 13px; color: ${accent}; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">Assets</div>
+  `
+
+  if (data.callouts.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Pending callouts</span>
+        <span style="color: #D97706; font-size: 14px; font-weight: 600;">${data.callouts.length}</span>
+      </div>
+    `
+  }
+
+  if (data.outOfCommission.length > 0) {
+    content += `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="color: #6B7280; font-size: 14px;">Out of commission</span>
+        <span style="color: #DC2626; font-size: 14px; font-weight: 700;">${data.outOfCommission.length} assets</span>
+      </div>
+    `
+
+    // List out of commission assets
+    content += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);">`
+    data.outOfCommission.slice(0, 5).forEach((asset: any) => {
+      content += `<div style="color: #6B7280; font-size: 12px; padding: 3px 0;">• ${asset.name}</div>`
+    })
+    if (data.outOfCommission.length > 5) {
+      content += `<div style="color: #9CA3AF; font-size: 12px; padding: 3px 0;">...and ${data.outOfCommission.length - 5} more</div>`
+    }
+    content += `</div>`
+  }
+
+  content += `</div>`
+  return content
+}
+
+function buildCalendarSection(data: CalendarData, accent: string, bgTint: string): string {
+  if (data.events.length === 0) return ''
+
+  let content = `
+    <div style="padding: 16px; margin-bottom: 12px; border-left: 4px solid ${accent}; background: ${bgTint}; border-radius: 0 8px 8px 0;">
+      <div style="font-weight: 700; font-size: 13px; color: ${accent}; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">Today's Schedule</div>
+  `
+
+  content += `<div style="color: #374151; font-size: 12px; font-weight: 600; margin-bottom: 8px;">You have ${data.events.length} event${data.events.length > 1 ? 's' : ''} today:</div>`
+
+  data.events.forEach((event: any) => {
+    const startTime = new Date(event.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+    content += `<div style="color: #6B7280; font-size: 12px; padding: 4px 0; border-left: 3px solid ${accent}; padding-left: 8px; margin-bottom: 6px;">
+      <div style="font-weight: 600; color: #374151;">${startTime} — ${event.title}</div>
+      ${event.description ? `<div style="color: #9CA3AF; font-size: 11px; margin-top: 2px;">${event.description}</div>` : ''}
+    </div>`
+  })
+
+  content += `</div>`
+  return content
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// MAIN ROUTE HANDLER
+// ───────────────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now()
@@ -323,13 +752,17 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseAdmin()
     const now = new Date()
 
-    // Yesterday's date range
+    // Date ranges
     const yesterday = new Date(now)
     yesterday.setUTCDate(now.getUTCDate() - 1)
     const yesterdayStr = yesterday.toISOString().split('T')[0]
     const yesterdayStart = `${yesterdayStr}T00:00:00Z`
     const yesterdayEnd = `${yesterdayStr}T23:59:59Z`
-    const thirtyDaysOut = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+    const todayStr = now.toISOString().split('T')[0]
+    const next7Days = new Date(now)
+    next7Days.setUTCDate(now.getUTCDate() + 7)
+    const next7DaysStr = next7Days.toISOString().split('T')[0]
 
     const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', {
       weekday: 'long',
@@ -338,7 +771,14 @@ export async function GET(request: NextRequest) {
       year: 'numeric',
     })
 
-    // 1. Get all companies
+    const todayFormatted = now.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+
+    // Get all companies
     const { data: companies, error: compErr } = await supabase
       .from('companies')
       .select('id, name')
@@ -350,63 +790,36 @@ export async function GET(request: NextRequest) {
     let totalSent = 0
     let totalSkipped = 0
     const errors: string[] = []
-    const companyResults: { company: string; recipients: number; recipientList: string[] }[] = []
 
     for (const company of companies) {
       try {
-        // Timeout safety — bail at 50s (Vercel maxDuration is 60s)
+        // Timeout safety
         if (Date.now() - startTime > 50_000) {
           console.warn('[Cron] Digest: approaching timeout, stopping')
           break
         }
 
-        // 2. Get managers/admins for this company
+        // Get recipients (managers/admins) with digest preferences
         const { data: recipients, error: recipErr } = await supabase
           .from('profiles')
-          .select('id, email, full_name, app_role, site_id')
+          .select('id, email, full_name, app_role, site_id, digest_enabled, digest_include_compliance, digest_include_staff, digest_include_stock, digest_include_assets, digest_include_calendar')
           .eq('company_id', company.id)
           .eq('status', 'active')
+          .eq('digest_enabled', true) // Only send to users who have enabled digest
           .in('app_role', ['Admin', 'Owner', 'General Manager', 'Area Manager', 'Ops Manager'])
 
-        if (recipErr) {
-          console.warn(`[Digest] recipient query error for ${company.name}:`, recipErr.message)
-        }
-        if (!recipients?.length) {
-          companyResults.push({ company: company.name, recipients: 0, recipientList: [] })
-          continue
-        }
+        if (recipErr || !recipients?.length) continue
 
-        companyResults.push({
-          company: company.name,
-          recipients: recipients.length,
-          recipientList: recipients.map(r => `${r.full_name} <${r.email}> (${r.app_role})`),
-        })
-
-        // 3. Get sites
+        // Get sites
         const { data: sites } = await supabase
-          .from('sites').select('id, name').eq('company_id', company.id)
+          .from('sites')
+          .select('id, name')
+          .eq('company_id', company.id)
 
         const siteMap = new Map<string, string>()
         for (const s of sites || []) siteMap.set(s.id, s.name)
-        const siteIds = Array.from(siteMap.keys())
 
-        // 4. Fetch ALL module data in parallel (no gating on company_modules)
-        const [checklyResult, teamlyResult, stocklyResult, planlyResult, assetlyResult] =
-          await Promise.allSettled([
-            fetchChecklyData(supabase, company.id, siteIds, yesterdayStr, yesterdayStart, yesterdayEnd),
-            fetchTeamlyData(supabase, company.id, siteIds, yesterdayStr, yesterdayStart, yesterdayEnd),
-            fetchStocklyData(supabase, company.id, yesterdayStart, yesterdayEnd),
-            fetchPlanlyData(supabase, siteIds, yesterdayStr),
-            fetchAssetlyData(supabase, company.id, siteIds, yesterdayStr),
-          ])
-
-        const checkly = checklyResult.status === 'fulfilled' ? checklyResult.value : null
-        const teamly = teamlyResult.status === 'fulfilled' ? teamlyResult.value : null
-        const stockly = stocklyResult.status === 'fulfilled' ? stocklyResult.value : null
-        const planly = planlyResult.status === 'fulfilled' ? planlyResult.value : null
-        const assetly = assetlyResult.status === 'fulfilled' ? assetlyResult.value : null
-
-        // 5. Send email to each recipient
+        // Send to each recipient
         for (const recipient of recipients) {
           if (!recipient.email) {
             totalSkipped++
@@ -419,199 +832,71 @@ export async function GET(request: NextRequest) {
           const firstName = (recipient.full_name || 'Manager').split(' ')[0]
           const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.opslytech.com'
 
-          // Build module sections — only include sections that have data
+          // Fetch all data
+          const [compliance, staff, stock, assets, calendar] = await Promise.allSettled([
+            fetchComplianceData(supabase, company.id, siteFilter, yesterdayStr, todayStr, yesterdayStart, yesterdayEnd),
+            fetchStaffData(supabase, company.id, siteFilter, yesterdayStart, yesterdayEnd, todayStr, next7DaysStr),
+            fetchStockData(supabase, company.id, siteFilter, yesterdayStr, todayStr),
+            fetchAssetsData(supabase, company.id, siteFilter),
+            fetchCalendarData(supabase, company.id, recipient.id, todayStr),
+          ])
+
+          const complianceData = compliance.status === 'fulfilled' ? compliance.value : null
+          const staffData = staff.status === 'fulfilled' ? staff.value : null
+          const stockData = stock.status === 'fulfilled' ? stock.value : null
+          const assetsData = assets.status === 'fulfilled' ? assets.value : null
+          const calendarData = calendar.status === 'fulfilled' ? calendar.value : null
+
+          if (!complianceData) {
+            totalSkipped++
+            continue
+          }
+
+          // Build sections based on user preferences
           const sections: string[] = []
-          let hasAlerts = false
-          let hasWarnings = false
 
-          // --- CHECKLY ---
-          if (checkly) {
-            const bySite = (arr: any[]) => siteFilter ? arr.filter(i => i.site_id === siteFilter) : arr
-            const tasks = bySite(checkly.tasks)
-            const completed = tasks.filter(t => t.status === 'completed').length
-            const missed = tasks.filter(t => t.status === 'missed' || t.status === 'failed').length
-            const pending = tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length
-            const total = tasks.length
-            const overdue = bySite(checkly.overdueTasks)
-            const overdueCount = overdue.length
-            const tempTotal = bySite(checkly.tempLogs).length
-            const tempFail = bySite(checkly.tempFailures).length
-            const incidents = bySite(checkly.incidents)
-            const incidentCount = incidents.length
-            const criticalIncidents = incidents.filter(i => ['major', 'critical', 'fatality'].includes(i.severity)).length
-
-            if (tempFail > 0 || criticalIncidents > 0) hasAlerts = true
-            if (overdueCount > 0 || missed > 0) hasWarnings = true
-
-            // Only show if there's any data at all
-            if (total > 0 || overdueCount > 0 || tempTotal > 0 || incidentCount > 0) {
-              const stats: StatItem[] = []
-              if (total > 0) {
-                const pct = Math.round((completed / total) * 100)
-                stats.push({ label: 'Tasks completed', value: `${completed} of ${total} (${pct}%)` })
-                if (missed > 0) stats.push({ label: 'Missed / failed', value: missed, alert: true })
-                if (pending > 0) stats.push({ label: 'Still pending', value: pending, warn: true })
-              }
-              if (overdueCount > 0) stats.push({ label: 'Overdue tasks', value: overdueCount, warn: true })
-              if (tempTotal > 0) stats.push({ label: 'Temperature checks', value: `${tempTotal} recorded` })
-              if (tempFail > 0) stats.push({ label: 'Temperature failures', value: tempFail, alert: true })
-              if (incidentCount > 0) stats.push({ label: 'Incidents reported', value: incidentCount, alert: criticalIncidents > 0 })
-
-              // Detail items
-              const details: string[] = []
-              if (overdueCount > 0) {
-                const topOverdue = overdue.slice(0, 5)
-                for (const t of topOverdue) {
-                  details.push(`Overdue: ${getTaskName(t)} (due ${t.due_date})`)
-                }
-                if (overdueCount > 5) details.push(`...and ${overdueCount - 5} more overdue`)
-              }
-              if (incidentCount > 0) {
-                for (const inc of incidents.slice(0, 3)) {
-                  const sev = inc.severity ? ` [${inc.severity}]` : ''
-                  details.push(`${inc.title || 'Incident'}${sev}`)
-                }
-              }
-
-              sections.push(buildModuleSection(
-                'Checkly — Tasks & Compliance',
-                MODULE_THEME.checkly.accent, MODULE_THEME.checkly.bg,
-                stats, details.length > 0 ? details : undefined
-              ))
-            }
+          // 1. Compliance (always first, most important) - respect preference
+          if (recipient.digest_include_compliance !== false) {
+            sections.push(buildComplianceSection(complianceData, MODULE_THEME.checkly.accent, MODULE_THEME.checkly.bg))
           }
 
-          // --- TEAMLY ---
-          if (teamly) {
-            const bySite = (arr: any[]) => siteFilter ? arr.filter(i => i.site_id === siteFilter) : arr
-            const shifts = bySite(teamly.shifts)
-            const totalShifts = shifts.length
-            const noShows = shifts.filter(s => ['missed', 'no_show'].includes(s.status)).length
-            const cancelled = shifts.filter(s => s.status === 'cancelled').length
-            const leaveReqs = teamly.leaveRequests.length
-            const expiringCerts = countExpiringCerts(teamly.expiringProfiles, thirtyDaysOut, siteFilter)
-            const trainingDone = teamly.trainingCompleted.length
-
-            if (noShows > 0) hasAlerts = true
-            if (expiringCerts > 0) hasWarnings = true
-
-            if (totalShifts > 0 || leaveReqs > 0 || expiringCerts > 0 || trainingDone > 0) {
-              const stats: StatItem[] = []
-              if (totalShifts > 0) {
-                stats.push({ label: 'Shifts scheduled', value: totalShifts })
-                if (noShows > 0) stats.push({ label: 'No-shows', value: noShows, alert: true })
-                if (cancelled > 0) stats.push({ label: 'Cancelled shifts', value: cancelled })
-              }
-              if (leaveReqs > 0) stats.push({ label: 'New leave requests', value: leaveReqs })
-              if (trainingDone > 0) stats.push({ label: 'Training sessions completed', value: trainingDone })
-              if (expiringCerts > 0) stats.push({ label: 'Expiring certifications', value: `${expiringCerts} within 30 days`, warn: true })
-
-              // Detail: list expiring cert names (top 5)
-              const certDetails = getExpiringCertDetails(teamly.expiringProfiles, thirtyDaysOut, siteFilter)
-              const details = certDetails.slice(0, 5)
-              if (certDetails.length > 5) details.push(`...and ${certDetails.length - 5} more`)
-
-              sections.push(buildModuleSection(
-                'Teamly — People & Schedules',
-                MODULE_THEME.teamly.accent, MODULE_THEME.teamly.bg,
-                stats, details.length > 0 ? details : undefined
-              ))
-            }
+          // 2. Staff - respect preference
+          if (staffData && recipient.digest_include_staff !== false) {
+            sections.push(buildStaffSection(staffData, MODULE_THEME.teamly.accent, MODULE_THEME.teamly.bg))
           }
 
-          // --- STOCKLY ---
-          if (stockly && stockly.movements.length > 0) {
-            const movements = stockly.movements
-            const totalMov = movements.length
-            const deliveries = movements.filter(m => m.movement_type === 'delivery' || m.movement_type === 'in').length
-            const waste = movements.filter(m => m.movement_type === 'waste').length
-            const counts = movements.filter(m => m.movement_type === 'count').length
-            const transfers = movements.filter(m => m.movement_type === 'transfer').length
-
-            const stats: StatItem[] = [
-              { label: 'Total stock movements', value: totalMov },
-            ]
-            if (deliveries > 0) stats.push({ label: 'Deliveries received', value: deliveries })
-            if (waste > 0) stats.push({ label: 'Waste recorded', value: waste, warn: waste > 3 })
-            if (counts > 0) stats.push({ label: 'Stock counts', value: counts })
-            if (transfers > 0) stats.push({ label: 'Transfers', value: transfers })
-
-            sections.push(buildModuleSection(
-              'Stockly — Inventory',
-              MODULE_THEME.stockly.accent, MODULE_THEME.stockly.bg,
-              stats
-            ))
+          // 3. Stock & Sales - respect preference
+          if (stockData && recipient.digest_include_stock !== false) {
+            sections.push(buildStockSection(stockData, MODULE_THEME.stockly.accent, MODULE_THEME.stockly.bg))
           }
 
-          // --- PLANLY ---
-          if (planly) {
-            const bySite = (arr: any[]) => siteFilter ? arr.filter(i => i._site_id === siteFilter) : arr
-            const orders = bySite(planly.orders)
-            const totalOrders = orders.length
-            const delivered = orders.filter(o => o.status === 'completed' || o.status === 'delivered').length
-            const pending = orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length
-
-            if (totalOrders > 0) {
-              const stats: StatItem[] = [
-                { label: 'Total orders', value: totalOrders },
-                { label: 'Delivered / completed', value: delivered },
-              ]
-              if (pending > 0) stats.push({ label: 'Pending / confirmed', value: pending })
-
-              sections.push(buildModuleSection(
-                'Planly — Production & Orders',
-                MODULE_THEME.planly.accent, MODULE_THEME.planly.bg,
-                stats
-              ))
-            }
+          // 4. Assets - respect preference
+          if (assetsData && recipient.digest_include_assets !== false) {
+            sections.push(buildAssetsSection(assetsData, MODULE_THEME.assetly.accent, MODULE_THEME.assetly.bg))
           }
 
-          // --- ASSETLY ---
-          if (assetly) {
-            const bySite = (arr: any[]) => siteFilter ? arr.filter(i => i.site_id === siteFilter) : arr
-            const issues = bySite(assetly.issueAssets)
-            const ppm = bySite(assetly.ppmTasks)
-            const ppmCompleted = ppm.filter(t => t.last_completed && t.last_completed >= yesterdayStr).length
-            const ppmDue = ppm.length
-
-            if (issues.length > 0) hasWarnings = true
-
-            if (issues.length > 0 || ppmDue > 0) {
-              const stats: StatItem[] = []
-              if (issues.length > 0) stats.push({ label: 'Asset issues reported', value: issues.length, warn: true })
-              if (ppmDue > 0) {
-                stats.push({ label: 'PPM tasks due', value: ppmDue })
-                stats.push({ label: 'PPM completed', value: ppmCompleted })
-              }
-
-              const details: string[] = []
-              for (const a of issues.slice(0, 4)) {
-                details.push(`${a.name} — ${a.status === 'out_of_service' ? 'Out of service' : 'Needs repair'}`)
-              }
-              if (issues.length > 4) details.push(`...and ${issues.length - 4} more`)
-
-              sections.push(buildModuleSection(
-                'Assetly — Assets & Maintenance',
-                MODULE_THEME.assetly.accent, MODULE_THEME.assetly.bg,
-                stats, details.length > 0 ? details : undefined
-              ))
-            }
+          // 5. Calendar - respect preference
+          if (calendarData && recipient.digest_include_calendar !== false) {
+            sections.push(buildCalendarSection(calendarData, MODULE_THEME.calendar.accent, MODULE_THEME.calendar.bg))
           }
 
-          // If no sections have data, add a quiet "all clear" note
-          if (sections.length === 0) {
-            sections.push(`
-  <div style="text-align: center; padding: 24px 16px; color: #9ca3af; font-size: 14px;">
-    No notable activity recorded yesterday.
-  </div>`)
+          const filteredSections = sections.filter(s => s !== '')
+
+          if (filteredSections.length === 0) {
+            // All clear message
+            filteredSections.push(`
+              <div style="text-align: center; padding: 32px 16px; color: #9CA3AF; font-size: 14px;">
+                <div style="font-size: 48px; margin-bottom: 12px;">✓</div>
+                <div style="color: #374151; font-weight: 600; margin-bottom: 4px;">All Clear</div>
+                <div>No notable activity from yesterday</div>
+              </div>
+            `)
           }
 
-          // Status
-          const statusColor = hasAlerts ? '#DC2626' : hasWarnings ? '#B45309' : '#059669'
-          const statusBg = hasAlerts ? '#FEF2F2' : hasWarnings ? '#FFFBEB' : '#F0FDF4'
-          const statusLabel = hasAlerts ? 'Action Required' : hasWarnings ? 'Needs Attention' : 'All Clear'
-          const statusEmoji = hasAlerts ? '\u{1F534}' : hasWarnings ? '\u{1F7E1}' : '\u{1F7E2}'
+          // Determine alert level
+          const alertLevel = getAlertLevel(complianceData)
 
+          // Build email HTML
           const html = `
 <!DOCTYPE html>
 <html>
@@ -620,92 +905,74 @@ export async function GET(request: NextRequest) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yesterday's Ops Summary — ${company.name}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f3f4f6;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #F3F4F6;">
   <div style="max-width: 600px; margin: 0 auto; padding: 32px 16px;">
 
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 24px;">
-      <span style="font-size: 18px; font-weight: 700; color: #111827; letter-spacing: -0.3px;">Opsly</span>
+      <span style="font-size: 20px; font-weight: 700; color: #111827; letter-spacing: -0.4px;">opsly</span>
     </div>
 
     <!-- Main Card -->
-    <div style="background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
+    <div style="background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E5E7EB;">
 
-      <!-- Accent bar -->
-      <div style="height: 4px; background: linear-gradient(90deg, #8A2B2B 0%, #9A8EC9 50%, #CDEED6 100%);"></div>
+      <!-- Gradient accent bar -->
+      <div style="height: 4px; background: linear-gradient(90deg, ${MODULE_THEME.checkly.accent} 0%, ${MODULE_THEME.stockly.accent} 50%, ${MODULE_THEME.teamly.accent} 100%);"></div>
 
       <!-- Title Block -->
-      <div style="padding: 28px 32px 0;">
-        <h1 style="margin: 0 0 4px; font-size: 22px; font-weight: 700; color: #111827;">Yesterday's Ops Summary</h1>
-        <p style="margin: 0; font-size: 14px; color: #6b7280;">${yesterdayFormatted}</p>
+      <div style="padding: 24px 28px 0;">
+        <h1 style="margin: 0 0 6px; font-size: 24px; font-weight: 700; color: #111827; line-height: 1.2;">Yesterday's Ops Summary</h1>
+        <p style="margin: 0; font-size: 14px; color: #6B7280;">${yesterdayFormatted}</p>
       </div>
 
       <!-- Status Banner -->
-      <div style="margin: 20px 32px 0;">
-        <div style="background: ${statusBg}; border: 1px solid ${statusColor}20; border-radius: 8px; padding: 12px 16px;">
-          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; margin-right: 8px; vertical-align: middle;"></span>
-          <span style="color: ${statusColor}; font-size: 13px; font-weight: 700; vertical-align: middle;">${statusLabel}</span>
-          <span style="color: #9ca3af; font-size: 13px; margin-left: 6px; vertical-align: middle;">&middot; ${siteName}</span>
+      <div style="margin: 20px 28px 0;">
+        <div style="background: ${alertLevel.bg}; border: 1px solid ${alertLevel.color}40; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center;">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: ${alertLevel.color}; margin-right: 10px;"></div>
+          <span style="color: ${alertLevel.color}; font-size: 13px; font-weight: 700;">${alertLevel.label}</span>
+          <span style="color: #9CA3AF; font-size: 13px; margin-left: 8px;">• ${siteName}</span>
         </div>
       </div>
 
       <!-- Greeting -->
-      <div style="padding: 20px 32px 4px;">
-        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.5;">
-          Good morning ${firstName}, here's what happened yesterday at <strong>${company.name}</strong>.
+      <div style="padding: 20px 28px 4px;">
+        <p style="margin: 0; font-size: 15px; color: #374151; line-height: 1.5;">
+          Good morning ${firstName}, here's what happened yesterday and what's on your plate today.
         </p>
       </div>
 
-      <!-- Module Sections -->
-      <div style="padding: 16px 32px 28px;">
-        ${sections.join('\n')}
+      <!-- Sections -->
+      <div style="padding: 16px 28px 28px;">
+        ${filteredSections.join('\n')}
       </div>
 
       <!-- CTA -->
-      <div style="padding: 0 32px 32px;">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
-          <tr>
-            <td align="center" style="padding: 0;">
-              <!--[if mso]>
-              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${appUrl}/dashboard" style="height:44px;v-text-anchor:middle;width:220px;" arcsize="18%" fillcolor="#8A2B2B" strokecolor="#8A2B2B" strokeweight="0">
-                <w:anchorlock/>
-                <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">Open Dashboard</center>
-              </v:roundrect>
-              <![endif]-->
-              <!--[if !mso]><!-->
-              <a href="${appUrl}/dashboard" target="_blank"
-                 style="background-color: #8A2B2B; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display: inline-block;">
-                Open Dashboard
-              </a>
-              <!--<![endif]-->
-            </td>
-          </tr>
-        </table>
+      <div style="padding: 0 28px 32px; text-align: center;">
+        <a href="${appUrl}/dashboard"
+           style="display: inline-block; background: ${BRAND_CTA}; color: #FFFFFF; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+          Open Dashboard
+        </a>
       </div>
     </div>
 
     <!-- Footer -->
-    <div style="padding: 24px 0 12px;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation">
-        <tr>
-          <td align="center" style="padding: 0 0 14px; color: #9ca3af; font-size: 11px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
-            ${company.name} &middot; ${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} UTC
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding: 0;">
-            <span style="color: #b0b5bd; font-size: 11px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Powered by </span><span style="color: #1B2624; font-size: 13px; font-weight: 500; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: -0.3px;">opsly</span>
-          </td>
-        </tr>
-      </table>
+    <div style="text-align: center; padding: 20px 0 8px;">
+      <div style="color: #9CA3AF; font-size: 11px; margin-bottom: 8px;">
+        ${company.name} • ${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} UTC
+      </div>
+      <div style="color: #D1D5DB; font-size: 11px;">
+        Powered by <span style="font-weight: 600; color: #6B7280;">opsly</span>
+      </div>
     </div>
   </div>
 </body>
 </html>`.trim()
 
+          const statusEmoji = alertLevel.status === 'critical' ? '🔴' : alertLevel.status === 'warning' ? '🟡' : '🟢'
+
           const result = await sendEmail({
             to: recipient.email,
-            subject: `${statusEmoji} Yesterday's Ops Summary \u00b7 ${siteName} \u00b7 ${yesterdayFormatted}`,
+            subject: `${statusEmoji} Yesterday's Ops Summary • ${siteName} • ${yesterdayFormatted}`,
             html,
           })
 
@@ -717,22 +984,8 @@ export async function GET(request: NextRequest) {
             errors.push(`Failed for ${recipient.email}: ${result.error}`)
           }
 
-          // Resend free tier: 2 req/sec — delay to avoid rate limiting
+          // Rate limit protection
           await new Promise(resolve => setTimeout(resolve, 600))
-        }
-
-        // In-app notification (non-blocking)
-        try {
-          await supabase.from('notifications').insert({
-            company_id: company.id,
-            profile_id: recipients[0]?.id,
-            type: 'digest',
-            title: 'Daily Operations Summary',
-            message: `Yesterday's digest sent to ${recipients.length} recipient(s)`,
-            read: false,
-          })
-        } catch (notifErr: any) {
-          console.warn(`[Digest] notification insert failed for ${company.name}:`, notifErr.message)
         }
       } catch (companyErr: any) {
         errors.push(`Company ${company.name}: ${companyErr.message}`)
@@ -745,7 +998,6 @@ export async function GET(request: NextRequest) {
       totalSkipped,
       errors: errors.length,
       duration_ms: duration,
-      timestamp: now.toISOString(),
     })
 
     return NextResponse.json({
@@ -755,9 +1007,7 @@ export async function GET(request: NextRequest) {
       skipped: totalSkipped,
       errors: errors.length,
       errorDetails: errors.slice(0, 5),
-      companyResults,
       duration_ms: duration,
-      timestamp: now.toISOString(),
     })
   } catch (error: any) {
     console.error('[Cron] Daily digest error:', error)
@@ -768,7 +1018,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Allow POST for manual triggers (e.g. admin tools, testing)
 export async function POST(request: NextRequest) {
   return GET(request)
 }

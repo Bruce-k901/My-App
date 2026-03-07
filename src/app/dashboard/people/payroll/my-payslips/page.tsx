@@ -121,11 +121,11 @@ export default function MyPayslipsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400';
       case 'approved':
-        return 'bg-blue-500/20 text-blue-400';
+        return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400';
       case 'calculated':
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400';
       case 'draft':
         return 'bg-theme-surface-elevated0/20 text-theme-tertiary';
       default:

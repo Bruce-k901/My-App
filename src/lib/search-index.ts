@@ -157,7 +157,7 @@ export const SEARCH_INDEX: SearchItem[] = [
   { id: "lib-disposables", label: "Disposables Library", href: "/dashboard/libraries/disposables", section: "Libraries", keywords: ["single use"] },
   { id: "lib-glassware", label: "Glassware Library", href: "/dashboard/libraries/glassware", section: "Libraries", keywords: ["glasses", "cups"] },
   { id: "lib-packaging", label: "Packaging Library", href: "/dashboard/libraries/packaging", section: "Libraries", keywords: ["containers", "boxes", "wrapping"] },
-  { id: "lib-serving", label: "Serving Equipment", href: "/dashboard/libraries/serving-equipment", section: "Libraries", keywords: ["plates", "utensils"] },
+  { id: "lib-serving", label: "Utensils & Tools", href: "/dashboard/libraries/serving-equipment", section: "Libraries", keywords: ["plates", "utensils", "serving equipment", "knives", "tools"] },
   { id: "lib-appliances", label: "Appliances", href: "/dashboard/libraries/appliances", section: "Libraries", keywords: ["machines", "equipment"] },
   { id: "lib-first-aid", label: "First Aid Supplies", href: "/dashboard/libraries/first-aid", section: "Libraries", keywords: ["medical", "safety"] },
 

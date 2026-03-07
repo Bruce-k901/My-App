@@ -49,12 +49,12 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 export function DialogContent({ children, className = '', style }: DialogContentProps) {
   // Only apply default max-w-md if className doesn't specify a max-width
-  // Check for any max-w class (including arbitrary values like max-w-[3600px])
   const hasCustomMaxWidth = /max-w-/.test(className);
   // If className includes overflow-y or overflow-hidden, skip default overflow-y-auto (allows flex scroll layouts)
   const hasCustomOverflow = /overflow-/.test(className);
-  const base = `bg-white dark:bg-[#101214] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-full ${hasCustomOverflow ? '' : 'overflow-y-auto'}`;
-  // Put className last so custom max-w classes can override base styles
+  // If className includes a custom max-h, skip default max-h-full to avoid Tailwind conflicts
+  const hasCustomMaxHeight = /max-h-/.test(className);
+  const base = `bg-white dark:bg-[#101214] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} ${hasCustomMaxHeight ? '' : 'max-h-full'} ${hasCustomOverflow ? '' : 'overflow-y-auto'}`;
   return (
     <div style={style} className={`${base} ${className}`}>
       {children}

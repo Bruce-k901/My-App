@@ -8,6 +8,7 @@ import Select from '@/components/ui/Select';
 import { fuzzyMatchUnit, normalizeUnitText, type UOM } from '@/lib/utils/unitLookup';
 import { generateSKU, extractPrefix } from '@/lib/utils/skuGenerator';
 import { handlePrepItemToggle } from '@/lib/utils/prepItemRecipeFlow';
+import { useStocklyDepartments } from '@/hooks/stockly/use-stockly-departments';
 // toast removed per project policy
 
 const INGREDIENT_CATEGORIES = [
@@ -40,6 +41,8 @@ export default function IngredientsLibraryPage() {
   const [ingredients, setIngredients] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterDepartment, setFilterDepartment] = useState('all');
+  const departments = useStocklyDepartments(companyId);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -199,6 +202,7 @@ export default function IngredientsLibraryPage() {
         retail_price: retailPriceVal,
         wholesale_price: wholesalePriceVal,
         online_price: onlinePriceVal,
+        department: rowDraft.department?.trim() || null,
         company_id: companyId,
       };
       
@@ -329,7 +333,8 @@ export default function IngredientsLibraryPage() {
       is_prep_item: item.is_prep_item ?? false,
       is_purchasable: item.is_purchasable ?? true,
       is_saleable: item.is_saleable ?? false,
-      sale_price: item.sale_price ?? ''
+      sale_price: item.sale_price ?? '',
+      department: item.department || '',
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
   };
@@ -616,7 +621,10 @@ export default function IngredientsLibraryPage() {
   const filteredItems = ingredients.filter((item: any) => {
     const matchesSearch = (item.ingredient_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesDepartment = filterDepartment === 'all'
+      || (filterDepartment === '_shared' && !item.department)
+      || item.department === filterDepartment;
+    return matchesSearch && matchesCategory && matchesDepartment;
   });
 
   return (
@@ -705,6 +713,17 @@ export default function IngredientsLibraryPage() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
+        <select
+          value={filterDepartment}
+          onChange={(e) => setFilterDepartment(e.target.value)}
+          className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-theme-primary"
+        >
+          <option value="all">All Departments</option>
+          <option value="_shared">Shared</option>
+          {departments.map(dept => (
+            <option key={dept} value={dept}>{dept}</option>
+          ))}
+        </select>
       </div>
 
       {loading ? (
@@ -729,9 +748,9 @@ export default function IngredientsLibraryPage() {
                 const expanded = expandedRows.has(item.id);
                 return (
                   <React.Fragment key={item.id}>
-                    <tr className="border-t border-theme hover:bg-neutral-800/50">
+                    <tr className={`border-t border-theme hover:bg-neutral-800/50 transition-colors ${expanded ? 'bg-module-fg/[0.04] border-l-2 border-l-module-fg-mid' : ''}`}>
                       <td className="px-2 py-3 align-top">
-                        <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-neutral-800 text-theme-tertiary">
+                        <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className={`p-1 rounded hover:bg-neutral-800 transition-colors ${expanded ? 'text-module-fg' : 'text-theme-tertiary'}`}>
                           {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         </button>
                       </td>
@@ -753,7 +772,7 @@ export default function IngredientsLibraryPage() {
                                     ⚠ Recipe Draft
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
                                     Recipe Disabled
                                   </span>
                                 )}
@@ -761,6 +780,11 @@ export default function IngredientsLibraryPage() {
                             )}
                             {item.supplier && (
                               <span className="text-theme-tertiary text-sm">• {item.supplier}</span>
+                            )}
+                            {item.department && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[0.65rem] font-medium bg-module-fg/10 text-module-fg border border-module-fg/20">
+                                {item.department}
+                              </span>
                             )}
                           </div>
                         )}
@@ -790,8 +814,8 @@ export default function IngredientsLibraryPage() {
                       </td>
                     </tr>
                     {expanded && (
-                      <tr className="border-t border-neutral-800/60">
-                        <td colSpan={4} className="px-4 py-4 bg-neutral-900/40">
+                      <tr className="border-l-2 border-l-module-fg-mid">
+                        <td colSpan={4} className="px-4 py-4 bg-module-fg/[0.02] dark:bg-module-fg/[0.03] border-t border-module-fg-mid/20">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
                               <div className="text-xs text-theme-tertiary">Supplier</div>
@@ -823,6 +847,17 @@ export default function IngredientsLibraryPage() {
                                 <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.pack_cost ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_cost: e.target.value }))} />
                               ) : (
                                 <div className="text-sm text-theme-primary">{item.pack_cost != null ? `£${item.pack_cost}` : '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Department</div>
+                              {editingRowId === item.id ? (
+                                <select className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.department ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, department: e.target.value }))}>
+                                  <option value="">Shared (All)</option>
+                                  {departments.map(dept => (<option key={dept} value={dept}>{dept}</option>))}
+                                </select>
+                              ) : (
+                                <div className="text-sm text-theme-primary">{item.department || 'Shared'}</div>
                               )}
                             </div>
                             <div className="bg-neutral-800/60 border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">

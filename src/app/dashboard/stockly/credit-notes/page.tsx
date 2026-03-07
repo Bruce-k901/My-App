@@ -66,11 +66,11 @@ const STATUS_OPTIONS = [
 
 const CN_STATUS_CONFIG = {
   draft: { label: 'Draft', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
-  submitted: { label: 'Submitted', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  acknowledged: { label: 'Acknowledged', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-  approved: { label: 'Approved', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  disputed: { label: 'Disputed', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
-  received: { label: 'CN Received', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+  submitted: { label: 'Submitted', color: 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/30' },
+  acknowledged: { label: 'Acknowledged', color: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30' },
+  approved: { label: 'Approved', color: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30' },
+  disputed: { label: 'Disputed', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30' },
+  received: { label: 'CN Received', color: 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/30' },
   closed: { label: 'Closed', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
 } as const;
 

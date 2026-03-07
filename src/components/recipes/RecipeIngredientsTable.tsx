@@ -17,10 +17,12 @@ interface RecipeIngredient {
   quantity: number;
   unit_id: string | null;  // UUID reference to uom table
   sort_order?: number;      // Changed from display_order
+  unit_cost?: number;
   line_cost?: number;
-  
+
   // Display-only fields (from JOINs)
   ingredient_name?: string;
+  sub_recipe_name?: string;
   supplier?: string;
   ingredient_unit_cost?: number;
   pack_cost?: number;
@@ -146,6 +148,11 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
         .limit(1000); // Limit to prevent loading too many at once
 
       if (error) {
+        // Ignore AbortErrors — expected during rapid navigation/re-renders
+        if (error.message?.includes('AbortError') || error.code === 'ABORT_ERR') {
+          loadingAvailableIngredientsRef.current = false;
+          return;
+        }
         console.error('❌ Error loading available ingredients:', error);
         console.error('Error details:', {
           code: error.code,
@@ -155,7 +162,7 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
         });
         setAvailableIngredientsError(error.message || 'Failed to load ingredients');
         setAvailableIngredients([]);
-        
+
         // Retry once if it's a network error
         if (retryCount === 0 && (error.message?.includes('network') || error.message?.includes('fetch'))) {
           console.log('🔄 Retrying load available ingredients...');
@@ -382,8 +389,10 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
           quantity,
           unit_id,
           sort_order,
+          unit_cost,
           line_cost,
           ingredient_name,
+          sub_recipe_name,
           supplier,
           ingredient_unit_cost,
           pack_cost,
@@ -404,6 +413,10 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
       }
 
       if (error) {
+        // Ignore AbortErrors — expected during rapid navigation/re-renders
+        if (error.message?.includes('AbortError') || error.code === 'ABORT_ERR') {
+          return;
+        }
         console.error('❌ Error loading ingredients:', error);
         console.error('Error details:', {
           code: error.code,
@@ -1380,6 +1393,14 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
     const qty = parseFloat(String(ingredient.quantity || '0'));
     if (qty <= 0) return 0;
 
+    // Prefer stored unit_cost from recipe_ingredients (already in recipe unit)
+    if (ingredient.unit_cost && ingredient.unit_cost > 0) {
+      const yieldPercent = ingredient.yield_percent || 100;
+      return yieldPercent > 0
+        ? (ingredient.unit_cost * qty) / (yieldPercent / 100)
+        : ingredient.unit_cost * qty;
+    }
+
     let unitCost = ingredient.ingredient_unit_cost || 0;
 
     // If unit_cost is 0 or null, try to calculate from pack_cost/pack_size
@@ -1797,8 +1818,12 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
                         </div>
                       ) : (
                         <div>
-                          <span className="text-[rgb(var(--text-primary))] dark:text-white">{ingredient.ingredient_name || '-'}</span>
-                          {ingredient.is_sub_recipe && (
+                          <span className="text-[rgb(var(--text-primary))] dark:text-white">
+                            {ingredient.sub_recipe_id && ingredient.sub_recipe_name
+                              ? ingredient.sub_recipe_name
+                              : ingredient.ingredient_name || '-'}
+                          </span>
+                          {(ingredient.sub_recipe_id || ingredient.is_sub_recipe) && (
                             <span className="ml-2 text-xs text-module-fg">(Sub Recipe)</span>
                           )}
                         </div>
@@ -1939,7 +1964,7 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
                           step="0.0001"
                           value={editingId === ingredient.id ? (draft?.ingredient_unit_cost ?? ingredient.ingredient_unit_cost ?? '') : (ingredient.ingredient_unit_cost ?? '')}
                           onChange={(e) => {
-                            const value = parseFloat(e.target.value) || 0;
+                            const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                             // Always update the ingredient in the list
                             setIngredients(prev => prev.map(ing =>
                               ing.id === ingredient.id ? { ...ing, ingredient_unit_cost: value } : ing
@@ -1967,21 +1992,22 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
                         />
                       ) : (
                         (() => {
-                          // Display unit cost converted to recipe's unit so Total = UnitCost × Qty
-                          // unit_cost from library is per base_unit (e.g. £1.75/kg)
-                          // If recipe uses grams, show cost per gram instead
-                          const rawUnitCost = ingredient.ingredient_unit_cost || 0;
+                          // Prefer stored unit_cost from recipe_ingredients (already converted to recipe unit)
                           const yieldPercent = ingredient.yield_percent || 100;
-                          const ingredientInfo = availableIngredients.find(a => a.id === ingredient.ingredient_id);
-                          const baseUnitId = ingredientInfo?.base_unit_id;
+                          let costPerRecipeUnit = ingredient.unit_cost || 0;
 
-                          // Convert from cost-per-base-unit to cost-per-recipe-unit
-                          let costPerRecipeUnit = rawUnitCost;
-                          if (ingredient.unit_id && baseUnitId && ingredient.unit_id !== baseUnitId) {
-                            // How many recipe units fit in 1 base unit? e.g. 1kg = 1000g
-                            const oneBaseInRecipeUnits = convertUnit(1, baseUnitId, ingredient.unit_id);
-                            if (oneBaseInRecipeUnits > 0) {
-                              costPerRecipeUnit = rawUnitCost / oneBaseInRecipeUnits;
+                          // Fall back to library unit cost with conversion if no stored unit_cost
+                          if (!costPerRecipeUnit) {
+                            const rawUnitCost = ingredient.ingredient_unit_cost || 0;
+                            costPerRecipeUnit = rawUnitCost;
+                            const ingredientInfo = availableIngredients.find(a => a.id === ingredient.ingredient_id);
+                            const baseUnitId = ingredientInfo?.base_unit_id;
+
+                            if (ingredient.unit_id && baseUnitId && ingredient.unit_id !== baseUnitId) {
+                              const oneBaseInRecipeUnits = convertUnit(1, baseUnitId, ingredient.unit_id);
+                              if (oneBaseInRecipeUnits > 0) {
+                                costPerRecipeUnit = rawUnitCost / oneBaseInRecipeUnits;
+                              }
                             }
                           }
 
@@ -2036,12 +2062,6 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
  <tfoot className="bg-theme-button border-t border-theme">
             <tr>
               <td colSpan={isEditing ? 3 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-                Total Recipe Cost:
-              </td>
-              <td className="px-4 py-3 text-right text-lg font-bold text-module-fg">
-                £{totalCost.toFixed(2)}
-              </td>
-              <td colSpan={isEditing ? 1 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                 Recipe Yield:
               </td>
               <td className="px-4 py-3 text-right text-lg font-bold text-module-fg">
@@ -2063,6 +2083,12 @@ export const RecipeIngredientsTable = forwardRef<RecipeIngredientsTableHandle, R
                   }
                   return '-';
                 })()}
+              </td>
+              <td colSpan={isEditing ? 1 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+                Total Recipe Cost:
+              </td>
+              <td className="px-4 py-3 text-right text-lg font-bold text-module-fg">
+                £{totalCost.toFixed(2)}
               </td>
               {isEditing && <td colSpan={1} />}
             </tr>

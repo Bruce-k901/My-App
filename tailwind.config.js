@@ -52,7 +52,6 @@ module.exports = {
         planly: 'rgb(var(--module-planly) / <alpha-value>)',
         assetly: 'rgb(var(--module-assetly) / <alpha-value>)',
         msgly: 'rgb(var(--module-msgly) / <alpha-value>)',
-        forecastly: 'rgb(var(--module-forecastly) / <alpha-value>)',
         // Module mid variants (for depth, highlights, borders)
         'checkly-mid': 'rgb(var(--module-checkly-mid) / <alpha-value>)',
         'stockly-mid': 'rgb(var(--module-stockly-mid) / <alpha-value>)',
@@ -60,8 +59,6 @@ module.exports = {
         'planly-mid': 'rgb(var(--module-planly-mid) / <alpha-value>)',
         'assetly-mid': 'rgb(var(--module-assetly-mid) / <alpha-value>)',
         'msgly-mid': 'rgb(var(--module-msgly-mid) / <alpha-value>)',
-        'forecastly-mid': 'rgb(var(--module-forecastly-mid) / <alpha-value>)',
-        'forecastly-dark': 'rgb(var(--module-forecastly-dark) / <alpha-value>)',
         // UI neutral (Graphite Chrome)
         'ui-chrome': 'rgb(var(--ui-chrome) / <alpha-value>)',
         'ui-chrome-mid': 'rgb(var(--ui-chrome-mid) / <alpha-value>)',

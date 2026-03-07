@@ -182,7 +182,7 @@ export const LIBRARIES: Library[] = [
   },
   {
     id: "serving-equipment",
-    name: "Serving Equipment",
+    name: "Utensils & Tools",
     href: "/dashboard/libraries/serving-equipment",
   },
   {

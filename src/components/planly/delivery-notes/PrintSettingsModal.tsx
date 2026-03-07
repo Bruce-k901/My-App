@@ -122,7 +122,7 @@ export function PrintSettingsModal({
                     value={localSettings.customWidth || 210}
                     onChange={(e) => setLocalSettings(prev => ({
                       ...prev,
-                      customWidth: parseInt(e.target.value) || 210,
+                      customWidth: e.target.value === '' ? '' : parseInt(e.target.value) || 210,
                     }))}
                     className="w-20 h-8 text-sm"
                     min={100}
@@ -137,7 +137,7 @@ export function PrintSettingsModal({
                     value={localSettings.customHeight || 297}
                     onChange={(e) => setLocalSettings(prev => ({
                       ...prev,
-                      customHeight: parseInt(e.target.value) || 297,
+                      customHeight: e.target.value === '' ? '' : parseInt(e.target.value) || 297,
                     }))}
                     className="w-20 h-8 text-sm"
                     min={100}

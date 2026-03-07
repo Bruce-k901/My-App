@@ -388,7 +388,7 @@ export default function AttendanceSignOffPage() {
       // Get all staff IDs who have connection to this site:
       // 1. Employees with scheduled shifts for this site
       // 2. Employees with attendance records for this site
-      // 3. Employees whose home_site (site_id) matches this site
+      // 3. Employees whose home_site matches this site
       const staffIds = new Set<string>();
       
       // Add employees with scheduled shifts
@@ -403,22 +403,24 @@ export default function AttendanceSignOffPage() {
       
       // Fetch employees - filter by:
       // 1. Company ID
-      // 2. Either: home_site (site_id) matches selected site, OR they have shifts/attendance for this site
+      // 2. Either: home_site matches selected site, OR they have shifts/attendance for this site
       let staffData: any[] = [];
-      
+
       // Build the query - include employees whose home_site matches OR who have shifts/attendance
+      // Exclude inactive/merged profiles so duplicates don't appear
       let query = supabase
         .from('profiles')
-        .select('id, full_name, position_title, hourly_rate, salary, contracted_hours_per_week, site_id')
-        .eq('company_id', companyId);
-      
+        .select('id, full_name, position_title, hourly_rate, salary, contracted_hours_per_week, home_site')
+        .eq('company_id', companyId)
+        .neq('status', 'inactive');
+
       // Filter: home_site matches selected site OR they have shifts/attendance for this site
       if (staffIds.size > 0) {
-        // Use OR filter: site_id matches selected site OR id is in staffIds
-        query = query.or(`site_id.eq.${selectedSiteId},id.in.(${Array.from(staffIds).join(',')})`);
+        // Use OR filter: home_site matches selected site OR id is in staffIds
+        query = query.or(`home_site.eq.${selectedSiteId},id.in.(${Array.from(staffIds).join(',')})`);
       } else {
         // If no shifts/attendance, only show employees whose home_site matches
-        query = query.eq('site_id', selectedSiteId);
+        query = query.eq('home_site', selectedSiteId);
       }
       
       const { data, error } = await query.order('full_name');
@@ -429,13 +431,14 @@ export default function AttendanceSignOffPage() {
         if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
           let fallbackQuery = supabase
             .from('profiles')
-            .select('id, full_name, position_title, hourly_rate, site_id')
-            .eq('company_id', companyId);
-          
+            .select('id, full_name, position_title, hourly_rate, home_site')
+            .eq('company_id', companyId)
+            .neq('status', 'inactive');
+
           if (staffIds.size > 0) {
-            fallbackQuery = fallbackQuery.or(`site_id.eq.${selectedSiteId},id.in.(${Array.from(staffIds).join(',')})`);
+            fallbackQuery = fallbackQuery.or(`home_site.eq.${selectedSiteId},id.in.(${Array.from(staffIds).join(',')})`);
           } else {
-            fallbackQuery = fallbackQuery.eq('site_id', selectedSiteId);
+            fallbackQuery = fallbackQuery.eq('home_site', selectedSiteId);
           }
           
           const { data: basicData, error: basicError } = await fallbackQuery.order('full_name');

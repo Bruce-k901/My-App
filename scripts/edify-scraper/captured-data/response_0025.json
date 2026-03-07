@@ -1,0 +1,24 @@
+[
+  {
+    "id": "6c75411f-7c56-40bc-92ca-40ff32dabe72",
+    "name": "Production 1",
+    "startAt": null,
+    "endAt": null,
+    "isDisplayColumn": true,
+    "isFullSelectionTime": false,
+    "siteId": "64ce33d7-8681-4a9f-808b-2fa9f325b73c",
+    "createdAt": "2025-08-06T16:29:49.392Z",
+    "updatedAt": "2025-08-06T16:29:49.392Z"
+  },
+  {
+    "id": "02b54fa8-bb18-45c8-96a7-1a5c72b90d68",
+    "name": "Production 2",
+    "startAt": null,
+    "endAt": null,
+    "isDisplayColumn": true,
+    "isFullSelectionTime": false,
+    "siteId": "64ce33d7-8681-4a9f-808b-2fa9f325b73c",
+    "createdAt": "2025-08-06T16:29:49.392Z",
+    "updatedAt": "2025-08-06T16:29:49.392Z"
+  }
+]

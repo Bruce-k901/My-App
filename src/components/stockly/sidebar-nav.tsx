@@ -77,6 +77,9 @@ const navItems: NavItem[] = [
       { label: 'Disposables', href: '/dashboard/stockly/libraries/disposables', icon: Package },
       { label: 'First Aid', href: '/dashboard/stockly/libraries/first-aid', icon: Package },
       { label: 'Packaging', href: '/dashboard/stockly/libraries/packaging', icon: Package },
+      { label: 'Drinks', href: '/dashboard/libraries/drinks', icon: Package },
+      { label: 'Glassware', href: '/dashboard/libraries/glassware', icon: Package },
+      { label: 'Utensils & Tools', href: '/dashboard/libraries/serving-equipment', icon: Package },
     ],
   },
   {

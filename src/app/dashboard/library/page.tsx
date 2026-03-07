@@ -76,10 +76,10 @@ export default function LibraryPage() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'document': return 'text-blue-400 bg-blue-500/10 border-blue-500/20';
-      case 'template': return 'text-green-400 bg-green-500/10 border-green-500/20';
-      case 'guide': return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
-      case 'reference': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
+      case 'document': return 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20';
+      case 'template': return 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20';
+      case 'guide': return 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20';
+      case 'reference': return 'text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20';
       default: return 'text-theme-tertiary bg-theme-surface-elevated0/10 border-gray-500/20';
     }
   };

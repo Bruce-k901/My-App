@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { ExpandableRecipeCard } from '@/components/recipes/ExpandableRecipeCard';
+import { useStocklyDepartments } from '@/hooks/stockly/use-stockly-departments';
 
 interface Recipe {
   id: string;
@@ -61,6 +62,12 @@ interface Recipe {
   updated_by?: string | null;
   created_by_name?: string | null;
   updated_by_name?: string | null;
+  department?: string | null;
+  // Nutrition (calculated from ingredients)
+  nutrition_per_recipe?: Record<string, number> | null;
+  nutrition_per_portion?: Record<string, number> | null;
+  nutrition_per_100g?: Record<string, number> | null;
+  nutrition_data_complete?: boolean;
 }
 
 const recipeTypeConfig = {
@@ -84,6 +91,8 @@ function RecipesPage() {
   const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null);
   const [recalculating, setRecalculating] = useState(false);
   const [uomList, setUomList] = useState<any[]>([]);
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const departments = useStocklyDepartments(companyId);
   const processedRecipeId = useRef<string | null>(null); // Track if we've processed a recipe ID
 
   useEffect(() => {
@@ -557,11 +566,11 @@ function RecipesPage() {
     if (!user?.id || !companyId) return;
     
     try {
-      // Generate code if missing
+      // Generate code if missing or stale (e.g. REC-XXX-001 from when name was empty)
       let recipeCode = recipe.code;
-      if (!recipeCode || recipeCode.trim() === '') {
+      const { generateRecipeId, isStaleRecipeCode } = await import('@/lib/utils/recipeIdGenerator');
+      if (!recipeCode || recipeCode.trim() === '' || isStaleRecipeCode(recipeCode, recipe.name)) {
         try {
-          const { generateRecipeId } = await import('@/lib/utils/recipeIdGenerator');
           recipeCode = await generateRecipeId(recipe.name, companyId);
         } catch (genError: any) {
           console.warn('Error generating recipe code, continuing without code:', genError);
@@ -610,6 +619,11 @@ function RecipesPage() {
         updatePayload.storage_requirements = null; // Explicitly set to null to clear the field
       }
       
+      // Department - allow setting to null (shared) or a string value
+      if (recipe.department !== undefined) {
+        updatePayload.department = recipe.department || null;
+      }
+
       // Only include code if we have one (view might not support it yet)
       if (recipeCode) {
         updatePayload.code = recipeCode;
@@ -711,7 +725,10 @@ function RecipesPage() {
                           recipe.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || recipe.recipe_type === typeFilter;
     const matchesCategory = categoryFilter === 'all' || recipe.menu_category === categoryFilter;
-    return matchesSearch && matchesType && matchesCategory;
+    const matchesDept = departmentFilter === 'all'
+      || (departmentFilter === '_shared' && !recipe.department)
+      || recipe.department === departmentFilter;
+    return matchesSearch && matchesType && matchesCategory && matchesDept;
   });
 
   const formatCurrency = (value: number | null) => {
@@ -731,11 +748,11 @@ function RecipesPage() {
   };
 
   const stats = {
-    total: recipes.length,
-    prep: recipes.filter(r => r.recipe_type === 'prep').length,
-    dish: recipes.filter(r => r.recipe_type === 'dish').length,
-    composite: recipes.filter(r => r.recipe_type === 'composite').length,
-    belowTarget: recipes.filter(r => r.actual_gp_percent !== null && r.actual_gp_percent < r.target_gp_percent).length
+    total: filteredRecipes.length,
+    prep: filteredRecipes.filter(r => r.recipe_type === 'prep').length,
+    dish: filteredRecipes.filter(r => r.recipe_type === 'dish').length,
+    composite: filteredRecipes.filter(r => r.recipe_type === 'composite').length,
+    belowTarget: filteredRecipes.filter(r => r.actual_gp_percent !== null && r.actual_gp_percent < r.target_gp_percent).length
   };
 
   if (loading) {
@@ -866,6 +883,19 @@ function RecipesPage() {
             ))}
           </select>
         )}
+
+        {/* Department Filter */}
+        <select
+          value={departmentFilter}
+          onChange={(e) => setDepartmentFilter(e.target.value)}
+          className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-module-fg"
+        >
+          <option value="all">All Departments</option>
+          <option value="_shared">Shared</option>
+          {departments.map(dept => (
+            <option key={dept} value={dept}>{dept}</option>
+          ))}
+        </select>
       </div>
 
       {/* Recipe List */}
@@ -905,6 +935,7 @@ function RecipesPage() {
                 companyId={companyId || ''}
                 uomList={uomList}
                 userId={user?.id}
+                departments={departments}
               />
             </div>
             );

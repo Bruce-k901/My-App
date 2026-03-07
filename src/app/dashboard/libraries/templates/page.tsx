@@ -97,8 +97,8 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
   },
   {
     id: 'serving-equipment',
-    name: 'Serving Equipment Library',
-    description: 'Plates, bowls, utensils, and serving tools',
+    name: 'Utensils & Tools Library',
+    description: 'Knives, spatulas, tongs, boards, and kitchen tools',
     tableName: 'equipment_library',
     icon: UtensilsCrossed,
     color: 'from-rose-500/20 to-module-fg/[0.25]',

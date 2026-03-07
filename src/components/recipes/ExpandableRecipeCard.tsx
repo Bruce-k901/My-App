@@ -23,9 +23,11 @@ import {
   ExternalLink
 } from '@/components/ui/icons';
 import { RecipeIngredientsTable, type RecipeIngredientsTableHandle } from './RecipeIngredientsTable';
+import { RecipeNutritionPanel } from './RecipeNutritionPanel';
 import { supabase } from '@/lib/supabase';
 // @salsa — Shared allergen utility for label display
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
+import { extractPrefix, isStaleRecipeCode } from '@/lib/utils/recipeIdGenerator';
 import { createFoodSOPFromRecipe } from '@/lib/utils/sopCreator';
 import { updateFoodSOPFromRecipe } from '@/lib/utils/sopUpdater';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
@@ -57,6 +59,12 @@ interface Recipe {
   updated_by?: string | null;
   created_by_name?: string | null;
   updated_by_name?: string | null;
+  department?: string | null;
+  // Nutrition (calculated from ingredients)
+  nutrition_per_recipe?: Record<string, number> | null;
+  nutrition_per_portion?: Record<string, number> | null;
+  nutrition_per_100g?: Record<string, number> | null;
+  nutrition_data_complete?: boolean;
 }
 
 interface ExpandableRecipeCardProps {
@@ -72,6 +80,7 @@ interface ExpandableRecipeCardProps {
   companyId: string;
   uomList?: Array<{ id: string; name: string; abbreviation: string }>; // UOM units for dropdown
   userId?: string; // User ID for SOP creation
+  departments?: string[]; // Available departments for dropdown
 }
 
 const recipeTypeConfig = {
@@ -94,7 +103,8 @@ export function ExpandableRecipeCard({
   onRecipeUpdate,
   companyId,
   uomList = [],
-  userId
+  userId,
+  departments = []
 }: ExpandableRecipeCardProps) {
   const ingredientsRef = useRef<RecipeIngredientsTableHandle>(null);
   const [draft, setDraft] = useState<Partial<Recipe>>(recipe);
@@ -230,6 +240,7 @@ export function ExpandableRecipeCard({
       allergens: recipe.allergens ?? null,
       shelf_life_days: recipe.shelf_life_days ?? null,
       storage_requirements: recipe.storage_requirements ?? null,
+      department: recipe.department ?? null,
       is_active: recipe.is_active ?? null,
       created_at: recipe.created_at,
       updated_at: recipe.updated_at,
@@ -318,7 +329,7 @@ export function ExpandableRecipeCard({
         );
       case 'archived':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 line-through">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 line-through">
             <AlertTriangle className="w-3 h-3" />
             Archived
           </span>
@@ -380,6 +391,11 @@ export function ExpandableRecipeCard({
               <TypeIcon className="w-3 h-3" />
               {typeLabel}
             </span>
+            {recipe.department && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-module-fg/10 text-module-fg border border-module-fg/20">
+                {recipe.department}
+              </span>
+            )}
             {linkedSOPId && linkedSOPNeedsUpdate && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 animate-pulse">
                 ⚠️ SOP needs review
@@ -532,7 +548,19 @@ export function ExpandableRecipeCard({
                     <input
                       type="text"
                       value={draft.name || ''}
-                      onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                      onChange={(e) => {
+                        const newName = e.target.value;
+                        // Auto-update code prefix when name changes and code is stale/empty
+                        const currentCode = draft.code;
+                        if (!currentCode || isStaleRecipeCode(currentCode, newName)) {
+                          const prefix = extractPrefix(newName);
+                          const numMatch = currentCode?.match(/(\d+)$/);
+                          const num = numMatch ? numMatch[1] : '001';
+                          setDraft({ ...draft, name: newName, code: `REC-${prefix}-${num}` });
+                        } else {
+                          setDraft({ ...draft, name: newName });
+                        }
+                      }}
  className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     />
                   </div>
@@ -543,7 +571,7 @@ export function ExpandableRecipeCard({
                       value={draft.code || ''}
                       onChange={(e) => setDraft({ ...draft, code: e.target.value })}
  className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                      placeholder="REC-XXX-001"
+                      placeholder="Auto-generated on save"
                     />
                   </div>
                 </div>
@@ -616,6 +644,19 @@ export function ExpandableRecipeCard({
  className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     placeholder="Storage instructions..."
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Department</label>
+                  <select
+                    value={draft.department || ''}
+                    onChange={(e) => setDraft({ ...draft, department: e.target.value || null })}
+                    className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  >
+                    <option value="">Shared (All)</option>
+                    {departments.map(dept => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             ) : (
@@ -722,6 +763,15 @@ export function ExpandableRecipeCard({
               )}
             </div>
 
+            {/* 2.5. NUTRITION */}
+            <RecipeNutritionPanel
+              nutritionPerPortion={recipe.nutrition_per_portion}
+              nutritionPer100g={recipe.nutrition_per_100g}
+              nutritionPerRecipe={recipe.nutrition_per_recipe}
+              isComplete={recipe.nutrition_data_complete}
+              yieldQty={recipe.yield_qty}
+            />
+
             {/* 3. INGREDIENTS TABLE */}
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -763,6 +813,105 @@ export function ExpandableRecipeCard({
                 isExpanded={isExpanded}
               />
             </div>
+
+            {/* Action Buttons - above history */}
+            {isEditing ? (
+              <div className="flex justify-between items-center pt-4 border-t border-theme dark:border-theme">
+                <div className="flex gap-2">
+                  {/* SOP Management Button - Always visible */}
+                  {linkedSOPId ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        await handleUpdateSOP();
+                      }}
+                      disabled={updatingSOP}
+                      className="gap-2"
+                    >
+                      {updatingSOP ? (
+                        <>
+                          <Clock className="h-4 w-4 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="h-4 w-4" />
+                          Update SOP
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowSopDialog(true);
+                      }}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Create SOP
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setDraft(recipe);
+                      onCancel();
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  {recipe.recipe_status === 'draft' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFinaliseDialog(true)}
+                      className="border-module-fg/50 text-module-fg hover:bg-module-fg/10"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Finalise
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Recipe
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center gap-2 pt-4 border-t border-theme dark:border-theme">
+                {/* View SOP link - visible when SOP exists */}
+                <div>
+                  {linkedSOPId && (
+                    <Link
+                      href={`/dashboard/sops/view/${linkedSOPId}`}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors text-sm"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View SOP
+                    </Link>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit()}
+                >
+                  Edit Recipe
+                </Button>
+              </div>
+            )}
 
             {/* 4. RECIPE HISTORY */}
             <div>
@@ -829,129 +978,6 @@ export function ExpandableRecipeCard({
               )}
             </div>
 
-            {/* Action Buttons */}
-            {isEditing ? (
-              <div className="flex justify-between items-center pt-4 border-t border-theme dark:border-theme">
-                <div className="flex gap-2">
-                  {/* SOP Management Button - Always visible */}
-                  {linkedSOPId ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={async () => {
-                        await handleUpdateSOP();
-                      }}
-                      disabled={updatingSOP}
-                      className="gap-2"
-                    >
-                      {updatingSOP ? (
-                        <>
-                          <Clock className="h-4 w-4 animate-spin" />
-                          Updating...
-                        </>
-                      ) : (
-                        <>
-                          <FileText className="h-4 w-4" />
-                          Update SOP
-                        </>
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setShowSopDialog(true);
-                      }}
-                      className="gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Create SOP
-                    </Button>
-                  )}
-
-                  {/* Complete & Save - for draft recipes */}
-                  {recipe.recipe_status === 'draft' && (
-                    <Button
-                      size="sm"
-                      onClick={async () => {
-                        const { error } = await supabase
-                          .from('recipes')
-                          .update({
-                            recipe_status: 'active',
-                            is_active: true
-                          })
-                          .eq('id', recipe.id);
-
-                        if (error) {
-                          toast.error('Failed to update recipe');
-                          return;
-                        }
-
-                        setShowSopDialog(true);
-                        if (onRecipeUpdate) {
-                          onRecipeUpdate();
-                        }
-                      }}
-                      disabled={finalising || saving}
-                      className="bg-emerald-600 hover:bg-emerald-700 gap-2"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Complete & Save
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  {/* Cancel Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      onCancel();
-                    }}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-
-                  {/* Save Button */}
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      handleSave();
-                    }}
-                    disabled={saving}
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Recipe
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-between items-center gap-2 pt-4 border-t border-theme dark:border-theme">
-                {/* View SOP link - visible when SOP exists */}
-                <div>
-                  {linkedSOPId && (
-                    <Link
-                      href={`/dashboard/sops/view/${linkedSOPId}`}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors text-sm"
-                    >
-                      <FileText className="w-4 h-4" />
-                      View SOP
-                    </Link>
-                  )}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEdit()}
-                >
-                  Edit Recipe
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -119,11 +119,11 @@ export default function ConfirmationsPage() {
   const getActionBadge = (action: string) => {
     switch (action) {
       case 'confirm':
-        return <span className="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">✓ Confirmed</span>
+        return <span className="px-2 py-1 text-xs rounded bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30">✓ Confirmed</span>
       case 'decline':
-        return <span className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-400 border border-red-500/30">✗ Declined</span>
+        return <span className="px-2 py-1 text-xs rounded bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30">✗ Declined</span>
       case 'reschedule':
-        return <span className="px-2 py-1 text-xs rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">🔄 Reschedule</span>
+        return <span className="px-2 py-1 text-xs rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30">🔄 Reschedule</span>
       default:
         return null
     }
@@ -132,9 +132,9 @@ export default function ConfirmationsPage() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'interview':
-        return <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">📅 Interview</span>
+        return <span className="px-2 py-1 text-xs rounded bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30">📅 Interview</span>
       case 'trial':
-        return <span className="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">👔 Trial</span>
+        return <span className="px-2 py-1 text-xs rounded bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30">👔 Trial</span>
       case 'offer':
         return <span className="px-2 py-1 text-xs rounded bg-module-fg/[0.25] text-module-fg border border-module-fg/[0.30]">💼 Offer</span>
       default:
@@ -226,8 +226,8 @@ export default function ConfirmationsPage() {
 
               {/* Response Details */}
               {response.action === 'reschedule' && (
-                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4">
-                  <div className="text-amber-400 font-medium text-sm mb-2">
+                <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg p-4 mb-4">
+                  <div className="text-amber-700 dark:text-amber-400 font-medium text-sm mb-2">
                     🔄 Reschedule Request
                   </div>
                   {response.requested_date && (
@@ -250,8 +250,8 @@ export default function ConfirmationsPage() {
               )}
 
               {response.action === 'decline' && response.decline_reason && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
-                  <div className="text-red-400 font-medium text-sm mb-2">
+                <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg p-4 mb-4">
+                  <div className="text-red-700 dark:text-red-400 font-medium text-sm mb-2">
                     ✗ Decline Reason
                   </div>
                   <div className="text-theme-primary/70 text-sm">

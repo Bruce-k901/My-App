@@ -21,6 +21,19 @@ export function extractPrefix(name: string): string {
 }
 
 /**
+ * Returns true if a recipe code has a stale/fallback prefix that doesn't match the recipe name.
+ * e.g. code "REC-XXX-001" is stale for name "Vanilla bean swirl" (should be REC-VAN-001)
+ */
+export function isStaleRecipeCode(code: string | null | undefined, name: string): boolean {
+  if (!code) return false;
+  const match = code.match(/^REC-([A-Z]{3})-\d+$/);
+  if (!match) return false;
+  const codePrefix = match[1];
+  const expectedPrefix = extractPrefix(name);
+  return codePrefix !== expectedPrefix;
+}
+
+/**
  * Generates unique recipe ID in format: REC-{PREFIX}-{NUMBER}
  * Example: REC-OKJ-001 for "Okja Butter"
  */

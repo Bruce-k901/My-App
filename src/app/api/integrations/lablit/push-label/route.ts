@@ -19,12 +19,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { companyId, batchId, outputId, type } = body as {
+    const { companyId, batchId, outputId, type, copies = 1 } = body as {
       companyId: string;
       batchId: string;
       outputId?: string;
       type: 'production_output' | 'stock_batch';
+      copies?: number;
     };
+    const labelCopies = Math.max(1, Math.min(copies, 50)); // clamp 1–50
 
     if (!companyId || !batchId || !type) {
       return NextResponse.json(
@@ -87,23 +89,27 @@ export async function POST(request: NextRequest) {
         ),
       );
 
-      // Convert to Labl.it products
-      const products = payloads.map(labelPayloadToLablitProduct);
+      // Convert to Labl.it products, expanding for copies
+      const singleProducts = payloads.map(labelPayloadToLablitProduct);
+      const products = labelCopies === 1
+        ? singleProducts
+        : singleProducts.flatMap(p => Array.from({ length: labelCopies }, () => p));
 
       // Try to push to Labl.it API
       const client = new LablitClient(config.apiKey, config.deviceId, config.baseUrl);
       try {
         const result = await client.pushProducts(products);
-        return NextResponse.json({ success: true, result });
+        return NextResponse.json({ success: true, copies: labelCopies, result });
       } catch (err) {
         if (err instanceof LablitApiError && err.category === 'NOT_IMPLEMENTED') {
           // Return the mapped data as a dry-run preview
           return NextResponse.json({
             success: true,
             placeholder: true,
+            copies: labelCopies,
             message: 'Label data mapped successfully. Labl.it API push will activate once API access is confirmed.',
             labels: payloads,
-            products,
+            products: singleProducts,
           });
         }
         throw err;
@@ -126,16 +132,20 @@ export async function POST(request: NextRequest) {
       );
 
       const product = labelPayloadToLablitProduct(labelPayload);
+      const products = Array.from({ length: labelCopies }, () => product);
 
       const client = new LablitClient(config.apiKey, config.deviceId, config.baseUrl);
       try {
-        const result = await client.pushProduct(product);
-        return NextResponse.json({ success: true, result });
+        const result = labelCopies === 1
+          ? await client.pushProduct(product)
+          : await client.pushProducts(products);
+        return NextResponse.json({ success: true, copies: labelCopies, result });
       } catch (err) {
         if (err instanceof LablitApiError && err.category === 'NOT_IMPLEMENTED') {
           return NextResponse.json({
             success: true,
             placeholder: true,
+            copies: labelCopies,
             message: 'Label data mapped successfully. Labl.it API push will activate once API access is confirmed.',
             label: labelPayload,
             product,

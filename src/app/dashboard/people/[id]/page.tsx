@@ -452,10 +452,10 @@ export default function EmployeeProfilePage() {
     if (!role) return 'bg-neutral-500/20 text-theme-tertiary';
     const roleLower = role.toLowerCase();
     switch (roleLower) {
-      case 'admin': return 'bg-purple-500/20 text-purple-400';
-      case 'owner': return 'bg-amber-500/20 text-amber-400';
-      case 'manager': return 'bg-blue-500/20 text-blue-400';
-      case 'general_manager': return 'bg-blue-500/20 text-blue-400';
+      case 'admin': return 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400';
+      case 'owner': return 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400';
+      case 'manager': return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400';
+      case 'general_manager': return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400';
       case 'staff': return 'bg-neutral-500/20 text-theme-tertiary';
       default: return 'bg-neutral-500/20 text-theme-tertiary';
     }
@@ -463,9 +463,9 @@ export default function EmployeeProfilePage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500/20 text-green-400';
-      case 'onboarding': return 'bg-amber-500/20 text-amber-400';
-      case 'inactive': return 'bg-red-500/20 text-red-400';
+      case 'active': return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400';
+      case 'onboarding': return 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400';
+      case 'inactive': return 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400';
       default: return 'bg-neutral-500/20 text-theme-tertiary';
     }
   };
@@ -612,9 +612,9 @@ export default function EmployeeProfilePage() {
               </button>
             )}
             {employee.status === 'offboarding' && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span className="text-sm text-amber-400 font-medium">Offboarding in progress</span>
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg">
+                <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                <span className="text-sm text-amber-700 dark:text-amber-400 font-medium">Offboarding in progress</span>
               </div>
             )}
 
@@ -1070,7 +1070,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
               </div>
               <button
                 onClick={() => onOpenSiteAssignments(employee)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-700 dark:text-blue-400 hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
               >
                 <MapPin className="w-5 h-5" />
                 Manage Site Assignments
@@ -1281,13 +1281,13 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
               : null;
 
             const statusColors: Record<string, string> = {
-              scheduled: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-              invitation_sent: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-              in_progress: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-              pending_manager: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-              pending_employee: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-              completed: 'bg-green-500/10 text-green-400 border-green-500/30',
-              cancelled: 'bg-red-500/10 text-red-400 border-red-500/30',
+              scheduled: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
+              invitation_sent: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/30',
+              in_progress: 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+              pending_manager: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
+              pending_employee: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
+              completed: 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
+              cancelled: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
             };
 
             return (
@@ -1310,7 +1310,7 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
                         <Calendar className="h-3 w-3" />
                         <span>Scheduled: {scheduledDate}</span>
                         {daysUntil !== null && (
-                          <span className={daysUntil < 0 ? 'text-red-400' : daysUntil <= 7 ? 'text-yellow-400' : 'text-theme-tertiary'}>
+                          <span className={daysUntil < 0 ? 'text-red-700 dark:text-red-400' : daysUntil <= 7 ? 'text-yellow-700 dark:text-yellow-400' : 'text-theme-tertiary'}>
                             ({daysUntil < 0 ? `${Math.abs(daysUntil)} days overdue` : daysUntil === 0 ? 'Today' : `${daysUntil} days away`})
                           </span>
                         )}
@@ -1820,7 +1820,7 @@ function DocumentsTab({ employeeId, onModalChange }: { employeeId: string; onMod
             <p className="text-xs text-theme-primary/60">Checklist (can be configured per role later)</p>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-green-400">
+            <div className="text-lg font-bold text-green-700 dark:text-green-400">
               {REQUIRED_DOCS.filter((d) => d.required && (uploadedByType.get(d.key)?.length || 0) > 0).length}
             </div>
             <div className="text-xs text-theme-primary/60">of {REQUIRED_DOCS.filter((d) => d.required).length}</div>
@@ -1834,10 +1834,10 @@ function DocumentsTab({ employeeId, onModalChange }: { employeeId: string; onMod
               <div
                 key={d.key}
                 className={`flex items-center gap-2 text-xs p-2 rounded ${
-                  has ? 'bg-green-500/10 border border-green-500/30' : 'bg-gray-50 dark:bg-white/[0.03] border border-theme'
+                  has ? 'bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30' : 'bg-gray-50 dark:bg-white/[0.03] border border-theme'
                 }`}
               >
-                <span className={has ? 'text-green-400' : 'text-red-400'}>{has ? '✓' : '○'}</span>
+                <span className={has ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}>{has ? '✓' : '○'}</span>
                 <span className={`flex-1 ${has ? 'text-theme-primary/80' : 'text-theme-primary/60'}`}>{d.label}</span>
                 {d.help && <span className="text-theme-primary/40">{d.help}</span>}
               </div>
@@ -1881,7 +1881,7 @@ function DocumentsTab({ employeeId, onModalChange }: { employeeId: string; onMod
                 </button>
                 <button
                   onClick={() => handleDelete(doc)}
-                  className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-red-400"
+                  className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-white/5 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400"
                   title="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -1994,7 +1994,7 @@ function DocumentsTab({ employeeId, onModalChange }: { employeeId: string; onMod
                       {!uploading && (
                         <button
                           onClick={() => removeFromQueue(doc.id)}
-                          className="p-1 hover:bg-white/5 rounded text-theme-tertiary hover:text-red-400"
+                          className="p-1 hover:bg-red-50 dark:hover:bg-white/5 rounded text-theme-tertiary hover:text-red-600 dark:hover:text-red-400"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>

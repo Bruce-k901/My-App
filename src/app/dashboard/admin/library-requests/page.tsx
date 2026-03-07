@@ -51,28 +51,28 @@ export default function AdminLibraryRequestsPage() {
     switch (status) {
       case 'pending':
         return (
-          <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs flex items-center gap-1">
+          <span className="px-2 py-1 bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-full text-xs flex items-center gap-1">
             <Clock size={12} />
             Pending
           </span>
         );
       case 'approved':
         return (
-          <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs flex items-center gap-1">
+          <span className="px-2 py-1 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-xs flex items-center gap-1">
             <CheckCircle2 size={12} />
             Approved
           </span>
         );
       case 'deployed':
         return (
-          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs flex items-center gap-1">
+          <span className="px-2 py-1 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded-full text-xs flex items-center gap-1">
             <CheckCircle2 size={12} />
             Deployed
           </span>
         );
       case 'rejected':
         return (
-          <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs flex items-center gap-1">
+          <span className="px-2 py-1 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-full text-xs flex items-center gap-1">
             <XCircle size={12} />
             Rejected
           </span>
@@ -122,7 +122,7 @@ export default function AdminLibraryRequestsPage() {
         </div>
         <div className="flex items-center gap-2">
           {pendingCount > 0 && (
-            <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm">
+            <span className="px-3 py-1 bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-full text-sm">
               {pendingCount} Pending
             </span>
           )}

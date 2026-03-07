@@ -109,7 +109,7 @@ export default function CutoffRulesPage() {
               type="number"
               min="0"
               value={bufferDays}
-              onChange={(e) => setBufferDays(parseInt(e.target.value) || 0)}
+              onChange={(e) => setBufferDays(e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               className="w-32 bg-theme-button border-theme text-theme-primary"
             />
             <p className="text-sm text-theme-tertiary mt-1">

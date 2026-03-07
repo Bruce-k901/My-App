@@ -226,10 +226,10 @@ export default function PublicJobPage() {
               </div>
 
               <div className="flex items-center gap-2 mt-4">
-                <span className="px-3 py-1 text-xs rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                <span className="px-3 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30">
                   {job.boh_foh}
                 </span>
-                <span className="px-3 py-1 text-xs rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                <span className="px-3 py-1 text-xs rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30">
                   {job.pay_type === 'hourly' ? 'Hourly' : 'Salaried'}
                 </span>
                 {job.contract_type && (

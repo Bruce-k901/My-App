@@ -69,8 +69,8 @@ const LIBRARIES = [
     borderColor: 'border-yellow-500/30'
   },
   { 
-    id: 'serving_equipment_library', 
-    name: 'Serving Equipment', 
+    id: 'serving_equipment_library',
+    name: 'Utensils & Tools', 
     icon: UtensilsCrossed, 
     color: 'text-[#8A2B2B]',
     bgColor: 'bg-[#8A2B2B]/15',

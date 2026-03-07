@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
 
-// GET - Fetch saleable ingredients from Stockly for linking to Planly
+// GET - Fetch saleable ingredients from Stockly (retail/wholesale) for linking to Planly products
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -33,11 +33,12 @@ export async function GET(request: NextRequest) {
     const linkedIds = (linkedProducts || []).map(p => p.stockly_product_id);
 
     // Fetch saleable ingredients from the ingredients library by company_id
+    // Include products that are saleable via retail OR wholesale channels
     const { data, error } = await supabase
       .from('ingredients_library')
-      .select('id, ingredient_name, category, unit')
+      .select('id, ingredient_name, category, unit, is_retail_saleable, is_wholesale_saleable')
       .eq('company_id', site.company_id)
-      .eq('is_saleable', true)
+      .or('is_retail_saleable.eq.true,is_wholesale_saleable.eq.true')
       .order('ingredient_name', { ascending: true });
 
     if (error) {

@@ -357,7 +357,7 @@ export default function AssetForm({ open, onClose, onSaved }: { open: boolean; o
                       min="1"
                       placeholder="every 6 months"
                       value={form.watch('ppm_frequency_months') || ''}
-                      onChange={(e) => form.setValue('ppm_frequency_months', parseInt(e.target.value) || 6)}
+                      onChange={(e) => form.setValue('ppm_frequency_months', e.target.value === '' ? '' : parseInt(e.target.value) || 6)}
                       className="w-full"
                     />
                   </Tooltip>

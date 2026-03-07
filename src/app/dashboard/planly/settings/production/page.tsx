@@ -485,7 +485,7 @@ export default function ProductionSettingsPage() {
                 min={0}
                 value={doughForm.mix_lead_days}
                 onChange={e =>
-                  setDoughForm(prev => ({ ...prev, mix_lead_days: parseInt(e.target.value) || 0 }))
+                  setDoughForm(prev => ({ ...prev, mix_lead_days: e.target.value === '' ? '' : parseInt(e.target.value) || 0 }))
                 }
               />
             </div>
@@ -578,7 +578,7 @@ export default function ProductionSettingsPage() {
                   onChange={e =>
                     setStyleForm(prev => ({
                       ...prev,
-                      products_per_sheet: parseInt(e.target.value) || 1,
+                      products_per_sheet: e.target.value === '' ? '' : parseInt(e.target.value) || 1,
                     }))
                   }
                 />
@@ -610,7 +610,7 @@ export default function ProductionSettingsPage() {
                 onChange={e =>
                   setStyleForm(prev => ({
                     ...prev,
-                    laminate_lead_days: parseInt(e.target.value) || 1,
+                    laminate_lead_days: e.target.value === '' ? '' : parseInt(e.target.value) || 1,
                   }))
                 }
               />

@@ -1,0 +1,35 @@
+{
+  "errorsWhileComputingFlags": false,
+  "flags": {},
+  "requestId": "defe11d5-a999-469e-90d2-30b5e392db32",
+  "evaluatedAt": 1772663474745,
+  "supportedCompression": ["gzip", "gzip-js"],
+  "autocaptureExceptions": false,
+  "siteApps": [],
+  "conversations": false,
+  "surveys": false,
+  "logs": {
+    "captureConsoleLogs": false
+  },
+  "token": "phc_WFAXElvwzHePNyMSbImX9lTBoiiM3mu0zXT5ilQjNLJ",
+  "hasFeatureFlags": false,
+  "captureDeadClicks": false,
+  "capturePerformance": {
+    "network_timing": true,
+    "web_vitals": false,
+    "web_vitals_allowed_metrics": null
+  },
+  "autocapture_opt_out": false,
+  "elementsChainAsString": true,
+  "analytics": {
+    "endpoint": "/i/v0/e/"
+  },
+  "defaultIdentifiedOnly": true,
+  "errorTracking": {
+    "autocaptureExceptions": false,
+    "suppressionRules": []
+  },
+  "productTours": false,
+  "sessionRecording": false,
+  "heatmaps": false
+}

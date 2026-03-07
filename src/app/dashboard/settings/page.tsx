@@ -13,6 +13,7 @@ import { WorkflowTab } from '@/components/settings/WorkflowTab';
 
 import { IntegrationsTab } from '@/components/settings/IntegrationsTab';
 import { WhatsAppSettingsTab } from '@/components/settings/WhatsAppSettingsTab';
+import { DigestSettingsTab } from '@/components/settings/DigestSettingsTab';
 
 type ProfileSettings = {
   user_id: string;
@@ -25,7 +26,7 @@ type ProfileSettings = {
   sound_vibration: boolean;
 };
 
-type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'integrations' | 'whatsapp' | 'company';
+type Tab = 'profile' | 'appearance' | 'notifications' | 'digest' | 'workflow' | 'integrations' | 'whatsapp' | 'company';
 
 export default function SettingsPage() {
   const { profile, companyId, siteId, company, role, userId } = useAppContext();
@@ -356,6 +357,7 @@ export default function SettingsPage() {
     { id: 'profile' as Tab, label: 'Profile', icon: User },
     { id: 'appearance' as Tab, label: 'Appearance', icon: Palette },
     { id: 'notifications' as Tab, label: 'Notifications', icon: Bell },
+    { id: 'digest' as Tab, label: 'Daily Digest', icon: Mail },
     { id: 'workflow' as Tab, label: 'Workflow', icon: Workflow },
     { id: 'integrations' as Tab, label: 'Integrations', icon: Plug },
     { id: 'whatsapp' as Tab, label: 'WhatsApp', icon: MessageCircle },
@@ -721,6 +723,9 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Digest Tab */}
+      {activeTab === 'digest' && <DigestSettingsTab />}
 
       {/* Workflow Tab */}
       {activeTab === 'workflow' && <WorkflowTab />}

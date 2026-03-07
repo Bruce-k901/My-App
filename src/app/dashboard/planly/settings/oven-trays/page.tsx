@@ -589,7 +589,7 @@ export default function OvenAndTraysPage() {
                 type="number"
                 min={1}
                 value={trayForm.default_capacity}
-                onChange={(e) => setTrayForm((p) => ({ ...p, default_capacity: parseInt(e.target.value) || 1 }))}
+                onChange={(e) => setTrayForm((p) => ({ ...p, default_capacity: e.target.value === '' ? '' : parseInt(e.target.value) || 1 }))}
               />
               <p className="text-xs text-theme-tertiary mt-1">How many items fit on this tray by default</p>
             </div>
@@ -628,7 +628,7 @@ export default function OvenAndTraysPage() {
                         type="number"
                         min={1}
                         value={profile.capacity}
-                        onChange={(e) => updateProfile(index, 'capacity', parseInt(e.target.value) || 1)}
+                        onChange={(e) => updateProfile(index, 'capacity', e.target.value === '' ? '' : parseInt(e.target.value) || 1)}
                         className="w-20"
                       />
                       <button onClick={() => removeProfile(index)} className="p-2 text-red-500 hover:text-red-600">

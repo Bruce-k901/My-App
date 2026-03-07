@@ -314,11 +314,11 @@ export default function EquipmentLibraryPage() {
 
   const colourBadge = (code: string) => {
     const cls =
-      code === 'Red' ? 'bg-red-500/20 text-red-400' :
-      code === 'Blue' ? 'bg-blue-500/20 text-blue-400' :
-      code === 'Green' ? 'bg-green-500/20 text-green-400' :
-      code === 'Yellow' ? 'bg-yellow-500/20 text-yellow-400' :
-      code === 'Brown' ? 'bg-amber-700/20 text-amber-400' :
+      code === 'Red' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
+      code === 'Blue' ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400' :
+      code === 'Green' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400' :
+      code === 'Yellow' ? 'bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400' :
+      code === 'Brown' ? 'bg-amber-50 dark:bg-amber-700/20 text-amber-700 dark:text-amber-400' :
       code === 'White' ? 'bg-neutral-200 dark:bg-white/20 text-theme-primary' :
       'bg-neutral-200 dark:bg-neutral-700 text-theme-tertiary';
     return <span className={`px-2 py-1 rounded-full text-xs ${cls}`}>{code}</span>;

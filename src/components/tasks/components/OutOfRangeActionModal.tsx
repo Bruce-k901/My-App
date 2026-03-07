@@ -77,7 +77,7 @@ export function OutOfRangeActionModal({
                     {asset.assetName}
                   </h3>
                   <p className="text-xs text-theme-tertiary">
-                    Recorded: <span className="text-red-400 font-medium">{asset.temperature}°C</span> | Expected: {asset.min}°C to {asset.max}°C
+                    Recorded: <span className="text-red-600 dark:text-red-400 font-medium">{asset.temperature}°C</span> | Expected: {asset.min}°C to {asset.max}°C
                   </p>
                 </div>
 
@@ -88,8 +88,8 @@ export function OutOfRangeActionModal({
                     onClick={() => handleActionSelect(asset.assetId, 'monitor')}
                     className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                       selectedAction === 'monitor'
-                        ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                        : 'bg-white/[0.03] border-white/[0.1] text-theme-tertiary hover:border-white/[0.2]'
+                        ? 'bg-blue-50 dark:bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-400'
+                        : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.1] text-theme-tertiary hover:border-gray-300 dark:hover:border-white/[0.2]'
                     }`}
                   >
                     <Clock className="w-5 h-5 flex-shrink-0" />
@@ -105,8 +105,8 @@ export function OutOfRangeActionModal({
                     onClick={() => handleActionSelect(asset.assetId, 'callout')}
                     className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                       selectedAction === 'callout'
-                        ? 'bg-red-500/20 border-red-500 text-red-400'
-                        : 'bg-white/[0.03] border-white/[0.1] text-theme-tertiary hover:border-white/[0.2]'
+                        ? 'bg-red-50 dark:bg-red-500/20 border-red-500 text-red-700 dark:text-red-400'
+                        : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.1] text-theme-tertiary hover:border-gray-300 dark:hover:border-white/[0.2]'
                     }`}
                   >
                     <Phone className="w-5 h-5 flex-shrink-0" />

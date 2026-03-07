@@ -1,0 +1,97 @@
+{
+  "id": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+  "name": "Okja",
+  "status": "ACTIVE",
+  "contactName": null,
+  "contactEmail": null,
+  "jobTitle": null,
+  "isDemo": false,
+  "accountsEmails": null,
+  "invoiceEmails": null,
+  "statementEmails": null,
+  "contactPhones": null,
+  "mobilePhones": null,
+  "currency": null,
+  "website": null,
+  "vatNumber": null,
+  "companyRegistrationNumber": null,
+  "addressId": null,
+  "franchisorId": null,
+  "posSystemId": "87c50c84-73a2-4f7c-aae6-96f63961cdaf",
+  "createdAt": "2025-08-06T16:26:47.864Z",
+  "timezone": "Europe/London",
+  "landingPageUrl": null,
+  "updatedAt": "2025-08-14T08:52:48.645Z",
+  "autoUpdateProductPrices": null,
+  "orderInvoiceEmail": "f342affa-882e-4474-bc2c-1108055fdad4@invoices.edifysystems.io",
+  "address": null,
+  "franchises": [],
+  "features": [
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "bakersPercentage",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "checklists",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "inventory",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "orders",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "recipes",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "reports",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "settings",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "suppliers",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "wasteAndTransfer",
+      "createdAt": "2025-08-06T16:26:47.864Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "workflows",
+      "createdAt": "2025-08-06T16:30:54.241Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "posDashboard",
+      "createdAt": "2025-08-26T13:37:56.241Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "production",
+      "createdAt": "2025-08-27T09:13:23.444Z"
+    },
+    {
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+      "featureName": "cogsDashboard",
+      "createdAt": "2025-10-01T16:13:42.945Z"
+    }
+  ],
+  "supplierPriceUpdateExceptions": []
+}

@@ -605,7 +605,7 @@ export function NewCreditNoteModal({
                           type="number"
                           step="0.001"
                           value={line.quantity || ''}
-                          onChange={(e) => updateLineItem(index, 'quantity', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => updateLineItem(index, 'quantity', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                           placeholder="0"
                           disabled={saving}
                         />
@@ -618,7 +618,7 @@ export function NewCreditNoteModal({
                           type="number"
                           step="0.01"
                           value={line.unit_price || ''}
-                          onChange={(e) => updateLineItem(index, 'unit_price', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => updateLineItem(index, 'unit_price', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                           placeholder="0.00"
                           disabled={saving}
                         />

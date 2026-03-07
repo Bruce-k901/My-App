@@ -167,13 +167,13 @@ export default function TicketsPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'text-red-400 bg-red-500/20 border-red-500/40';
+        return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/40';
       case 'high':
-        return 'text-orange-400 bg-orange-500/20 border-orange-500/40';
+        return 'text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/20 border-orange-200 dark:border-orange-500/40';
       case 'medium':
-        return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
+        return 'text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/20 border-yellow-200 dark:border-yellow-500/40';
       case 'low':
-        return 'text-blue-400 bg-blue-500/20 border-blue-500/40';
+        return 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-500/40';
       default:
         return 'text-theme-tertiary bg-theme-surface-elevated0/20 border-gray-500/40';
     }
@@ -182,11 +182,11 @@ export default function TicketsPage() {
   const getModuleColor = (module: string) => {
     const colors: Record<string, string> = {
       checkly: 'text-module-fg bg-module-fg/[0.25] border-module-fg/[0.40]',
-      stockly: 'text-green-400 bg-green-500/20 border-green-500/40',
-      teamly: 'text-blue-400 bg-blue-500/20 border-blue-500/40',
+      stockly: 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/40',
+      teamly: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-500/40',
       planly: 'text-module-fg bg-module-fg/20 border-module-fg/30',
       assetly: 'text-module-fg bg-module-fg/20 border-module-fg/30',
-      msgly: 'text-purple-400 bg-purple-500/20 border-purple-500/40',
+      msgly: 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/20 border-purple-200 dark:border-purple-500/40',
       general: 'text-theme-tertiary bg-theme-surface-elevated0/20 border-gray-500/40'
     };
     return colors[module] || colors.general;
@@ -196,7 +196,7 @@ export default function TicketsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-yellow-600 dark:text-yellow-400 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-theme-primary mb-2">Access Restricted</h2>
           <p className="text-theme-tertiary">Only administrators and owners can view support tickets.</p>
         </div>

@@ -69,10 +69,10 @@ export default function SupplierDetailPage() {
     wa_opted_in: false,
     portal_url: '',
     rep_name: '',
-    payment_terms_days: 30,
+    payment_terms_days: 30 as number | '',
     minimum_order_value: '',
     delivery_days: [] as number[],
-    lead_time_days: 1,
+    lead_time_days: 1 as number | '',
     order_cutoff_time: '14:00',
     account_number: '',
   });
@@ -416,7 +416,7 @@ export default function SupplierDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm text-theme-secondary mb-1">Payment Terms (days)</label>
-                  <Input type="number" value={formData.payment_terms_days} onChange={(e) => setFormData({ ...formData, payment_terms_days: parseInt(e.target.value) || 30 })} min="0" />
+                  <Input type="number" value={formData.payment_terms_days} onChange={(e) => setFormData({ ...formData, payment_terms_days: e.target.value === '' ? '' : parseInt(e.target.value) })} min="0" />
                 </div>
                 <div>
                   <label className="block text-sm text-theme-secondary mb-1">Min Order Value</label>
@@ -424,7 +424,7 @@ export default function SupplierDetailPage() {
                 </div>
                 <div>
                   <label className="block text-sm text-theme-secondary mb-1">Lead Time (days)</label>
-                  <Input type="number" value={formData.lead_time_days} onChange={(e) => setFormData({ ...formData, lead_time_days: parseInt(e.target.value) || 1 })} min="0" />
+                  <Input type="number" value={formData.lead_time_days} onChange={(e) => setFormData({ ...formData, lead_time_days: e.target.value === '' ? '' : parseInt(e.target.value) })} min="0" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">

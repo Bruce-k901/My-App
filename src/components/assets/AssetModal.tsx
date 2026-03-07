@@ -441,7 +441,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
                     min="1"
                     max="24"
                     value={form.ppm_frequency_months}
-                    onChange={(e) => handleInputChange('ppm_frequency_months', parseInt(e.target.value) || 6)}
+                    onChange={(e) => handleInputChange('ppm_frequency_months', e.target.value === '' ? '' : parseInt(e.target.value) || 6)}
                     className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>

@@ -718,7 +718,7 @@ export default function OrdersPage() {
                                   step="1"
                                   value={quantity || ''}
                                   onChange={(e) => {
-                                    const value = parseInt(e.target.value) || 0;
+                                    const value = e.target.value === '' ? 0 : parseInt(e.target.value) || 0;
                                     updateQuantity(product.id, date, value);
                                   }}
                                   className={`w-full px-2 py-2 rounded text-center text-base font-semibold focus:outline-none focus:ring-2 focus:ring-[#10B981]/50 min-h-[44px] ${

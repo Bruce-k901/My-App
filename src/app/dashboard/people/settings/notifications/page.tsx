@@ -288,7 +288,7 @@ export default function NotificationsPage() {
                                   type="number"
                                   min="0"
                                   value={typeof value === 'number' ? value : 0}
-                                  onChange={(e) => updateTiming(type.id, key, parseInt(e.target.value) || 0)}
+                                  onChange={(e) => updateTiming(type.id, key, e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
                                   placeholder="0"
                                 />
                               </div>

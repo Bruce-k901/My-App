@@ -44,11 +44,6 @@
   --module-assetly-dark: 0 43 54; /* #002B36 Royal Emerald dark */
   --module-msgly-dark: 26 28 34; /* #1A1C22 Platinum Dusk dark */
 
-  /* Forecastly — Storm Marble */
-  --module-forecastly: 228 233 236; /* #E4E9EC light */
-  --module-forecastly-mid: 123 143 161; /* #7B8FA1 mid */
-  --module-forecastly-dark: 42 46 53; /* #2A2E35 dark */
-
   /* UI neutral — Graphite Chrome */
   --ui-chrome: 189 189 189; /* #BDBDBD light */
   --ui-chrome-mid: 88 88 88; /* #585858 mid */
@@ -120,7 +115,6 @@
   --module-fg-mid: var(--module-msgly-mid);
   --module-bg-tint: var(--sidebar-msgly);
 }
-
 .light .module-checkly {
   --module-fg: var(--module-checkly-dark);
   --module-fg-mid: var(--module-checkly-mid);
@@ -1275,43 +1269,6 @@ body:has(.marketing-page) .global-footer {
 .planly-page-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--module-planly) / 0.2) transparent;
-}
-
-/* Forecastly */
-.forecastly-sidebar-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(var(--module-forecastly) / 0.5);
-  border-radius: 9999px;
-}
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--module-forecastly) / 0.7);
-}
-.forecastly-sidebar-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent;
-}
-
-.forecastly-page-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.forecastly-page-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.forecastly-page-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(var(--module-forecastly) / 0.2);
-  border-radius: 9999px;
-}
-.forecastly-page-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--module-forecastly) / 0.4);
-}
-.forecastly-page-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(var(--module-forecastly) / 0.2) transparent;
 }
 
 /* AI Assistant - uses checkly module colour */

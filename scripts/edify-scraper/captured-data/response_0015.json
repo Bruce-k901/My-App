@@ -1,0 +1,217 @@
+{
+  "data": [
+    {
+      "id": "929dfa85-eccc-427c-9348-e0cf9e488e16",
+      "name": "Andrew Gecko",
+      "email": "andrew@geckocoffee.house",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["8f010fbf-a143-479f-b7fb-e9e084af0ed1"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "89b7a76a-3891-46bf-a589-baa54ec87151",
+      "name": "Ben Bracchi",
+      "email": "benb@okja.com",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "3a4bd3db-e19f-4f7b-95f3-50692de2156b",
+      "name": "Ben  Mandala Cafe",
+      "email": "info@mandalacafe.co.uk",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["6b8fde8b-42a3-4e5d-984e-3a77c504fc8d"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "da54501d-c78e-40d0-a0f7-73fde7c37587",
+      "name": "Brandon Bradley",
+      "email": "brandon.bradley@jwpike.net",
+      "sub": null,
+      "contactPhone": "+4407555291647",
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "696a3f0c-bbd3-4a2c-93ee-31270329c7af",
+      "name": "Brett Thomas",
+      "email": "moolah@olaokja.com",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "6f4320a6-3ba9-4cfd-a2da-25e51b864f2e",
+      "name": "Bruce Test",
+      "email": "bruce@e-a-g.co",
+      "sub": null,
+      "contactPhone": "+447891710002",
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "09157527-cfc2-4ba6-8724-3ae2155e5ba9",
+      "name": "Eniko Hevesi",
+      "email": "eniko@bonedaddies.com",
+      "sub": null,
+      "contactPhone": "+4407340218897",
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["379c8081-aeff-4978-a004-c325903271dd"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "f519d568-e15f-4eaa-a455-8a5add33be99",
+      "name": "Gareth Alchemy 2",
+      "email": "duomanager@alchemycoffee.co.uk",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["95f690d5-8108-4097-9b86-f2eb613e7ce0"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "c5263023-7f5b-497a-8037-043729ae5eaa",
+      "name": "Georgia Naked",
+      "email": "a@naked.care",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["35e7d835-0012-41a2-8e3f-58ec821be633", "5525e105-ffe1-4875-8e3d-017d9ad739ca"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "27400159-9fa1-4236-9aaa-d48a8782387b",
+      "name": "Guido Chaos",
+      "email": "guido@chaos.london",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["fc42804d-cc3e-4043-b115-7e803ee3e134"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "name": "Martina Senesi",
+      "email": "martina@okja.com",
+      "sub": null,
+      "contactPhone": "+4407763815035",
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "3983679a-3c27-43af-9e69-6024a19baaea",
+      "name": "Max Kleinskys",
+      "email": "max@bonedaddies.com",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["379c8081-aeff-4978-a004-c325903271dd"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "2785e895-5e10-41ab-8418-30303f90bbea",
+      "name": "Niki Bean",
+      "email": "info@beanandfriends.co.uk",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["1b0551fe-dfee-451f-b600-fb8c6fb3dd59"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "392a6b69-eb7f-49e3-8136-4e074cfecc0f",
+      "name": "rossana Merlini",
+      "email": "rossana@okja.com",
+      "sub": null,
+      "contactPhone": "+4407436376215",
+      "roleName": "Admin",
+      "roleId": "afebf9dd-853d-44ed-82b9-002a3c46d521",
+      "sites": [],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "23fbc767-478e-4f78-81ac-4f2d586837ea",
+      "name": "Shubham Ghanatha",
+      "email": "photobookec2@gmail.com",
+      "sub": null,
+      "contactPhone": "+447884703603",
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["d47df061-5208-4417-bd3d-00178c555c81"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "162ab25f-f9ca-4973-91b2-e583bb2d2043",
+      "name": "Sophie De Beauvoir Deli",
+      "email": "info@thedebeauvoirdeli.co.uk",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["93d4e234-bdbd-4d7d-828c-6045519b05af"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "16109777-48bd-409c-b3d3-4f0fa48a5879",
+      "name": "Stevie  High grade",
+      "email": "manager@highgrade.coffee",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["97d3f380-d29c-4ac3-a20d-b2e6e8427339"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "ce68aaa0-dae8-47b0-9369-e8a3aebb159a",
+      "name": "Tilen 3rd Cuture",
+      "email": "hi@thirdculturedeli.com",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["ea6a8929-990f-41b6-931f-1ebd33103d0e"],
+      "status": "ACTIVE"
+    },
+    {
+      "id": "57acf098-374a-4a7c-91b3-bb196034fa9f",
+      "name": "Tunc Tram Store",
+      "email": "tunc@tram-store.co.uk",
+      "sub": null,
+      "contactPhone": null,
+      "roleName": "Employee",
+      "roleId": "2bf68ff7-7335-4b6c-8877-e648ddc93713",
+      "sites": ["e15b32e0-4ed8-40cf-b91a-5eda7cdd15cc"],
+      "status": "ACTIVE"
+    }
+  ],
+  "page": 1,
+  "size": 50,
+  "total": 19,
+  "totalPages": 1
+}

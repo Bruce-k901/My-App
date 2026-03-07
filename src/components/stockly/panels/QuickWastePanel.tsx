@@ -442,7 +442,7 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
                         step="0.01"
                         min="0"
                         value={line.quantity}
-                        onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
+                        onChange={(e) => updateLine(idx, { quantity: e.target.value === '' ? '' : parseFloat(e.target.value) || 0 })}
                         className={`w-full px-2 py-1 bg-theme-surface border rounded text-theme-primary text-sm ${
                           line.stock_warning ? 'border-red-500/50' : 'border-gray-200 dark:border-neutral-600'
                         }`}

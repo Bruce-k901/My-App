@@ -19,12 +19,12 @@ const DOC_TYPE_LABELS: Record<string, string> = {
 };
 
 const DOC_TYPE_COLORS: Record<string, string> = {
-  certificate: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-  insurance: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  spec_sheet: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
-  audit_report: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  contract: 'bg-slate-500/15 text-slate-400 border-slate-500/25',
-  other: 'bg-gray-500/15 text-gray-400 border-gray-500/25',
+  certificate: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/25',
+  insurance: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/25',
+  spec_sheet: 'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/25',
+  audit_report: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/25',
+  contract: 'bg-slate-50 dark:bg-slate-500/15 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-500/25',
+  other: 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/25',
 };
 
 interface SupplierDocumentListProps {

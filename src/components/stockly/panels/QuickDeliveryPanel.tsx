@@ -284,7 +284,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                             type="number"
                             step="0.01"
                             value={line.quantity}
-                            onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) => updateLine(idx, { quantity: e.target.value === '' ? '' : parseFloat(e.target.value) || 0 })}
                             className="w-full px-2 py-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded text-theme-primary text-sm"
                           />
                         </div>
@@ -294,7 +294,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                             type="number"
                             step="0.01"
                             value={line.unit_price}
-                            onChange={(e) => updateLine(idx, { unit_price: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) => updateLine(idx, { unit_price: e.target.value === '' ? '' : parseFloat(e.target.value) || 0 })}
                             className="w-full px-2 py-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded text-theme-primary text-sm"
                           />
                         </div>

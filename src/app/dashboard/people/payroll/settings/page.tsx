@@ -422,7 +422,7 @@ export default function PayrunSettingsPage() {
               max="28"
               value={schedule.period_start_date || 1}
               onChange={(e) =>
-                setSchedule({ ...schedule, period_start_date: parseInt(e.target.value) || 1 })
+                setSchedule({ ...schedule, period_start_date: e.target.value === '' ? '' : parseInt(e.target.value) || 1 })
               }
  className="bg-theme-surface ] border-gray-300 dark:border-white/[0.12] text-theme-primary"
             />
@@ -463,7 +463,7 @@ export default function PayrunSettingsPage() {
               max="14"
               value={schedule.days_after_period_end}
               onChange={(e) =>
-                setSchedule({ ...schedule, days_after_period_end: parseInt(e.target.value) || 5 })
+                setSchedule({ ...schedule, days_after_period_end: e.target.value === '' ? '' : parseInt(e.target.value) || 5 })
               }
  className="bg-theme-surface ] border-gray-300 dark:border-white/[0.12] text-theme-primary"
             />
@@ -521,7 +521,7 @@ export default function PayrunSettingsPage() {
                 max="7"
                 value={schedule.generate_days_before}
                 onChange={(e) =>
-                  setSchedule({ ...schedule, generate_days_before: parseInt(e.target.value) || 3 })
+                  setSchedule({ ...schedule, generate_days_before: e.target.value === '' ? '' : parseInt(e.target.value) || 3 })
                 }
  className="bg-theme-surface ] border-gray-300 dark:border-white/[0.12] text-theme-primary"
               />

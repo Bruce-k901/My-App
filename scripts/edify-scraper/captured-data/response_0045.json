@@ -1,0 +1,244 @@
+{
+  "categories": [
+    {
+      "id": "2f17fc42-5791-4272-8f1e-6d5fb3c19d74",
+      "name": "Alcohol",
+      "companyId": null
+    },
+    {
+      "id": "677b28ef-9acd-4071-808d-30e008ece314",
+      "name": "Alternative milk",
+      "companyId": null
+    },
+    {
+      "id": "63a7f3f8-4eb4-4528-b7a3-e95ebbd36783",
+      "name": "Baguettes",
+      "companyId": null
+    },
+    {
+      "id": "1f47f1b5-2b70-4427-b17a-014b2514b204",
+      "name": "Bakery",
+      "companyId": null
+    },
+    {
+      "id": "f25eefc3-e554-41cc-88d1-281c84308650",
+      "name": "Beer",
+      "companyId": null
+    },
+    {
+      "id": "3a9a007f-0727-4447-b2f3-6eb041a4d200",
+      "name": "Beverage",
+      "companyId": null
+    },
+    {
+      "id": "febe35df-bf32-41a4-b66f-cd6b230d2826",
+      "name": "Cakes",
+      "companyId": null
+    },
+    {
+      "id": "9f76d4da-2291-4ec8-9a4c-a7097c7533d6",
+      "name": "Chai",
+      "companyId": null
+    },
+    {
+      "id": "817c11c1-cb00-43f8-8cb8-9aa7c7568e11",
+      "name": "Chilled",
+      "companyId": null
+    },
+    {
+      "id": "fbd36bc4-fb8f-4658-849e-97fea5d7aa44",
+      "name": "Cleaning",
+      "companyId": null
+    },
+    {
+      "id": "025b7e76-a0ef-4e49-aa87-b6b054263cd6",
+      "name": "Coffee",
+      "companyId": null
+    },
+    {
+      "id": "fd240728-0545-4ed4-83d1-646756b2c982",
+      "name": "Cookies",
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b"
+    },
+    {
+      "id": "24c6e470-4a65-4174-b78a-47eb4956d5d8",
+      "name": "Dairy",
+      "companyId": null
+    },
+    {
+      "id": "b0f055b5-252d-4e9b-9053-7d2e22a224f6",
+      "name": "Delivery",
+      "companyId": null
+    },
+    {
+      "id": "3da92a43-efa6-47dc-a764-40b7a2f6ee24",
+      "name": "Dry",
+      "companyId": null
+    },
+    {
+      "id": "b36d2c74-ff0e-4939-b230-cf636a3a5fbe",
+      "name": "Energy drinks",
+      "companyId": null
+    },
+    {
+      "id": "d8daa99a-c6d2-4a23-8c78-cb572175d403",
+      "name": "Fish",
+      "companyId": null
+    },
+    {
+      "id": "c0128840-0884-433a-8d51-686f313acef9",
+      "name": "Food",
+      "companyId": null
+    },
+    {
+      "id": "9577fd5e-9936-42ea-8cfd-531fda213ca3",
+      "name": "Frozen",
+      "companyId": null
+    },
+    {
+      "id": "08141542-cd23-4fa7-b6e9-0c7dc188d554",
+      "name": "Fruit & Veg",
+      "companyId": null
+    },
+    {
+      "id": "c42e28c1-5144-44e5-bbc4-c448352637f0",
+      "name": "Granary",
+      "companyId": null
+    },
+    {
+      "id": "7a96ae1e-9b11-4849-9a3b-4eb1aebc34b3",
+      "name": "Juices",
+      "companyId": null
+    },
+    {
+      "id": "4a67b41e-2038-43df-a641-5e4b5d1b5cc3",
+      "name": "Meat",
+      "companyId": null
+    },
+    {
+      "id": "0a9a9efd-a130-4941-871e-94948fe7271a",
+      "name": "Milk",
+      "companyId": null
+    },
+    {
+      "id": "6cef7391-0a76-4639-982b-07fa62f215f2",
+      "name": "Other",
+      "companyId": null
+    },
+    {
+      "id": "a250c2e8-b10e-4c0d-acdf-9891a35fcdae",
+      "name": "Packaging",
+      "companyId": null
+    },
+    {
+      "id": "461991a4-b548-4d2d-a80e-01cb06084f5a",
+      "name": "Pasta",
+      "companyId": null
+    },
+    {
+      "id": "2261300f-7064-4687-9138-f8bd2a2b0306",
+      "name": "Pastry",
+      "companyId": null
+    },
+    {
+      "id": "82c81263-cfe1-4782-8f37-b6e77b413cde",
+      "name": "Patisserie",
+      "companyId": null
+    },
+    {
+      "id": "0b30587f-fae9-4f2a-a659-836b42cd567b",
+      "name": "Pots",
+      "companyId": null
+    },
+    {
+      "id": "98e46344-316f-4506-82b1-9e72030521fb",
+      "name": "Protein drinks",
+      "companyId": null
+    },
+    {
+      "id": "3ae8dfe0-cd12-4456-be60-f2a840711e75",
+      "name": "Refreshers",
+      "companyId": null
+    },
+    {
+      "id": "85b03df8-c1b1-4903-802f-014040c07f65",
+      "name": "Retail",
+      "companyId": null
+    },
+    {
+      "id": "ab700950-41a5-4db4-9ceb-6a8f400ea8ec",
+      "name": "Salad",
+      "companyId": null
+    },
+    {
+      "id": "6caf72bd-a249-4ba1-8bcd-4804820d737c",
+      "name": "Sandwiches",
+      "companyId": null
+    },
+    {
+      "id": "7e38a325-380f-49f5-a844-2669202b1a25",
+      "name": "Sauces",
+      "companyId": null
+    },
+    {
+      "id": "755262da-af38-4aa5-aeb5-2af10f17b3b4",
+      "name": "Seafood",
+      "companyId": null
+    },
+    {
+      "id": "0d13efc5-2d0c-467f-89a8-71923b2944b9",
+      "name": "Shakes",
+      "companyId": null
+    },
+    {
+      "id": "476ace9c-9a15-4867-a05f-24f1f0171313",
+      "name": "Smoothie",
+      "companyId": null
+    },
+    {
+      "id": "d42f6036-92bb-4087-bb3f-3cc2ebc9f4dd",
+      "name": "Spirits",
+      "companyId": null
+    },
+    {
+      "id": "d189187f-d248-4982-ab30-ac1eb6d0ddbb",
+      "name": "Syrups",
+      "companyId": null
+    },
+    {
+      "id": "d007ac5d-bf57-4a0e-994c-986c9adfdb49",
+      "name": "Teas",
+      "companyId": null
+    },
+    {
+      "id": "69931ced-5fb3-410b-aab7-b61fc568d360",
+      "name": "Toastie",
+      "companyId": null
+    },
+    {
+      "id": "b60c842a-f850-4121-bbdc-381f2419d4f2",
+      "name": "Traybakes",
+      "companyId": null
+    },
+    {
+      "id": "1d06d50b-e4ff-442e-abe6-eec7c3c874b1",
+      "name": "Whisky",
+      "companyId": null
+    },
+    {
+      "id": "4f24c8b1-7582-45f9-b932-bd66dfd31cbc",
+      "name": "Wine",
+      "companyId": null
+    },
+    {
+      "id": "94d7d1ab-d337-4c1f-ac23-1b21835bc74c",
+      "name": "Wraps",
+      "companyId": null
+    },
+    {
+      "id": "87b8e378-2747-43f6-90d4-2440ebbe9ccb",
+      "name": "Yogurt",
+      "companyId": null
+    }
+  ]
+}

@@ -548,7 +548,7 @@ export default function RolesAndPermissionsPage() {
                         <Input
                           type="number"
                           value={roleForm.hierarchy_level}
-                          onChange={(e) => setRoleForm({ ...roleForm, hierarchy_level: parseInt(e.target.value) || 100 })}
+                          onChange={(e) => setRoleForm({ ...roleForm, hierarchy_level: e.target.value === '' ? '' : parseInt(e.target.value) || 100 })}
                           className="w-full"
                         />
                         <p className="text-xs text-theme-tertiary mt-1">Lower = more access (0 = Owner, 100 = Employee)</p>

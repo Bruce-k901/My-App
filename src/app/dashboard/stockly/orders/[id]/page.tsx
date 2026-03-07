@@ -28,6 +28,7 @@ import {
 import SmartOrderSuggestions from '@/components/stockly/SmartOrderSuggestions';
 import DeliveryScheduleInfo from '@/components/stockly/DeliveryScheduleInfo';
 import SendDialog from '@/components/whatsapp/SendDialog';
+import { SendPurchaseOrderDialog } from '@/components/stockly/SendPurchaseOrderDialog';
 
 interface Supplier {
   id: string;
@@ -149,6 +150,7 @@ export default function PurchaseOrderDetailPage() {
   
   const [showActions, setShowActions] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [showSendDialog, setShowSendDialog] = useState(false);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -1008,6 +1010,16 @@ export default function PurchaseOrderDetailPage() {
             </div>
           )}
           
+          {!isNew && selectedSupplier && ['draft', 'approved'].includes(order.status) && (
+            <button
+              onClick={() => setShowSendDialog(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-module-fg text-white hover:opacity-90 rounded-lg transition-all"
+            >
+              <Send className="w-5 h-5" />
+              Send Order
+            </button>
+          )}
+
           {!isNew && selectedSupplier?.ordering_config?.whatsapp_number && ['approved', 'sent', 'draft'].includes(order.status) && (
             <button
               onClick={() => setShowWhatsApp(true)}
@@ -1231,7 +1243,7 @@ export default function PurchaseOrderDetailPage() {
                           min={item.min_order_qty || 0}
                           value={quantity || ''}
                           onChange={(e) => {
-                            const val = parseFloat(e.target.value) || 0;
+                            const val = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                             handleQuantityChange(item, val);
                           }}
                           disabled={!canEdit}
@@ -1392,6 +1404,28 @@ export default function PurchaseOrderDetailPage() {
         </div>
       </div>
       </div>
+
+      {/* Send Purchase Order Dialog */}
+      {selectedSupplier && (
+        <SendPurchaseOrderDialog
+          isOpen={showSendDialog}
+          onClose={() => setShowSendDialog(false)}
+          purchaseOrder={{
+            id: order.id,
+            order_number: order.order_number,
+            supplier: {
+              id: selectedSupplier.id,
+              name: selectedSupplier.name,
+              email: selectedSupplier.email,
+              ordering_method: selectedSupplier.ordering_method,
+              ordering_config: selectedSupplier.ordering_config,
+            },
+          }}
+          onSuccess={() => {
+            loadOrder(); // Refresh to show sent status
+          }}
+        />
+      )}
 
       {/* WhatsApp Send Dialog */}
       {selectedSupplier?.ordering_config?.whatsapp_number && (

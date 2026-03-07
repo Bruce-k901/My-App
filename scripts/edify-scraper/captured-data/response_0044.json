@@ -1,0 +1,54 @@
+{
+  "classes": [
+    {
+      "id": "28dcda5d-1293-4dbb-b259-63048619dee1",
+      "name": "Alcohol",
+      "companyId": null
+    },
+    {
+      "id": "c456ef3e-87eb-4527-8953-18d4d3dc9bea",
+      "name": "Beverage",
+      "companyId": null
+    },
+    {
+      "id": "cbbafe76-38fe-4cff-8171-4d0c7121b593",
+      "name": "Beverage - Coffee",
+      "companyId": null
+    },
+    {
+      "id": "c3282d0b-e2bb-4e8c-91f0-3eaabc088aa3",
+      "name": "Cookie",
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b"
+    },
+    {
+      "id": "4ff0cf57-e22a-4076-b00f-82ddc1fabef0",
+      "name": "Croissant",
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b"
+    },
+    {
+      "id": "980c4103-964b-4010-b099-a8b421acf519",
+      "name": "Food",
+      "companyId": null
+    },
+    {
+      "id": "d75e5487-c7c5-44a8-8f9d-d0c688beae51",
+      "name": "Other",
+      "companyId": null
+    },
+    {
+      "id": "0cf6184b-b9e9-4047-8571-22d24dee716f",
+      "name": "Packaging",
+      "companyId": null
+    },
+    {
+      "id": "7cb8379c-9d4f-46e8-86c6-45c1d036f975",
+      "name": "Retail",
+      "companyId": null
+    },
+    {
+      "id": "50b6a51e-e431-45cc-acd9-80707aa7452c",
+      "name": "Swirls",
+      "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b"
+    }
+  ]
+}

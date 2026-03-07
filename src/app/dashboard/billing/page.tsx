@@ -246,17 +246,17 @@ export default function BillingPage() {
     const statusConfig = {
       trial: {
         label: "Free Trial",
-        color: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+        color: "bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/40",
         icon: Clock,
       },
       active: {
         label: "Active",
-        color: "bg-green-500/20 text-green-400 border-green-500/40",
+        color: "bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/40",
         icon: CheckCircle2,
       },
       expired: {
         label: "Expired",
-        color: "bg-red-500/20 text-red-400 border-red-500/40",
+        color: "bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/40",
         icon: AlertCircle,
       },
       cancelled: {
@@ -266,7 +266,7 @@ export default function BillingPage() {
       },
       past_due: {
         label: "Past Due",
-        color: "bg-orange-500/20 text-orange-400 border-orange-500/40",
+        color: "bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/40",
         icon: AlertCircle,
       },
     };

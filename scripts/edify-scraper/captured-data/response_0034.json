@@ -1,0 +1,110 @@
+{
+  "id": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+  "name": "Croissant dough",
+  "description": "Dough used for croissants ",
+  "workflowBaseHour": 5,
+  "companyId": "c87184ab-e6c3-4cdb-ab10-37c995fdf55b",
+  "createdAt": "2025-08-27T22:14:51.257Z",
+  "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+  "updatedAt": "2025-08-27T22:15:25.686Z",
+  "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+  "deletedAt": null,
+  "steps": [
+    {
+      "id": "16439a12-62d6-48d7-967d-60e8e2aaf529",
+      "name": "Weight wet ingridients",
+      "description": "Weight water, milk, butter and fermented dough and place in the fridge ",
+      "hourOffset": 60,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "a05ee17f-8837-4942-8c7f-d3dd8757cf9b",
+      "name": "Weight dry ingredients",
+      "description": "Weight flour, salt, sugar, yeast ",
+      "hourOffset": 45,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "f3c7b03b-3273-44ea-88c7-08cba985d384",
+      "name": "Mix all the ingredients",
+      "description": "After senior baker checks, mix the dough ",
+      "hourOffset": 44,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "c788863a-9980-41d8-86ac-50379d98d739",
+      "name": "Proof the dough",
+      "description": "Proof the dough inside proofer then ball it into 1.02kg ",
+      "hourOffset": 41,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "53ace682-07ea-4332-9efe-2a8b96d6b733",
+      "name": "Laminate the dough",
+      "description": "Laminate the dough and let it rest in freezer ",
+      "hourOffset": 17,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "04609a9b-6a99-4b58-b376-3f3d26ac3889",
+      "name": "Shape croissants",
+      "description": "Shape them and place them in proofer overnight",
+      "hourOffset": 15,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "b233a831-daf3-4bfe-82e0-046d2e33ae1f",
+      "name": "Bake",
+      "description": "Bake them ",
+      "hourOffset": 2,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    },
+    {
+      "id": "2270ac68-2572-4dd9-9af7-b4681c2be687",
+      "name": "Decorate and box",
+      "description": "Decorate and prep them for pick up",
+      "hourOffset": 1,
+      "workflowId": "e3b7c723-fd53-42b1-989b-53c3a7941568",
+      "createdAt": "2025-08-27T22:35:06.930Z",
+      "createdBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "updatedAt": "2025-08-27T22:35:06.930Z",
+      "updatedBy": "a9f43cda-9f63-4cc4-8900-f94987ea314c",
+      "deletedAt": null
+    }
+  ]
+}

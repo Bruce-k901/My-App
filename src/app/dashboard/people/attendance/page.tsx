@@ -41,7 +41,8 @@ export default function AttendancePage() {
         .from('profiles')
         .select('id')
         .eq('company_id', companyId)
-        .eq('home_site', siteId);
+        .eq('home_site', siteId)
+        .neq('status', 'inactive');
       setSiteProfileIds(new Set((data || []).map((p: any) => p.id)));
     }
 

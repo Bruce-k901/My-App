@@ -13,7 +13,7 @@ export function MessagingPanel() {
   const { isMobile } = useIsMobile()
 
   return (
-    <Sheet open={messagingOpen} onOpenChange={setMessagingOpen}>
+    <Sheet open={messagingOpen} onOpenChange={setMessagingOpen} modal={false}>
       <SheetContent
         side="right"
         hideClose

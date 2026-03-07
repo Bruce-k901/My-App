@@ -311,18 +311,18 @@ export default function SmartOrderSuggestions({
                         </span>
                         {/* Badges */}
                         {suggestion.shelf_life_days && suggestion.shelf_life_days >= 180 && (
-                          <span className="px-1.5 py-0.5 bg-green-500/20 text-green-400 text-xs rounded">
+                          <span className="px-1.5 py-0.5 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 text-xs rounded">
                             Long life
                           </span>
                         )}
                         {suggestion.days_until_reorder !== null && suggestion.days_until_reorder <= 14 && (
-                          <span className="px-1.5 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded flex items-center gap-1">
+                          <span className="px-1.5 py-0.5 bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 text-xs rounded flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {suggestion.days_until_reorder}d
                           </span>
                         )}
                         {!suggestion.is_perishable && (
-                          <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
+                          <span className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-xs rounded">
                             Non-perishable
                           </span>
                         )}

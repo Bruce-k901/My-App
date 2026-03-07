@@ -590,21 +590,29 @@ function FoodSOPTemplatePageContent() {
           // Populate ingredients from TipTap ingredientTable
           if (ingredientTableNode?.attrs?.rows && Array.isArray(ingredientTableNode.attrs.rows)) {
             const tipTapIngredients = ingredientTableNode.attrs.rows.map((row: any, idx: number) => {
-              // Try to find ingredient_id by matching name in ingredients library
               const ingredientName = row.ingredient || '';
-              const matchedIngredient = ingredientsLibrary.find(
-                (lib: any) => lib.ingredient_name?.toLowerCase() === ingredientName.toLowerCase()
-              );
-              
+              // Use stored ingredient_id first, fall back to name matching
+              let ingredientId = row.ingredient_id || '';
+              let matchedIngredient = ingredientId
+                ? ingredientsLibrary.find((lib: any) => lib.id === ingredientId)
+                : null;
+              if (!matchedIngredient) {
+                matchedIngredient = ingredientsLibrary.find(
+                  (lib: any) => lib.ingredient_name?.toLowerCase() === ingredientName.toLowerCase()
+                );
+                if (matchedIngredient) ingredientId = matchedIngredient.id;
+              }
+
               return {
                 id: Date.now() + idx,
-                ingredient_id: matchedIngredient?.id || '', // Look up by name
+                ingredient_id: ingredientId,
                 ingredient_name: ingredientName,
                 quantity: parseFloat(row.quantity) || '',
                 unit: row.unit || '',
                 allergens: Array.isArray(row.allergen) ? row.allergen : (row.allergen ? [row.allergen] : []),
                 colour_code: row.colour_code || matchedIngredient?.default_colour_code || '',
                 supplier: row.supplier || matchedIngredient?.supplier || '',
+                lineCost: parseFloat(row.lineCost) || 0, // Pre-calculated cost from recipe system
                 prepState: row.prepState || '',
                 useByDate: row.useByDate || '',
                 costPerUnit: row.costPerUnit || ''
@@ -744,9 +752,9 @@ function FoodSOPTemplatePageContent() {
     }
   }, [profile, editId]);
 
-  // Auto-generate reference code (only for new SOPs, not when editing)
+  // Auto-generate reference code when empty (for new SOPs and existing SOPs with missing ref_code)
   useEffect(() => {
-    if (!editId && title && category && !refCode) {
+    if (title && category && !refCode) {
       const prefixMap = {
         'Food Prep': 'PREP',
         'Service (FOH)': 'FOH',
@@ -761,7 +769,21 @@ function FoodSOPTemplatePageContent() {
       const nameBit = title.replace(/\s+/g, '').slice(0, 4).toUpperCase();
       setRefCode(`${prefix}-${nameBit}-001`);
     }
-  }, [title, category, editId, refCode]);
+  }, [title, category, refCode]);
+
+  // Fetch recipe cost for linked SOPs (authoritative source)
+  const [recipeTotalCost, setRecipeTotalCost] = useState<number | null>(null);
+  useEffect(() => {
+    if (!linkedRecipeId) { setRecipeTotalCost(null); return; }
+    supabase
+      .from('recipes')
+      .select('total_cost, ingredient_cost')
+      .eq('id', linkedRecipeId)
+      .single()
+      .then(({ data }) => {
+        if (data) setRecipeTotalCost(data.total_cost || data.ingredient_cost || null);
+      });
+  }, [linkedRecipeId]);
 
   // Calculate totals and allergens from ingredients
   useEffect(() => {
@@ -769,14 +791,19 @@ function FoodSOPTemplatePageContent() {
     let yieldVal = 0;
     const allergensSet = new Set();
     const coloursSet = new Set();
+    let hasStoredLineCosts = false;
 
     ingredients.forEach(ing => {
       const libItem = ingredientsLibrary.find(i => i.id === ing.ingredient_id);
-      if (libItem && ing.quantity) {
-        // Convert quantity to match the ingredient library's unit
+
+      // Use pre-calculated line_cost from recipe system if available (avoids unit conversion mismatch)
+      if (ing.lineCost && ing.lineCost > 0) {
+        cost += ing.lineCost;
+        hasStoredLineCosts = true;
+      } else if (!linkedRecipeId && libItem && ing.quantity) {
+        // Only recalculate for non-linked SOPs (manual ingredients)
         const qtyInLibraryUnit = convertToUnit(ing.quantity, ing.unit, libItem.unit);
-        
-        // Calculate unit cost - use unit_cost if available, otherwise calculate from pack_cost/pack_size
+
         let unitCost = libItem.unit_cost || 0;
         if (!unitCost || unitCost === 0) {
           const packCost = parseFloat(libItem.pack_cost || 0);
@@ -785,9 +812,7 @@ function FoodSOPTemplatePageContent() {
             unitCost = packCost / packSize;
           }
         }
-        
-        // Calculate cost with yield_percent adjustment (same logic as recipe system)
-        // Formula: (unit_cost * quantity) / (yield_percent / 100)
+
         const yieldPercent = parseFloat(libItem.yield_percent || 100);
         let lineCost = 0;
         if (yieldPercent > 0) {
@@ -795,24 +820,38 @@ function FoodSOPTemplatePageContent() {
         } else {
           lineCost = unitCost * qtyInLibraryUnit;
         }
-        
+
         cost += lineCost;
-        
-        // Convert all units to grams for consistent yield calculation
+      }
+
+      // Yield calculation
+      if (ing.quantity) {
         const qtyInGrams = convertToGrams(ing.quantity, ing.unit);
         yieldVal += qtyInGrams;
-        
+      }
+
+      // Allergens and colours from library
+      if (libItem) {
         (libItem.allergens || []).forEach(a => allergensSet.add(a));
         if (libItem.default_colour_code) coloursSet.add(libItem.default_colour_code);
       }
+      // Also pick up allergens stored directly on ingredient (from sopCreator)
+      if (ing.allergens) {
+        (Array.isArray(ing.allergens) ? ing.allergens : []).forEach(a => allergensSet.add(a));
+      }
     });
+
+    // For linked SOPs without stored line costs, use recipe's authoritative total_cost
+    if (linkedRecipeId && !hasStoredLineCosts && recipeTotalCost && recipeTotalCost > 0) {
+      cost = recipeTotalCost;
+    }
 
     setTotalCost(cost);
     // Convert total yield back to kg for display
     setTotalYield(yieldVal / 1000);
     setAllergensList(Array.from(allergensSet));
     setToolColours(Array.from(coloursSet));
-  }, [ingredients, ingredientsLibrary, convertToGrams, convertToUnit]);
+  }, [ingredients, ingredientsLibrary, convertToGrams, convertToUnit, linkedRecipeId, recipeTotalCost]);
 
   // Ingredient handlers
   const addIngredient = () => {

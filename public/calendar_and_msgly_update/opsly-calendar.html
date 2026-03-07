@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opsly — Calendar & Msgly</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Opsly module colours */
+  --checkly:     #C4617A;
+  --checkly-bg:  rgba(196,97,122,0.08);
+  --stockly:     #4E9A8F;
+  --stockly-bg:  rgba(78,154,143,0.08);
+  --teamly:      #5B7FD4;
+  --teamly-bg:   rgba(91,127,212,0.08);
+  --planly:      #6BA86A;
+  --planly-bg:   rgba(107,168,106,0.08);
+  --assetly:     #D4924E;
+  --assetly-bg:  rgba(212,146,78,0.08);
+  --msgly:       #7B9EC2;
+  --msgly-bg:    rgba(123,158,194,0.08);
+
+  /* Surface */
+  --bg:          #F5F4F2;
+  --surface:     #FFFFFF;
+  --surface-2:   #F9F8F7;
+  --border:      rgba(0,0,0,0.07);
+  --border-mid:  rgba(0,0,0,0.10);
+  --text-1:      #1A1A1A;
+  --text-2:      #6B6B6B;
+  --text-3:      #A0A0A0;
+  --text-inv:    #FFFFFF;
+  --accent:      #C4617A;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+  --radius:      14px;
+  --radius-sm:   8px;
+  --radius-xs:   5px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-1);
+}
+
+/* ═══════════════ SHELL ═══════════════ */
+.shell {
+  width: 100%;
+  max-width: 1380px;
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 56px 1fr;
+  min-height: 820px;
+  border: 1px solid var(--border);
+}
+
+/* ═══════════════ TOP BAR ═══════════════ */
+.topbar {
+  grid-column: 1 / -1;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  gap: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo-bars {
+  display: flex;
+  gap: 2.5px;
+  align-items: flex-end;
+  height: 20px;
+  margin-right: 4px;
+}
+.logo-bars span {
+  width: 4px;
+  border-radius: 2px;
+  display: block;
+}
+
+.topbar-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+
+.topbar-sep { flex: 1; }
+
+.topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.38rem 0.85rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: var(--text-3);
+  width: 260px;
+  cursor: text;
+  transition: border-color 0.15s;
+}
+.topbar-search:hover { border-color: rgba(0,0,0,0.18); }
+.topbar-search kbd {
+  margin-left: auto;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 3px;
+  color: var(--text-3);
+  font-family: inherit;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.75rem;
+}
+
+.tb-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 16px;
+}
+.tb-btn:hover { background: var(--surface-2); color: var(--text-1); }
+
+.ask-ai {
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  background: linear-gradient(135deg, #C4617A, #9B4A60);
+  color: white;
+  border: none; border-radius: 8px;
+  font-size: 0.7rem; font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(196,97,122,0.3);
+}
+
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #C4617A, #9B4A60);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+}
+
+/* ═══════════════ LEFT PANEL ═══════════════ */
+.left-panel {
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Mini calendar */
+.mini-cal {
+  padding: 1.25rem 1.1rem 0.75rem;
+}
+
+.mini-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.mini-cal-month {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+
+.mini-nav {
+  display: flex; gap: 2px;
+}
+.mini-nav button {
+  width: 22px; height: 22px;
+  border: none; background: transparent;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 12px;
+}
+.mini-nav button:hover { background: var(--border); color: var(--text-1); }
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.mini-dow {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: center;
+  padding: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mini-day {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-2);
+  font-weight: 400;
+}
+.mini-day:hover { background: var(--border); color: var(--text-1); }
+.mini-day.today {
+  background: var(--checkly);
+  color: white;
+  font-weight: 600;
+}
+.mini-day.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--checkly);
+}
+.mini-day { position: relative; }
+.mini-day.other-month { color: var(--text-3); opacity: 0.5; }
+.mini-day.selected {
+  background: rgba(196,97,122,0.12);
+  color: var(--checkly);
+  font-weight: 600;
+}
+
+/* Left panel sections */
+.lp-section {
+  padding: 0.75rem 1.1rem 0;
+}
+
+.lp-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+}
+
+/* Today's feed */
+.feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+.feed-item:hover { background: var(--border); }
+
+.feed-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.feed-content {}
+.feed-title {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text-1);
+  line-height: 1.3;
+}
+.feed-sub {
+  font-size: 0.65rem;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+/* Messages preview */
+.msg-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+.msg-preview:hover { background: var(--border); }
+
+.msg-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.msg-info { flex: 1; min-width: 0; }
+.msg-name {
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--text-1);
+}
+.msg-snippet {
+  font-size: 0.65rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-badge {
+  background: var(--checkly);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.lp-spacer { flex: 1; }
+
+.lp-user {
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.lp-user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #C4617A, #9B4A60);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+}
+.lp-user-name { font-size: 0.75rem; font-weight: 500; color: var(--text-1); }
+.lp-user-role { font-size: 0.62rem; color: var(--text-3); }
+.lp-settings {
+  margin-left: auto;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  border: none; background: transparent;
+  color: var(--text-3); cursor: pointer;
+  transition: all 0.15s;
+}
+.lp-settings:hover { background: var(--border); color: var(--text-1); }
+
+/* ═══════════════ MAIN CALENDAR AREA ═══════════════ */
+.cal-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Calendar header */
+.cal-header {
+  padding: 1rem 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.cal-top-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+}
+
+.cal-nav {
+  display: flex; align-items: center; gap: 0.25rem;
+}
+.cal-nav-btn {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+}
+.cal-nav-btn:hover { background: var(--surface-2); color: var(--text-1); border-color: rgba(0,0,0,0.15); }
+
+.today-btn {
+  padding: 0.28rem 0.75rem;
+  border-radius: 7px;
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.today-btn:hover { background: var(--surface-2); color: var(--text-1); }
+
+.cal-header-sep { flex: 1; }
+
+.view-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.view-btn {
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.view-btn.active {
+  background: var(--surface);
+  color: var(--text-1);
+  box-shadow: var(--shadow-sm);
+}
+
+.add-event-btn {
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--text-1);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.add-event-btn:hover { background: #333; }
+
+/* Filter tags */
+.cal-filters {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding-bottom: 0.85rem;
+}
+
+.filter-tag {
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-color: var(--border-mid);
+}
+.filter-tag .tag-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.filter-tag.active {
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+.filter-tag.active.shifts { border-color: var(--teamly); color: var(--teamly); }
+.filter-tag.active.compliance { border-color: var(--checkly); color: var(--checkly); }
+.filter-tag.active.deliveries { border-color: var(--stockly); color: var(--stockly); }
+.filter-tag.active.tasks { border-color: var(--planly); color: var(--planly); }
+.filter-tag.active.messages { border-color: var(--msgly); color: var(--msgly); }
+.filter-tag.active.leave { border-color: var(--assetly); color: var(--assetly); }
+
+/* ═══════════════ CALENDAR GRID ═══════════════ */
+.cal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+.day-header {
+  padding: 0.7rem 0.5rem 0.55rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.day-header:last-child { border-right: none; }
+
+.day-header .dow {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  margin-bottom: 0.25rem;
+}
+
+.day-header .date-num {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--text-2);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.day-header .date-num:hover { background: var(--surface-2); }
+.day-header.today .date-num {
+  background: var(--checkly);
+  color: white;
+  font-weight: 600;
+}
+.day-header.today .dow { color: var(--checkly); }
+.day-header.selected .date-num {
+  background: rgba(196,97,122,0.1);
+  color: var(--checkly);
+}
+
+/* Events grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.day-col {
+  border-right: 1px solid var(--border);
+  padding: 0.65rem 0.45rem;
+  min-height: 180px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.day-col:last-child { border-right: none; }
+.day-col:hover { background: rgba(0,0,0,0.012); }
+.day-col.today-col { background: rgba(196,97,122,0.025); }
+.day-col.selected-col { background: rgba(196,97,122,0.04); }
+
+/* Event cards */
+.event-card {
+  border-radius: var(--radius-xs);
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  border-left: 2.5px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.event-card:hover {
+  transform: translateX(1px);
+  filter: brightness(0.97);
+}
+.event-card.active {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transform: translateX(1px);
+}
+
+.event-card.shift    { background: var(--teamly-bg);   border-color: var(--teamly); }
+.event-card.check    { background: var(--checkly-bg);  border-color: var(--checkly); }
+.event-card.delivery { background: var(--stockly-bg);  border-color: var(--stockly); }
+.event-card.task     { background: var(--planly-bg);   border-color: var(--planly); }
+.event-card.message  { background: var(--msgly-bg);    border-color: var(--msgly); }
+.event-card.leave    { background: var(--assetly-bg);  border-color: var(--assetly); }
+
+.event-time {
+  font-size: 0.58rem;
+  font-weight: 600;
+  opacity: 0.65;
+  margin-bottom: 1px;
+  letter-spacing: 0.02em;
+}
+.event-card.shift    .event-time { color: var(--teamly); }
+.event-card.check    .event-time { color: var(--checkly); }
+.event-card.delivery .event-time { color: var(--stockly); }
+.event-card.task     .event-time { color: var(--planly); }
+.event-card.message  .event-time { color: var(--msgly); }
+.event-card.leave    .event-time { color: var(--assetly); }
+
+.event-name {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-1);
+  line-height: 1.25;
+}
+.event-meta {
+  font-size: 0.6rem;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+.status-pip {
+  display: inline-flex; align-items: center; gap: 3px;
+  margin-top: 3px;
+  font-size: 0.58rem;
+  font-weight: 500;
+}
+.pip-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.status-confirmed .pip-dot { background: #34C759; }
+.status-confirmed { color: #34C759; }
+.status-pending .pip-dot { background: #FF9500; }
+.status-pending { color: #FF9500; }
+
+/* ═══════════════ DETAIL PANEL ═══════════════ */
+.detail-panel {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+  max-height: 280px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detail-panel.expanded { max-height: 340px; }
+
+.detail-tabs {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+  background: var(--surface-2);
+}
+
+.d-tab {
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.d-tab:hover { color: var(--text-2); }
+.d-tab.active {
+  color: var(--checkly);
+  border-bottom-color: var(--checkly);
+  font-weight: 600;
+}
+
+.d-tab-sep { flex: 1; }
+
+.panel-expand-btn {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border-mid);
+  border-radius: 7px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-3); cursor: pointer;
+  transition: all 0.15s;
+  font-size: 12px;
+}
+.panel-expand-btn:hover { color: var(--text-1); background: var(--surface-2); }
+
+/* Detail content */
+.detail-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+/* Default / overview state */
+.detail-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.overview-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.overview-card:hover {
+  border-color: rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.ov-header {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.ov-icon {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.ov-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ov-items { display: flex; flex-direction: column; gap: 0.3rem; }
+.ov-item {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+.ov-item-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.ov-item-time { margin-left: auto; color: var(--text-3); font-size: 0.65rem; }
+
+/* Event detail state */
+.event-detail {
+  display: none;
+}
+.event-detail.visible { display: block; }
+.detail-overview.hidden { display: none; }
+
+.ed-header {
+  display: flex; align-items: flex-start; gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ed-colour-bar {
+  width: 4px;
+  border-radius: 2px;
+  align-self: stretch;
+  min-height: 40px;
+  flex-shrink: 0;
+}
+
+.ed-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text-1); }
+.ed-sub { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
+
+.ed-meta {
+  display: flex; gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.ed-meta-item {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.73rem; color: var(--text-2);
+}
+.ed-meta-item i { color: var(--text-3); font-size: 14px; }
+
+.ed-actions {
+  display: flex; gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.ed-action-btn {
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.ed-action-btn:hover { background: var(--surface-2); color: var(--text-1); border-color: rgba(0,0,0,0.15); }
+.ed-action-btn.primary {
+  background: var(--text-1);
+  color: white;
+  border-color: transparent;
+}
+.ed-action-btn.primary:hover { background: #333; }
+
+/* Messages in detail */
+.msg-thread { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.msg-bubble {
+  display: flex; gap: 0.55rem; align-items: flex-end;
+}
+.msg-bubble.mine { flex-direction: row-reverse; }
+
+.bubble-avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+
+.bubble-body {
+  max-width: 65%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 3px;
+  padding: 0.45rem 0.65rem;
+}
+.msg-bubble.mine .bubble-body {
+  background: var(--text-1);
+  color: white;
+  border-color: transparent;
+  border-radius: 12px 12px 3px 12px;
+}
+
+.bubble-text { font-size: 0.73rem; line-height: 1.4; }
+.bubble-time { font-size: 0.58rem; color: var(--text-3); margin-top: 2px; }
+.msg-bubble.mine .bubble-time { color: rgba(255,255,255,0.5); }
+
+.msg-input-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+}
+.msg-input-row input {
+  flex: 1; border: none; background: transparent;
+  font-size: 0.73rem; color: var(--text-1);
+  font-family: inherit; outline: none;
+}
+.msg-input-row input::placeholder { color: var(--text-3); }
+.msg-send-btn {
+  width: 26px; height: 26px;
+  background: var(--checkly); border: none; border-radius: 7px;
+  color: white; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px;
+  transition: all 0.15s;
+}
+.msg-send-btn:hover { background: #b5566d; }
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* ═══════════════ ANIMATIONS ═══════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-detail.visible {
+  animation: fadeIn 0.2s ease;
+}
+
+.event-card {
+  animation: fadeIn 0.25s ease backwards;
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo-bars">
+      <span style="height:15px;background:#1B2624;"></span>
+      <span style="height:12px;background:#8B2E3E;"></span>
+      <span style="height:14px;background:#D9868C;"></span>
+      <span style="height:12px;background:#5D8AA8;"></span>
+      <span style="height:15px;background:#87B0D6;"></span>
+      <span style="height:13px;background:#9AC297;"></span>
+    </div>
+    <span class="topbar-title">opsly</span>
+
+    <div class="topbar-sep"></div>
+
+    <div class="topbar-search">
+      <i class="ph-thin ph-magnifying-glass" style="font-size:13px;"></i>
+      Search everything…
+      <kbd>⌘K</kbd>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="tb-btn"><i class="ph-thin ph-bell"></i></button>
+      <button class="tb-btn"><i class="ph-thin ph-calendar-blank"></i></button>
+      <button class="ask-ai"><i class="ph-thin ph-sparkle" style="font-size:11px;"></i> Ask AI</button>
+      <div class="avatar">BK</div>
+    </div>
+  </div>
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+
+    <!-- Mini calendar -->
+    <div class="mini-cal">
+      <div class="mini-cal-header">
+        <span class="mini-cal-month">March 2026</span>
+        <div class="mini-nav">
+          <button><i class="ph-thin ph-caret-left"></i></button>
+          <button><i class="ph-thin ph-caret-right"></i></button>
+        </div>
+      </div>
+      <div class="mini-grid">
+        <div class="mini-dow">M</div><div class="mini-dow">T</div><div class="mini-dow">W</div>
+        <div class="mini-dow">T</div><div class="mini-dow">F</div><div class="mini-dow">S</div><div class="mini-dow">S</div>
+
+        <div class="mini-day other-month">24</div>
+        <div class="mini-day other-month">25</div>
+        <div class="mini-day other-month">26</div>
+        <div class="mini-day other-month">27</div>
+        <div class="mini-day other-month">28</div>
+        <div class="mini-day other-month">1</div>
+        <div class="mini-day other-month">2</div>
+
+        <div class="mini-day">3</div>
+        <div class="mini-day">4</div>
+        <div class="mini-day today" onclick="selectDay(this)">5</div>
+        <div class="mini-day has-event">6</div>
+        <div class="mini-day has-event">7</div>
+        <div class="mini-day">8</div>
+        <div class="mini-day">9</div>
+
+        <div class="mini-day has-event">10</div>
+        <div class="mini-day">11</div>
+        <div class="mini-day">12</div>
+        <div class="mini-day has-event">13</div>
+        <div class="mini-day">14</div>
+        <div class="mini-day">15</div>
+        <div class="mini-day">16</div>
+
+        <div class="mini-day">17</div>
+        <div class="mini-day has-event">18</div>
+        <div class="mini-day">19</div>
+        <div class="mini-day">20</div>
+        <div class="mini-day has-event">21</div>
+        <div class="mini-day">22</div>
+        <div class="mini-day">23</div>
+
+        <div class="mini-day">24</div>
+        <div class="mini-day">25</div>
+        <div class="mini-day">26</div>
+        <div class="mini-day has-event">27</div>
+        <div class="mini-day">28</div>
+        <div class="mini-day">29</div>
+        <div class="mini-day">30</div>
+
+        <div class="mini-day">31</div>
+        <div class="mini-day other-month">1</div>
+        <div class="mini-day other-month">2</div>
+        <div class="mini-day other-month">3</div>
+        <div class="mini-day other-month">4</div>
+        <div class="mini-day other-month">5</div>
+        <div class="mini-day other-month">6</div>
+      </div>
+    </div>
+
+    <!-- Today's priorities -->
+    <div class="lp-section" style="margin-top: 0.5rem;">
+      <div class="lp-label">Today's priorities</div>
+
+      <div class="feed-item" onclick="showEvent('check1')">
+        <div class="feed-dot" style="background:var(--checkly)"></div>
+        <div class="feed-content">
+          <div class="feed-title">Opening temp check due</div>
+          <div class="feed-sub">Checkly · 07:00</div>
+        </div>
+      </div>
+
+      <div class="feed-item" onclick="showEvent('delivery1')">
+        <div class="feed-dot" style="background:var(--stockly)"></div>
+        <div class="feed-content">
+          <div class="feed-title">Fresh Direct delivery</div>
+          <div class="feed-sub">Stockly · 10:30–11:00</div>
+        </div>
+      </div>
+
+      <div class="feed-item" onclick="showEvent('task1')">
+        <div class="feed-dot" style="background:var(--planly)"></div>
+        <div class="feed-content">
+          <div class="feed-title">Weekly stock signoff</div>
+          <div class="feed-sub">Planly · By 17:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages preview -->
+    <div class="lp-section" style="margin-top: 0.85rem;">
+      <div class="lp-label">Unread messages</div>
+
+      <div class="msg-preview" onclick="showMessages()">
+        <div class="msg-avatar" style="background:var(--teamly)">VT</div>
+        <div class="msg-info">
+          <div class="msg-name">Vicky Thomas</div>
+          <div class="msg-snippet">Are we still on for the briefing?</div>
+        </div>
+        <div class="msg-badge">2</div>
+      </div>
+
+      <div class="msg-preview" onclick="showMessages()">
+        <div class="msg-avatar" style="background:var(--stockly)">SR</div>
+        <div class="msg-info">
+          <div class="msg-name">Sophie Rees</div>
+          <div class="msg-snippet">Delivery note attached</div>
+        </div>
+        <div class="msg-badge">1</div>
+      </div>
+    </div>
+
+    <div class="lp-spacer"></div>
+
+    <!-- User -->
+    <div class="lp-user">
+      <div class="lp-user-avatar">BK</div>
+      <div>
+        <div class="lp-user-name">Bruce Kamp</div>
+        <div class="lp-user-role">Owner · Okja London</div>
+      </div>
+      <button class="lp-settings"><i class="ph-thin ph-gear-six" style="font-size:14px;"></i></button>
+    </div>
+
+  </div>
+
+  <!-- CALENDAR AREA -->
+  <div class="cal-area">
+
+    <!-- Calendar header -->
+    <div class="cal-header">
+      <div class="cal-top-row">
+        <h1 class="cal-title">March 2026</h1>
+        <div class="cal-nav">
+          <button class="cal-nav-btn"><i class="ph-thin ph-caret-left"></i></button>
+          <button class="today-btn">Today</button>
+          <button class="cal-nav-btn"><i class="ph-thin ph-caret-right"></i></button>
+        </div>
+        <div class="cal-header-sep"></div>
+        <div class="view-toggle">
+          <button class="view-btn">Day</button>
+          <button class="view-btn active">Week</button>
+          <button class="view-btn">Month</button>
+        </div>
+        <button class="add-event-btn">
+          <i class="ph-thin ph-plus" style="font-size:12px;"></i> Add event
+        </button>
+      </div>
+
+      <div class="cal-filters">
+        <div class="filter-tag active shifts" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--teamly)"></div> Shifts
+        </div>
+        <div class="filter-tag active compliance" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--checkly)"></div> Compliance
+        </div>
+        <div class="filter-tag active deliveries" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--stockly)"></div> Deliveries
+        </div>
+        <div class="filter-tag active tasks" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--planly)"></div> Tasks
+        </div>
+        <div class="filter-tag active messages" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--msgly)"></div> Messages
+        </div>
+        <div class="filter-tag active leave" onclick="toggleFilter(this)">
+          <div class="tag-dot" style="background:var(--assetly)"></div> Leave
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar body -->
+    <div class="cal-body">
+      <!-- Day headers -->
+      <div class="day-headers">
+        <div class="day-header">
+          <div class="dow">Mon</div>
+          <div class="date-num">2</div>
+        </div>
+        <div class="day-header">
+          <div class="dow">Tue</div>
+          <div class="date-num">3</div>
+        </div>
+        <div class="day-header">
+          <div class="dow">Wed</div>
+          <div class="date-num">4</div>
+        </div>
+        <div class="day-header today selected">
+          <div class="dow">Thu</div>
+          <div class="date-num">5</div>
+        </div>
+        <div class="day-header">
+          <div class="dow">Fri</div>
+          <div class="date-num">6</div>
+        </div>
+        <div class="day-header">
+          <div class="dow">Sat</div>
+          <div class="date-num">7</div>
+        </div>
+        <div class="day-header">
+          <div class="dow">Sun</div>
+          <div class="date-num">8</div>
+        </div>
+      </div>
+
+      <!-- Events grid -->
+      <div class="events-grid">
+
+        <!-- Mon -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.05s">
+            <div class="event-time">07:00–15:00</div>
+            <div class="event-name">Morning shift</div>
+            <div class="event-meta">4 staff</div>
+          </div>
+          <div class="event-card check" onclick="showEvent('check1')" style="animation-delay:0.08s">
+            <div class="event-time">07:00</div>
+            <div class="event-name">Opening checks</div>
+            <div class="status-pip status-confirmed"><div class="pip-dot"></div> Confirmed</div>
+          </div>
+        </div>
+
+        <!-- Tue -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.06s">
+            <div class="event-time">07:00–15:00</div>
+            <div class="event-name">Morning shift</div>
+            <div class="event-meta">3 staff</div>
+          </div>
+          <div class="event-card delivery" onclick="showEvent('delivery1')" style="animation-delay:0.09s">
+            <div class="event-time">09:00–10:00</div>
+            <div class="event-name">Brakes delivery</div>
+            <div class="status-pip status-confirmed"><div class="pip-dot"></div> Confirmed</div>
+          </div>
+          <div class="event-card task" onclick="showEvent('task1')" style="animation-delay:0.12s">
+            <div class="event-time">12:00</div>
+            <div class="event-name">Rota signoff</div>
+          </div>
+        </div>
+
+        <!-- Wed -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.07s">
+            <div class="event-time">07:00–15:00</div>
+            <div class="event-name">Morning shift</div>
+            <div class="event-meta">4 staff</div>
+          </div>
+          <div class="event-card leave" onclick="showEvent('leave1')" style="animation-delay:0.10s">
+            <div class="event-time">All day</div>
+            <div class="event-name">J. Morris — Annual leave</div>
+          </div>
+        </div>
+
+        <!-- Thu (today) -->
+        <div class="day-col today-col selected-col">
+          <div class="event-card check" onclick="showEvent('check1')" style="animation-delay:0.05s">
+            <div class="event-time">07:00</div>
+            <div class="event-name">Opening temp check</div>
+            <div class="status-pip status-pending"><div class="pip-dot"></div> Due now</div>
+          </div>
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.08s">
+            <div class="event-time">07:00–15:00</div>
+            <div class="event-name">Morning shift</div>
+            <div class="event-meta">5 staff</div>
+          </div>
+          <div class="event-card delivery" onclick="showEvent('delivery1')" style="animation-delay:0.11s">
+            <div class="event-time">10:30–11:00</div>
+            <div class="event-name">Fresh Direct</div>
+            <div class="status-pip status-pending"><div class="pip-dot"></div> Pending</div>
+          </div>
+          <div class="event-card task" onclick="showEvent('task1')" style="animation-delay:0.14s">
+            <div class="event-time">By 17:00</div>
+            <div class="event-name">Weekly stock signoff</div>
+          </div>
+          <div class="event-card message" onclick="showMessages()" style="animation-delay:0.17s">
+            <div class="event-time">09:42</div>
+            <div class="event-name">Vicky Thomas</div>
+            <div class="event-meta">Are we still on for the briefing?</div>
+          </div>
+        </div>
+
+        <!-- Fri -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.07s">
+            <div class="event-time">07:00–15:00</div>
+            <div class="event-name">Morning shift</div>
+            <div class="event-meta">4 staff</div>
+          </div>
+          <div class="event-card check" onclick="showEvent('check1')" style="animation-delay:0.10s">
+            <div class="event-time">14:00</div>
+            <div class="event-name">Weekly audit</div>
+            <div class="event-meta">Checkly</div>
+          </div>
+          <div class="event-card delivery" onclick="showEvent('delivery1')" style="animation-delay:0.13s">
+            <div class="event-time">11:00–12:00</div>
+            <div class="event-name">Bidfood order</div>
+            <div class="status-pip status-confirmed"><div class="pip-dot"></div> Confirmed</div>
+          </div>
+        </div>
+
+        <!-- Sat -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.08s">
+            <div class="event-time">08:00–16:00</div>
+            <div class="event-name">Weekend shift</div>
+            <div class="event-meta">3 staff</div>
+          </div>
+          <div class="event-card task" onclick="showEvent('task1')" style="animation-delay:0.11s">
+            <div class="event-time">16:30</div>
+            <div class="event-name">Close-down checklist</div>
+          </div>
+        </div>
+
+        <!-- Sun -->
+        <div class="day-col">
+          <div class="event-card shift" onclick="showEvent('shift1')" style="animation-delay:0.09s">
+            <div class="event-time">09:00–17:00</div>
+            <div class="event-name">Weekend shift</div>
+            <div class="event-meta">2 staff</div>
+          </div>
+          <div class="event-card leave" onclick="showEvent('leave1')" style="animation-delay:0.12s">
+            <div class="event-time">All day</div>
+            <div class="event-name">K. Davies — Annual leave</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-tabs">
+        <button class="d-tab active" onclick="switchTab(this,'overview')"><i class="ph-thin ph-squares-four" style="font-size:13px;"></i> Overview</button>
+        <button class="d-tab" onclick="switchTab(this,'detail')"><i class="ph-thin ph-info" style="font-size:13px;"></i> Detail</button>
+        <button class="d-tab" onclick="switchTab(this,'messages')"><i class="ph-thin ph-chat-circle" style="font-size:13px;"></i> Messages <span style="margin-left:4px;background:var(--checkly);color:white;font-size:0.58rem;padding:1px 5px;border-radius:10px;font-weight:700;">3</span></button>
+        <button class="d-tab" onclick="switchTab(this,'history')"><i class="ph-thin ph-clock-counter-clockwise" style="font-size:13px;"></i> History</button>
+        <div class="d-tab-sep"></div>
+        <button class="panel-expand-btn" onclick="toggleExpand()"><i class="ph-thin ph-arrows-out-simple" id="expandIcon"></i></button>
+      </div>
+
+      <div class="detail-content">
+
+        <!-- OVERVIEW (default) -->
+        <div class="detail-overview" id="tab-overview">
+          <div class="overview-card" onclick="showEvent('shift1')">
+            <div class="ov-header">
+              <div class="ov-icon" style="background:var(--teamly-bg)"><i class="ph-thin ph-users" style="color:var(--teamly);font-size:13px;"></i></div>
+              <span class="ov-label" style="color:var(--teamly)">Shifts today</span>
+            </div>
+            <div class="ov-items">
+              <div class="ov-item"><div class="ov-item-dot" style="background:var(--teamly)"></div> Morning · 5 staff <span class="ov-item-time">07:00</span></div>
+              <div class="ov-item"><div class="ov-item-dot" style="background:var(--teamly)"></div> Evening · 3 staff <span class="ov-item-time">15:00</span></div>
+            </div>
+          </div>
+
+          <div class="overview-card" onclick="showEvent('check1')">
+            <div class="ov-header">
+              <div class="ov-icon" style="background:var(--checkly-bg)"><i class="ph-thin ph-clipboard-text" style="color:var(--checkly);font-size:13px;"></i></div>
+              <span class="ov-label" style="color:var(--checkly)">Compliance</span>
+            </div>
+            <div class="ov-items">
+              <div class="ov-item"><div class="ov-item-dot" style="background:#FF9500"></div> Temp check due <span class="ov-item-time">07:00</span></div>
+              <div class="ov-item"><div class="ov-item-dot" style="background:#34C759"></div> Close checks ready <span class="ov-item-time">21:00</span></div>
+            </div>
+          </div>
+
+          <div class="overview-card" onclick="showEvent('delivery1')">
+            <div class="ov-header">
+              <div class="ov-icon" style="background:var(--stockly-bg)"><i class="ph-thin ph-truck" style="color:var(--stockly);font-size:13px;"></i></div>
+              <span class="ov-label" style="color:var(--stockly)">Deliveries</span>
+            </div>
+            <div class="ov-items">
+              <div class="ov-item"><div class="ov-item-dot" style="background:#FF9500"></div> Fresh Direct <span class="ov-item-time">10:30</span></div>
+              <div class="ov-item"><div class="ov-item-dot" style="background:var(--stockly)"></div> Stock signoff due <span class="ov-item-time">17:00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAIL -->
+        <div class="event-detail" id="tab-detail">
+          <div class="ed-header">
+            <div class="ed-colour-bar" id="ed-bar" style="background:var(--checkly)"></div>
+            <div>
+              <div class="ed-title" id="ed-title">Opening temp check</div>
+              <div class="ed-sub" id="ed-sub">Checkly · Thursday 5 March</div>
+            </div>
+          </div>
+          <div class="ed-meta">
+            <div class="ed-meta-item"><i class="ph-thin ph-clock"></i> <span id="ed-time">07:00 – due now</span></div>
+            <div class="ed-meta-item"><i class="ph-thin ph-map-pin"></i> <span id="ed-loc">Okja Soho</span></div>
+            <div class="ed-meta-item"><i class="ph-thin ph-user"></i> <span id="ed-who">Assigned to you</span></div>
+          </div>
+          <div class="ed-actions">
+            <button class="ed-action-btn primary" id="ed-cta"><i class="ph-thin ph-arrow-right" style="font-size:12px;"></i> Open in Checkly</button>
+            <button class="ed-action-btn"><i class="ph-thin ph-chat-circle" style="font-size:12px;"></i> Message team</button>
+            <button class="ed-action-btn"><i class="ph-thin ph-pencil" style="font-size:12px;"></i> Edit</button>
+          </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="event-detail" id="tab-messages">
+          <div class="msg-thread">
+            <div class="msg-bubble">
+              <div class="bubble-avatar" style="background:var(--teamly)">VT</div>
+              <div class="bubble-body">
+                <div class="bubble-text">Are we still on for the briefing tomorrow?</div>
+                <div class="bubble-time">Yesterday, 16:42</div>
+              </div>
+            </div>
+            <div class="msg-bubble mine">
+              <div class="bubble-avatar" style="background:var(--checkly)">BK</div>
+              <div class="bubble-body">
+                <div class="bubble-text">Yes, 9am in the office. I'll send a calendar invite.</div>
+                <div class="bubble-time">Yesterday, 17:01 ✓✓</div>
+              </div>
+            </div>
+            <div class="msg-bubble">
+              <div class="bubble-avatar" style="background:var(--teamly)">VT</div>
+              <div class="bubble-body">
+                <div class="bubble-text">Great, I'll make sure Marcus is there too.</div>
+                <div class="bubble-time">Yesterday, 17:14</div>
+              </div>
+            </div>
+          </div>
+          <div class="msg-input-row">
+            <i class="ph-thin ph-paperclip" style="font-size:14px;color:var(--text-3);cursor:pointer;"></i>
+            <input type="text" placeholder="Reply to Vicky…">
+            <button class="msg-send-btn"><i class="ph-thin ph-paper-plane-tilt" style="font-size:11px;"></i></button>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="event-detail" id="tab-history">
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--checkly);margin-top:5px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:0.73rem;font-weight:500;color:var(--text-1);">Opening checks completed</div>
+                <div style="font-size:0.65rem;color:var(--text-3);">Wednesday 4 Mar · 07:12 · Vicky Thomas</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--stockly);margin-top:5px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:0.73rem;font-weight:500;color:var(--text-1);">Brakes delivery received — 3 variances noted</div>
+                <div style="font-size:0.65rem;color:var(--text-3);">Tuesday 3 Mar · 09:48 · Bruce Kamp</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--teamly);margin-top:5px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:0.73rem;font-weight:500;color:var(--text-1);">Rota published for week of 2–8 Mar</div>
+                <div style="font-size:0.65rem;color:var(--text-3);">Monday 2 Mar · 14:22 · Bruce Kamp</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--planly);margin-top:5px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:0.73rem;font-weight:500;color:var(--text-1);">Weekly stock count signed off</div>
+                <div style="font-size:0.65rem;color:var(--text-3);">Friday 28 Feb · 16:55 · Sophie Rees</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /cal-area -->
+
+</div><!-- /shell -->
+
+<script>
+const events = {
+  check1: {
+    title: 'Opening temp check',
+    sub: 'Checkly · Thursday 5 March',
+    time: '07:00 – due now',
+    loc: 'Okja Soho',
+    who: 'Assigned to you',
+    colour: 'var(--checkly)',
+    cta: 'Open in Checkly',
+    tab: 'detail'
+  },
+  delivery1: {
+    title: 'Fresh Direct delivery',
+    sub: 'Stockly · Thursday 5 March',
+    time: '10:30 – 11:00',
+    loc: 'Okja Soho',
+    who: 'Bruce Kamp',
+    colour: 'var(--stockly)',
+    cta: 'Open in Stockly',
+    tab: 'detail'
+  },
+  task1: {
+    title: 'Weekly stock signoff',
+    sub: 'Planly · Thursday 5 March',
+    time: 'By 17:00',
+    loc: 'Okja Soho',
+    who: 'Bruce Kamp',
+    colour: 'var(--planly)',
+    cta: 'Open in Planly',
+    tab: 'detail'
+  },
+  shift1: {
+    title: 'Morning shift',
+    sub: 'Teamly · Thursday 5 March',
+    time: '07:00 – 15:00',
+    loc: 'Okja Soho',
+    who: '5 staff scheduled',
+    colour: 'var(--teamly)',
+    cta: 'Open in Teamly',
+    tab: 'detail'
+  },
+  leave1: {
+    title: 'J. Morris — Annual leave',
+    sub: 'Teamly · All day',
+    time: 'All day',
+    loc: 'Okja Soho',
+    who: 'J. Morris',
+    colour: 'var(--assetly)',
+    cta: 'View in Teamly',
+    tab: 'detail'
+  }
+};
+
+function showEvent(id) {
+  const e = events[id];
+  if (!e) return;
+  document.getElementById('ed-title').textContent = e.title;
+  document.getElementById('ed-sub').textContent = e.sub;
+  document.getElementById('ed-time').textContent = e.time;
+  document.getElementById('ed-loc').textContent = e.loc;
+  document.getElementById('ed-who').textContent = e.who;
+  document.getElementById('ed-bar').style.background = e.colour;
+  document.getElementById('ed-cta').innerHTML = `<i class="ph-thin ph-arrow-right" style="font-size:12px;"></i> ${e.cta}`;
+  switchToTab('detail');
+  highlightTab('detail');
+}
+
+function showMessages() {
+  switchToTab('messages');
+  highlightTab('messages');
+}
+
+function switchTab(btn, tabId) {
+  highlightTab(tabId, btn);
+  switchToTab(tabId);
+}
+
+function highlightTab(tabId, btn) {
+  document.querySelectorAll('.d-tab').forEach(t => t.classList.remove('active'));
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.d-tab').forEach(t => {
+      if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) {
+        t.classList.add('active');
+      }
+    });
+  }
+}
+
+function switchToTab(tabId) {
+  const overview = document.getElementById('tab-overview');
+  const allDetails = document.querySelectorAll('.event-detail');
+
+  if (tabId === 'overview') {
+    overview.classList.remove('hidden');
+    allDetails.forEach(d => d.classList.remove('visible'));
+  } else {
+    overview.classList.add('hidden');
+    allDetails.forEach(d => d.classList.remove('visible'));
+    const target = document.getElementById('tab-' + tabId);
+    if (target) target.classList.add('visible');
+  }
+}
+
+let expanded = false;
+function toggleExpand() {
+  expanded = !expanded;
+  const panel = document.getElementById('detailPanel');
+  const icon = document.getElementById('expandIcon');
+  panel.classList.toggle('expanded', expanded);
+  icon.className = expanded ? 'ph-thin ph-arrows-in-simple' : 'ph-thin ph-arrows-out-simple';
+}
+
+function toggleFilter(el) {
+  el.classList.toggle('active');
+}
+</script>
+</body>
+</html>

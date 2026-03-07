@@ -435,7 +435,7 @@ export default function EmergencyContactsPage() {
                 <input
                   type="number"
                   value={formData.display_order}
-                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => setFormData({ ...formData, display_order: e.target.value === '' ? '' : parseInt(e.target.value) || 0 })}
                   className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   min="0"
                 />

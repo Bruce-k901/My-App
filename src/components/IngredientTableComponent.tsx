@@ -253,7 +253,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
             max="10"
             step="0.1"
             value={multiplier}
-            onChange={(e) => setMultiplier(parseFloat(e.target.value) || 1)}
+            onChange={(e) => setMultiplier(e.target.value === '' ? '' : parseFloat(e.target.value) || 1)}
             className="w-20 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
           />
           <span className="text-xs text-theme-tertiary">(default: 1)</span>
@@ -303,7 +303,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                   <input
                     type="number"
                     value={row.baseQty}
-                    onChange={(e) => updateCell(i, "baseQty", parseFloat(e.target.value) || 0)}
+                    onChange={(e) => updateCell(i, "baseQty", e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                     className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-right text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     step="0.1"
                   />

@@ -107,7 +107,7 @@ export default function Select({
                       value={val}
                     className={cn(
                       "relative flex w-full cursor-default select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none",
- "text-theme-primary hover:bg-black/[0.05] dark:hover:bg-white/[0.06] focus:bg-black/[0.05] dark:focus:bg-white/[0.06]",
+ "text-neutral-900 dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.06] focus:bg-black/[0.05] dark:focus:bg-white/[0.06]",
                       "data-[state=checked]:bg-black/[0.08] dark:data-[state=checked]:bg-white/[0.08]"
                     )}
                   >

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "7e46e11d-823e-404d-a782-0c6ccf71c591",
+    "name": "Kitchen"
+  },
+  {
+    "id": "9414de45-53b9-4cb6-b01f-eaa228bc027c",
+    "name": "Dry storage"
+  },
+  {
+    "id": "f3dcd93f-e7c3-44d6-85d2-5010d4a39721",
+    "name": "Back fridge and freezer"
+  },
+  {
+    "id": "a7a0c306-0b54-4fb2-b750-b72e14b522d9",
+    "name": "Chemicals"
+  },
+  {
+    "id": "0fb2a2cb-e8e0-4b2f-a144-e7ccd4b5e36e",
+    "name": "Packaging"
+  }
+]

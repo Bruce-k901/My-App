@@ -26,6 +26,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Layers, // @salsa — batch tracking settings icon
+  Building2,
 } from '@/components/ui/icons';
 import { previewBatchCodeFormat } from '@/lib/stockly/batch-codes'; // @salsa
 import Link from 'next/link';
@@ -60,6 +61,9 @@ interface StocklySettings {
   // Categories
   menu_categories: string[];
 
+  // Departments
+  departments: string[];
+
   // Display
   date_format: string;
   week_start_day: string;
@@ -90,6 +94,7 @@ const DEFAULT_SETTINGS: StocklySettings = {
   waste_reasons: ['expired', 'damaged', 'spoiled', 'spillage', 'theft', 'other'],
   require_waste_notes: false,
   menu_categories: ['Starters', 'Mains', 'Desserts', 'Sides', 'Drinks', 'Cocktails', 'Wine', 'Coffee', 'Kids', 'Specials'],
+  departments: [],
   date_format: 'DD/MM/YYYY',
   week_start_day: 'monday',
   default_report_days: 30,
@@ -127,6 +132,7 @@ export default function StocklySettingsPage() {
   // For adding new items
   const [newCategory, setNewCategory] = useState('');
   const [newWasteReason, setNewWasteReason] = useState('');
+  const [newDepartment, setNewDepartment] = useState('');
 
   useEffect(() => {
     if (companyId) {
@@ -217,6 +223,17 @@ export default function StocklySettingsPage() {
     updateSetting('menu_categories', settings.menu_categories.filter(c => c !== cat));
   }
 
+  function addDepartment() {
+    if (newDepartment && !settings.departments.includes(newDepartment)) {
+      updateSetting('departments', [...settings.departments, newDepartment]);
+      setNewDepartment('');
+    }
+  }
+
+  function removeDepartment(dept: string) {
+    updateSetting('departments', settings.departments.filter(d => d !== dept));
+  }
+
   function addWasteReason() {
     if (newWasteReason && !settings.waste_reasons.includes(newWasteReason.toLowerCase())) {
       updateSetting('waste_reasons', [...settings.waste_reasons, newWasteReason.toLowerCase()]);
@@ -243,6 +260,7 @@ export default function StocklySettingsPage() {
     { id: 'counts', label: 'Stock Counts', icon: ClipboardList },
     { id: 'waste', label: 'Waste', icon: Trash2 },
     { id: 'categories', label: 'Categories', icon: Tags },
+    { id: 'departments', label: 'Departments', icon: Building2 },
     { id: 'display', label: 'Display', icon: Eye },
     { id: 'batches', label: 'Batch Tracking', icon: Layers }, // @salsa
   ];
@@ -334,7 +352,7 @@ export default function StocklySettingsPage() {
                     <input
                       type="number"
                       value={settings.default_gp_target}
-                      onChange={(e) => updateSetting('default_gp_target', parseFloat(e.target.value) || 70)}
+                      onChange={(e) => updateSetting('default_gp_target', e.target.value === '' ? '' : parseFloat(e.target.value) || 70)}
                       className="w-full px-3 py-2 pr-8 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">%</span>
@@ -348,7 +366,7 @@ export default function StocklySettingsPage() {
                     <input
                       type="number"
                       value={settings.default_vat_rate}
-                      onChange={(e) => updateSetting('default_vat_rate', parseFloat(e.target.value) || 20)}
+                      onChange={(e) => updateSetting('default_vat_rate', e.target.value === '' ? '' : parseFloat(e.target.value) || 20)}
                       className="w-full px-3 py-2 pr-8 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">%</span>
@@ -457,7 +475,7 @@ export default function StocklySettingsPage() {
                       <input
                         type="number"
                         value={settings.low_stock_threshold_percent}
-                        onChange={(e) => updateSetting('low_stock_threshold_percent', parseFloat(e.target.value) || 20)}
+                        onChange={(e) => updateSetting('low_stock_threshold_percent', e.target.value === '' ? '' : parseFloat(e.target.value) || 20)}
                         className="w-full px-3 py-2 pr-20 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">% of reorder point</span>
@@ -485,7 +503,7 @@ export default function StocklySettingsPage() {
                       <input
                         type="number"
                         value={settings.expiry_warning_days}
-                        onChange={(e) => updateSetting('expiry_warning_days', parseInt(e.target.value) || 3)}
+                        onChange={(e) => updateSetting('expiry_warning_days', e.target.value === '' ? '' : parseInt(e.target.value) || 3)}
                         className="w-full px-3 py-2 pr-12 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">days</span>
@@ -512,7 +530,7 @@ export default function StocklySettingsPage() {
                       type="number"
                       step="0.1"
                       value={settings.variance_alert_threshold_percent}
-                      onChange={(e) => updateSetting('variance_alert_threshold_percent', parseFloat(e.target.value) || 5)}
+                      onChange={(e) => updateSetting('variance_alert_threshold_percent', e.target.value === '' ? '' : parseFloat(e.target.value) || 5)}
                       className="w-full px-3 py-2 pr-8 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">%</span>
@@ -527,7 +545,7 @@ export default function StocklySettingsPage() {
                       type="number"
                       step="0.1"
                       value={settings.auto_approve_variance_percent}
-                      onChange={(e) => updateSetting('auto_approve_variance_percent', parseFloat(e.target.value) || 2)}
+                      onChange={(e) => updateSetting('auto_approve_variance_percent', e.target.value === '' ? '' : parseFloat(e.target.value) || 2)}
                       className="w-full px-3 py-2 pr-8 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">%</span>
@@ -661,6 +679,54 @@ export default function StocklySettingsPage() {
             </div>
           )}
 
+          {/* Departments */}
+          {activeSection === 'departments' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-theme-primary mb-1">Departments</h2>
+                <p className="text-theme-tertiary text-sm">Operational areas for sectioning stock, recipes, and GP reporting (e.g., CPU, Kiosk)</p>
+              </div>
+
+              <div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {settings.departments.map(dept => (
+                    <span
+                      key={dept}
+                      className="px-3 py-1.5 bg-theme-button rounded-lg text-theme-secondary text-sm flex items-center gap-2"
+                    >
+                      {dept}
+                      <button
+                        onClick={() => removeDepartment(dept)}
+                        className="text-theme-tertiary hover:text-red-400"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {settings.departments.length === 0 && (
+                    <p className="text-theme-tertiary text-sm italic">No departments defined. Add departments to section your stock and recipes.</p>
+                  )}
+                </div>
+                <div className="flex gap-2 max-w-sm">
+                  <input
+                    type="text"
+                    value={newDepartment}
+                    onChange={(e) => setNewDepartment(e.target.value)}
+                    placeholder="Add new department..."
+                    className="flex-1 px-3 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
+                    onKeyDown={(e) => e.key === 'Enter' && addDepartment()}
+                  />
+                  <button
+                    onClick={addDepartment}
+                    className="px-3 py-2 bg-theme-button hover:bg-theme-hover text-theme-primary rounded-lg"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Display */}
           {activeSection === 'display' && (
             <div className="space-y-6">
@@ -784,7 +850,7 @@ export default function StocklySettingsPage() {
                       min="0"
                       max="30"
                       value={settings.expiry_warning_days_use_by}
-                      onChange={(e) => updateSetting('expiry_warning_days_use_by', parseInt(e.target.value) || 3)}
+                      onChange={(e) => updateSetting('expiry_warning_days_use_by', e.target.value === '' ? '' : parseInt(e.target.value) || 3)}
                       className="w-full px-3 py-2 pr-12 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">days</span>
@@ -800,7 +866,7 @@ export default function StocklySettingsPage() {
                       min="0"
                       max="60"
                       value={settings.expiry_warning_days_best_before}
-                      onChange={(e) => updateSetting('expiry_warning_days_best_before', parseInt(e.target.value) || 7)}
+                      onChange={(e) => updateSetting('expiry_warning_days_best_before', e.target.value === '' ? '' : parseInt(e.target.value) || 7)}
                       className="w-full px-3 py-2 pr-12 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">days</span>

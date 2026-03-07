@@ -11,18 +11,18 @@ import type { SupplierApprovalStatus, RiskRating } from '@/lib/types/stockly';
 
 // @salsa
 const APPROVAL_STATUSES: { value: SupplierApprovalStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { value: 'approved', label: 'Approved', icon: ShieldCheck, color: 'text-emerald-500' },
-  { value: 'conditional', label: 'Conditional', icon: ShieldAlert, color: 'text-amber-500' },
-  { value: 'pending', label: 'Pending Review', icon: Shield, color: 'text-blue-400' },
-  { value: 'suspended', label: 'Suspended', icon: ShieldAlert, color: 'text-red-500' },
-  { value: 'rejected', label: 'Rejected', icon: ShieldAlert, color: 'text-red-700' },
+  { value: 'approved', label: 'Approved', icon: ShieldCheck, color: 'text-emerald-600 dark:text-emerald-500' },
+  { value: 'conditional', label: 'Conditional', icon: ShieldAlert, color: 'text-amber-600 dark:text-amber-500' },
+  { value: 'pending', label: 'Pending Review', icon: Shield, color: 'text-blue-600 dark:text-blue-400' },
+  { value: 'suspended', label: 'Suspended', icon: ShieldAlert, color: 'text-red-600 dark:text-red-500' },
+  { value: 'rejected', label: 'Rejected', icon: ShieldAlert, color: 'text-red-800 dark:text-red-700' },
 ];
 
 const RISK_RATINGS: { value: RiskRating; label: string; color: string }[] = [
-  { value: 'low', label: 'Low', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
-  { value: 'medium', label: 'Medium', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-  { value: 'high', label: 'High', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-  { value: 'critical', label: 'Critical', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  { value: 'low', label: 'Low', color: 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30' },
+  { value: 'medium', label: 'Medium', color: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30' },
+  { value: 'high', label: 'High', color: 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30' },
+  { value: 'critical', label: 'Critical', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30' },
 ];
 
 interface SupplierApprovalPanelProps {
@@ -251,11 +251,11 @@ export function ApprovalStatusBadge({ status }: { status: SupplierApprovalStatus
   const info = APPROVAL_STATUSES.find((s) => s.value === (status || 'pending')) || APPROVAL_STATUSES[2];
   const Icon = info.icon;
   const bgMap: Record<string, string> = {
-    approved: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-    conditional: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-    pending: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-    suspended: 'bg-red-500/15 text-red-400 border-red-500/25',
-    rejected: 'bg-red-700/15 text-red-600 border-red-700/25',
+    approved: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/25',
+    conditional: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/25',
+    pending: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/25',
+    suspended: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/25',
+    rejected: 'bg-red-100 dark:bg-red-700/15 text-red-800 dark:text-red-600 border-red-300 dark:border-red-700/25',
   };
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${bgMap[status || 'pending'] || bgMap.pending}`}>

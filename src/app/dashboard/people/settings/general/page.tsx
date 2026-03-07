@@ -334,7 +334,7 @@ export default function GeneralSettingsPage() {
               min="0"
               max="24"
               value={formData.standard_shift_length_hours || 8}
-              onChange={(e) => updateField('standard_shift_length_hours', parseFloat(e.target.value) || 8)}
+              onChange={(e) => updateField('standard_shift_length_hours', e.target.value === '' ? '' : parseFloat(e.target.value) || 8)}
               className="w-32"
             />
           </div>

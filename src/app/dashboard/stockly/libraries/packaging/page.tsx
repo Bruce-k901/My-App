@@ -7,6 +7,7 @@ import { useAppContext } from '@/context/AppContext';
 import { ensureSupplierExists } from '@/lib/utils/supplierPlaceholderFlow';
 import { SupplierSearchInput } from '@/components/stockly/SupplierSearchInput';
 // toast removed per project policy
+import { useStocklyDepartments } from '@/hooks/stockly/use-stockly-departments';
 
 const PACKAGING_CATEGORIES = [
   'Food Containers',
@@ -28,6 +29,8 @@ export default function PackagingLibraryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterSupplier, setFilterSupplier] = useState('all');
+  const [filterDepartment, setFilterDepartment] = useState('all');
+  const departments = useStocklyDepartments(companyId);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -141,6 +144,7 @@ export default function PackagingLibraryPage() {
         reorder_point: reorderPointVal,
         reorder_qty: reorderQtyVal,
         sku: rowDraft.sku?.trim() || null,
+        department: rowDraft.department || null,
         company_id: companyId,
       };
 
@@ -235,7 +239,8 @@ export default function PackagingLibraryPage() {
       par_level: item.par_level ?? '',
       reorder_point: item.reorder_point ?? '',
       reorder_qty: item.reorder_qty ?? '',
-      sku: item.sku || ''
+      sku: item.sku || '',
+      department: item.department || '',
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
   };
@@ -453,7 +458,8 @@ export default function PackagingLibraryPage() {
     const matchesSearch = (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
     const matchesSupplier = filterSupplier === 'all' || (item.supplier || '').trim() === filterSupplier;
-    return matchesSearch && matchesCategory && matchesSupplier;
+    const matchesDepartment = filterDepartment === 'all' || (item.department || '') === filterDepartment;
+    return matchesSearch && matchesCategory && matchesSupplier && matchesDepartment;
   });
 
   return (
@@ -552,6 +558,16 @@ export default function PackagingLibraryPage() {
               <option value="all">All Suppliers</option>
               {uniqueSuppliers.map(sup => (
                 <option key={sup} value={sup}>{sup}</option>
+              ))}
+            </select>
+            <select
+              value={filterDepartment}
+              onChange={(e) => setFilterDepartment(e.target.value)}
+              className="bg-theme-surface border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Departments</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
           </div>
@@ -828,7 +844,24 @@ export default function PackagingLibraryPage() {
                                 <div className="text-sm text-theme-primary font-medium">{item.usage_context || '-'}</div>
                               )}
                             </div>
-                            
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Department</div>
+                              {editingRowId === item.id ? (
+                                <select
+                                  className="w-full bg-theme-surface border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+                                  value={rowDraft?.department ?? ''}
+                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, department: e.target.value }))}
+                                >
+                                  <option value="">Shared</option>
+                                  {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <div className="text-sm text-theme-primary font-medium">{item.department || 'Shared'}</div>
+                              )}
+                            </div>
+
                             {/* Stockly Fields Section */}
                             <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
                               <div className="text-xs font-semibold text-theme-secondary mb-2 uppercase">Stock Management</div>

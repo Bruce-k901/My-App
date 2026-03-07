@@ -37,7 +37,7 @@ export function GridCell({
   );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value) || 0;
+    const newValue = e.target.value === '' ? 0 : parseInt(e.target.value) || 0;
     onUpdate(productId, date, Math.max(0, newValue));
   };
 

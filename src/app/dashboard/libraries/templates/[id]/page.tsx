@@ -150,7 +150,7 @@ const TEMPLATE_CONFIGS: Record<string, any> = {
     ]
   },
   'serving-equipment': {
-    name: 'Serving Equipment Library',
+    name: 'Utensils & Tools Library',
     tableName: 'equipment_library',
     csvHeaders: ['item_name', 'category', 'material', 'size_dimensions', 'shape', 'use_case', 'color_finish', 'dishwasher_safe', 'oven_safe', 'supplier', 'brand', 'color_coding', 'unit_cost', 'storage_location', 'notes'],
     fields: [

@@ -20,12 +20,14 @@ import {
   Layers,
   ExternalLink,
   RefreshCw,
+  Printer,
 } from '@/components/ui/icons';
 import type { BatchMovement, BatchStatus } from '@/lib/types/stockly';
 // @salsa — Shared allergen utility for badge labels
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
-// @salsa — Phase 4: Dispatch record form
+// Phase 4: Dispatch record form
 import DispatchRecordForm from '@/components/stockly/DispatchRecordForm';
+import { useLablitConnection } from '@/hooks/integrations/useLablitConnection';
 import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface BatchDetailDrawerProps {
@@ -56,7 +58,7 @@ const MOVEMENT_LABELS: Record<string, string> = {
 };
 
 export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: BatchDetailDrawerProps) {
-  const { userId } = useAppContext();
+  const { userId, companyId } = useAppContext();
   const [batch, setBatch] = useState<any>(null);
   const [movements, setMovements] = useState<BatchMovement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,11 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   const [adjustQty, setAdjustQty] = useState('');
   const [adjustReason, setAdjustReason] = useState('');
   const [updating, setUpdating] = useState(false);
-  const [showDispatch, setShowDispatch] = useState(false); // @salsa Phase 4
+  const [showDispatch, setShowDispatch] = useState(false);
+  const [showPrintLabels, setShowPrintLabels] = useState(false);
+  const [labelCount, setLabelCount] = useState(1);
+  const [pushingLabel, setPushingLabel] = useState(false);
+  const lablit = useLablitConnection();
 
   // @salsa — Fetch batch detail
   useEffect(() => {
@@ -370,6 +376,74 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
                   onClose={() => setShowDispatch(false)}
                   onSaved={onUpdated}
                 />
+              )}
+
+              {/* Print Labels */}
+              {lablit.connected && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPrintLabels(!showPrintLabels)}
+                    className="w-full"
+                  >
+                    <Printer className="w-3.5 h-3.5 mr-1" /> Print Labels
+                  </Button>
+
+                  {showPrintLabels && (
+                    <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-theme-secondary whitespace-nowrap">Copies:</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={labelCount}
+                          onChange={(e) => setLabelCount(e.target.value === '' ? '' as unknown as number : Math.max(1, parseInt(e.target.value) || 1))}
+                          onBlur={() => { if (!labelCount || labelCount < 1) setLabelCount(1); }}
+                          className="w-20 rounded-md border border-theme bg-theme-surface px-2 py-1 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          disabled={pushingLabel}
+                          onClick={async () => {
+                            setPushingLabel(true);
+                            try {
+                              const res = await fetch('/api/integrations/lablit/push-label', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  companyId,
+                                  batchId,
+                                  type: 'stock_batch',
+                                  copies: labelCount,
+                                }),
+                              });
+                              const data = await res.json();
+                              if (data.success) {
+                                const { toast } = await import('sonner');
+                                toast.success(`${labelCount} label${labelCount > 1 ? 's' : ''} sent to printer`);
+                                setShowPrintLabels(false);
+                              } else {
+                                const { toast } = await import('sonner');
+                                toast.error(data.error || 'Failed to print labels');
+                              }
+                            } catch {
+                              const { toast } = await import('sonner');
+                              toast.error('Failed to print labels');
+                            } finally {
+                              setPushingLabel(false);
+                            }
+                          }}
+                          className="flex-1"
+                        >
+                          {pushingLabel ? 'Sending...' : 'Print'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Adjustment form */}

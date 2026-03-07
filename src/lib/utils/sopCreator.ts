@@ -39,17 +39,19 @@ export async function createFoodSOPFromRecipe(
       const quantity = ri.quantity || 0;
       const unitAbbreviation = ri.unit_abbreviation || 'g';
       const supplier = ri.supplier || '';
-      
+
       // Get allergens from view (already joined)
       const allergens = ri.allergens || [];
       const allergenArray = Array.isArray(allergens) ? allergens : (allergens ? [allergens] : []);
-      
+
       return {
         ingredient: ingredientName,
+        ingredient_id: ri.stock_item_id || ri.ingredient_id || '', // Store library ID for cost lookup
         quantity: quantity.toString(),
         unit: unitAbbreviation,
         supplier: supplier,
         allergen: allergenArray,
+        lineCost: parseFloat(ri.line_cost) || 0, // Pre-calculated cost from recipe system
         prepState: '',
         useByDate: '',
         costPerUnit: '',
@@ -62,10 +64,17 @@ export async function createFoodSOPFromRecipe(
     const ingredientAllergens = ingredientRows.flatMap(row => row.allergen || []);
     const allAllergens = [...new Set([...recipeAllergens, ...ingredientAllergens])];
     
-    // 5. Create SOP data from template
+    // 5. Generate ref_code — use recipe code or auto-generate from name
+    let refCode = recipe.code || '';
+    if (!refCode && recipe.name) {
+      const nameBit = recipe.name.replace(/\s+/g, '').slice(0, 4).toUpperCase();
+      refCode = `PREP-${nameBit}-001`;
+    }
+
+    // 6. Create SOP data from template
     const sopData = JSON.parse(JSON.stringify(FOOD_SOP_TEMPLATE));
-    
-    // 6. Update header with recipe info including allergen warning
+
+    // 7. Update header with recipe info including allergen warning
     const headerIndex = sopData.content.findIndex((node: any) => node.type === 'prepHeader');
     if (headerIndex !== -1) {
       // Build safety notes with allergen warning
@@ -75,11 +84,11 @@ export async function createFoodSOPFromRecipe(
       }
       safetyNotes += recipe.storage_requirements ? `Storage: ${recipe.storage_requirements}\n` : '';
       safetyNotes += recipe.shelf_life_days ? `Shelf Life: ${recipe.shelf_life_days} days\n` : '';
-      
+
       sopData.content[headerIndex].attrs = {
         ...sopData.content[headerIndex].attrs,
         title: recipe.name || '',
-        ref_code: recipe.code || '',
+        ref_code: refCode,
         version: (recipe.version_number || recipe.version || 1.0).toString(),
         status: 'Draft',
         author: authorName,
@@ -164,7 +173,7 @@ export async function createFoodSOPFromRecipe(
       .insert({
         company_id: companyId,
         title: recipe.name || 'Food Prep SOP',
-        ref_code: recipe.code || '',
+        ref_code: refCode,
         version: '1.0',
         status: 'Draft',
         author: authorName,

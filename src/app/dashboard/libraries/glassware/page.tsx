@@ -5,6 +5,7 @@ import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, Che
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 // toast removed per project policy
+import { useStocklyDepartments } from '@/hooks/stockly/use-stockly-departments';
 
 const GLASSWARE_CATEGORIES = [
   'Beer',
@@ -26,6 +27,8 @@ export default function GlasswareLibraryPage() {
   const [glassware, setGlassware] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterDepartment, setFilterDepartment] = useState('all');
+  const departments = useStocklyDepartments(companyId);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -110,6 +113,7 @@ export default function GlasswareLibraryPage() {
         breakage_rate: rowDraft.breakage_rate ?? null,
         storage_location: rowDraft.storage_location ?? null,
         reorder_level: reorderLevelVal,
+        department: rowDraft.department || null,
         notes: rowDraft.notes ?? null,
         company_id: companyId,
       };
@@ -194,6 +198,7 @@ export default function GlasswareLibraryPage() {
       breakage_rate: item.breakage_rate || '',
       storage_location: item.storage_location || '',
       reorder_level: item.reorder_level ?? '',
+      department: item.department || '',
       notes: item.notes || ''
     });
     setExpandedRows(prev => new Set(prev).add(item.id));
@@ -368,7 +373,8 @@ export default function GlasswareLibraryPage() {
   const filteredItems = glassware.filter((item: any) => {
     const matchesSearch = (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesDepartment = filterDepartment === 'all' || (item.department || '') === filterDepartment;
+    return matchesSearch && matchesCategory && matchesDepartment;
   });
 
   return (
@@ -449,6 +455,16 @@ export default function GlasswareLibraryPage() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
+            <select
+              value={filterDepartment}
+              onChange={(e) => setFilterDepartment(e.target.value)}
+              className="bg-theme-surface border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Departments</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
       </div>
 
       {loading ? (
@@ -590,6 +606,23 @@ export default function GlasswareLibraryPage() {
                                 <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.storage_location ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, storage_location: e.target.value }))} />
                               ) : (
                                 <div className="text-sm text-theme-primary">{item.storage_location || '-'}</div>
+                              )}
+                            </div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Department</div>
+                              {editingRowId === item.id ? (
+                                <select
+                                  className="w-full bg-theme-surface border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+                                  value={rowDraft?.department ?? ''}
+                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, department: e.target.value }))}
+                                >
+                                  <option value="">Shared</option>
+                                  {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <div className="text-sm text-theme-primary font-medium">{item.department || 'Shared'}</div>
                               )}
                             </div>
                             <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">

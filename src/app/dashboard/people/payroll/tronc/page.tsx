@@ -167,7 +167,7 @@ export default function TroncPage() {
               step="0.01"
               min="0"
               value={newConfig.point_value || 1.00}
-              onChange={(e) => setNewConfig({ ...newConfig, point_value: parseFloat(e.target.value) || 1.00 })}
+              onChange={(e) => setNewConfig({ ...newConfig, point_value: e.target.value === '' ? '' : parseFloat(e.target.value) || 1.00 })}
  className="bg-theme-surface ] border-gray-300 dark:border-white/[0.12] text-theme-primary"
             />
             <p className="text-xs text-theme-tertiary">How much each point is worth in pounds</p>
@@ -181,7 +181,7 @@ export default function TroncPage() {
               step="0.01"
               min="0"
               value={newConfig.total_tronc_pool || 0}
-              onChange={(e) => setNewConfig({ ...newConfig, total_tronc_pool: parseFloat(e.target.value) || 0 })}
+              onChange={(e) => setNewConfig({ ...newConfig, total_tronc_pool: e.target.value === '' ? '' : parseFloat(e.target.value) || 0 })}
  className="bg-theme-surface ] border-gray-300 dark:border-white/[0.12] text-theme-primary"
             />
             <p className="text-xs text-theme-tertiary">Total tip pool for this period</p>

@@ -42,11 +42,11 @@ interface CalloutTaskModalProps {
 type CalloutStatus = 'not_yet_visited' | 'in_progress' | 'awaiting_parts' | 'completed' | 'cancelled'
 
 const STATUS_OPTIONS: { value: CalloutStatus; label: string; description: string; color: string }[] = [
-  { value: 'not_yet_visited', label: 'Not Yet Visited', description: 'Contractor has not yet attended site', color: 'text-amber-400 bg-amber-500/20' },
-  { value: 'in_progress', label: 'In Progress', description: 'Work is ongoing', color: 'text-blue-400 bg-blue-500/20' },
-  { value: 'awaiting_parts', label: 'Awaiting Parts', description: 'Waiting for parts/materials to arrive', color: 'text-purple-400 bg-purple-500/20' },
-  { value: 'completed', label: 'Completed', description: 'Work has been completed successfully', color: 'text-green-400 bg-green-500/20' },
-  { value: 'cancelled', label: 'Cancelled', description: 'Callout has been cancelled', color: 'text-red-400 bg-red-500/20' },
+  { value: 'not_yet_visited', label: 'Not Yet Visited', description: 'Contractor has not yet attended site', color: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/20' },
+  { value: 'in_progress', label: 'In Progress', description: 'Work is ongoing', color: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20' },
+  { value: 'awaiting_parts', label: 'Awaiting Parts', description: 'Waiting for parts/materials to arrive', color: 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/20' },
+  { value: 'completed', label: 'Completed', description: 'Work has been completed successfully', color: 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/20' },
+  { value: 'cancelled', label: 'Cancelled', description: 'Callout has been cancelled', color: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/20' },
 ]
 
 export default function CalloutTaskModal({

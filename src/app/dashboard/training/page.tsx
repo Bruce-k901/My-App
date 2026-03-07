@@ -52,10 +52,10 @@ interface MatrixRow {
 
 const STATUS_STYLES: Record<TrainingStatus, string> = {
   current: "bg-module-fg/10 text-module-fg border border-module-fg/30",
-  due_soon: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  expired: "bg-red-500/10 text-red-400 border border-red-500/20",
-  missing: "bg-slate-500/10 text-theme-tertiary border border-slate-500/20",
-  not_trained: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+  due_soon: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20",
+  expired: "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20",
+  missing: "bg-slate-50 dark:bg-slate-500/10 text-theme-tertiary border border-slate-200 dark:border-slate-500/20",
+  not_trained: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20",
 };
 
 // Map certificate_type query params to course codes for task navigation
@@ -667,7 +667,7 @@ function TrainingMatrixPageContent() {
                               className="p-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/40"
                               title="Assign course to employee"
                             >
-                              <Mail className="h-3.5 w-3.5 text-amber-400" />
+                              <Mail className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                             </button>
                           )}
                           <button
@@ -694,7 +694,7 @@ function TrainingMatrixPageContent() {
                             </p>
                           )}
                           {course.is_mandatory && (
-                            <span className="inline-block px-1.5 py-0.5 text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 rounded">
+                            <span className="inline-block px-1.5 py-0.5 text-[10px] bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20 rounded">
                               Mandatory
                             </span>
                           )}

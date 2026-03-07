@@ -109,7 +109,7 @@ export default function ShiftRulesPage() {
               min="0"
               max="24"
               value={formData.min_rest_between_shifts ?? DEFAULT_SHIFT_RULES.min_rest_between_shifts}
-              onChange={(e) => updateField('min_rest_between_shifts', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('min_rest_between_shifts', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="11"
             />
             <p className="text-xs text-theme-primary/50 mt-1">UK default: 11 hours</p>
@@ -138,7 +138,7 @@ export default function ShiftRulesPage() {
               min="0"
               max="48"
               value={formData.min_weekly_rest_hours ?? DEFAULT_SHIFT_RULES.min_weekly_rest_hours}
-              onChange={(e) => updateField('min_weekly_rest_hours', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('min_weekly_rest_hours', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="24"
             />
           </div>
@@ -158,7 +158,7 @@ export default function ShiftRulesPage() {
               min="0"
               max="168"
               value={formData.max_weekly_hours ?? DEFAULT_SHIFT_RULES.max_weekly_hours}
-              onChange={(e) => updateField('max_weekly_hours', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('max_weekly_hours', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="48"
             />
             <p className="text-xs text-theme-primary/50 mt-1">UK default: 48 hours</p>
@@ -173,7 +173,7 @@ export default function ShiftRulesPage() {
               min="1"
               max="52"
               value={formData.weekly_hours_reference_weeks ?? DEFAULT_SHIFT_RULES.weekly_hours_reference_weeks}
-              onChange={(e) => updateField('weekly_hours_reference_weeks', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('weekly_hours_reference_weeks', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="17"
             />
             <p className="text-xs text-theme-primary/50 mt-1">Averaging period for weekly hours</p>
@@ -211,7 +211,7 @@ export default function ShiftRulesPage() {
               step="0.5"
               value={((formData.break_threshold_minutes ?? DEFAULT_SHIFT_RULES.break_threshold_minutes) / 60).toString()}
               onChange={(e) => {
-                const hours = parseFloat(e.target.value) || 0;
+                const hours = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                 updateField('break_threshold_minutes', Math.round(hours * 60));
               }}
               placeholder="6"
@@ -228,7 +228,7 @@ export default function ShiftRulesPage() {
               min="0"
               max="120"
               value={formData.break_duration_minutes ?? DEFAULT_SHIFT_RULES.break_duration_minutes}
-              onChange={(e) => updateField('break_duration_minutes', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('break_duration_minutes', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="20"
             />
           </div>
@@ -285,7 +285,7 @@ export default function ShiftRulesPage() {
               min="0"
               max="12"
               value={formData.max_night_shift_hours ?? DEFAULT_SHIFT_RULES.max_night_shift_hours}
-              onChange={(e) => updateField('max_night_shift_hours', parseInt(e.target.value) || 0)}
+              onChange={(e) => updateField('max_night_shift_hours', e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
               placeholder="8"
             />
           </div>

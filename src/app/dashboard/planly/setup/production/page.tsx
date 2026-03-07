@@ -154,10 +154,10 @@ export default function ProductionSetupWizardPage() {
 
   // ─── Step Navigation ───────────────────────────────────────
 
-  const canProceedStep1 = state.name.trim() && state.recipe_id && state.selected_product_ids.length > 0;
+  const canProceedStep1 = state.name.trim() && state.recipe_id;
 
   const canProceedStep2 = state.is_laminated
-    ? state.lamination_styles.length > 0 && unassignedProducts.length === 0
+    ? state.lamination_styles.length > 0 && (state.selected_product_ids.length === 0 || unassignedProducts.length === 0)
     : (state.batch_size_kg ?? 0) > 0 && (state.units_per_batch ?? 0) > 0;
 
   const goNext = () => {
@@ -441,7 +441,7 @@ export default function ProductionSetupWizardPage() {
                   className="w-20"
                   value={state.mix_lead_days}
                   onChange={e =>
-                    setState(prev => ({ ...prev, mix_lead_days: parseInt(e.target.value) || 0 }))
+                    setState(prev => ({ ...prev, mix_lead_days: e.target.value === '' ? '' : parseInt(e.target.value) || 0 }))
                   }
                 />
                 <span className="text-theme-tertiary">days before delivery</span>
@@ -454,14 +454,41 @@ export default function ProductionSetupWizardPage() {
 
             {/* Product Selection */}
             <div className="space-y-2">
-              <Label>Which products use this dough? *</Label>
-              <div className="border border-theme rounded-lg max-h-64 overflow-y-auto">
-                {products.length === 0 ? (
-                  <p className="p-4 text-theme-tertiary text-center">
-                    No products found. Create products first.
-                  </p>
-                ) : (
-                  products.map(product => {
+              <Label>Which products use this dough?</Label>
+              <p className="text-xs text-theme-tertiary">
+                You can skip this step and link products later if needed.
+              </p>
+
+              {products.length === 0 ? (
+                <div className="border border-amber-200 dark:border-amber-500/20 rounded-lg p-6 bg-amber-50 dark:bg-amber-500/10">
+                  <div className="text-center space-y-3">
+                    <div className="flex justify-center">
+                      <Package className="h-12 w-12 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-amber-900 dark:text-amber-200 mb-1">
+                        No products configured yet
+                      </h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-300">
+                        You'll need to create Planly products before you can link them to this dough.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push('/dashboard/planly/products')}
+                      className="bg-white dark:bg-white/10 border-amber-300 dark:border-amber-500/30 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Products First
+                    </Button>
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      Or continue and add products later
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="border border-theme rounded-lg max-h-64 overflow-y-auto">
+                  {products.map(product => {
                     const isSelected = state.selected_product_ids.includes(product.id);
                     return (
                       <label
@@ -481,13 +508,20 @@ export default function ProductionSetupWizardPage() {
                         </span>
                       </label>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </div>
+              )}
+
               {state.selected_product_ids.length > 0 && (
                 <p className="text-sm text-module-fg">
                   {state.selected_product_ids.length} product
                   {state.selected_product_ids.length !== 1 ? 's' : ''} selected
+                </p>
+              )}
+
+              {products.length > 0 && state.selected_product_ids.length === 0 && (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  No products selected. You can link products to this dough later.
                 </p>
               )}
             </div>
@@ -608,7 +642,7 @@ export default function ProductionSetupWizardPage() {
                 </Button>
 
                 {/* Unassigned Products Warning */}
-                {unassignedProducts.length > 0 && (
+                {state.selected_product_ids.length > 0 && unassignedProducts.length > 0 && (
                   <div className="p-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg">
                     <p className="text-sm text-amber-700 dark:text-amber-400">
                       {unassignedProducts.length} product
@@ -626,6 +660,15 @@ export default function ProductionSetupWizardPage() {
                   </div>
                 )}
 
+                {/* No Products Warning */}
+                {state.selected_product_ids.length === 0 && (
+                  <div className="p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-lg">
+                    <p className="text-sm text-blue-700 dark:text-blue-400">
+                      No products selected yet. You can link products to your lamination styles later.
+                    </p>
+                  </div>
+                )}
+
                 {/* Lamination Lead Days */}
                 <div className="space-y-2">
                   <Label>When do you laminate?</Label>
@@ -638,7 +681,7 @@ export default function ProductionSetupWizardPage() {
                       onChange={e =>
                         setState(prev => ({
                           ...prev,
-                          laminate_lead_days: parseInt(e.target.value) || 1,
+                          laminate_lead_days: e.target.value === '' ? '' : parseInt(e.target.value) || 1,
                         }))
                       }
                     />
@@ -781,7 +824,9 @@ export default function ProductionSetupWizardPage() {
                   <div>
                     <h4 className="font-medium text-theme-primary">PRODUCTS</h4>
                     <p className="text-sm text-theme-secondary">
-                      {state.selected_product_ids.length} products linked to this dough
+                      {state.selected_product_ids.length > 0
+                        ? `${state.selected_product_ids.length} products linked to this dough`
+                        : 'No products linked yet (can be added later)'}
                     </p>
                   </div>
                 </div>
@@ -794,6 +839,11 @@ export default function ProductionSetupWizardPage() {
                 <Check className="inline h-4 w-4 mr-1" />
                 Setup looks good! You can edit this anytime in Production Settings.
               </p>
+              {state.selected_product_ids.length === 0 && (
+                <p className="text-xs text-module-fg/80 mt-2">
+                  Remember to link products to this dough configuration when you're ready.
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -883,7 +933,7 @@ export default function ProductionSetupWizardPage() {
                   onChange={e =>
                     setStyleForm(prev => ({
                       ...prev,
-                      products_per_sheet: parseInt(e.target.value) || 1,
+                      products_per_sheet: e.target.value === '' ? '' : parseInt(e.target.value) || 1,
                     }))
                   }
                 />

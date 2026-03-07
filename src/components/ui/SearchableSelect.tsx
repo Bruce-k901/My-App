@@ -82,7 +82,7 @@ export function SearchableSelect({
           bg-white/[0.03] border border-theme rounded-lg
           text-left transition-colors
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-neutral-600 cursor-pointer'}
-          ${isOpen ? 'border-module-fg-mid/50 ring-1 ring-module-fg-mid/20' : ''}
+          ${isOpen ? 'border-blue-500 dark:border-blue-500 ring-1 ring-blue-500/20' : ''}
         `}
       >
         <span className={selectedOption ? 'text-theme-primary' : 'text-theme-tertiary'}>
@@ -109,22 +109,22 @@ export function SearchableSelect({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-theme rounded-lg shadow-xl overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#14161c]/95 border border-theme rounded-lg shadow-xl overflow-hidden">
           {/* Search Input */}
           <div className="p-2 border-b border-theme">
             <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
               <input
                 ref={inputRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search suppliers..."
+                placeholder={`Search${placeholder ? '...' : '...'}`}
                 className="
                   w-full pl-9 pr-3 py-2
-                  bg-white/[0.05] border border-theme rounded-md
-                  text-theme-primary placeholder-slate-500
-                  focus:outline-none focus:border-module-fg-mid/50
+                  bg-neutral-100 dark:bg-white/[0.05] border border-theme rounded-md
+                  text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500
+                  focus:outline-none focus:ring-2 focus:ring-ring
                   text-sm
                 "
               />
@@ -134,8 +134,8 @@ export function SearchableSelect({
           {/* Options List */}
           <div className="max-h-60 overflow-y-auto">
             {filteredOptions.length === 0 ? (
-              <div className="px-3 py-4 text-center text-theme-tertiary text-sm">
-                No suppliers found
+              <div className="px-3 py-4 text-center text-neutral-500 dark:text-neutral-400 text-sm">
+                No results found
               </div>
             ) : (
               filteredOptions.map((option) => (
@@ -147,8 +147,8 @@ export function SearchableSelect({
                     w-full flex items-center justify-between px-3 py-2.5
                     text-left text-sm transition-colors
                     ${option.value === value
-                      ? 'bg-module-fg-mid/10 text-module-fg-mid'
-                      : 'text-theme-primary hover:bg-white/[0.05]'
+                      ? 'bg-neutral-100 dark:bg-white/[0.08] text-neutral-900 dark:text-white font-medium'
+                      : 'text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-white/[0.05]'
                     }
                   `}
                 >

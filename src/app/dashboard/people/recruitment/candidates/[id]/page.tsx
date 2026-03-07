@@ -316,13 +316,13 @@ export default function CandidateProfilePage() {
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      applied: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-      screening: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-      interview: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-      trial: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+      applied: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
+      screening: 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+      interview: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/30',
+      trial: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
       offer: 'bg-module-fg/[0.15] text-module-fg border-module-fg/[0.30]',
-      accepted: 'bg-green-500/10 text-green-400 border-green-500/30',
-      rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
+      accepted: 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
+      rejected: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
     }
     return (
       <span className={`px-2 py-1 text-xs rounded border ${styles[status] || styles.applied}`}>
@@ -445,10 +445,10 @@ export default function CandidateProfilePage() {
                           {app.job.title}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30">
                             {app.job.boh_foh}
                           </span>
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30">
                             {app.job.pay_type === 'hourly' ? 'Hourly' : 'Salaried'}
                           </span>
                         </div>
@@ -495,7 +495,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-module-fg/10"
+                                className="px-2 py-1 text-xs rounded bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-module-fg/10"
                               >
                                 ✓ Confirmed
                               </button>
@@ -509,7 +509,7 @@ export default function CandidateProfilePage() {
                                         interview_confirmation_at: new Date().toISOString()
                                       })
                                       .eq('id', app.id)
-                                    
+
                                     if (error) throw error
                                     toast.info('Marked as declined')
                                     load()
@@ -518,7 +518,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                                className="px-2 py-1 text-xs rounded bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-500/30"
                               >
                                 ✗ Declined
                               </button>
@@ -526,7 +526,7 @@ export default function CandidateProfilePage() {
                                 onClick={async () => {
                                   const reason = prompt('Why does it need to be rescheduled?')
                                   if (!reason) return
-                                  
+
                                   try {
                                     const { error } = await supabase
                                       .from('applications')
@@ -536,7 +536,7 @@ export default function CandidateProfilePage() {
                                         interview_reschedule_reason: reason
                                       })
                                       .eq('id', app.id)
-                                    
+
                                     if (error) throw error
                                     toast.info('Marked for rescheduling')
                                     load()
@@ -545,7 +545,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30"
+                                className="px-2 py-1 text-xs rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/30"
                               >
                                 🔄 Reschedule
                               </button>
@@ -553,11 +553,11 @@ export default function CandidateProfilePage() {
                           ) : (
                             <div className="flex items-center gap-2">
                               <span className={`px-2 py-1 text-xs rounded ${
-                                app.interview_confirmation_status === 'confirmed' 
-                                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                app.interview_confirmation_status === 'confirmed'
+                                  ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30'
                                   : app.interview_confirmation_status === 'declined'
-                                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                  : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                  ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30'
+                                  : 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30'
                               }`}>
                                 {app.interview_confirmation_status === 'confirmed' && '✓ Confirmed'}
                                 {app.interview_confirmation_status === 'declined' && '✗ Declined'}
@@ -592,7 +592,7 @@ export default function CandidateProfilePage() {
                         </div>
                         
                         {app.interview_reschedule_reason && (
-                          <div className="mt-2 text-xs text-amber-400/70">
+                          <div className="mt-2 text-xs text-amber-700/70 dark:text-amber-400/70">
                             Reason: {app.interview_reschedule_reason}
                           </div>
                         )}
@@ -634,7 +634,7 @@ export default function CandidateProfilePage() {
                               toast.error('Failed to resend invitation')
                             }
                           }}
-                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-module-fg/10 flex items-center justify-center gap-2"
+                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 hover:bg-module-fg/10 flex items-center justify-center gap-2"
                         >
                           <Mail className="w-3.5 h-3.5" />
                           Resend Interview Invitation
@@ -675,7 +675,7 @@ export default function CandidateProfilePage() {
                             </div>
                           )}
                           {!(app as any).sites?.name && !(app as any).trial_contact_person && (
-                            <div className="text-amber-400/60 text-xs">
+                            <div className="text-amber-700/60 dark:text-amber-400/60 text-xs">
                               ⚠️ Trial details incomplete - click Edit to add site and contact
                             </div>
                           )}
@@ -705,7 +705,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-module-fg/10"
+                                className="px-2 py-1 text-xs rounded bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-module-fg/10"
                               >
                                 ✓ Confirmed
                               </button>
@@ -719,7 +719,7 @@ export default function CandidateProfilePage() {
                                         trial_confirmation_at: new Date().toISOString()
                                       })
                                       .eq('id', app.id)
-                                    
+
                                     if (error) throw error
                                     toast.info('Marked as declined')
                                     load()
@@ -728,7 +728,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                                className="px-2 py-1 text-xs rounded bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-500/30"
                               >
                                 ✗ Declined
                               </button>
@@ -736,7 +736,7 @@ export default function CandidateProfilePage() {
                                 onClick={async () => {
                                   const reason = prompt('Why does it need to be rescheduled?')
                                   if (!reason) return
-                                  
+
                                   try {
                                     const { error } = await supabase
                                       .from('applications')
@@ -746,7 +746,7 @@ export default function CandidateProfilePage() {
                                         trial_reschedule_reason: reason
                                       })
                                       .eq('id', app.id)
-                                    
+
                                     if (error) throw error
                                     toast.info('Marked for rescheduling')
                                     load()
@@ -755,7 +755,7 @@ export default function CandidateProfilePage() {
                                     toast.error('Failed to update')
                                   }
                                 }}
-                                className="px-2 py-1 text-xs rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30"
+                                className="px-2 py-1 text-xs rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/30"
                               >
                                 🔄 Reschedule
                               </button>
@@ -763,11 +763,11 @@ export default function CandidateProfilePage() {
                           ) : (
                             <div className="flex items-center gap-2">
                               <span className={`px-2 py-1 text-xs rounded ${
-                                app.trial_confirmation_status === 'confirmed' 
-                                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                app.trial_confirmation_status === 'confirmed'
+                                  ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30'
                                   : app.trial_confirmation_status === 'declined'
-                                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                  : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                  ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30'
+                                  : 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30'
                               }`}>
                                 {app.trial_confirmation_status === 'confirmed' && '✓ Confirmed'}
                                 {app.trial_confirmation_status === 'declined' && '✗ Declined'}
@@ -802,7 +802,7 @@ export default function CandidateProfilePage() {
                         </div>
                         
                         {app.trial_reschedule_reason && (
-                          <div className="mt-2 text-xs text-amber-400/70">
+                          <div className="mt-2 text-xs text-amber-700/70 dark:text-amber-400/70">
                             Reason: {app.trial_reschedule_reason}
                           </div>
                         )}
@@ -813,7 +813,7 @@ export default function CandidateProfilePage() {
                             setSelectedApplication(app)
                             setShowEditTrialModal(true)
                           }}
-                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 flex items-center justify-center gap-2"
+                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 flex items-center justify-center gap-2"
                         >
                           <Calendar className="w-3.5 h-3.5" />
                           Edit Trial Details
@@ -880,7 +880,7 @@ export default function CandidateProfilePage() {
                               toast.error('Failed to resend invitation')
                             }
                           }}
-                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30 hover:bg-module-fg/10 flex items-center justify-center gap-2"
+                          className="mt-3 w-full px-3 py-1.5 text-xs rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30 hover:bg-module-fg/10 flex items-center justify-center gap-2"
                         >
                           <Mail className="w-3.5 h-3.5" />
                           Resend Trial Invitation
@@ -916,12 +916,12 @@ export default function CandidateProfilePage() {
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2 mb-1">
                                         <span className={`px-2 py-0.5 text-xs rounded ${
-                                          offer.status === 'accepted' 
-                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                          offer.status === 'accepted'
+                                            ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30'
                                             : offer.status === 'declined'
-                                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                            ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30'
                                             : offer.status === 'sent'
-                                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                            ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30'
                                             : 'bg-theme-surface-elevated0/20 text-theme-tertiary border border-gray-500/30'
                                         }`}>
                                           {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
@@ -952,12 +952,12 @@ export default function CandidateProfilePage() {
                                           </div>
                                         )}
                                         {offer.accepted_at && (
-                                          <div className="text-green-400 text-xs mt-1">
+                                          <div className="text-green-700 dark:text-green-400 text-xs mt-1">
                                             ✓ Accepted {new Date(offer.accepted_at).toLocaleDateString('en-GB')}
                                           </div>
                                         )}
                                         {offer.declined_at && (
-                                          <div className="text-red-400 text-xs mt-1">
+                                          <div className="text-red-700 dark:text-red-400 text-xs mt-1">
                                             ✗ Declined {new Date(offer.declined_at).toLocaleDateString('en-GB')}
                                           </div>
                                         )}
@@ -970,7 +970,7 @@ export default function CandidateProfilePage() {
                                           setSelectedApplication(app)
                                           setShowEditOffer(true)
                                         }}
-                                        className="px-2 py-1 text-xs rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1"
+                                        className="px-2 py-1 text-xs rounded bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1"
                                       >
                                         <Edit className="w-3 h-3" />
                                         Edit
@@ -1136,7 +1136,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowScheduleInterview(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-green-500/10 hover:bg-module-fg/10 border border-green-500/30 text-green-400 font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-green-50 dark:bg-green-500/10 hover:bg-module-fg/10 border border-green-200 dark:border-green-500/30 text-green-700 dark:text-green-400 font-medium"
                           >
                             📅 Schedule Interview
                           </button>
@@ -1146,7 +1146,7 @@ export default function CandidateProfilePage() {
                               setProgressMode('reject')
                               setShowProgressModal(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-red-50 dark:bg-red-500/10 hover:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400"
                           >
                             ✕ Reject
                           </button>
@@ -1161,7 +1161,7 @@ export default function CandidateProfilePage() {
                               setProgressMode('interview')
                               setShowProgressModal(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-blue-500/10 hover:bg-module-fg/10 border border-blue-500/30 text-blue-400 font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-blue-50 dark:bg-blue-500/10 hover:bg-module-fg/10 border border-blue-200 dark:border-blue-500/30 text-blue-700 dark:text-blue-400 font-medium"
                           >
                             ✍️ Complete Interview
                           </button>
@@ -1171,7 +1171,7 @@ export default function CandidateProfilePage() {
                                 setSelectedApplication(app)
                                 setShowScheduleTrial(true)
                               }}
-                              className="w-full px-3 py-2 rounded-lg text-xs bg-purple-500/10 hover:bg-module-fg/10 border border-purple-500/30 text-purple-400 font-medium"
+                              className="w-full px-3 py-2 rounded-lg text-xs bg-purple-50 dark:bg-purple-500/10 hover:bg-module-fg/10 border border-purple-200 dark:border-purple-500/30 text-purple-700 dark:text-purple-400 font-medium"
                             >
                               📅 Schedule Trial Shift
                             </button>
@@ -1187,7 +1187,7 @@ export default function CandidateProfilePage() {
                               setProgressMode('trial')
                               setShowProgressModal(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-purple-500/10 hover:bg-module-fg/10 border border-purple-500/30 text-purple-400 font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-purple-50 dark:bg-purple-500/10 hover:bg-module-fg/10 border border-purple-200 dark:border-purple-500/30 text-purple-700 dark:text-purple-400 font-medium"
                           >
                             ⭐ Complete Trial
                           </button>
@@ -1210,7 +1210,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowOffersManagement(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 flex items-center justify-center gap-2 font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 flex items-center justify-center gap-2 font-medium"
                           >
                             <FileText className="w-3.5 h-3.5" />
                             Manage Offers
@@ -1431,7 +1431,7 @@ export default function CandidateProfilePage() {
                 {candidate.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 text-xs rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30"
+                    className="px-2 py-1 text-xs rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30"
                   >
                     {tag}
                   </span>

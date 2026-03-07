@@ -456,18 +456,18 @@ export default function AdminDashboardPage() {
 
   function getEHOScoreColor(score: number | null): string {
     if (score === null) return 'text-theme-tertiary';
-    if (score >= 80) return 'text-green-400';
-    if (score >= 60) return 'text-yellow-400';
-    if (score >= 40) return 'text-orange-400';
-    return 'text-red-400';
+    if (score >= 80) return 'text-green-600 dark:text-green-400';
+    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
+    if (score >= 40) return 'text-orange-600 dark:text-orange-400';
+    return 'text-red-600 dark:text-red-400';
   }
 
   function getEHOScoreBg(score: number | null): string {
     if (score === null) return 'bg-theme-surface-elevated0/10';
-    if (score >= 80) return 'bg-green-500/10';
-    if (score >= 60) return 'bg-yellow-500/10';
-    if (score >= 40) return 'bg-orange-500/10';
-    return 'bg-red-500/10';
+    if (score >= 80) return 'bg-green-50 dark:bg-green-500/10';
+    if (score >= 60) return 'bg-yellow-50 dark:bg-yellow-500/10';
+    if (score >= 40) return 'bg-orange-50 dark:bg-orange-500/10';
+    return 'bg-red-50 dark:bg-red-500/10';
   }
 
   const handleRefresh = () => {
@@ -556,7 +556,7 @@ export default function AdminDashboardPage() {
               <Building2 className="w-6 h-6 text-[#8A2B2B]" />
             </div>
             {stats && stats.new_companies_this_week > 0 && (
-              <span className="text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
+              <span className="text-xs text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
                 +{stats.new_companies_this_week} this week
               </span>
             )}
@@ -569,10 +569,10 @@ export default function AdminDashboardPage() {
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-blue-500/10 rounded-lg">
-              <Users className="w-6 h-6 text-blue-400" />
+              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             {stats && stats.active_users_today > 0 && (
-              <span className="text-xs text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full font-medium">
+              <span className="text-xs text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full font-medium">
                 {stats.active_users_today} active today
               </span>
             )}
@@ -585,10 +585,10 @@ export default function AdminDashboardPage() {
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-yellow-500/10 rounded-lg">
-              <ClipboardCheck className="w-6 h-6 text-yellow-400" />
+              <ClipboardCheck className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
             {stats && stats.tasks_completed_today > 0 && (
-              <span className="text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
+              <span className="text-xs text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
                 {stats.tasks_completed_today} done today
               </span>
             )}
@@ -596,7 +596,7 @@ export default function AdminDashboardPage() {
           <div className="text-3xl font-bold text-theme-primary mb-1">{stats.pending_tasks}</div>
           <div className="text-sm text-theme-tertiary">Pending Tasks</div>
           {stats && stats.missed_tasks > 0 && (
-            <div className="text-xs text-red-400 mt-1">{stats.missed_tasks} overdue</div>
+            <div className="text-xs text-red-600 dark:text-red-400 mt-1">{stats.missed_tasks} overdue</div>
           )}
         </div>
 
@@ -604,7 +604,7 @@ export default function AdminDashboardPage() {
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-red-500/10 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-red-400" />
+              <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
           </div>
           <div className="text-3xl font-bold text-theme-primary mb-1">{stats.missed_tasks}</div>
@@ -619,7 +619,7 @@ export default function AdminDashboardPage() {
           {/* Active SOPs */}
           <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-4 h-4 text-purple-400" />
+              <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               <span className="text-xs text-theme-tertiary font-medium">Active SOPs</span>
             </div>
             <div className="text-2xl font-bold text-theme-primary mb-1">{stats.active_sops}</div>
@@ -631,12 +631,12 @@ export default function AdminDashboardPage() {
           {/* Risk Assessments */}
           <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <ShieldAlert className="w-4 h-4 text-orange-400" />
+              <ShieldAlert className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span className="text-xs text-theme-tertiary font-medium">Risk Assessments</span>
             </div>
             <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_risk_assessments}</div>
             {stats && stats.overdue_risk_assessments > 0 && (
-              <div className="text-xs text-red-400 font-medium">{stats.overdue_risk_assessments} overdue</div>
+              <div className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.overdue_risk_assessments} overdue</div>
             )}
           </Link>
 
@@ -648,31 +648,31 @@ export default function AdminDashboardPage() {
             </div>
             <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_assets}</div>
             {stats && stats.overdue_service_assets > 0 && (
-              <div className="text-xs text-red-400 font-medium">{stats.overdue_service_assets} need service</div>
+              <div className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.overdue_service_assets} need service</div>
             )}
           </Link>
 
           {/* Messages */}
           <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <MessageSquare className="w-4 h-4 text-green-400" />
+              <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400" />
               <span className="text-xs text-theme-tertiary font-medium">Messages</span>
             </div>
             <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_messages}</div>
             {stats && stats.messages_today > 0 && (
-              <div className="text-xs text-green-400">{stats.messages_today} today</div>
+              <div className="text-xs text-green-600 dark:text-green-400">{stats.messages_today} today</div>
             )}
           </Link>
 
           {/* Callouts */}
           <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <Phone className="w-4 h-4 text-red-400" />
+              <Phone className="w-4 h-4 text-red-600 dark:text-red-400" />
               <span className="text-xs text-theme-tertiary font-medium">Callouts</span>
             </div>
             <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_callouts}</div>
             {stats && stats.open_callouts > 0 && (
-              <div className="text-xs text-yellow-400 font-medium">{stats.open_callouts} open</div>
+              <div className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">{stats.open_callouts} open</div>
             )}
           </Link>
 
@@ -697,11 +697,11 @@ export default function AdminDashboardPage() {
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Tasks</div>
-              <div className="text-xl font-semibold text-blue-400">{stats.active_tasks}</div>
+              <div className="text-xl font-semibold text-blue-600 dark:text-blue-400">{stats.active_tasks}</div>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Completed Tasks</div>
-              <div className="text-xl font-semibold text-green-400">{stats.completed_tasks}</div>
+              <div className="text-xl font-semibold text-green-600 dark:text-green-400">{stats.completed_tasks}</div>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Completions Today</div>

@@ -245,11 +245,11 @@ export default function MyTasksPage() {
 
   const getStatusColor = (status) => {
     const colors = {
-      'pending': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-      'in_progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      'completed': 'bg-green-500/10 text-green-400 border-green-500/20',
-      'overdue': 'bg-red-500/10 text-red-400 border-red-500/20',
-      'failed': 'bg-red-500/10 text-red-400 border-red-500/20',
+      'pending': 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20',
+      'in_progress': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+      'completed': 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20',
+      'overdue': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
+      'failed': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
       'skipped': 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
     };
     return colors[status] || 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20';
@@ -269,11 +269,11 @@ export default function MyTasksPage() {
 
   const getCategoryColor = (category) => {
     const colors = {
-      'food_safety': 'bg-green-500/10 text-green-400',
-      'h_and_s': 'bg-blue-500/10 text-blue-400',
-      'fire': 'bg-red-500/10 text-red-400',
-      'cleaning': 'bg-purple-500/10 text-purple-400',
-      'compliance': 'bg-yellow-500/10 text-yellow-400'
+      'food_safety': 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400',
+      'h_and_s': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
+      'fire': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
+      'cleaning': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400',
+      'compliance': 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
     };
     return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary';
   };

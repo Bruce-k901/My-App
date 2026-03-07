@@ -323,7 +323,7 @@ function AddShiftModal({
                 step="15"
                 value={breakMins}
                 onChange={(e) => {
-                  const val = parseInt(e.target.value) || 0;
+                  const val = e.target.value === '' ? 0 : parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
                 className="w-full px-3 py-2 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary text-sm font-medium focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
@@ -540,7 +540,7 @@ function EditShiftModal({
                 step="15"
                 value={breakMins}
                 onChange={(e) => {
-                  const val = parseInt(e.target.value) || 0;
+                  const val = e.target.value === '' ? 0 : parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
                 className="w-full px-3 py-2 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary text-sm font-medium focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"

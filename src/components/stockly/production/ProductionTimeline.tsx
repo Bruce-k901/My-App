@@ -103,22 +103,22 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
   function getStatusColor(status: string) {
     switch (status) {
       case 'complete':
-        return 'text-green-400 bg-green-400/10 border-green-400/20';
+        return 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-400/10 border-green-200 dark:border-green-400/20';
       case 'in_progress':
-        return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+        return 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-400/10 border-blue-200 dark:border-blue-400/20';
       default:
-        return 'text-theme-tertiary bg-white/5 border-white/10';
+        return 'text-theme-tertiary bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10';
     }
   }
 
   function getCapacityColor(status?: string) {
     switch (status) {
       case 'overloaded':
-        return 'text-red-400 bg-red-400/10 border-red-400/20';
+        return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-400/10 border-red-200 dark:border-red-400/20';
       case 'tight':
-        return 'text-amber-400 bg-amber-400/10 border-amber-400/20';
+        return 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-400/10 border-amber-200 dark:border-amber-400/20';
       default:
-        return 'text-green-400 bg-green-400/10 border-green-400/20';
+        return 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-400/10 border-green-200 dark:border-green-400/20';
     }
   }
 
@@ -202,11 +202,11 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
               {/* Timeline Line */}
               <div className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                  step.status === 'complete' 
-                    ? 'bg-green-400/20 border-green-400 text-green-400'
+                  step.status === 'complete'
+                    ? 'bg-green-100 dark:bg-green-400/20 border-green-500 dark:border-green-400 text-green-700 dark:text-green-400'
                     : step.status === 'in_progress'
-                    ? 'bg-blue-400/20 border-blue-400 text-blue-400'
-                    : 'bg-white/5 border-white/20 text-theme-tertiary'
+                    ? 'bg-blue-100 dark:bg-blue-400/20 border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-400'
+                    : 'bg-gray-100 dark:bg-white/5 border-gray-300 dark:border-white/20 text-theme-tertiary'
                 }`}>
                   {step.status === 'complete' ? (
                     <CheckCircle2 className="w-5 h-5" />
